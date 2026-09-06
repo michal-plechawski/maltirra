@@ -26,7 +26,7 @@ jobs:
 
     steps:
       - name: Check out sources
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: Locate Visual Studio 2022 MSBuild
         shell: pwsh
@@ -86,9 +86,15 @@ jobs:
             throw "Expected test runner was not created: $testExecutable"
           }
 
-          & $testExecutable all
-          if ($LASTEXITCODE -ne 0) {
-            throw "Automatic tests failed with exit code $LASTEXITCODE."
+          $testOutput = & $testExecutable all 2>&1
+          $testExitCode = $LASTEXITCODE
+          $testOutput | ForEach-Object { Write-Host $_ }
+
+          if ($testExitCode -ne 0) {
+            $details = ($testOutput | Select-Object -Last 50) -join "`n"
+            $details = $details.Replace('%', '%25').Replace("`r", '%0D').Replace("`n", '%0A')
+            Write-Host "::error title=Altirra automatic tests failed::$details"
+            exit $testExitCode
           }
 
       - name: Build Windows x86 release
@@ -112,7 +118,7 @@ jobs:
           Get-Item $executable | Format-List FullName, Length, LastWriteTimeUtc
 
       - name: Upload Windows x86 artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: altirra-windows-x86-${{ github.sha }}
           path: out/Release/
