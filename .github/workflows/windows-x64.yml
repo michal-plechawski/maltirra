@@ -1,4 +1,4 @@
-name: Windows x86
+name: Windows x64
 
 on:
   push:
@@ -11,12 +11,12 @@ permissions:
   contents: read
 
 concurrency:
-  group: windows-x86-${{ github.workflow }}-${{ github.ref }}
+  group: windows-x64-${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
   build:
-    name: Build Release x86
+    name: Build and test Release x64
     runs-on: windows-2022
     timeout-minutes: 60
 
@@ -57,8 +57,7 @@ jobs:
 
           $madsDirectory | Out-File -FilePath $env:GITHUB_PATH -Append -Encoding utf8
 
-      # Altirra's x86 build uses helper programs compiled for the native x64 host.
-      - name: Build native x64 tools
+      - name: Build Windows x64 release
         shell: pwsh
         run: |
           & $env:MSBUILD_EXE 'src\Altirra.sln' `
@@ -98,30 +97,20 @@ jobs:
             exit $testExitCode
           }
 
-      - name: Build Windows x86 release
+      - name: Verify x64 executable
         shell: pwsh
         run: |
-          & $env:MSBUILD_EXE 'src\Altirra.sln' `
-            /m `
-            /t:Build `
-            /p:Configuration=Release `
-            /p:Platform=Win32 `
-            /verbosity:minimal
-
-      - name: Verify x86 executable
-        shell: pwsh
-        run: |
-          $executable = 'out\Release\Altirra.exe'
+          $executable = 'out\ReleaseAMD64\Altirra64.exe'
           if (-not (Test-Path -Path $executable -PathType Leaf)) {
             throw "Expected build output was not created: $executable"
           }
 
           Get-Item $executable | Format-List FullName, Length, LastWriteTimeUtc
 
-      - name: Upload Windows x86 artifact
+      - name: Upload Windows x64 artifact
         uses: actions/upload-artifact@v7
         with:
-          name: altirra-windows-x86-${{ github.sha }}
-          path: out/Release/
+          name: altirra-windows-x64-${{ github.sha }}
+          path: out/ReleaseAMD64/
           if-no-files-found: error
           retention-days: 14
