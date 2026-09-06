@@ -103,8 +103,10 @@ public:
 
 	virtual void ThreadRun() = 0;				// thread, come to life
 
-private:
+	// Internal entry point used by the platform thread launcher.
 	static unsigned StaticThreadStart(void *pThis);
+
+private:
 	void ThreadDetach();
 
 	const char *mpszDebugName;

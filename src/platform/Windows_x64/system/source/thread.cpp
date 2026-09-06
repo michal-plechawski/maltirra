@@ -129,11 +129,15 @@ VDThread::~VDThread() throw() {
 		ThreadWait();
 }
 
+static unsigned __stdcall VDThreadStartThunk(void *pThis) {
+	return VDThread::StaticThreadStart(pThis);
+}
+
 bool VDThread::ThreadStart() {
 	VDASSERT(!isThreadAttached());
 
 	if (!isThreadAttached())
-		mhThread = (void *)_beginthreadex(NULL, 0, StaticThreadStart, this, 0, &mThreadID);
+		mhThread = (void *)_beginthreadex(NULL, 0, VDThreadStartThunk, this, 0, &mThreadID);
 
 	return mhThread != 0;
 }
