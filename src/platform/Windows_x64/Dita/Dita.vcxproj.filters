@@ -40,10 +40,10 @@
     <ClInclude Include="..\h\vd2\Dita\w32accel.h">
       <Filter>Win32 Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\h\vd2\Dita\accel.h">
+    <ClInclude Include="..\..\..\h\vd2\Dita\accel.h">
       <Filter>Interface files</Filter>
     </ClInclude>
-    <ClInclude Include="..\h\VD2\Dita\services.h">
+    <ClInclude Include="..\..\..\h\VD2\Dita\services.h">
       <Filter>Interface files</Filter>
     </ClInclude>
     <ClInclude Include="h\stdafx.h">

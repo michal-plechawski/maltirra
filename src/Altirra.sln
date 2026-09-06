@@ -25,7 +25,7 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Kernel", "Kernel\Kernel.vcx
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Kasumi", "Kasumi\Kasumi.vcxproj", "{0D252872-7542-4232-8D02-53F9182AEE15}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Dita", "Dita\Dita.vcxproj", "{308BF83F-B11C-48DC-AAF2-4A2003E8C377}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Dita", "platform\Windows_x64\Dita\Dita.vcxproj", "{308BF83F-B11C-48DC-AAF2-4A2003E8C377}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Riza", "Riza\Riza.vcxproj", "{AF613049-D4E2-4C65-ADEE-40DC037995CC}"
 EndProject

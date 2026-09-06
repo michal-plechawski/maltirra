@@ -830,7 +830,7 @@
       <Project>{db396fa4-478d-49b1-8ac9-59e70878c38d}</Project>
       <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
     </ProjectReference>
-    <ProjectReference Include="..\Dita\Dita.vcxproj">
+    <ProjectReference Include="..\platform\Windows_x64\Dita\Dita.vcxproj">
       <Project>{308bf83f-b11c-48dc-aaf2-4a2003e8c377}</Project>
       <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
     </ProjectReference>
