@@ -55,14 +55,14 @@
     <TargetName>sa_pokey</TargetName>
   </PropertyGroup>
   <ItemGroup>
-    <ClCompile Include="source\main.cpp" />
-    <ClCompile Include="source\rmtinterface.cpp" />
-    <ClCompile Include="source\stdafx.cpp">
+    <ClCompile Include="..\platform\Windows_x64\AltirraRMTPOKEY\source\main.cpp" />
+    <ClCompile Include="..\platform\Windows_x64\AltirraRMTPOKEY\source\rmtinterface.cpp" />
+    <ClCompile Include="..\platform\Windows_x64\AltirraRMTPOKEY\source\stdafx.cpp">
       <PrecompiledHeader>Create</PrecompiledHeader>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="h\stdafx.h" />
+    <ClInclude Include="..\platform\Windows_x64\AltirraRMTPOKEY\h\stdafx.h" />
     <ClInclude Include="interface\rmtbypass.h" />
   </ItemGroup>
   <ItemDefinitionGroup>

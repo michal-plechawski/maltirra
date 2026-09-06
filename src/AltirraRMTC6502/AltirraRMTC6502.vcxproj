@@ -55,9 +55,9 @@
     <TargetName>sa_c6502</TargetName>
   </PropertyGroup>
   <ItemGroup>
-    <ClCompile Include="source\rmtinterface.cpp" />
-    <ClCompile Include="source\main.cpp" />
-    <ClCompile Include="source\stdafx.cpp">
+    <ClCompile Include="..\platform\Windows_x64\AltirraRMTC6502\source\rmtinterface.cpp" />
+    <ClCompile Include="..\platform\Windows_x64\AltirraRMTC6502\source\main.cpp" />
+    <ClCompile Include="..\platform\Windows_x64\AltirraRMTC6502\source\stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Analysis|x64'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
@@ -71,7 +71,7 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="h\stdafx.h" />
+    <ClInclude Include="..\platform\Windows_x64\AltirraRMTC6502\h\stdafx.h" />
   </ItemGroup>
   <ItemDefinitionGroup>
     <ClCompile>

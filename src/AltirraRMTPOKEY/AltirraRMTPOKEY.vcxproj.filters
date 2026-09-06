@@ -15,18 +15,18 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="source\stdafx.cpp">
+    <ClCompile Include="..\platform\Windows_x64\AltirraRMTPOKEY\source\stdafx.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="source\main.cpp">
+    <ClCompile Include="..\platform\Windows_x64\AltirraRMTPOKEY\source\main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="source\rmtinterface.cpp">
+    <ClCompile Include="..\platform\Windows_x64\AltirraRMTPOKEY\source\rmtinterface.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="h\stdafx.h">
+    <ClInclude Include="..\platform\Windows_x64\AltirraRMTPOKEY\h\stdafx.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="interface\rmtbypass.h">

@@ -19,8 +19,21 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  platform-boundary:
+    name: Verify Windows x64 platform boundary
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+
+    steps:
+      - name: Check out sources
+        uses: actions/checkout@v7
+
+      - name: Check platform-specific source placement
+        run: bash scripts/check-windows-x64-boundary.sh
+
   build:
     name: Build Release x64
+    needs: platform-boundary
     runs-on: windows-2022
     timeout-minutes: 60
 
@@ -100,15 +113,44 @@ jobs:
             /p:Platform=x64 `
             /verbosity:minimal
 
-      - name: Verify x64 executable
+      - name: Build Windows x64 RMT plugins
+        if: steps.release-cache.outputs.cache-hit != 'true'
         shell: pwsh
         run: |
-          $executable = 'out\ReleaseAMD64\Altirra64.exe'
-          if (-not (Test-Path -Path $executable -PathType Leaf)) {
-            throw "Expected build output was not created: $executable"
+          $pluginProjects = @(
+            'src\AltirraRMTPOKEY\AltirraRMTPOKEY.vcxproj'
+            'src\AltirraRMTC6502\AltirraRMTC6502.vcxproj'
+          )
+
+          foreach ($project in $pluginProjects) {
+            & $env:MSBUILD_EXE $project `
+              /m `
+              /t:Build `
+              /p:Configuration=Release `
+              /p:Platform=x64 `
+              /verbosity:minimal
+
+            if ($LASTEXITCODE -ne 0) {
+              exit $LASTEXITCODE
+            }
           }
 
-          Get-Item $executable | Format-List FullName, Length, LastWriteTimeUtc
+      - name: Verify x64 outputs
+        shell: pwsh
+        run: |
+          $outputs = @(
+            'out\ReleaseAMD64\Altirra64.exe'
+            'out\ReleaseAMD64\sa_pokey.dll'
+            'out\ReleaseAMD64\sa_c6502.dll'
+          )
+
+          foreach ($output in $outputs) {
+            if (-not (Test-Path -Path $output -PathType Leaf)) {
+              throw "Expected build output was not created: $output"
+            }
+
+            Get-Item $output | Format-List FullName, Length, LastWriteTimeUtc
+          }
 
       - name: Upload Windows x64 artifact
         uses: actions/upload-artifact@v7
@@ -120,6 +162,7 @@ jobs:
 
   test:
     name: Run automatic tests x64
+    needs: platform-boundary
     runs-on: windows-2022
     timeout-minutes: 60
 
