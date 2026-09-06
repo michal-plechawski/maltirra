@@ -8,26 +8,22 @@ windows_include_pattern='^[[:space:]]*#[[:space:]]*include[[:space:]]*[<"](windo
 platform_include_pattern='^[[:space:]]*#[[:space:]]*include[[:space:]]*[<"][^>"]*(vd2/system/win32|platform[/\\]Windows_x64)[/\\]'
 
 include_violations=$(
-  rg -n -i \
-    --glob '!src/platform/**' \
-    --glob '*.{h,hpp,c,cc,cpp,cxx,inl}' \
+  git grep -n -i -E \
     "$windows_include_pattern" \
-    src || true
+    -- src ':!src/platform/**' || true
 )
 
 platform_include_violations=$(
-  rg -n -i \
-    --glob '!src/platform/**' \
-    --glob '*.{h,hpp,c,cc,cpp,cxx,inl}' \
+  git grep -n -i -E \
     "$platform_include_pattern" \
-    src || true
+    -- src ':!src/platform/**' || true
 )
 
 name_violations=$(
   find src \
     -path 'src/platform' -prune -o \
     -type f -print |
-    rg -i '(^|/)[^/]*(win32|windows|x64|amd64)[^/]*\.(h|hpp|c|cc|cpp|cxx|inl|asm|manifest)$' || true
+    grep -E -i '(^|/)[^/]*(win32|windows|x64|amd64)[^/]*\.(h|hpp|c|cc|cpp|cxx|inl|asm|manifest)$' || true
 )
 
 if [[ -n "$include_violations" || -n "$platform_include_violations" || -n "$name_violations" ]]; then
@@ -54,7 +50,6 @@ printf '%s\n' \
   '#include <vd2/system/atomic.h>' \
   '#include <vd2/system/event.h>' \
   '#include <vd2/system/file.h>' \
-  '#include <vd2/system/int128.h>' \
   '#include <vd2/system/memory.h>' \
   '#include <vd2/system/refcount.h>' \
   '#include <vd2/system/seh.h>' \
