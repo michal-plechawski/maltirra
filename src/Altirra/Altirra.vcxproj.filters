@@ -1437,7 +1437,7 @@
     <ClInclude Include="h\sio2sd.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\ATNativeUI\res\resource.h">
+    <ClInclude Include="..\platform\Windows_x64\ATNativeUI\res\resource.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="h\sapwriter.h">
@@ -1990,7 +1990,7 @@
     <ResourceCompile Include="res\Altirra.rc">
       <Filter>Resource Files</Filter>
     </ResourceCompile>
-    <ResourceCompile Include="..\ATNativeUI\res\atnativeui.rc">
+    <ResourceCompile Include="..\platform\Windows_x64\ATNativeUI\res\atnativeui.rc">
       <Filter>Resource Files</Filter>
     </ResourceCompile>
     <ResourceCompile Include="res\AltirraVersion.rc">

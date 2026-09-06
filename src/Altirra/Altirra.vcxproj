@@ -624,7 +624,7 @@
     <ClInclude Include="h\warpos.h" />
     <ClInclude Include="h\xelcf.h" />
     <ClInclude Include="res\resource.h" />
-    <ClInclude Include="..\ATNativeUI\res\resource.h" />
+    <ClInclude Include="..\platform\Windows_x64\ATNativeUI\res\resource.h" />
     <ClInclude Include="h\rs232.h" />
     <ClInclude Include="h\rtime8.h" />
     <ClInclude Include="h\savestate.h" />
@@ -779,7 +779,7 @@
   <ItemGroup>
     <ResourceCompile Include="res\Altirra.rc" />
     <ResourceCompile Include="res\AltirraVersion.rc" />
-    <ResourceCompile Include="..\ATNativeUI\res\atnativeui.rc" />
+    <ResourceCompile Include="..\platform\Windows_x64\ATNativeUI\res\atnativeui.rc" />
   </ItemGroup>
   <ItemGroup>
     <Resource Include="res\AltirraExtIcons.res" />
@@ -826,7 +826,7 @@
       <Project>{91051a49-721f-42d7-b542-3192e2e982e2}</Project>
       <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
     </ProjectReference>
-    <ProjectReference Include="..\ATNativeUI\ATNativeUI.vcxproj">
+    <ProjectReference Include="..\platform\Windows_x64\ATNativeUI\ATNativeUI.vcxproj">
       <Project>{db396fa4-478d-49b1-8ac9-59e70878c38d}</Project>
       <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
     </ProjectReference>

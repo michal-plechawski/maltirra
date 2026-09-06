@@ -36,6 +36,7 @@
     <ATLibPath>$(VDLibPath)</ATLibPath>
     <ATObjPath>$(VDObjPath)</ATObjPath>
     <ATOutPath>$(VDOutputPath)</ATOutPath>
+    <ATPlatformIncludePath Condition="'$(Platform)'=='x64'">$(MSBuildThisFileDirectory)..\platform\Windows_x64\h</ATPlatformIncludePath>
     <ATMadsPath>mads.exe</ATMadsPath>
     <ATATCompilerPath>$(ATBuildToolPath)\atcompiler.exe</ATATCompilerPath>
     <XPDeprecationWarning>False</XPDeprecationWarning>
@@ -63,7 +64,7 @@
   </ItemGroup>
   <ItemDefinitionGroup>
     <ClCompile>
-      <AdditionalIncludeDirectories>h;$([MSBuild]::MakeRelative($(ProjectDir),$(MSBuildThisFileDirectory)..\h));autogen;res;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ATPlatformIncludePath);h;$([MSBuild]::MakeRelative($(ProjectDir),$(MSBuildThisFileDirectory)..\h));autogen;res;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       
       <!--
         warning as error C4834: discarding return value of function with 'nodiscard' attribute
