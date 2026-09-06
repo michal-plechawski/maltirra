@@ -1,0 +1,97 @@
+name: Windows x86
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: windows-x86-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    name: Build Release x86
+    runs-on: windows-2022
+    timeout-minutes: 60
+
+    env:
+      MADS_URL: https://raw.githubusercontent.com/tebe6502/Mad-Assembler/d6d9982b8800a18fe19c780aae5ecaf2d8bd3b8c/mads.exe
+      MADS_SHA256: 50cd618dc9ca92889b3867bb6ffd0bc5474384da95e9209bc6c53d89ec364787
+
+    steps:
+      - name: Check out sources
+        uses: actions/checkout@v4
+
+      - name: Locate Visual Studio 2022 MSBuild
+        shell: pwsh
+        run: |
+          $vswhere = "${env:ProgramFiles(x86)}\Microsoft Visual Studio\Installer\vswhere.exe"
+          $msbuild = & $vswhere -latest -version '[17.14,18.0)' -products '*' `
+            -requires Microsoft.Component.MSBuild `
+            -find 'MSBuild\**\Bin\MSBuild.exe' | Select-Object -First 1
+
+          if (-not $msbuild) {
+            throw 'Visual Studio 2022 17.14+ with MSBuild was not found.'
+          }
+
+          "MSBUILD_EXE=$msbuild" | Out-File -FilePath $env:GITHUB_ENV -Append -Encoding utf8
+
+      - name: Install MADS 2.1.0
+        shell: pwsh
+        run: |
+          $madsDirectory = Join-Path $env:RUNNER_TEMP 'mads-2.1.0'
+          $madsPath = Join-Path $madsDirectory 'mads.exe'
+          New-Item -ItemType Directory -Path $madsDirectory -Force | Out-Null
+          Invoke-WebRequest -Uri $env:MADS_URL -OutFile $madsPath
+
+          $actualHash = (Get-FileHash -Path $madsPath -Algorithm SHA256).Hash.ToLowerInvariant()
+          if ($actualHash -ne $env:MADS_SHA256) {
+            throw "MADS checksum mismatch: expected $env:MADS_SHA256, got $actualHash"
+          }
+
+          $madsDirectory | Out-File -FilePath $env:GITHUB_PATH -Append -Encoding utf8
+
+      # Altirra's x86 build uses helper programs compiled for the native x64 host.
+      - name: Build native x64 tools
+        shell: pwsh
+        run: |
+          & $env:MSBUILD_EXE 'src\Altirra.sln' `
+            /m `
+            /t:Build `
+            /p:Configuration=Release `
+            /p:Platform=x64 `
+            /verbosity:minimal
+
+      - name: Build Windows x86 release
+        shell: pwsh
+        run: |
+          & $env:MSBUILD_EXE 'src\Altirra.sln' `
+            /m `
+            /t:Build `
+            /p:Configuration=Release `
+            /p:Platform=Win32 `
+            /verbosity:minimal
+
+      - name: Verify x86 executable
+        shell: pwsh
+        run: |
+          $executable = 'out\Release\Altirra.exe'
+          if (-not (Test-Path -Path $executable -PathType Leaf)) {
+            throw "Expected build output was not created: $executable"
+          }
+
+          Get-Item $executable | Format-List FullName, Length, LastWriteTimeUtc
+
+      - name: Upload Windows x86 artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: altirra-windows-x86-${{ github.sha }}
+          path: out/Release/
+          if-no-files-found: error
+          retention-days: 14
