@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <Filter Include="Source Files">
@@ -35,7 +35,7 @@
     <ClInclude Include="..\h\at\atappbase\exceptionfilter.h">
       <Filter>Interface Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\h\at\atappbase\crthooks.h">
+    <ClInclude Include="..\..\..\h\at\atappbase\crthooks.h">
       <Filter>Interface Header Files</Filter>
     </ClInclude>
   </ItemGroup>
