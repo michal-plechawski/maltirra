@@ -43,7 +43,7 @@
     </Link>
     <Manifest>
       <AdditionalManifestFiles Condition="'$(Platform)'=='Win32'">manifest\win7.manifest;manifest\comctl6.manifest;%(AdditionalManifestFiles)</AdditionalManifestFiles>
-      <AdditionalManifestFiles Condition="'$(Platform)'=='x64'">manifest\win7.manifest;manifest\comctl6_x64.manifest;%(AdditionalManifestFiles)</AdditionalManifestFiles>
+      <AdditionalManifestFiles Condition="'$(Platform)'=='x64'">manifest\win7.manifest;..\platform\Windows_x64\Altirra\manifest\comctl6_x64.manifest;%(AdditionalManifestFiles)</AdditionalManifestFiles>
       <AdditionalManifestFiles Condition="'$(Platform)'=='ARM64'">manifest\win7.manifest;manifest\comctl6_arm64.manifest;%(AdditionalManifestFiles)</AdditionalManifestFiles>
     </Manifest>
     <ResourceCompile>
@@ -76,7 +76,7 @@
     <ClInclude Include="h\cputracer.h" />
     <ClInclude Include="h\customdevice.h" />
     <ClInclude Include="h\customdevicevmtypes.h" />
-    <ClInclude Include="h\customdevice_win32.h" />
+    <ClInclude Include="..\platform\Windows_x64\Altirra\h\customdevice_win32.h" />
     <ClInclude Include="h\debuggersettings.h" />
     <ClInclude Include="h\decode_png.h" />
     <ClInclude Include="h\devicemanager.h" />
@@ -171,7 +171,7 @@
     <ClCompile Include="source\audiowriter.cpp" />
     <ClCompile Include="source\autosavemanager.cpp" />
     <ClCompile Include="source\aviwriter.cpp" />
-    <ClCompile Include="source\asyncdownloader_win32.cpp" />
+    <ClCompile Include="..\platform\Windows_x64\Altirra\source\asyncdownloader_win32.cpp" />
     <ClCompile Include="source\bit3.cpp" />
     <ClCompile Include="source\bkptmanager.cpp" />
     <ClCompile Include="source\blackbox.cpp" />
@@ -214,7 +214,7 @@
     <ClCompile Include="source\cs8900a.cpp" />
     <ClCompile Include="source\customdevice.cpp" />
     <ClCompile Include="source\customdevicevmtypes.cpp" />
-    <ClCompile Include="source\customdevice_win32.cpp" />
+    <ClCompile Include="..\platform\Windows_x64\Altirra\source\customdevice_win32.cpp" />
     <ClCompile Include="source\debugdisplay.cpp" />
     <ClCompile Include="source\debugger.cpp" />
     <ClCompile Include="source\debuggerautotest.cpp" />
@@ -229,7 +229,7 @@
     <ClCompile Include="source\devxcmdcopypaste.cpp" />
     <ClCompile Include="source\devxcmdexploredisk.cpp" />
     <ClCompile Include="source\devxcmdmountvhd.cpp" />
-    <ClCompile Include="source\devxcmdmountvhd_win32.cpp" />
+    <ClCompile Include="..\platform\Windows_x64\Altirra\source\devxcmdmountvhd_win32.cpp" />
     <ClCompile Include="source\devxcmdrescandynamicdisk.cpp" />
     <ClCompile Include="source\directorywatcher.cpp" />
     <ClCompile Include="source\disasm.cpp" />
@@ -298,9 +298,9 @@
     <ClCompile Include="source\pbi.cpp" />
     <ClCompile Include="source\pbidisk.cpp" />
     <ClCompile Include="source\pclink.cpp" />
-    <ClCompile Include="source\pclink_win32.cpp" />
+    <ClCompile Include="..\platform\Windows_x64\Altirra\source\pclink_win32.cpp" />
     <ClCompile Include="source\pia.cpp" />
-    <ClCompile Include="source\pipeserial_win32.cpp" />
+    <ClCompile Include="..\platform\Windows_x64\Altirra\source\pipeserial_win32.cpp" />
     <ClCompile Include="source\pocketmodem.cpp" />
     <ClCompile Include="source\pokeysavecompat.cpp" />
     <ClCompile Include="source\pokeytrace.cpp" />
@@ -420,10 +420,10 @@
     <ClCompile Include="source\uidevices.cpp" />
     <ClCompile Include="source\uidisk.cpp" />
     <ClCompile Include="source\uidiskexplorer.cpp" />
-    <ClCompile Include="source\uidiskexplorer_win32.cpp" />
+    <ClCompile Include="..\platform\Windows_x64\Altirra\source\uidiskexplorer_win32.cpp" />
     <ClCompile Include="source\uidisplay.cpp" />
     <ClCompile Include="source\uidisplayaccessibility.cpp" />
-    <ClCompile Include="source\uidisplayaccessibility_win32.cpp" />
+    <ClCompile Include="..\platform\Windows_x64\Altirra\source\uidisplayaccessibility_win32.cpp" />
     <ClCompile Include="source\uidisplaytool.cpp" />
     <ClCompile Include="source\uidragdrop.cpp" />
     <ClCompile Include="source\uidragoncart.cpp" />
@@ -479,7 +479,7 @@
     <ClCompile Include="source\ultimate1mb.cpp" />
     <ClCompile Include="source\updatecheck.cpp" />
     <ClCompile Include="source\updatefeed.cpp" />
-    <ClCompile Include="source\updatefeed_win32.cpp" />
+    <ClCompile Include="..\platform\Windows_x64\Altirra\source\updatefeed_win32.cpp" />
     <ClCompile Include="source\vbxe.cpp" />
     <ClCompile Include="source\vbxestate.cpp" />
     <ClCompile Include="source\verifier.cpp" />
@@ -599,9 +599,9 @@
     <ClInclude Include="h\uidbgtargets.h" />
     <ClInclude Include="h\uidbgwatch.h" />
     <ClInclude Include="h\uidevices.h" />
-    <ClInclude Include="h\uidiskexplorer_win32.h" />
+    <ClInclude Include="..\platform\Windows_x64\Altirra\h\uidiskexplorer_win32.h" />
     <ClInclude Include="h\uidisplayaccessibility.h" />
-    <ClInclude Include="h\uidisplayaccessibility_win32.h" />
+    <ClInclude Include="..\platform\Windows_x64\Altirra\h\uidisplayaccessibility_win32.h" />
     <ClInclude Include="h\uidisplaytool.h" />
     <ClInclude Include="h\uidragdrop.h" />
     <ClInclude Include="h\uifilefilters.h" />
@@ -788,7 +788,7 @@
     <None Include="manifest\comctl6.manifest">
       <ExcludedFromBuild Condition="'$(Platform)'!='Win32'">true</ExcludedFromBuild>
     </None>
-    <None Include="manifest\comctl6_x64.manifest">
+    <None Include="..\platform\Windows_x64\Altirra\manifest\comctl6_x64.manifest">
       <ExcludedFromBuild Condition="'$(Platform)'!='Win32'">true</ExcludedFromBuild>
     </None>
     <None Include="manifest\comctl6_arm64.manifest">

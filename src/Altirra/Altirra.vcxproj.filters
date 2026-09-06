@@ -256,7 +256,7 @@
     <ClCompile Include="source\pclink.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="source\pclink_win32.cpp">
+    <ClCompile Include="..\platform\Windows_x64\Altirra\source\pclink_win32.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="source\pia.cpp">
@@ -775,7 +775,7 @@
     <ClCompile Include="source\uiconfdevcustom.cpp">
       <Filter>Source Files - Device Configuration UI</Filter>
     </ClCompile>
-    <ClCompile Include="source\customdevice_win32.cpp">
+    <ClCompile Include="..\platform\Windows_x64\Altirra\source\customdevice_win32.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="source\videomanager.cpp">
@@ -832,7 +832,7 @@
     <ClCompile Include="source\uitapeeditor.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="source\asyncdownloader_win32.cpp">
+    <ClCompile Include="..\platform\Windows_x64\Altirra\source\asyncdownloader_win32.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="source\updatecheck.cpp">
@@ -847,7 +847,7 @@
     <ClCompile Include="source\updatefeed.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="source\updatefeed_win32.cpp">
+    <ClCompile Include="..\platform\Windows_x64\Altirra\source\updatefeed_win32.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="source\uiconfdevparfilewriter.cpp">
@@ -892,7 +892,7 @@
     <ClCompile Include="source\devxcmdmountvhd.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="source\devxcmdmountvhd_win32.cpp">
+    <ClCompile Include="..\platform\Windows_x64\Altirra\source\devxcmdmountvhd_win32.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="source\uidbgpane.cpp">
@@ -934,7 +934,7 @@
     <ClCompile Include="source\uidbgtargets.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="source\uidiskexplorer_win32.cpp">
+    <ClCompile Include="..\platform\Windows_x64\Altirra\source\uidiskexplorer_win32.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="source\devxcmdexploredisk.cpp">
@@ -973,7 +973,7 @@
     <ClCompile Include="source\tracefileencoding.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="source\uidisplayaccessibility_win32.cpp">
+    <ClCompile Include="..\platform\Windows_x64\Altirra\source\uidisplayaccessibility_win32.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="source\uidisplayaccessibility.cpp">
@@ -1093,7 +1093,7 @@
     <ClCompile Include="source\uiconfdevmultiplexer.cpp">
       <Filter>Source Files - Device Configuration UI</Filter>
     </ClCompile>
-    <ClCompile Include="source\pipeserial_win32.cpp">
+    <ClCompile Include="..\platform\Windows_x64\Altirra\source\pipeserial_win32.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="source\uiconfdevpipeserial.cpp">
@@ -1578,7 +1578,7 @@
     <ClInclude Include="h\customdevice.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="h\customdevice_win32.h">
+    <ClInclude Include="..\platform\Windows_x64\Altirra\h\customdevice_win32.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="h\videomanager.h">
@@ -1692,7 +1692,7 @@
     <ClInclude Include="h\uidbgtargets.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="h\uidiskexplorer_win32.h">
+    <ClInclude Include="..\platform\Windows_x64\Altirra\h\uidiskexplorer_win32.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="h\vbxestate.h">
@@ -1719,7 +1719,7 @@
     <ClInclude Include="h\tracefileencoding.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="h\uidisplayaccessibility_win32.h">
+    <ClInclude Include="..\platform\Windows_x64\Altirra\h\uidisplayaccessibility_win32.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="h\uidisplayaccessibility.h">
@@ -1892,7 +1892,7 @@
     <None Include="..\..\out\release\ultimate.lzrom">
       <Filter>Resource Files</Filter>
     </None>
-    <None Include="manifest\comctl6_x64.manifest">
+    <None Include="..\platform\Windows_x64\Altirra\manifest\comctl6_x64.manifest">
       <Filter>Manifest Files</Filter>
     </None>
     <None Include="manifest\comctl6.manifest">
