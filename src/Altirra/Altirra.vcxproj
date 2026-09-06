@@ -818,7 +818,7 @@
     <ProjectReference Include="..\ATCore\ATCore.vcxproj">
       <Project>{b3c54d9a-6cbc-4a10-93ee-7a88b1b6e5af}</Project>
     </ProjectReference>
-    <ProjectReference Include="..\ATNetworkSockets\ATNetworkSockets.vcxproj">
+    <ProjectReference Include="..\platform\Windows_x64\ATNetworkSockets\ATNetworkSockets.vcxproj">
       <Project>{3da1c056-7383-4f66-a9a0-0303a52d8171}</Project>
       <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
     </ProjectReference>

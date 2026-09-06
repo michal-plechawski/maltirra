@@ -43,7 +43,7 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ATCompiler", "ATCompiler\AT
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ATNetwork", "ATNetwork\ATNetwork.vcxproj", "{91051A49-721F-42D7-B542-3192E2E982E2}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ATNetworkSockets", "ATNetworkSockets\ATNetworkSockets.vcxproj", "{3DA1C056-7383-4F66-A9A0-0303A52D8171}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ATNetworkSockets", "platform\Windows_x64\ATNetworkSockets\ATNetworkSockets.vcxproj", "{3DA1C056-7383-4F66-A9A0-0303A52D8171}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "atbasic", "ATBasic\atbasic.vcxproj", "{CDE4065A-7B15-429C-80C3-BF7D77942155}"
 EndProject
