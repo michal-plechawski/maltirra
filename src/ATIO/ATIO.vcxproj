@@ -6,7 +6,7 @@
     <ClCompile Include="source\audioreader.cpp" />
     <ClCompile Include="source\audioreaderflac.cpp" />
     <ClCompile Include="source\audioreaderflac_arm64.cpp" />
-    <ClCompile Include="source\audioreaderflac_x86.cpp" />
+    <ClCompile Include="..\platform\Windows_x64\ATIO\source\audioreaderflac_x86.cpp" />
     <ClCompile Include="source\audioreadervorbis.cpp" />
     <ClCompile Include="source\audioutils.cpp" />
     <ClCompile Include="source\cartridgeimage.cpp" />
