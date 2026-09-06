@@ -56,6 +56,7 @@ printf '%s\n' \
   '#include <vd2/system/thread.h>' \
   '#include <vd2/system/time.h>' \
   '#include <vd2/system/unknown.h>' \
+  '#include <vd2/system/vecmath.h>' \
   'int main() { return 0; }' |
   "$compiler" -std=c++23 -Isrc/h -x c++ -fsyntax-only -
 

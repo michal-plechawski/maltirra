@@ -204,7 +204,7 @@
     <ClInclude Include="..\h\at\atcore\audiosource.h">
       <Filter>Interface Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\h\at\atcore\intrin_sse2.h">
+    <ClInclude Include="..\platform\Windows_x64\h\at\atcore\intrin_sse2.h">
       <Filter>Interface Files</Filter>
     </ClInclude>
     <ClInclude Include="..\h\at\atcore\devicediskdrive.h">

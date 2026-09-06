@@ -107,7 +107,7 @@
     <ClInclude Include="..\h\VD2\system\cpuaccel.h" />
     <ClInclude Include="..\h\vd2\system\date.h" />
     <ClInclude Include="..\h\vd2\system\debug.h" />
-    <ClInclude Include="..\h\vd2\system\debugx86.h" />
+    <ClInclude Include="..\platform\Windows_x64\h\vd2\system\debugx86.h" />
     <ClInclude Include="..\h\VD2\system\Error.h" />
     <ClInclude Include="..\h\vd2\system\event.h" />
     <ClInclude Include="..\h\vd2\system\file.h" />
@@ -135,6 +135,7 @@
     <ClInclude Include="..\h\vd2\system\vdstl_span.h" />
     <ClInclude Include="..\h\vd2\system\vdstl_structex.h" />
     <ClInclude Include="..\h\vd2\system\vecmath.h" />
+    <ClInclude Include="..\platform\Windows_x64\h\vd2\system\vecmath.h" />
     <ClInclude Include="..\h\VD2\system\strutil.h" />
     <ClInclude Include="..\h\VD2\system\text.h" />
     <ClInclude Include="..\h\VD2\system\thread.h" />
@@ -158,7 +159,7 @@
     <ClInclude Include="..\h\VD2\system\vdtypes.h" />
     <ClInclude Include="..\h\vd2\system\vecmath_neon.h" />
     <ClInclude Include="..\h\vd2\system\vecmath_ref.h" />
-    <ClInclude Include="..\h\vd2\system\vecmath_sse2.h" />
+    <ClInclude Include="..\platform\Windows_x64\h\vd2\system\vecmath_sse2.h" />
     <ClInclude Include="..\h\vd2\system\vectors.h" />
     <ClInclude Include="..\h\vd2\system\vectors_float.h" />
     <ClInclude Include="..\h\vd2\system\vectors_int.h" />

@@ -124,7 +124,7 @@ inline sint32 VDRoundToIntFast(float x) {
 #elif defined(VD_CPU_ARM64)
 	return (int)vcvtns_s32_f32(x);
 #else
-	return (int)std::lrintf(x);
+	return (int)::lrintf(x);
 #endif
 }
 
@@ -134,7 +134,7 @@ inline sint32 VDRoundToIntFastFullRange(double x) {
 #elif defined(VD_CPU_ARM64)
 	return (int)vcvtnd_s64_f64(x);
 #else
-	return (int)std::lrint(x);
+	return (int)::lrint(x);
 #endif
 }
 

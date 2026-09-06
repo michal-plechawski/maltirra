@@ -47,7 +47,7 @@
     <ClInclude Include="..\h\at\atcore\enumparseimpl.h" />
     <ClInclude Include="..\h\at\atcore\fft.h" />
     <ClInclude Include="..\h\at\atcore\intrin_neon.h" />
-    <ClInclude Include="..\h\at\atcore\intrin_sse2.h" />
+    <ClInclude Include="..\platform\Windows_x64\h\at\atcore\intrin_sse2.h" />
     <ClInclude Include="..\h\at\atcore\ksyms.h" />
     <ClInclude Include="..\h\at\atcore\logging.h" />
     <ClInclude Include="..\h\at\atcore\md5.h" />
