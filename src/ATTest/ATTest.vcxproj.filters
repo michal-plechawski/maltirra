@@ -18,135 +18,135 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="source\stdafx.cpp">
+    <ClCompile Include="..\platform\Windows_x64\ATTest\source\stdafx.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="source\main.cpp">
+    <ClCompile Include="..\platform\Windows_x64\ATTest\source\main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="source\utils.cpp">
+    <ClCompile Include="..\platform\Windows_x64\ATTest\source\utils.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="source\TestSystem_Function.cpp">
+    <ClCompile Include="..\platform\Windows_x64\ATTest\source\TestSystem_Function.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="source\TestSystem_Int128.cpp">
+    <ClCompile Include="..\platform\Windows_x64\ATTest\source\TestSystem_Int128.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="source\TestDebugger_HistoryTree.cpp">
+    <ClCompile Include="..\platform\Windows_x64\ATTest\source\TestDebugger_HistoryTree.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="source\TestCoProc_6502.cpp">
+    <ClCompile Include="..\platform\Windows_x64\ATTest\source\TestCoProc_6502.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="source\TestSystem_Zip.cpp">
+    <ClCompile Include="..\platform\Windows_x64\ATTest\source\TestSystem_Zip.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="source\TestCore_Checksum.cpp">
+    <ClCompile Include="..\platform\Windows_x64\ATTest\source\TestCore_Checksum.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="source\TestSystem_Math.cpp">
+    <ClCompile Include="..\platform\Windows_x64\ATTest\source\TestSystem_Math.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="source\TestCore_VFS.cpp">
+    <ClCompile Include="..\platform\Windows_x64\ATTest\source\TestCore_VFS.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="source\TestUI_TextDOM.cpp">
+    <ClCompile Include="..\platform\Windows_x64\ATTest\source\TestUI_TextDOM.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="source\blob.cpp">
+    <ClCompile Include="..\platform\Windows_x64\ATTest\source\blob.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="source\TestIO_DiskImage.cpp">
+    <ClCompile Include="..\platform\Windows_x64\ATTest\source\TestIO_DiskImage.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="source\TestIO_VirtFAT32.cpp">
+    <ClCompile Include="..\platform\Windows_x64\ATTest\source\TestIO_VirtFAT32.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="source\TestEmu_PokeyTimers.cpp">
+    <ClCompile Include="..\platform\Windows_x64\ATTest\source\TestEmu_PokeyTimers.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="source\TestIO_TapeWrite.cpp">
+    <ClCompile Include="..\platform\Windows_x64\ATTest\source\TestIO_TapeWrite.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="source\TestCore_MD5.cpp">
+    <ClCompile Include="..\platform\Windows_x64\ATTest\source\TestCore_MD5.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="source\TestIO_FLAC.cpp">
+    <ClCompile Include="..\platform\Windows_x64\ATTest\source\TestIO_FLAC.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="source\TestEmu_PCLink.cpp">
+    <ClCompile Include="..\platform\Windows_x64\ATTest\source\TestEmu_PCLink.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="source\TestKasumi_Uberblit.cpp">
+    <ClCompile Include="..\platform\Windows_x64\ATTest\source\TestKasumi_Uberblit.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="source\TestKasumi_Resampler.cpp">
+    <ClCompile Include="..\platform\Windows_x64\ATTest\source\TestKasumi_Resampler.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="source\TestKasumi_Pixmap.cpp">
+    <ClCompile Include="..\platform\Windows_x64\ATTest\source\TestKasumi_Pixmap.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="source\TestSystem_Filesys.cpp">
+    <ClCompile Include="..\platform\Windows_x64\ATTest\source\TestSystem_Filesys.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="source\TestDebugger_SymbolIO.cpp">
+    <ClCompile Include="..\platform\Windows_x64\ATTest\source\TestDebugger_SymbolIO.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="source\TestSystem_HashSet.cpp">
+    <ClCompile Include="..\platform\Windows_x64\ATTest\source\TestSystem_HashSet.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="source\TestSystem_HashMap.cpp">
+    <ClCompile Include="..\platform\Windows_x64\ATTest\source\TestSystem_HashMap.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="source\TestNet_NativeSockets.cpp">
+    <ClCompile Include="..\platform\Windows_x64\ATTest\source\TestNet_NativeSockets.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="source\TestNet_NativeDatagramLiveTest.cpp">
+    <ClCompile Include="..\platform\Windows_x64\ATTest\source\TestNet_NativeDatagramLiveTest.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="source\TestSystem_CRC.cpp">
+    <ClCompile Include="..\platform\Windows_x64\ATTest\source\TestSystem_CRC.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="source\TestEmu_PokeyPots.cpp">
+    <ClCompile Include="..\platform\Windows_x64\ATTest\source\TestEmu_PokeyPots.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="source\TestSystem_FastVector.cpp">
+    <ClCompile Include="..\platform\Windows_x64\ATTest\source\TestSystem_FastVector.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="source\TestSystem_Vector.cpp">
+    <ClCompile Include="..\platform\Windows_x64\ATTest\source\TestSystem_Vector.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="source\TestTrace_CPU.cpp">
+    <ClCompile Include="..\platform\Windows_x64\ATTest\source\TestTrace_CPU.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="source\TestTrace_IO.cpp">
+    <ClCompile Include="..\platform\Windows_x64\ATTest\source\TestTrace_IO.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="source\TestIO_Vorbis.cpp">
+    <ClCompile Include="..\platform\Windows_x64\ATTest\source\TestIO_Vorbis.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="source\TestCore_FFT.cpp">
+    <ClCompile Include="..\platform\Windows_x64\ATTest\source\TestCore_FFT.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="source\TestSystem_Exception.cpp">
+    <ClCompile Include="..\platform\Windows_x64\ATTest\source\TestSystem_Exception.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="source\TestMisc_TTF.cpp">
+    <ClCompile Include="..\platform\Windows_x64\ATTest\source\TestMisc_TTF.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="source\TestSystem_VecMath.cpp">
+    <ClCompile Include="..\platform\Windows_x64\ATTest\source\TestSystem_VecMath.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="h\stdafx.h">
+    <ClInclude Include="..\platform\Windows_x64\ATTest\h\stdafx.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="h\test.h">
+    <ClInclude Include="..\platform\Windows_x64\ATTest\h\test.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="h\blob.h">
+    <ClInclude Include="..\platform\Windows_x64\ATTest\h\blob.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\h\at\attest\test.h">

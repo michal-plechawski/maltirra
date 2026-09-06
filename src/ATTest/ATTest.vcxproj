@@ -2,54 +2,54 @@
 <Project DefaultTargets="Build" ToolsVersion="12.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="../Build/ProjectConfigurations.props" />
   <ItemGroup>
-    <ClCompile Include="source\blob.cpp" />
-    <ClCompile Include="source\main.cpp" />
-    <ClCompile Include="source\stdafx.cpp">
+    <ClCompile Include="..\platform\Windows_x64\ATTest\source\blob.cpp" />
+    <ClCompile Include="..\platform\Windows_x64\ATTest\source\main.cpp" />
+    <ClCompile Include="..\platform\Windows_x64\ATTest\source\stdafx.cpp">
       <PrecompiledHeader>Create</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="source\TestCoProc_6502.cpp" />
-    <ClCompile Include="source\TestCore_Checksum.cpp" />
-    <ClCompile Include="source\TestCore_FFT.cpp" />
-    <ClCompile Include="source\TestCore_MD5.cpp" />
-    <ClCompile Include="source\TestCore_VFS.cpp" />
-    <ClCompile Include="source\TestDebugger_HistoryTree.cpp" />
-    <ClCompile Include="source\TestDebugger_SymbolIO.cpp" />
-    <ClCompile Include="source\TestEmu_PCLink.cpp" />
-    <ClCompile Include="source\TestEmu_PokeyPots.cpp" />
-    <ClCompile Include="source\TestEmu_PokeyTimers.cpp" />
-    <ClCompile Include="source\TestIO_Vorbis.cpp" />
-    <ClCompile Include="source\TestMisc_TTF.cpp" />
-    <ClCompile Include="source\TestNet_NativeDatagramLiveTest.cpp" />
-    <ClCompile Include="source\TestNet_NativeSockets.cpp" />
-    <ClCompile Include="source\TestSystem_CRC.cpp" />
-    <ClCompile Include="source\TestSystem_Exception.cpp" />
-    <ClCompile Include="source\TestSystem_HashMap.cpp" />
-    <ClCompile Include="source\TestSystem_HashSet.cpp" />
-    <ClCompile Include="source\TestIO_DiskImage.cpp" />
-    <ClCompile Include="source\TestIO_FLAC.cpp" />
-    <ClCompile Include="source\TestIO_TapeWrite.cpp" />
-    <ClCompile Include="source\TestIO_VirtFAT32.cpp" />
-    <ClCompile Include="source\TestKasumi_Pixmap.cpp" />
-    <ClCompile Include="source\TestKasumi_Resampler.cpp" />
-    <ClCompile Include="source\TestKasumi_Uberblit.cpp" />
-    <ClCompile Include="source\TestSystem_Filesys.cpp" />
-    <ClCompile Include="source\TestSystem_Function.cpp" />
-    <ClCompile Include="source\TestSystem_Int128.cpp" />
-    <ClCompile Include="source\TestSystem_Math.cpp" />
-    <ClCompile Include="source\TestSystem_FastVector.cpp" />
-    <ClCompile Include="source\TestSystem_VecMath.cpp" />
-    <ClCompile Include="source\TestSystem_Vector.cpp" />
-    <ClCompile Include="source\TestSystem_Zip.cpp" />
-    <ClCompile Include="source\TestTrace_CPU.cpp" />
-    <ClCompile Include="source\TestTrace_IO.cpp" />
-    <ClCompile Include="source\TestUI_TextDOM.cpp" />
-    <ClCompile Include="source\utils.cpp" />
+    <ClCompile Include="..\platform\Windows_x64\ATTest\source\TestCoProc_6502.cpp" />
+    <ClCompile Include="..\platform\Windows_x64\ATTest\source\TestCore_Checksum.cpp" />
+    <ClCompile Include="..\platform\Windows_x64\ATTest\source\TestCore_FFT.cpp" />
+    <ClCompile Include="..\platform\Windows_x64\ATTest\source\TestCore_MD5.cpp" />
+    <ClCompile Include="..\platform\Windows_x64\ATTest\source\TestCore_VFS.cpp" />
+    <ClCompile Include="..\platform\Windows_x64\ATTest\source\TestDebugger_HistoryTree.cpp" />
+    <ClCompile Include="..\platform\Windows_x64\ATTest\source\TestDebugger_SymbolIO.cpp" />
+    <ClCompile Include="..\platform\Windows_x64\ATTest\source\TestEmu_PCLink.cpp" />
+    <ClCompile Include="..\platform\Windows_x64\ATTest\source\TestEmu_PokeyPots.cpp" />
+    <ClCompile Include="..\platform\Windows_x64\ATTest\source\TestEmu_PokeyTimers.cpp" />
+    <ClCompile Include="..\platform\Windows_x64\ATTest\source\TestIO_Vorbis.cpp" />
+    <ClCompile Include="..\platform\Windows_x64\ATTest\source\TestMisc_TTF.cpp" />
+    <ClCompile Include="..\platform\Windows_x64\ATTest\source\TestNet_NativeDatagramLiveTest.cpp" />
+    <ClCompile Include="..\platform\Windows_x64\ATTest\source\TestNet_NativeSockets.cpp" />
+    <ClCompile Include="..\platform\Windows_x64\ATTest\source\TestSystem_CRC.cpp" />
+    <ClCompile Include="..\platform\Windows_x64\ATTest\source\TestSystem_Exception.cpp" />
+    <ClCompile Include="..\platform\Windows_x64\ATTest\source\TestSystem_HashMap.cpp" />
+    <ClCompile Include="..\platform\Windows_x64\ATTest\source\TestSystem_HashSet.cpp" />
+    <ClCompile Include="..\platform\Windows_x64\ATTest\source\TestIO_DiskImage.cpp" />
+    <ClCompile Include="..\platform\Windows_x64\ATTest\source\TestIO_FLAC.cpp" />
+    <ClCompile Include="..\platform\Windows_x64\ATTest\source\TestIO_TapeWrite.cpp" />
+    <ClCompile Include="..\platform\Windows_x64\ATTest\source\TestIO_VirtFAT32.cpp" />
+    <ClCompile Include="..\platform\Windows_x64\ATTest\source\TestKasumi_Pixmap.cpp" />
+    <ClCompile Include="..\platform\Windows_x64\ATTest\source\TestKasumi_Resampler.cpp" />
+    <ClCompile Include="..\platform\Windows_x64\ATTest\source\TestKasumi_Uberblit.cpp" />
+    <ClCompile Include="..\platform\Windows_x64\ATTest\source\TestSystem_Filesys.cpp" />
+    <ClCompile Include="..\platform\Windows_x64\ATTest\source\TestSystem_Function.cpp" />
+    <ClCompile Include="..\platform\Windows_x64\ATTest\source\TestSystem_Int128.cpp" />
+    <ClCompile Include="..\platform\Windows_x64\ATTest\source\TestSystem_Math.cpp" />
+    <ClCompile Include="..\platform\Windows_x64\ATTest\source\TestSystem_FastVector.cpp" />
+    <ClCompile Include="..\platform\Windows_x64\ATTest\source\TestSystem_VecMath.cpp" />
+    <ClCompile Include="..\platform\Windows_x64\ATTest\source\TestSystem_Vector.cpp" />
+    <ClCompile Include="..\platform\Windows_x64\ATTest\source\TestSystem_Zip.cpp" />
+    <ClCompile Include="..\platform\Windows_x64\ATTest\source\TestTrace_CPU.cpp" />
+    <ClCompile Include="..\platform\Windows_x64\ATTest\source\TestTrace_IO.cpp" />
+    <ClCompile Include="..\platform\Windows_x64\ATTest\source\TestUI_TextDOM.cpp" />
+    <ClCompile Include="..\platform\Windows_x64\ATTest\source\utils.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\h\at\attest\test.h" />
-    <ClInclude Include="h\blob.h" />
-    <ClInclude Include="h\stdafx.h" />
-    <ClInclude Include="h\test.h" />
+    <ClInclude Include="..\platform\Windows_x64\ATTest\h\blob.h" />
+    <ClInclude Include="..\platform\Windows_x64\ATTest\h\stdafx.h" />
+    <ClInclude Include="..\platform\Windows_x64\ATTest\h\test.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{53B0A660-AACE-4EEE-8B88-C040CAA3C407}</ProjectGuid>
