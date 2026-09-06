@@ -32,31 +32,31 @@
     <ClCompile Include="..\platform\Windows_x64\VDDisplay\source\minid3dx.cpp">
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="source\checkimports.cpp" />
-    <ClCompile Include="source\filecreator.cpp" />
-    <ClCompile Include="source\fontencode.cpp" />
-    <ClCompile Include="source\fontextract.cpp" />
-    <ClCompile Include="source\fxc10.cpp" />
-    <ClCompile Include="source\hash.cpp" />
-    <ClCompile Include="source\main.cpp" />
-    <ClCompile Include="source\makearray.cpp" />
-    <ClCompile Include="source\maketables.cpp" />
-    <ClCompile Include="source\signexport.cpp" />
-    <ClCompile Include="source\signxml.cpp" />
-    <ClCompile Include="source\utils.cpp" />
-    <ClCompile Include="source\stdafx.cpp">
+    <ClCompile Include="..\platform\Windows_x64\Asuka\source\checkimports.cpp" />
+    <ClCompile Include="..\platform\Windows_x64\Asuka\source\filecreator.cpp" />
+    <ClCompile Include="..\platform\Windows_x64\Asuka\source\fontencode.cpp" />
+    <ClCompile Include="..\platform\Windows_x64\Asuka\source\fontextract.cpp" />
+    <ClCompile Include="..\platform\Windows_x64\Asuka\source\fxc10.cpp" />
+    <ClCompile Include="..\platform\Windows_x64\Asuka\source\hash.cpp" />
+    <ClCompile Include="..\platform\Windows_x64\Asuka\source\main.cpp" />
+    <ClCompile Include="..\platform\Windows_x64\Asuka\source\makearray.cpp" />
+    <ClCompile Include="..\platform\Windows_x64\Asuka\source\maketables.cpp" />
+    <ClCompile Include="..\platform\Windows_x64\Asuka\source\signexport.cpp" />
+    <ClCompile Include="..\platform\Windows_x64\Asuka\source\signxml.cpp" />
+    <ClCompile Include="..\platform\Windows_x64\Asuka\source\utils.cpp" />
+    <ClCompile Include="..\platform\Windows_x64\Asuka\source\stdafx.cpp">
       <PrecompiledHeader>Create</PrecompiledHeader>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="h\filecreator.h" />
-    <ClInclude Include="res\resource.h" />
-    <ClInclude Include="h\symbols.h" />
-    <ClInclude Include="h\utils.h" />
-    <ClInclude Include="h\stdafx.h" />
+    <ClInclude Include="..\platform\Windows_x64\Asuka\h\filecreator.h" />
+    <ClInclude Include="..\platform\Windows_x64\Asuka\res\resource.h" />
+    <ClInclude Include="..\platform\Windows_x64\Asuka\h\symbols.h" />
+    <ClInclude Include="..\platform\Windows_x64\Asuka\h\utils.h" />
+    <ClInclude Include="..\platform\Windows_x64\Asuka\h\stdafx.h" />
   </ItemGroup>
   <ItemGroup>
-    <ResourceCompile Include="res\Asuka.rc" />
+    <ResourceCompile Include="..\platform\Windows_x64\Asuka\res\Asuka.rc" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\system\system.vcxproj">
