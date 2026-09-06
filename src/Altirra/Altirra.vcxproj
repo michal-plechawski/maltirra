@@ -850,7 +850,7 @@
       <Project>{c2082189-3ecb-4079-91fa-89d3c8a305c0}</Project>
       <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
     </ProjectReference>
-    <ProjectReference Include="..\Tessa\Tessa.vcxproj">
+    <ProjectReference Include="..\platform\Windows_x64\Tessa\Tessa.vcxproj">
       <Project>{81adb599-84b5-4ff3-b781-fb39d5cc63ee}</Project>
       <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
     </ProjectReference>

@@ -56,13 +56,13 @@
     <ClInclude Include="h\stdafx.h">
       <Filter>Precompiled Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\h\vd2\Tessa\Context.h">
+    <ClInclude Include="..\..\..\h\vd2\Tessa\Context.h">
       <Filter>Interface Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\h\vd2\Tessa\Format.h">
+    <ClInclude Include="..\..\..\h\vd2\Tessa\Format.h">
       <Filter>Interface Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\h\vd2\Tessa\Types.h">
+    <ClInclude Include="..\..\..\h\vd2\Tessa\Types.h">
       <Filter>Interface Header Files</Filter>
     </ClInclude>
     <ClInclude Include="h\Program.h">
@@ -74,10 +74,10 @@
     <ClInclude Include="h\D3D11\FenceManager_D3D11.h">
       <Filter>Header Files\D3D11</Filter>
     </ClInclude>
-    <ClInclude Include="..\h\vd2\Tessa\Config.h">
+    <ClInclude Include="..\..\..\h\vd2\Tessa\Config.h">
       <Filter>Interface Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\h\vd2\Tessa\Options.h">
+    <ClInclude Include="..\..\..\h\vd2\Tessa\Options.h">
       <Filter>Interface Header Files</Filter>
     </ClInclude>
   </ItemGroup>

@@ -35,7 +35,7 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Asuka", "Asuka\Asuka.vcxpro
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "VDDisplay", "VDDisplay\VDDisplay.vcxproj", "{6638DCCD-01B4-49F8-BC66-696648AA0B84}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Tessa", "Tessa\Tessa.vcxproj", "{81ADB599-84B5-4FF3-B781-FB39D5CC63EE}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Tessa", "platform\Windows_x64\Tessa\Tessa.vcxproj", "{81ADB599-84B5-4FF3-B781-FB39D5CC63EE}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ATNativeUI", "platform\Windows_x64\ATNativeUI\ATNativeUI.vcxproj", "{DB396FA4-478D-49B1-8AC9-59E70878C38D}"
 EndProject
