@@ -49,7 +49,7 @@ if [[ -n "$include_violations" || -n "$platform_include_violations" || -n "$name
   exit 1
 fi
 
-compiler=${CXX:-c++}
+compiler=${CXX:-clang++}
 printf '%s\n' \
   '#include <vd2/system/atomic.h>' \
   '#include <vd2/system/event.h>' \
