@@ -54,7 +54,7 @@
     <ClCompile Include="source\stdafx.cpp">
       <Filter>Precompiled Header Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\VDDisplay\source\minid3dx.cpp">
+    <ClCompile Include="..\platform\Windows_x64\VDDisplay\source\minid3dx.cpp">
       <Filter>Borrowed Files</Filter>
     </ClCompile>
     <ClCompile Include="source\signxml.cpp">

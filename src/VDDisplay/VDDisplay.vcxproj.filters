@@ -27,123 +27,123 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="source\bicubic.cpp">
+    <ClCompile Include="..\platform\Windows_x64\VDDisplay\source\bicubic.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="source\display.cpp">
+    <ClCompile Include="..\platform\Windows_x64\VDDisplay\source\display.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="source\displaydrv.cpp">
+    <ClCompile Include="..\platform\Windows_x64\VDDisplay\source\displaydrv.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="source\displaydrv3d.cpp">
+    <ClCompile Include="..\platform\Windows_x64\VDDisplay\source\displaydrv3d.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="source\displaygdi.cpp">
+    <ClCompile Include="..\platform\Windows_x64\VDDisplay\source\displaygdi.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="source\displaymgr.cpp">
+    <ClCompile Include="..\platform\Windows_x64\VDDisplay\source\displaymgr.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="source\displaynode3d.cpp">
+    <ClCompile Include="..\platform\Windows_x64\VDDisplay\source\displaynode3d.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="source\fontgdi.cpp">
+    <ClCompile Include="..\platform\Windows_x64\VDDisplay\source\fontgdi.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="source\rendercache.cpp">
+    <ClCompile Include="..\platform\Windows_x64\VDDisplay\source\rendercache.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="source\renderer.cpp">
+    <ClCompile Include="..\platform\Windows_x64\VDDisplay\source\renderer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="source\renderer3d.cpp">
+    <ClCompile Include="..\platform\Windows_x64\VDDisplay\source\renderer3d.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="source\renderergdi.cpp">
+    <ClCompile Include="..\platform\Windows_x64\VDDisplay\source\renderergdi.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="source\renderersoft.cpp">
+    <ClCompile Include="..\platform\Windows_x64\VDDisplay\source\renderersoft.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="source\textrenderer.cpp">
+    <ClCompile Include="..\platform\Windows_x64\VDDisplay\source\textrenderer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="source\stdafx.cpp">
+    <ClCompile Include="..\platform\Windows_x64\VDDisplay\source\stdafx.cpp">
       <Filter>Precompiled Header Files</Filter>
     </ClCompile>
-    <ClCompile Include="source\rendererd3d9.cpp">
+    <ClCompile Include="..\platform\Windows_x64\VDDisplay\source\rendererd3d9.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="source\displaydrvd3d9.cpp">
+    <ClCompile Include="..\platform\Windows_x64\VDDisplay\source\displaydrvd3d9.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="source\direct3d.cpp">
+    <ClCompile Include="..\platform\Windows_x64\VDDisplay\source\direct3d.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="source\minid3dx.cpp">
+    <ClCompile Include="..\platform\Windows_x64\VDDisplay\source\minid3dx.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="source\customeffectimpld3d9.cpp">
+    <ClCompile Include="..\platform\Windows_x64\VDDisplay\source\customeffectimpld3d9.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="source\fontbitmap.cpp">
+    <ClCompile Include="..\platform\Windows_x64\VDDisplay\source\fontbitmap.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="source\logging.cpp">
+    <ClCompile Include="..\platform\Windows_x64\VDDisplay\source\logging.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="source\screenfx.cpp">
+    <ClCompile Include="..\platform\Windows_x64\VDDisplay\source\screenfx.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="source\options.cpp">
+    <ClCompile Include="..\platform\Windows_x64\VDDisplay\source\options.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="source\bloom.cpp">
+    <ClCompile Include="..\platform\Windows_x64\VDDisplay\source\bloom.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="source\displaytypes.cpp">
+    <ClCompile Include="..\platform\Windows_x64\VDDisplay\source\displaytypes.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="source\customeffectutils.cpp">
+    <ClCompile Include="..\platform\Windows_x64\VDDisplay\source\customeffectutils.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="source\customeffectbase.cpp">
+    <ClCompile Include="..\platform\Windows_x64\VDDisplay\source\customeffectbase.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="source\customeffectpassbase.cpp">
+    <ClCompile Include="..\platform\Windows_x64\VDDisplay\source\customeffectpassbase.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="source\customeffectimpld3d11.cpp">
+    <ClCompile Include="..\platform\Windows_x64\VDDisplay\source\customeffectimpld3d11.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="source\customeffectutilsd3d.cpp">
+    <ClCompile Include="..\platform\Windows_x64\VDDisplay\source\customeffectutilsd3d.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="h\bicubic.h">
+    <ClInclude Include="..\platform\Windows_x64\VDDisplay\h\bicubic.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="h\displaydrv3d.h">
+    <ClInclude Include="..\platform\Windows_x64\VDDisplay\h\displaydrv3d.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="h\displaymgr.h">
+    <ClInclude Include="..\platform\Windows_x64\VDDisplay\h\displaymgr.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="h\displaynode3d.h">
+    <ClInclude Include="..\platform\Windows_x64\VDDisplay\h\displaynode3d.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="h\vd2\VDDisplay\internal\fontgdi.h">
+    <ClInclude Include="..\platform\Windows_x64\VDDisplay\h\vd2\VDDisplay\internal\fontgdi.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="h\renderer3d.h">
+    <ClInclude Include="..\platform\Windows_x64\VDDisplay\h\renderer3d.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="h\vd2\VDDisplay\internal\renderergdi.h">
+    <ClInclude Include="..\platform\Windows_x64\VDDisplay\h\vd2\VDDisplay\internal\renderergdi.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="h\stdafx.h">
+    <ClInclude Include="..\platform\Windows_x64\VDDisplay\h\stdafx.h">
       <Filter>Precompiled Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\h\vd2\VDDisplay\compositor.h">
@@ -152,7 +152,7 @@
     <ClInclude Include="..\h\vd2\VDDisplay\display.h">
       <Filter>Interface Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\h\vd2\VDDisplay\displaydrv.h">
+    <ClInclude Include="..\platform\Windows_x64\h\vd2\VDDisplay\displaydrv.h">
       <Filter>Interface Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\h\vd2\VDDisplay\font.h">
@@ -170,61 +170,61 @@
     <ClInclude Include="..\h\vd2\VDDisplay\textrenderer.h">
       <Filter>Interface Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="h\displaydrvd3d9.h">
+    <ClInclude Include="..\platform\Windows_x64\VDDisplay\h\displaydrvd3d9.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\h\vd2\VDDisplay\direct3d.h">
+    <ClInclude Include="..\platform\Windows_x64\h\vd2\VDDisplay\direct3d.h">
       <Filter>Interface Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\h\vd2\VDDisplay\minid3dx.h">
       <Filter>Interface Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="h\vd2\VDDisplay\internal\customeffectd3d9.h">
+    <ClInclude Include="..\platform\Windows_x64\VDDisplay\h\vd2\VDDisplay\internal\customeffectd3d9.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="h\vd2\VDDisplay\internal\fontbitmap.h">
+    <ClInclude Include="..\platform\Windows_x64\VDDisplay\h\vd2\VDDisplay\internal\fontbitmap.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\h\vd2\VDDisplay\logging.h">
       <Filter>Interface Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="h\vd2\VDDisplay\internal\screenfx.h">
+    <ClInclude Include="..\platform\Windows_x64\VDDisplay\h\vd2\VDDisplay\internal\screenfx.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\h\vd2\VDDisplay\renderergdi.h">
+    <ClInclude Include="..\platform\Windows_x64\h\vd2\VDDisplay\renderergdi.h">
       <Filter>Interface Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="h\vd2\VDDisplay\internal\options.h">
+    <ClInclude Include="..\platform\Windows_x64\VDDisplay\h\vd2\VDDisplay\internal\options.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="h\vd2\VDDisplay\internal\bloom.h">
+    <ClInclude Include="..\platform\Windows_x64\VDDisplay\h\vd2\VDDisplay\internal\bloom.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\h\vd2\VDDisplay\displaytypes.h">
       <Filter>Interface Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="h\vd2\VDDisplay\internal\customeffectutils.h">
+    <ClInclude Include="..\platform\Windows_x64\VDDisplay\h\vd2\VDDisplay\internal\customeffectutils.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="h\vd2\VDDisplay\internal\customeffect.h">
+    <ClInclude Include="..\platform\Windows_x64\VDDisplay\h\vd2\VDDisplay\internal\customeffect.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="h\vd2\VDDisplay\internal\customeffectbase.h">
+    <ClInclude Include="..\platform\Windows_x64\VDDisplay\h\vd2\VDDisplay\internal\customeffectbase.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="h\vd2\VDDisplay\internal\customeffectpassbase.h">
+    <ClInclude Include="..\platform\Windows_x64\VDDisplay\h\vd2\VDDisplay\internal\customeffectpassbase.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="h\vd2\VDDisplay\internal\customeffectd3d11.h">
+    <ClInclude Include="..\platform\Windows_x64\VDDisplay\h\vd2\VDDisplay\internal\customeffectd3d11.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="h\vd2\VDDisplay\internal\customeffectimpld3d11.h">
+    <ClInclude Include="..\platform\Windows_x64\VDDisplay\h\vd2\VDDisplay\internal\customeffectimpld3d11.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="h\vd2\VDDisplay\internal\customeffectutilsd3d.h">
+    <ClInclude Include="..\platform\Windows_x64\VDDisplay\h\vd2\VDDisplay\internal\customeffectutilsd3d.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="h\vd2\VDDisplay\internal\customeffectimpld3d9.h">
+    <ClInclude Include="..\platform\Windows_x64\VDDisplay\h\vd2\VDDisplay\internal\customeffectimpld3d9.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

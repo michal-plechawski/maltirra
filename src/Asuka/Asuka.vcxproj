@@ -29,7 +29,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="..\VDDisplay\source\minid3dx.cpp">
+    <ClCompile Include="..\platform\Windows_x64\VDDisplay\source\minid3dx.cpp">
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="source\checkimports.cpp" />

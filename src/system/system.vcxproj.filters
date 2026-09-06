@@ -314,7 +314,7 @@
     <ClInclude Include="..\h\vd2\system\vectors_int.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\h\vd2\system\w32assist.h">
+    <ClInclude Include="..\platform\Windows_x64\h\vd2\system\w32assist.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\h\vd2\system\zip.h">
