@@ -33,7 +33,7 @@
     <ClCompile Include="source\debug.cpp" />
     <ClCompile Include="source\debugx86.cpp" />
     <ClCompile Include="source\Error.cpp" />
-    <ClCompile Include="source\error_win32.cpp" />
+    <ClCompile Include="..\platform\Windows_x64\system\source\error_win32.cpp" />
     <ClCompile Include="source\event.cpp" />
     <ClCompile Include="source\file.cpp" />
     <ClCompile Include="source\fileasync.cpp" />
@@ -81,7 +81,7 @@
     </ClCompile>
     <ClCompile Include="source\zip.cpp">
     </ClCompile>
-    <ClCompile Include="source\win32\touch_win32.cpp" />
+    <ClCompile Include="..\platform\Windows_x64\system\source\touch_win32.cpp" />
     <ClCompile Include="source\stdaccel.cpp">
       <Optimization Condition="'$(Configuration)'=='Debug'">Full</Optimization>
       <InlineFunctionExpansion Condition="'$(Configuration)'=='Debug'">Default</InlineFunctionExpansion>
@@ -163,9 +163,9 @@
     <ClInclude Include="..\h\vd2\system\vectors_int.h" />
     <ClInclude Include="..\h\vd2\system\w32assist.h" />
     <ClInclude Include="..\h\vd2\system\zip.h" />
-    <ClInclude Include="..\h\vd2\system\win32\intrin.h" />
-    <ClInclude Include="..\h\vd2\system\win32\miniwindows.h" />
-    <ClInclude Include="..\h\vd2\system\win32\touch.h" />
+    <ClInclude Include="..\platform\Windows_x64\h\vd2\system\win32\intrin.h" />
+    <ClInclude Include="..\platform\Windows_x64\h\vd2\system\win32\miniwindows.h" />
+    <ClInclude Include="..\platform\Windows_x64\h\vd2\system\win32\touch.h" />
     <ClInclude Include="h\stdafx.h" />
   </ItemGroup>
   <ItemGroup>
@@ -177,7 +177,7 @@
       <ExcludedFromBuild Condition="'$(Platform)'!='Win32'">true</ExcludedFromBuild>
       <FileType>Document</FileType>
     </MASM>
-    <MASM Include="source\a64_thunk.asm">
+    <MASM Include="..\platform\Windows_x64\system\source\a64_thunk.asm">
       <ExcludedFromBuild Condition="'$(Platform)'!='x64'">true</ExcludedFromBuild>
       <FileType>Document</FileType>
     </MASM>

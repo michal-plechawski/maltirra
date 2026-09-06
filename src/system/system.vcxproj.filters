@@ -51,7 +51,7 @@
     <ClCompile Include="source\Error.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="source\error_win32.cpp">
+    <ClCompile Include="..\platform\Windows_x64\system\source\error_win32.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="source\event.cpp">
@@ -144,7 +144,7 @@
     <ClCompile Include="source\zip.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="source\win32\touch_win32.cpp">
+    <ClCompile Include="..\platform\Windows_x64\system\source\touch_win32.cpp">
       <Filter>Source Files\win32</Filter>
     </ClCompile>
     <ClCompile Include="source\stdaccel.cpp">
@@ -320,13 +320,13 @@
     <ClInclude Include="..\h\vd2\system\zip.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\h\vd2\system\win32\intrin.h">
+    <ClInclude Include="..\platform\Windows_x64\h\vd2\system\win32\intrin.h">
       <Filter>Header Files\win32</Filter>
     </ClInclude>
-    <ClInclude Include="..\h\vd2\system\win32\miniwindows.h">
+    <ClInclude Include="..\platform\Windows_x64\h\vd2\system\win32\miniwindows.h">
       <Filter>Header Files\win32</Filter>
     </ClInclude>
-    <ClInclude Include="..\h\vd2\system\win32\touch.h">
+    <ClInclude Include="..\platform\Windows_x64\h\vd2\system\win32\touch.h">
       <Filter>Header Files\win32</Filter>
     </ClInclude>
     <ClInclude Include="h\stdafx.h">
@@ -379,7 +379,7 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <MASM Include="source\a64_thunk.asm">
+    <MASM Include="..\platform\Windows_x64\system\source\a64_thunk.asm">
       <Filter>Assembly Files %28AMD64%29</Filter>
     </MASM>
     <MASM Include="source\a_thunk.asm">

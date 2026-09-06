@@ -19,7 +19,7 @@
 #include <intrin.h>
 #include <vd2/system/cpuaccel.h>
 #include <vd2/Kasumi/resample_kernels.h>
-#include "resample_stages_x64.h"
+#include <vd2/Kasumi/internal/resample_stages_x64.h>
 
 extern "C" long VDCDECL vdasm_resize_table_col_SSE2(uint32 *out, const uint32 *const*in_table, const int *filter, int filter_width, uint32 w);
 extern "C" long VDCDECL vdasm_resize_table_row_SSE2(uint32 *out, const uint32 *in, const int *filter, int filter_width, uint32 w, long accum, long frac);

@@ -33,7 +33,7 @@
 #if VD_CPU_X86
 	#include "resample_stages_x86.h"
 #elif VD_CPU_X64
-	#include "resample_stages_x64.h"
+	#include <vd2/Kasumi/internal/resample_stages_x64.h>
 #elif VD_CPU_ARM64
 	#include "resample_stages_arm64.h"
 #else

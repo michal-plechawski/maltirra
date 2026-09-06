@@ -89,7 +89,7 @@
     <ClCompile Include="source\uberblit_resample_special_x86.cpp">
       <ExcludedFromBuild Condition="'$(Platform)'!='Win32'">true</ExcludedFromBuild>
     </ClCompile>
-    <ClCompile Include="source\resample_stages_x64.cpp">
+    <ClCompile Include="..\platform\Windows_x64\Kasumi\source\resample_stages_x64.cpp">
       <ExcludedFromBuild Condition="'$(Platform)'!='x64'">true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="source\stdafx.cpp">
@@ -111,7 +111,7 @@
     <ClInclude Include="h\resample_stages.h" />
     <ClInclude Include="h\resample_stages_arm64.h" />
     <ClInclude Include="h\resample_stages_reference.h" />
-    <ClInclude Include="h\resample_stages_x64.h" />
+    <ClInclude Include="..\platform\Windows_x64\h\vd2\Kasumi\internal\resample_stages_x64.h" />
     <ClInclude Include="h\resample_stages_x86.h" />
     <ClInclude Include="h\uberblit.h" />
     <ClInclude Include="h\uberblit_16f.h" />

@@ -139,7 +139,7 @@
     <ClCompile Include="source\uberblit_resample_special_x86.cpp">
       <Filter>Source Files %28x86%29</Filter>
     </ClCompile>
-    <ClCompile Include="source\resample_stages_x64.cpp">
+    <ClCompile Include="..\platform\Windows_x64\Kasumi\source\resample_stages_x64.cpp">
       <Filter>Source Files %28x64%29</Filter>
     </ClCompile>
     <ClCompile Include="source\stdafx.cpp">
@@ -198,7 +198,7 @@
     <ClInclude Include="h\resample_stages_reference.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="h\resample_stages_x64.h">
+    <ClInclude Include="..\platform\Windows_x64\h\vd2\Kasumi\internal\resample_stages_x64.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="h\resample_stages_x86.h">

@@ -106,7 +106,7 @@
     <ClCompile Include="source\fft_scalar.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="source\timerserviceimpl_win32.cpp">
+    <ClCompile Include="..\platform\Windows_x64\ATCore\source\timerserviceimpl_win32.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="source\atascii.cpp">
@@ -309,10 +309,10 @@
     <ClInclude Include="..\h\at\atcore\timerservice.h">
       <Filter>Interface Files</Filter>
     </ClInclude>
-    <ClInclude Include="h\at\atcore\internal\timerserviceimpl_win32.h">
+    <ClInclude Include="..\platform\Windows_x64\h\at\atcore\internal\timerserviceimpl_win32.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\h\at\atcore\comsupport_win32.h">
+    <ClInclude Include="..\platform\Windows_x64\h\at\atcore\comsupport_win32.h">
       <Filter>Interface Files</Filter>
     </ClInclude>
     <ClInclude Include="..\h\at\atcore\atascii.h">

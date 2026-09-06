@@ -11,7 +11,7 @@
     <ClInclude Include="..\h\at\atcore\blockdevice.h" />
     <ClInclude Include="..\h\at\atcore\checksum.h" />
     <ClInclude Include="..\h\at\atcore\cio.h" />
-    <ClInclude Include="..\h\at\atcore\comsupport_win32.h" />
+    <ClInclude Include="..\platform\Windows_x64\h\at\atcore\comsupport_win32.h" />
     <ClInclude Include="..\h\at\atcore\configvar.h" />
     <ClInclude Include="..\h\at\atcore\consoleoutput.h" />
     <ClInclude Include="..\h\at\atcore\constants.h" />
@@ -68,7 +68,7 @@
     <ClInclude Include="..\h\at\atcore\vfs.h" />
     <ClInclude Include="..\h\at\atcore\wraptime.h" />
     <ClInclude Include="h\at\atcore\internal\checksum.h" />
-    <ClInclude Include="h\at\atcore\internal\timerserviceimpl_win32.h" />
+    <ClInclude Include="..\platform\Windows_x64\h\at\atcore\internal\timerserviceimpl_win32.h" />
     <ClInclude Include="h\stdafx.h" />
   </ItemGroup>
   <ItemGroup>
@@ -125,7 +125,7 @@
     <ClCompile Include="source\stdafx.cpp">
       <PrecompiledHeader>Create</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="source\timerserviceimpl_win32.cpp" />
+    <ClCompile Include="..\platform\Windows_x64\ATCore\source\timerserviceimpl_win32.cpp" />
     <ClCompile Include="source\vfs.cpp" />
   </ItemGroup>
   <ItemGroup>
