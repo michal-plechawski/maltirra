@@ -27,142 +27,142 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="source\bitmath.cpp">
+    <ClCompile Include="..\platform\Windows_x64\system\source\bitmath.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="source\cache.cpp">
+    <ClCompile Include="..\platform\Windows_x64\system\source\cache.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="source\cmdline.cpp">
+    <ClCompile Include="..\platform\Windows_x64\system\source\cmdline.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="source\cpuaccel.cpp">
+    <ClCompile Include="..\platform\Windows_x64\system\source\cpuaccel.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="source\date.cpp">
+    <ClCompile Include="..\platform\Windows_x64\system\source\date.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="source\debug.cpp">
+    <ClCompile Include="..\platform\Windows_x64\system\source\debug.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="source\debugx86.cpp">
+    <ClCompile Include="..\platform\Windows_x64\system\source\debugx86.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="source\Error.cpp">
+    <ClCompile Include="..\platform\Windows_x64\system\source\Error.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\platform\Windows_x64\system\source\error_win32.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="source\event.cpp">
+    <ClCompile Include="..\platform\Windows_x64\system\source\event.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="source\file.cpp">
+    <ClCompile Include="..\platform\Windows_x64\system\source\file.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="source\fileasync.cpp">
+    <ClCompile Include="..\platform\Windows_x64\system\source\fileasync.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="source\filestream.cpp">
+    <ClCompile Include="..\platform\Windows_x64\system\source\filestream.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="source\filesys.cpp">
+    <ClCompile Include="..\platform\Windows_x64\system\source\filesys.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="source\filewatcher.cpp">
+    <ClCompile Include="..\platform\Windows_x64\system\source\filewatcher.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="source\Fraction.cpp">
+    <ClCompile Include="..\platform\Windows_x64\system\source\Fraction.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="source\halffloat.cpp">
+    <ClCompile Include="..\platform\Windows_x64\system\source\halffloat.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="source\hash.cpp">
+    <ClCompile Include="..\platform\Windows_x64\system\source\hash.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="source\int128.cpp">
+    <ClCompile Include="..\platform\Windows_x64\system\source\int128.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="source\linearalloc.cpp">
+    <ClCompile Include="..\platform\Windows_x64\system\source\linearalloc.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="source\math.cpp">
+    <ClCompile Include="..\platform\Windows_x64\system\source\math.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="source\memory.cpp">
+    <ClCompile Include="..\platform\Windows_x64\system\source\memory.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="source\process.cpp">
+    <ClCompile Include="..\platform\Windows_x64\system\source\process.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="source\refcount.cpp">
+    <ClCompile Include="..\platform\Windows_x64\system\source\refcount.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="source\registry.cpp">
+    <ClCompile Include="..\platform\Windows_x64\system\source\registry.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="source\strutil.cpp">
+    <ClCompile Include="..\platform\Windows_x64\system\source\strutil.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="source\text.cpp">
+    <ClCompile Include="..\platform\Windows_x64\system\source\text.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="source\thread.cpp">
+    <ClCompile Include="..\platform\Windows_x64\system\source\thread.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="source\thunk.cpp">
+    <ClCompile Include="..\platform\Windows_x64\system\source\thunk.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="source\time.cpp">
+    <ClCompile Include="..\platform\Windows_x64\system\source\time.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="source\tls.cpp">
+    <ClCompile Include="..\platform\Windows_x64\system\source\tls.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="source\vdalloc.cpp">
+    <ClCompile Include="..\platform\Windows_x64\system\source\vdalloc.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="source\vdstl.cpp">
+    <ClCompile Include="..\platform\Windows_x64\system\source\vdstl.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="source\vdstl_hash.cpp">
+    <ClCompile Include="..\platform\Windows_x64\system\source\vdstl_hash.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="source\vdstl_hashtable.cpp">
+    <ClCompile Include="..\platform\Windows_x64\system\source\vdstl_hashtable.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="source\VDString.cpp">
+    <ClCompile Include="..\platform\Windows_x64\system\source\VDString.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="source\vectors.cpp">
+    <ClCompile Include="..\platform\Windows_x64\system\source\vectors.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="source\w32assist.cpp">
+    <ClCompile Include="..\platform\Windows_x64\system\source\w32assist.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="source\zip.cpp">
+    <ClCompile Include="..\platform\Windows_x64\system\source\zip.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\platform\Windows_x64\system\source\touch_win32.cpp">
       <Filter>Source Files\win32</Filter>
     </ClCompile>
-    <ClCompile Include="source\stdaccel.cpp">
+    <ClCompile Include="..\platform\Windows_x64\system\source\stdaccel.cpp">
       <Filter>Precompiled Header Support</Filter>
     </ClCompile>
-    <ClCompile Include="source\stdafx.cpp">
+    <ClCompile Include="..\platform\Windows_x64\system\source\stdafx.cpp">
       <Filter>Precompiled Header Support</Filter>
     </ClCompile>
-    <ClCompile Include="source\function.cpp">
+    <ClCompile Include="..\platform\Windows_x64\system\source\function.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="source\constexpr.cpp">
+    <ClCompile Include="..\platform\Windows_x64\system\source\constexpr.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="source\registrymemory.cpp">
+    <ClCompile Include="..\platform\Windows_x64\system\source\registrymemory.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="source\binary.cpp">
+    <ClCompile Include="..\platform\Windows_x64\system\source\binary.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -329,7 +329,7 @@
     <ClInclude Include="..\platform\Windows_x64\h\vd2\system\win32\touch.h">
       <Filter>Header Files\win32</Filter>
     </ClInclude>
-    <ClInclude Include="h\stdafx.h">
+    <ClInclude Include="..\platform\Windows_x64\system\h\stdafx.h">
       <Filter>Precompiled Header Support</Filter>
     </ClInclude>
     <ClInclude Include="..\h\vd2\system\function.h">

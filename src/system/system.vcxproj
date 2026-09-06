@@ -23,66 +23,66 @@
     <_ProjectFileVersion>10.0.40219.1</_ProjectFileVersion>
   </PropertyGroup>
   <ItemGroup>
-    <ClCompile Include="source\binary.cpp" />
-    <ClCompile Include="source\bitmath.cpp" />
-    <ClCompile Include="source\cache.cpp" />
-    <ClCompile Include="source\cmdline.cpp" />
-    <ClCompile Include="source\constexpr.cpp" />
-    <ClCompile Include="source\cpuaccel.cpp" />
-    <ClCompile Include="source\date.cpp" />
-    <ClCompile Include="source\debug.cpp" />
-    <ClCompile Include="source\debugx86.cpp" />
-    <ClCompile Include="source\Error.cpp" />
+    <ClCompile Include="..\platform\Windows_x64\system\source\binary.cpp" />
+    <ClCompile Include="..\platform\Windows_x64\system\source\bitmath.cpp" />
+    <ClCompile Include="..\platform\Windows_x64\system\source\cache.cpp" />
+    <ClCompile Include="..\platform\Windows_x64\system\source\cmdline.cpp" />
+    <ClCompile Include="..\platform\Windows_x64\system\source\constexpr.cpp" />
+    <ClCompile Include="..\platform\Windows_x64\system\source\cpuaccel.cpp" />
+    <ClCompile Include="..\platform\Windows_x64\system\source\date.cpp" />
+    <ClCompile Include="..\platform\Windows_x64\system\source\debug.cpp" />
+    <ClCompile Include="..\platform\Windows_x64\system\source\debugx86.cpp" />
+    <ClCompile Include="..\platform\Windows_x64\system\source\Error.cpp" />
     <ClCompile Include="..\platform\Windows_x64\system\source\error_win32.cpp" />
-    <ClCompile Include="source\event.cpp" />
-    <ClCompile Include="source\file.cpp" />
-    <ClCompile Include="source\fileasync.cpp" />
-    <ClCompile Include="source\filestream.cpp" />
-    <ClCompile Include="source\filesys.cpp">
+    <ClCompile Include="..\platform\Windows_x64\system\source\event.cpp" />
+    <ClCompile Include="..\platform\Windows_x64\system\source\file.cpp" />
+    <ClCompile Include="..\platform\Windows_x64\system\source\fileasync.cpp" />
+    <ClCompile Include="..\platform\Windows_x64\system\source\filestream.cpp" />
+    <ClCompile Include="..\platform\Windows_x64\system\source\filesys.cpp">
     </ClCompile>
-    <ClCompile Include="source\filewatcher.cpp" />
-    <ClCompile Include="source\Fraction.cpp">
+    <ClCompile Include="..\platform\Windows_x64\system\source\filewatcher.cpp" />
+    <ClCompile Include="..\platform\Windows_x64\system\source\Fraction.cpp">
     </ClCompile>
-    <ClCompile Include="source\function.cpp" />
-    <ClCompile Include="source\halffloat.cpp" />
-    <ClCompile Include="source\hash.cpp" />
-    <ClCompile Include="source\int128.cpp">
+    <ClCompile Include="..\platform\Windows_x64\system\source\function.cpp" />
+    <ClCompile Include="..\platform\Windows_x64\system\source\halffloat.cpp" />
+    <ClCompile Include="..\platform\Windows_x64\system\source\hash.cpp" />
+    <ClCompile Include="..\platform\Windows_x64\system\source\int128.cpp">
     </ClCompile>
-    <ClCompile Include="source\linearalloc.cpp" />
-    <ClCompile Include="source\math.cpp">
+    <ClCompile Include="..\platform\Windows_x64\system\source\linearalloc.cpp" />
+    <ClCompile Include="..\platform\Windows_x64\system\source\math.cpp">
     </ClCompile>
-    <ClCompile Include="source\memory.cpp">
+    <ClCompile Include="..\platform\Windows_x64\system\source\memory.cpp">
     </ClCompile>
-    <ClCompile Include="source\process.cpp" />
-    <ClCompile Include="source\refcount.cpp" />
-    <ClCompile Include="source\registry.cpp">
+    <ClCompile Include="..\platform\Windows_x64\system\source\process.cpp" />
+    <ClCompile Include="..\platform\Windows_x64\system\source\refcount.cpp" />
+    <ClCompile Include="..\platform\Windows_x64\system\source\registry.cpp">
     </ClCompile>
-    <ClCompile Include="source\registrymemory.cpp" />
-    <ClCompile Include="source\strutil.cpp">
+    <ClCompile Include="..\platform\Windows_x64\system\source\registrymemory.cpp" />
+    <ClCompile Include="..\platform\Windows_x64\system\source\strutil.cpp">
     </ClCompile>
-    <ClCompile Include="source\text.cpp">
+    <ClCompile Include="..\platform\Windows_x64\system\source\text.cpp">
     </ClCompile>
-    <ClCompile Include="source\thread.cpp">
+    <ClCompile Include="..\platform\Windows_x64\system\source\thread.cpp">
     </ClCompile>
-    <ClCompile Include="source\thunk.cpp" />
-    <ClCompile Include="source\time.cpp">
+    <ClCompile Include="..\platform\Windows_x64\system\source\thunk.cpp" />
+    <ClCompile Include="..\platform\Windows_x64\system\source\time.cpp">
     </ClCompile>
-    <ClCompile Include="source\tls.cpp">
+    <ClCompile Include="..\platform\Windows_x64\system\source\tls.cpp">
     </ClCompile>
-    <ClCompile Include="source\vdalloc.cpp" />
-    <ClCompile Include="source\vdstl.cpp" />
-    <ClCompile Include="source\vdstl_hash.cpp" />
-    <ClCompile Include="source\vdstl_hashtable.cpp" />
-    <ClCompile Include="source\VDString.cpp">
+    <ClCompile Include="..\platform\Windows_x64\system\source\vdalloc.cpp" />
+    <ClCompile Include="..\platform\Windows_x64\system\source\vdstl.cpp" />
+    <ClCompile Include="..\platform\Windows_x64\system\source\vdstl_hash.cpp" />
+    <ClCompile Include="..\platform\Windows_x64\system\source\vdstl_hashtable.cpp" />
+    <ClCompile Include="..\platform\Windows_x64\system\source\VDString.cpp">
     </ClCompile>
-    <ClCompile Include="source\vectors.cpp">
+    <ClCompile Include="..\platform\Windows_x64\system\source\vectors.cpp">
     </ClCompile>
-    <ClCompile Include="source\w32assist.cpp">
+    <ClCompile Include="..\platform\Windows_x64\system\source\w32assist.cpp">
     </ClCompile>
-    <ClCompile Include="source\zip.cpp">
+    <ClCompile Include="..\platform\Windows_x64\system\source\zip.cpp">
     </ClCompile>
     <ClCompile Include="..\platform\Windows_x64\system\source\touch_win32.cpp" />
-    <ClCompile Include="source\stdaccel.cpp">
+    <ClCompile Include="..\platform\Windows_x64\system\source\stdaccel.cpp">
       <Optimization Condition="'$(Configuration)'=='Debug'">Full</Optimization>
       <InlineFunctionExpansion Condition="'$(Configuration)'=='Debug'">Default</InlineFunctionExpansion>
       <IntrinsicFunctions Condition="'$(Configuration)'=='Debug'">false</IntrinsicFunctions>
@@ -92,7 +92,7 @@
       <BasicRuntimeChecks Condition="'$(Configuration)'=='Debug'">Default</BasicRuntimeChecks>
       <ExcludedFromBuild Condition="'$(Configuration)'!='Debug'">true</ExcludedFromBuild>
     </ClCompile>
-    <ClCompile Include="source\stdafx.cpp">
+    <ClCompile Include="..\platform\Windows_x64\system\source\stdafx.cpp">
       <PrecompiledHeader>Create</PrecompiledHeader>
     </ClCompile>
   </ItemGroup>
@@ -166,7 +166,7 @@
     <ClInclude Include="..\platform\Windows_x64\h\vd2\system\win32\intrin.h" />
     <ClInclude Include="..\platform\Windows_x64\h\vd2\system\win32\miniwindows.h" />
     <ClInclude Include="..\platform\Windows_x64\h\vd2\system\win32\touch.h" />
-    <ClInclude Include="h\stdafx.h" />
+    <ClInclude Include="..\platform\Windows_x64\system\h\stdafx.h" />
   </ItemGroup>
   <ItemGroup>
     <MASM Include="source\a_memory.asm">
