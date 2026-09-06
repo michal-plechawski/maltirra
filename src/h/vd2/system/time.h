@@ -30,7 +30,6 @@
 #include <vd2/system/atomic.h>
 #include <vd2/system/function.h>
 #include <vd2/system/thread.h>
-#include <vd2/system/win32/miniwindows.h>
 
 class VDFunctionThunkInfo;
 
@@ -115,7 +114,7 @@ public:
 	void Stop();
 
 protected:
-	void StaticTimeCallback(VDZHWND hwnd, VDZUINT msg, VDZUINT_PTR id, VDZDWORD time);
+	void StaticTimeCallback(void *nativeWindow, uint32 message, uintptr timerId, uint32 time);
 
 	uint32				mTimerId;
 	bool				mbPeriodic;

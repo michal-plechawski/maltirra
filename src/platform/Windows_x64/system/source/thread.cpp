@@ -176,7 +176,7 @@ bool VDThread::IsCurrentThread() const {
 
 ///////////////////////////////////////////////////////////////////////////
 
-unsigned __stdcall VDThread::StaticThreadStart(void *pThisAsVoid) {
+unsigned VDThread::StaticThreadStart(void *pThisAsVoid) {
 	VDThread *pThis = static_cast<VDThread *>(pThisAsVoid);
 
 	// We cannot use mThreadID here because it might already have been
@@ -198,8 +198,31 @@ unsigned __stdcall VDThread::StaticThreadStart(void *pThisAsVoid) {
 
 ///////////////////////////////////////////////////////////////////////////
 
-void VDCriticalSection::StructCheck() {
-	VDASSERTCT(sizeof(CritSec) == sizeof(CRITICAL_SECTION));
+VDCriticalSection::VDCriticalSection() {
+	static_assert(sizeof(mNativeStorage) == sizeof(CRITICAL_SECTION));
+	static_assert(alignof(VDCriticalSection) == alignof(CRITICAL_SECTION));
+
+	InitializeCriticalSection(reinterpret_cast<CRITICAL_SECTION *>(mNativeStorage));
+}
+
+VDCriticalSection::~VDCriticalSection() {
+	DeleteCriticalSection(reinterpret_cast<CRITICAL_SECTION *>(mNativeStorage));
+}
+
+void VDCriticalSection::operator++() {
+	Lock();
+}
+
+void VDCriticalSection::operator--() {
+	Unlock();
+}
+
+void VDCriticalSection::Lock() {
+	EnterCriticalSection(reinterpret_cast<CRITICAL_SECTION *>(mNativeStorage));
+}
+
+void VDCriticalSection::Unlock() {
+	LeaveCriticalSection(reinterpret_cast<CRITICAL_SECTION *>(mNativeStorage));
 }
 
 ///////////////////////////////////////////////////////////////////////////
@@ -304,6 +327,22 @@ void VDSemaphore::Reset(int count) {
 
 	if (count)
 		ReleaseSemaphore(mKernelSema, count, NULL);
+}
+
+void VDSemaphore::Wait() {
+	WaitForSingleObject(mKernelSema, INFINITE);
+}
+
+bool VDSemaphore::Wait(int timeout) {
+	return WAIT_OBJECT_0 == WaitForSingleObject(mKernelSema, timeout);
+}
+
+bool VDSemaphore::TryWait() {
+	return WAIT_OBJECT_0 == WaitForSingleObject(mKernelSema, 0);
+}
+
+void VDSemaphore::Post() {
+	ReleaseSemaphore(mKernelSema, 1, nullptr);
 }
 
 ///////////////////////////////////////////////////////////////////////////////

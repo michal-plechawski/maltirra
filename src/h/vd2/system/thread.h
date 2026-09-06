@@ -38,21 +38,6 @@ typedef uint32 VDThreadID;
 typedef uint32 VDThreadId;
 typedef uint32 VDProcessId;
 
-#if defined(__MINGW32__) || defined(__MINGW64__)
-	struct _CRITICAL_SECTION;
-	typedef _CRITICAL_SECTION VDCriticalSectionW32;
-#else
-	struct _RTL_CRITICAL_SECTION;
-	typedef _RTL_CRITICAL_SECTION VDCriticalSectionW32;
-#endif
-
-extern "C" void __declspec(dllimport) __stdcall InitializeCriticalSection(VDCriticalSectionW32 *lpCriticalSection);
-extern "C" void __declspec(dllimport) __stdcall LeaveCriticalSection(VDCriticalSectionW32 *lpCriticalSection);
-extern "C" void __declspec(dllimport) __stdcall EnterCriticalSection(VDCriticalSectionW32 *lpCriticalSection);
-extern "C" void __declspec(dllimport) __stdcall DeleteCriticalSection(VDCriticalSectionW32 *lpCriticalSection);
-extern "C" unsigned long __declspec(dllimport) __stdcall WaitForSingleObject(void *hHandle, unsigned long dwMilliseconds);
-extern "C" int __declspec(dllimport) __stdcall ReleaseSemaphore(void *hSemaphore, long lReleaseCount, long *lpPreviousCount);
-
 VDThreadID VDGetCurrentThreadID();
 VDProcessId VDGetCurrentProcessId();
 uint32 VDGetLogicalProcessorCount();
@@ -119,7 +104,7 @@ public:
 	virtual void ThreadRun() = 0;				// thread, come to life
 
 private:
-	static unsigned __stdcall StaticThreadStart(void *pThis);
+	static unsigned StaticThreadStart(void *pThis);
 	void ThreadDetach();
 
 	const char *mpszDebugName;
@@ -131,18 +116,12 @@ private:
 
 class VDCriticalSection {
 private:
-	struct CritSec {				// This is a clone of CRITICAL_SECTION.
-		void	*DebugInfo;
-		sint32	LockCount;
-		sint32	RecursionCount;
-		void	*OwningThread;
-		void	*LockSemaphore;
-		uint32	SpinCount;
-	} csect;
+	// Native synchronization storage. The platform implementation verifies its
+	// size and alignment against the operating system's critical-section type.
+	alignas(void *) unsigned char mNativeStorage[sizeof(void *) == 8 ? 40 : 24];
 
 	VDCriticalSection(const VDCriticalSection&);
 	const VDCriticalSection& operator=(const VDCriticalSection&);
-	static void StructCheck();
 public:
 	class AutoLock {
 	private:
@@ -154,29 +133,13 @@ public:
 		inline operator bool() const { return false; }
 	};
 
-	VDCriticalSection() {
-		InitializeCriticalSection((VDCriticalSectionW32 *)&csect);
-	}
+	VDCriticalSection();
+	~VDCriticalSection();
 
-	~VDCriticalSection() {
-		DeleteCriticalSection((VDCriticalSectionW32 *)&csect);
-	}
-
-	void operator++() {
-		EnterCriticalSection((VDCriticalSectionW32 *)&csect);
-	}
-
-	void operator--() {
-		LeaveCriticalSection((VDCriticalSectionW32 *)&csect);
-	}
-
-	void Lock() {
-		EnterCriticalSection((VDCriticalSectionW32 *)&csect);
-	}
-
-	void Unlock() {
-		LeaveCriticalSection((VDCriticalSectionW32 *)&csect);
-	}
+	void operator++();
+	void operator--();
+	void Lock();
+	void Unlock();
 };
 
 // 'vdsynchronized' keyword
@@ -251,21 +214,10 @@ public:
 
 	void Reset(int count);
 
-	void Wait() {
-		WaitForSingleObject(mKernelSema, 0xFFFFFFFFU);
-	}
-
-	bool Wait(int timeout) {
-		return 0 == WaitForSingleObject(mKernelSema, timeout);
-	}
-
-	bool TryWait() {
-		return 0 == WaitForSingleObject(mKernelSema, 0);
-	}
-
-	void Post() {
-		ReleaseSemaphore(mKernelSema, 1, NULL);
-	}
+	void Wait();
+	bool Wait(int timeout);
+	bool TryWait();
+	void Post();
 
 private:
 	void *mKernelSema;

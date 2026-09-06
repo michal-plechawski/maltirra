@@ -283,7 +283,7 @@ void VDLazyTimer::Stop() {
 	}
 }
 
-void VDLazyTimer::StaticTimeCallback(VDZHWND hwnd, VDZUINT msg, VDZUINT_PTR id, VDZDWORD time) {
+void VDLazyTimer::StaticTimeCallback(void *nativeWindow, uint32 message, uintptr timerId, uint32 time) {
 	if (!mbPeriodic)
 		Stop();
 

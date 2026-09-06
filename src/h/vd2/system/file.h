@@ -38,11 +38,9 @@
 
 struct VDDate;
 
-#ifdef WIN32
-	typedef void *VDFileHandle;				// this needs to match wtypes.h definition for HANDLE
-#else
-	#error No operating system target declared??
-#endif
+// Opaque native file handle. Its concrete operating-system type is confined
+// to the platform implementation.
+typedef void *VDFileHandle;
 
 namespace nsVDFile {
 	enum eSeekMode {
