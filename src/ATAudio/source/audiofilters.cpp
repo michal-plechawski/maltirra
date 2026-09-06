@@ -24,7 +24,7 @@
 #include <at/ataudio/audiofilters.h>
 
 #if defined(VD_CPU_X86) || defined(VD_CPU_X64)
-#include <vd2/system/win32/intrin.h>
+#include <vd2/system/intrin.h>
 #elif defined(VD_CPU_ARM64)
 #include <arm_neon.h>
 #endif

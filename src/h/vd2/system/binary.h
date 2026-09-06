@@ -35,7 +35,7 @@
 #define VDMAKEFOURCC(byte1, byte2, byte3, byte4) (((uint8)byte1) + (((uint8)byte2) << 8) + (((uint8)byte3) << 16) + (((uint8)byte4) << 24))
 
 #ifdef _MSC_VER
-	#include <vd2/system/win32/intrin.h>
+	#include <vd2/system/intrin.h>
 
 	inline constexpr uint16 VDSwizzleU16(uint16 value) {
 		if consteval {

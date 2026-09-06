@@ -29,7 +29,7 @@
 #include <vd2/system/vdtypes.h>
 
 #ifdef VD_COMPILER_MSVC
-	#include <vd2/system/win32/intrin.h>
+	#include <vd2/system/intrin.h>
 #endif
 
 inline void *VDAtomicCompareExchangePointer(void *volatile *pp, void *p, void *compare) {

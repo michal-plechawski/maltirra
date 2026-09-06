@@ -21,7 +21,7 @@
 #include <vd2/system/vdstl.h>
 #include <vd2/system/cpuaccel.h>
 #include <vd2/system/memory.h>
-#include <vd2/system/win32/intrin.h>
+#include <vd2/system/intrin.h>
 #include <vd2/Kasumi/pixmap.h>
 #include <vd2/Kasumi/pixmaputils.h>
 

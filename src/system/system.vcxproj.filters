@@ -224,6 +224,9 @@
     <ClInclude Include="..\h\VD2\system\int128.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="..\h\vd2\system\intrin.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
     <ClInclude Include="..\h\vd2\system\linearalloc.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -321,6 +324,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\platform\Windows_x64\h\vd2\system\win32\intrin.h">
+      <Filter>Header Files\win32</Filter>
+    </ClInclude>
+    <ClInclude Include="..\platform\Windows_x64\h\vd2\system\intrin.h">
       <Filter>Header Files\win32</Filter>
     </ClInclude>
     <ClInclude Include="..\platform\Windows_x64\h\vd2\system\win32\miniwindows.h">

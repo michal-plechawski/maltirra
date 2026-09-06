@@ -119,6 +119,7 @@
     <ClInclude Include="..\h\vd2\system\halffloat.h" />
     <ClInclude Include="..\h\vd2\system\hash.h" />
     <ClInclude Include="..\h\VD2\system\int128.h" />
+    <ClInclude Include="..\h\vd2\system\intrin.h" />
     <ClInclude Include="..\h\vd2\system\linearalloc.h" />
     <ClInclude Include="..\h\vd2\system\math.h" />
     <ClInclude Include="..\h\VD2\system\memory.h" />
@@ -164,6 +165,7 @@
     <ClInclude Include="..\platform\Windows_x64\h\vd2\system\w32assist.h" />
     <ClInclude Include="..\h\vd2\system\zip.h" />
     <ClInclude Include="..\platform\Windows_x64\h\vd2\system\win32\intrin.h" />
+    <ClInclude Include="..\platform\Windows_x64\h\vd2\system\intrin.h" />
     <ClInclude Include="..\platform\Windows_x64\h\vd2\system\win32\miniwindows.h" />
     <ClInclude Include="..\platform\Windows_x64\h\vd2\system\win32\touch.h" />
     <ClInclude Include="..\platform\Windows_x64\system\h\stdafx.h" />
