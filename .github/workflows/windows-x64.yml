@@ -127,12 +127,28 @@ jobs:
       - name: Build native x64 tools
         shell: pwsh
         run: |
-          & $env:MSBUILD_EXE 'src\Altirra.sln' `
-            /m `
-            '/t:Asuka;ATCompiler' `
-            /p:Configuration=Release `
-            /p:Platform=x64 `
-            /verbosity:minimal
+          $toolProjects = @(
+            'src\Asuka\Asuka.vcxproj'
+            'src\ATCompiler\ATCompiler.vcxproj'
+          )
+
+          foreach ($project in $toolProjects) {
+            $buildOutput = & $env:MSBUILD_EXE $project `
+              /m `
+              /t:Build `
+              /p:Configuration=Release `
+              /p:Platform=x64 `
+              /verbosity:minimal 2>&1
+            $buildExitCode = $LASTEXITCODE
+            $buildOutput | ForEach-Object { Write-Host $_ }
+
+            if ($buildExitCode -ne 0) {
+              $details = ($buildOutput | Select-Object -Last 50) -join "`n"
+              $details = $details.Replace('%', '%25').Replace("`r", '%0D').Replace("`n", '%0A')
+              Write-Host "::error title=Native tool build failed ($project)::$details"
+              exit $buildExitCode
+            }
+          }
 
       - name: Build x64 automatic test runner
         shell: pwsh
