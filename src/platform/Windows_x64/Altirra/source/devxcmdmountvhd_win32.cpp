@@ -17,6 +17,7 @@
 #include <stdafx.h>
 #define INITGUID
 #include <vd2/system/w32assist.h>
+#include <vd2/system/win32/miniwindows.h>
 #include <windows.h>
 #include <virtdisk.h>
 #include "oshelper.h"
