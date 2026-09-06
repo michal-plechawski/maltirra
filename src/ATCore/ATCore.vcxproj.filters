@@ -67,7 +67,7 @@
     <ClCompile Include="source\decmath.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="source\checksum_intrin.cpp">
+    <ClCompile Include="..\platform\Windows_x64\ATCore\source\checksum_intrin.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="source\checksum_arm64.cpp">
@@ -100,7 +100,7 @@
     <ClCompile Include="source\fft_neon.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="source\fft_sse2.cpp">
+    <ClCompile Include="..\platform\Windows_x64\ATCore\source\fft_sse2.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="source\fft_scalar.cpp">
@@ -112,7 +112,7 @@
     <ClCompile Include="source\atascii.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="source\fft_avx2.cpp">
+    <ClCompile Include="..\platform\Windows_x64\ATCore\source\fft_avx2.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
