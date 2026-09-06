@@ -68,6 +68,29 @@ jobs:
             /p:Platform=x64 `
             /verbosity:minimal
 
+      - name: Build x64 automatic test runner
+        shell: pwsh
+        run: |
+          & $env:MSBUILD_EXE 'src\Altirra.sln' `
+            /m `
+            /t:Build `
+            /p:Configuration=ProfileTest `
+            /p:Platform=x64 `
+            /verbosity:minimal
+
+      - name: Run x64 automatic tests
+        shell: pwsh
+        run: |
+          $testExecutable = Join-Path $env:GITHUB_WORKSPACE 'out\ProfileAMD64\AltirraTest64.exe'
+          if (-not (Test-Path -Path $testExecutable -PathType Leaf)) {
+            throw "Expected test runner was not created: $testExecutable"
+          }
+
+          & $testExecutable all
+          if ($LASTEXITCODE -ne 0) {
+            throw "Automatic tests failed with exit code $LASTEXITCODE."
+          }
+
       - name: Build Windows x86 release
         shell: pwsh
         run: |
