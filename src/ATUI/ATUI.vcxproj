@@ -12,20 +12,20 @@
     <ClInclude Include="..\h\at\atui\uimanager.h" />
     <ClInclude Include="..\h\at\atui\uimenulist.h" />
     <ClInclude Include="..\h\at\atui\uiwidget.h" />
-    <ClInclude Include="h\stdafx.h" />
+    <ClInclude Include="..\platform\Windows_x64\ATUI\h\stdafx.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="source\stdafx.cpp">
+    <ClCompile Include="..\platform\Windows_x64\ATUI\source\stdafx.cpp">
       <PrecompiledHeader>Create</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="source\uiaccessibility.cpp" />
-    <ClCompile Include="source\uianchor.cpp" />
-    <ClCompile Include="source\uicommandmanager.cpp" />
-    <ClCompile Include="source\uicontainer.cpp" />
-    <ClCompile Include="source\uidrawingutils.cpp" />
-    <ClCompile Include="source\uimanager.cpp" />
-    <ClCompile Include="source\uimenulist.cpp" />
-    <ClCompile Include="source\uiwidget.cpp" />
+    <ClCompile Include="..\platform\Windows_x64\ATUI\source\uiaccessibility.cpp" />
+    <ClCompile Include="..\platform\Windows_x64\ATUI\source\uianchor.cpp" />
+    <ClCompile Include="..\platform\Windows_x64\ATUI\source\uicommandmanager.cpp" />
+    <ClCompile Include="..\platform\Windows_x64\ATUI\source\uicontainer.cpp" />
+    <ClCompile Include="..\platform\Windows_x64\ATUI\source\uidrawingutils.cpp" />
+    <ClCompile Include="..\platform\Windows_x64\ATUI\source\uimanager.cpp" />
+    <ClCompile Include="..\platform\Windows_x64\ATUI\source\uimenulist.cpp" />
+    <ClCompile Include="..\platform\Windows_x64\ATUI\source\uiwidget.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{B37046D2-6E5B-4E2B-8510-E6173B30E12B}</ProjectGuid>
