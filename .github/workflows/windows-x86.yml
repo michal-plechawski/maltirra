@@ -80,6 +80,7 @@ jobs:
 
       - name: Run x64 automatic tests
         shell: pwsh
+        working-directory: src/ATTest
         run: |
           $testExecutable = Join-Path $env:GITHUB_WORKSPACE 'out\ProfileAMD64\AltirraTest64.exe'
           if (-not (Test-Path -Path $testExecutable -PathType Leaf)) {
