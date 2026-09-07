@@ -35,7 +35,7 @@
 #endif
 
 #ifdef VD_COMPILER_MSVC
-	#include <intrin.h>
+	#include <vd2/system/intrin.h>
 #elif defined(VD_CPU_ARM64)
 	#include <arm_acle.h>
 #endif

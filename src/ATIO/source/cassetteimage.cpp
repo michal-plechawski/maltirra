@@ -42,7 +42,7 @@
 #include <at/atcore/logging.h>
 
 #if VD_CPU_X86 || VD_CPU_X64
-#include <emmintrin.h>
+#include <vd2/system/intrin.h>
 #elif VD_CPU_ARM64
 #include <arm_neon.h>
 #endif

@@ -29,7 +29,7 @@
 // Rest in peace, Phil Katz.
 
 #include <string.h>
-#include <intrin.h>
+#include <vd2/system/intrin.h>
 #include <vd2/system/vdtypes.h>
 #include <vd2/system/binary.h>
 #include <vd2/system/error.h>

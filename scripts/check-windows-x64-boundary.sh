@@ -6,6 +6,7 @@ cd "$repository_root"
 
 windows_include_pattern='^[[:space:]]*#[[:space:]]*include[[:space:]]*[<"](windows|windowsx|commctrl|commdlg|shellapi|shlobj|shlwapi|d3d[^/>]*|dxgi[^/>]*|xaudio[^/>]*|mmdeviceapi|audioclient|winsock[^/>]*|ws2tcpip|wrl)[.h>"/]'
 platform_include_pattern='^[[:space:]]*#[[:space:]]*include[[:space:]]*[<"][^>"]*(vd2/system/win32|platform[/\\]Windows_x64)[/\\]'
+compiler_intrinsic_pattern='^[[:space:]]*#[[:space:]]*include[[:space:]]*[<"](intrin|emmintrin|immintrin|xmmintrin)[.]h[>"]'
 
 include_violations=$(
   git grep -n -i -E \
@@ -19,6 +20,12 @@ platform_include_violations=$(
     -- src ':!src/platform/**' || true
 )
 
+compiler_intrinsic_violations=$(
+  git grep -n -i -E \
+    "$compiler_intrinsic_pattern" \
+    -- src ':!src/platform/**' ':!src/h/vd2/system/intrin.h' || true
+)
+
 name_violations=$(
   find src \
     -path 'src/platform' -prune -o \
@@ -26,7 +33,7 @@ name_violations=$(
     grep -E -i '(^|/)[^/]*(win32|windows|x64|amd64)[^/]*\.(h|hpp|c|cc|cpp|cxx|inl|asm|manifest)$' || true
 )
 
-if [[ -n "$include_violations" || -n "$platform_include_violations" || -n "$name_violations" ]]; then
+if [[ -n "$include_violations" || -n "$platform_include_violations" || -n "$compiler_intrinsic_violations" || -n "$name_violations" ]]; then
   if [[ -n "$include_violations" ]]; then
     printf '%s\n' 'Windows SDK includes found outside src/platform/Windows_x64:'
     printf '%s\n' "$include_violations"
@@ -35,6 +42,11 @@ if [[ -n "$include_violations" || -n "$platform_include_violations" || -n "$name
   if [[ -n "$platform_include_violations" ]]; then
     printf '%s\n' 'Platform-specific include paths found outside src/platform/Windows_x64:'
     printf '%s\n' "$platform_include_violations"
+  fi
+
+  if [[ -n "$compiler_intrinsic_violations" ]]; then
+    printf '%s\n' 'Compiler intrinsic headers bypassing the platform abstraction:'
+    printf '%s\n' "$compiler_intrinsic_violations"
   fi
 
   if [[ -n "$name_violations" ]]; then
