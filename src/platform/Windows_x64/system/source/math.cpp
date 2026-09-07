@@ -175,6 +175,11 @@ invalid:
 			return _udiv128(hi, lo, c, &r);
 		}
 	#endif
+
+	uint64 VDUMulDiv64x32(uint64 a, uint32 b, uint32 c) {
+		uint32 remainder;
+		return (uint64)VDFractionScale64(a, b, c, remainder);
+	}
 #else
 	sint64 VDFractionScale64(uint64 a, uint32 b, uint32 c, uint32& remainder) {
 		uint32 a0 = (uint32)a;
