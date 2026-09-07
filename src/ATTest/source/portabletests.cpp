@@ -4,6 +4,7 @@
 
 bool ATTestSystemBinary(ATPortableTestContext& context);
 bool ATTestSystemBitMath(ATPortableTestContext& context);
+bool ATTestSystemCommandLine(ATPortableTestContext& context);
 bool ATTestSystemConstexpr(ATPortableTestContext& context);
 bool ATTestSystemCPUAccel(ATPortableTestContext& context);
 bool ATTestSystemError(ATPortableTestContext& context);
@@ -29,6 +30,7 @@ const ATPortableTestCase *ATGetPortableTests(size_t& count) {
 	static const ATPortableTestCase kTests[] = {
 		{ "System_Binary", ATTestSystemBinary },
 		{ "System_BitMath", ATTestSystemBitMath },
+		{ "System_CommandLine", ATTestSystemCommandLine },
 		{ "System_Constexpr", ATTestSystemConstexpr },
 		{ "System_CPUAccel", ATTestSystemCPUAccel },
 		{ "System_Error", ATTestSystemError },
