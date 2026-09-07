@@ -168,7 +168,10 @@ public:
 	const vdint128 operator<<(int count) const {
 		vdint128 t;
 
-		if (count >= 64) {
+		if (count >= 128) {
+			t.q[0] = 0;
+			t.q[1] = 0;
+		} else if (count >= 64) {
 			t.q[0] = 0;
 			t.q[1] = q[0] << (count-64);
 		} else {
@@ -182,7 +185,10 @@ public:
 	const vdint128 operator>>(int count) const {
 		vdint128 t;
 
-		if (count >= 64) {
+		if (count >= 128) {
+			t.q[0] = q[1] >> 63;
+			t.q[1] = q[1] >> 63;
+		} else if (count >= 64) {
 			t.q[0] = q[1] >> (count-64);
 			t.q[1] = q[1] >> 63;
 		} else {
@@ -319,7 +325,10 @@ public:
 	const vduint128 operator<<(int count) const {
 		vduint128 t;
 
-		if (count >= 64) {
+		if (count >= 128) {
+			t.q[0] = 0;
+			t.q[1] = 0;
+		} else if (count >= 64) {
 			t.q[0] = 0;
 			t.q[1] = q[0] << (count-64);
 		} else {
@@ -333,7 +342,10 @@ public:
 	const vduint128 operator>>(int count) const {
 		vduint128 t;
 
-		if (count >= 64) {
+		if (count >= 128) {
+			t.q[0] = 0;
+			t.q[1] = 0;
+		} else if (count >= 64) {
 			t.q[0] = q[1] >> (count-64);
 			t.q[1] = 0;
 		} else {
