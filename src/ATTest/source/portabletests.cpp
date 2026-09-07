@@ -11,6 +11,7 @@ bool ATTestSystemFraction(ATPortableTestContext& context);
 bool ATTestSystemHash(ATPortableTestContext& context);
 bool ATTestSystemHalfFloat(ATPortableTestContext& context);
 bool ATTestSystemInt128(ATPortableTestContext& context);
+bool ATTestSystemLinearAlloc(ATPortableTestContext& context);
 bool ATTestSystemMath(ATPortableTestContext& context);
 bool ATTestSystemMemory(ATPortableTestContext& context);
 bool ATTestSystemRefCount(ATPortableTestContext& context);
@@ -33,6 +34,7 @@ const ATPortableTestCase *ATGetPortableTests(size_t& count) {
 		{ "System_Hash", ATTestSystemHash },
 		{ "System_HalfFloat", ATTestSystemHalfFloat },
 		{ "System_Int128", ATTestSystemInt128 },
+		{ "System_LinearAlloc", ATTestSystemLinearAlloc },
 		{ "System_Math", ATTestSystemMath },
 		{ "System_Memory", ATTestSystemMemory },
 		{ "System_RefCount", ATTestSystemRefCount },

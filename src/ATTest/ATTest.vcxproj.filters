@@ -31,6 +31,9 @@
 	<ClCompile Include="source\TestSystem_Int128Portable.cpp">
 	  <Filter>Source Files</Filter>
 	</ClCompile>
+	<ClCompile Include="source\TestSystem_LinearAlloc.cpp">
+	  <Filter>Source Files</Filter>
+	</ClCompile>
 	<ClCompile Include="source\TestSystem_MathPortable.cpp">
 	  <Filter>Source Files</Filter>
 	</ClCompile>

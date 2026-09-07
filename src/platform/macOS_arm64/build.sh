@@ -138,6 +138,7 @@ portable_test_sources=(
 	src/ATTest/source/TestSystem_Hash.cpp
 	src/ATTest/source/TestSystem_HalfFloat.cpp
 	src/ATTest/source/TestSystem_Int128Portable.cpp
+	src/ATTest/source/TestSystem_LinearAlloc.cpp
 	src/ATTest/source/TestSystem_MathPortable.cpp
 	src/ATTest/source/TestSystem_Memory.cpp
 	src/ATTest/source/TestSystem_RefCount.cpp
@@ -158,6 +159,7 @@ portable_test_sources=(
 	src/platform/macOS_arm64/system/source/hash.cpp
 	src/platform/macOS_arm64/system/source/halffloat.cpp
 	src/platform/macOS_arm64/system/source/int128.cpp
+	src/platform/macOS_arm64/system/source/linearalloc.cpp
 	src/platform/macOS_arm64/system/source/math.cpp
 	src/platform/macOS_arm64/system/source/memory.cpp
 	src/platform/macOS_arm64/system/source/refcount.cpp

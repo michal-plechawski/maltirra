@@ -3,6 +3,8 @@
 
 #include <vd2/system/vdtypes.h>
 #include <new>
+#include <type_traits>
+#include <utility>
 
 class VDLinearAllocator {
 	VDLinearAllocator(const VDLinearAllocator&) = delete;
@@ -43,8 +45,8 @@ public:
 			p = AllocateSlow(bytes, align);
 		else {
 			p = (char *)p + alignUpSize;
-			mAllocLeft -= bytes;
-			mpAllocPtr += bytes;
+			mAllocLeft -= bytes + alignUpSize;
+			mpAllocPtr = (char *)p + bytes;
 		}
 
 		return p;
