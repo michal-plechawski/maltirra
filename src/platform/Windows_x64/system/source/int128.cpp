@@ -567,9 +567,14 @@ const vdint128 vdint128::operator/(int x) const {
 }
 
 vdint128::operator double() const {
-	return (double)(unsigned long)q[0]
-		+ ldexp((double)(unsigned long)((unsigned __int64)q[0]>>32), 32)
-		+ ldexp((double)q[1], 64);
+	const bool negative = q[1] < 0;
+	vduint128 magnitude(*this);
+
+	if (negative)
+		magnitude = -magnitude;
+
+	const double result = (double)magnitude.q[0] + ldexp((double)magnitude.q[1], 64);
+	return negative ? -result : result;
 }
 
 /////////////////////////////////////////////////////////////////////////////
