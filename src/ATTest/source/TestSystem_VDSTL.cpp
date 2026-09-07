@@ -84,5 +84,27 @@ bool ATTestSystemVDSTL(ATPortableTestContext& context) {
 	AT_PORTABLE_TEST_ASSERT(context, span.size() == 3);
 	AT_PORTABLE_TEST_ASSERT(context, span.front() == 5 && span.back() == 7);
 
+	vdfastvector<uint8> bytes;
+	bytes.push_back(0x12);
+	bytes.push_back(0xA5);
+	AT_PORTABLE_TEST_ASSERT(context,
+		bytes.size() == 2 && bytes.front() == 0x12 && bytes.back() == 0xA5);
+	vdspan<uint8> byteSpan(bytes.data(), bytes.size());
+	AT_PORTABLE_TEST_ASSERT(context,
+		byteSpan.size() == 2 && byteSpan[0] == 0x12 && byteSpan[1] == 0xA5);
+
+	vdfastvector<double> doubles;
+	doubles.push_back(1.25);
+	doubles.push_back(-4.5);
+	AT_PORTABLE_TEST_ASSERT(context,
+		doubles.size() == 2 && doubles.front() == 1.25 && doubles.back() == -4.5);
+
+	vdfastvector<wchar_t> wideCharacters;
+	wideCharacters.push_back(L'A');
+	wideCharacters.push_back(L'Z');
+	AT_PORTABLE_TEST_ASSERT(context,
+		wideCharacters.size() == 2
+		&& wideCharacters.front() == L'A' && wideCharacters.back() == L'Z');
+
 	return true;
 }

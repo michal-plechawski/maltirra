@@ -167,6 +167,7 @@ portable_test_sources=(
 	src/platform/macOS_arm64/system/source/math.cpp
 	src/platform/macOS_arm64/system/source/memory.cpp
 	src/platform/macOS_arm64/system/source/refcount.cpp
+	src/platform/macOS_arm64/system/source/stdaccel.cpp
 	src/platform/macOS_arm64/system/source/strutil.cpp
 	src/platform/macOS_arm64/system/source/tls.cpp
 	src/platform/macOS_arm64/system/source/vdalloc.cpp
