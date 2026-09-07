@@ -171,8 +171,10 @@ invalid:
 			unsigned __int64 hi = 0;
 			unsigned __int64 lo = _umul128(a, b, &hi);
 			unsigned __int64 r = 0;
+			const unsigned __int64 result = _udiv128(hi, lo, c, &r);
 
-			return _udiv128(hi, lo, c, &r);
+			remainder = (uint32)r;
+			return result;
 		}
 	#endif
 
