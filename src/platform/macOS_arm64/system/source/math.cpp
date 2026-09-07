@@ -56,8 +56,10 @@ sint64 VDFractionScale64(uint64 a, uint32 b, uint32 c, uint32& remainder) {
 	using NativeUInt128 = unsigned __int128;
 
 	const NativeUInt128 product = (NativeUInt128)a * b;
-	if (!c || product / c > std::numeric_limits<uint64>::max())
+	if (!c || product / c > std::numeric_limits<uint64>::max()) {
+		remainder = 0;
 		return -1;
+	}
 
 	remainder = (uint32)(product % c);
 	return std::bit_cast<sint64>((uint64)(product / c));

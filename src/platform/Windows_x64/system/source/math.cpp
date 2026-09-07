@@ -163,6 +163,11 @@ invalid:
 	#if defined(VD_COMPILER_CLANG)
 		sint64 VDFractionScale64(uint64 a, uint32 b, uint32 c, uint32& remainder) {
 			const __uint128_t product = (__uint128_t)a * b;
+			if (!c || product / c > UINT64_MAX) {
+				remainder = 0;
+				return -1;
+			}
+
 			remainder = (uint32)(product % c);
 			return (sint64)(product / c);
 		}
@@ -171,6 +176,12 @@ invalid:
 			unsigned __int64 hi = 0;
 			unsigned __int64 lo = _umul128(a, b, &hi);
 			unsigned __int64 r = 0;
+
+			if (hi >= c) {
+				remainder = 0;
+				return -1;
+			}
+
 			const unsigned __int64 result = _udiv128(hi, lo, c, &r);
 
 			remainder = (uint32)r;
@@ -202,8 +213,10 @@ invalid:
 		uint32 acc2 = s2 + (acc1 < s1b);
 
 		// check for overflow (or divide by zero)
-		if (acc2 >= c)
+		if (acc2 >= c) {
+			remainder = 0;
 			return 0xFFFFFFFFFFFFFFFFULL;
+		}
 
 		// do divide
 		uint64 div1 = ((uint64)acc2 << 32) + acc1;

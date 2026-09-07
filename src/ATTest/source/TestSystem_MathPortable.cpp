@@ -66,8 +66,10 @@ bool ATTestSystemMath(ATPortableTestContext& context) {
 		(uint64)VDFractionScale64(UINT64_MAX, UINT32_MAX - 1, UINT32_MAX, remainder)
 		== UINT64_C(0xFFFFFFFEFFFFFFFE));
 	AT_PORTABLE_TEST_ASSERT(context, remainder == 0);
+	remainder = UINT32_MAX;
 	AT_PORTABLE_TEST_ASSERT(context,
 		(uint64)VDFractionScale64(UINT64_MAX, UINT32_MAX, 1, remainder) == UINT64_MAX);
+	AT_PORTABLE_TEST_ASSERT(context, remainder == 0);
 	AT_PORTABLE_TEST_ASSERT(context, VDUMulDiv64x32(100, 7, 9) == 77);
 
 	AT_PORTABLE_TEST_ASSERT(context, VDMulDiv64(100, 100, 6) == 1667);
