@@ -138,6 +138,7 @@
     <ClInclude Include="..\platform\Windows_x64\h\vd2\system\vecmath.h" />
     <ClInclude Include="..\h\VD2\system\strutil.h" />
     <ClInclude Include="..\h\VD2\system\text.h" />
+    <ClInclude Include="source\textimpl.inl" />
     <ClInclude Include="..\h\VD2\system\thread.h" />
     <ClInclude Include="..\h\vd2\system\thunk.h" />
     <ClInclude Include="..\h\vd2\system\time.h" />

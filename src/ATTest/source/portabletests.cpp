@@ -19,6 +19,7 @@ bool ATTestSystemMath(ATPortableTestContext& context);
 bool ATTestSystemMemory(ATPortableTestContext& context);
 bool ATTestSystemRefCount(ATPortableTestContext& context);
 bool ATTestSystemStrUtil(ATPortableTestContext& context);
+bool ATTestSystemText(ATPortableTestContext& context);
 bool ATTestSystemTLS(ATPortableTestContext& context);
 bool ATTestSystemVDAlloc(ATPortableTestContext& context);
 bool ATTestSystemVDFunction(ATPortableTestContext& context);
@@ -47,6 +48,7 @@ const ATPortableTestCase *ATGetPortableTests(size_t& count) {
 		{ "System_Memory", ATTestSystemMemory },
 		{ "System_RefCount", ATTestSystemRefCount },
 		{ "System_StrUtil", ATTestSystemStrUtil },
+		{ "System_Text", ATTestSystemText },
 		{ "System_TLS", ATTestSystemTLS },
 		{ "System_VDAlloc", ATTestSystemVDAlloc },
 		{ "System_VDFunction", ATTestSystemVDFunction },

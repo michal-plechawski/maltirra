@@ -28,6 +28,7 @@
 
 #include <ctype.h>
 #include <stdarg.h>
+#include <vd2/system/vdtypes.h>
 
 class VDStringA;
 class VDStringSpanA;

@@ -257,6 +257,9 @@
     <ClInclude Include="..\h\VD2\system\text.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="source\textimpl.inl">
+      <Filter>Source Files</Filter>
+    </ClInclude>
     <ClInclude Include="..\h\VD2\system\thread.h">
       <Filter>Header Files</Filter>
     </ClInclude>
