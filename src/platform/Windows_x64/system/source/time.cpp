@@ -24,6 +24,7 @@
 //		distribution.
 
 #include <stdafx.h>
+#include <limits>
 #include <new>
 
 #include <windows.h>
@@ -98,7 +99,11 @@ VDCallbackTimer::~VDCallbackTimer() {
 }
 
 bool VDCallbackTimer::Init(IVDTimerCallback *pCB, uint32 period_ms) {
-	return Init2(pCB, period_ms * 10000);
+	const uint64 period100ns = static_cast<uint64>(period_ms) * 10000;
+	if (period100ns > (std::numeric_limits<uint32>::max)())
+		return false;
+
+	return Init2(pCB, static_cast<uint32>(period100ns));
 }
 
 bool VDCallbackTimer::Init2(IVDTimerCallback *pCB, uint32 period_100ns) {
@@ -107,6 +112,10 @@ bool VDCallbackTimer::Init2(IVDTimerCallback *pCB, uint32 period_100ns) {
 
 bool VDCallbackTimer::Init3(IVDTimerCallback *pCB, uint32 period_100ns, uint32 accuracy_100ns, bool precise) {
 	Shutdown();
+	if (!pCB || !period_100ns)
+		return false;
+	while(msigExit.check())
+		;
 
 	mpCB = pCB;
 	mbExit = false;
@@ -153,7 +162,7 @@ void VDCallbackTimer::Shutdown() {
 }
 
 void VDCallbackTimer::SetRateDelta(int delta_100ns) {
-	mTimerPeriodDelta = delta_100ns;
+	mTimerPeriodDelta.xchg(delta_100ns);
 }
 
 void VDCallbackTimer::AdjustRate(int adjustment_100ns) {
@@ -178,7 +187,7 @@ void VDCallbackTimer::ThreadRun() {
 	HANDLE hExit = msigExit.getHandle();
 
 	if (!mbPrecise) {
-		while(!mbExit) {
+		while(!mbExit.load(std::memory_order_acquire)) {
 			DWORD res = ::WaitForSingleObject(hExit, periodHi);
 
 			if (res != WAIT_TIMEOUT)
@@ -187,7 +196,7 @@ void VDCallbackTimer::ThreadRun() {
 			mpCB->TimerCallback();
 		}
 	} else {
-		while(!mbExit) {
+		while(!mbExit.load(std::memory_order_acquire)) {
 			uint32 currentTime = VDGetAccurateTick();
 			sint32 delta = nextTimeHi - currentTime;
 
@@ -218,7 +227,7 @@ void VDCallbackTimer::ThreadRun() {
 			mpCB->TimerCallback();
 
 			int adjust = mTimerPeriodAdjustment.xchg(0);
-			int perdelta = mTimerPeriodDelta;
+			int perdelta = mTimerPeriodDelta.compareExchange(0, 0);
 
 			if (adjust || perdelta) {
 				timerPeriod += adjust;
@@ -253,6 +262,11 @@ VDLazyTimer::~VDLazyTimer() {
 }
 
 void VDLazyTimer::SetOneShot(IVDTimerCallback *pCB, uint32 delay) {
+	if (!pCB) {
+		Stop();
+		return;
+	}
+
 	SetOneShotFn([=]() { pCB->TimerCallback(); }, delay);
 }
 
@@ -265,6 +279,11 @@ void VDLazyTimer::SetOneShotFn(const vdfunction<void()>& fn, uint32 delay) {
 }
 
 void VDLazyTimer::SetPeriodic(IVDTimerCallback *pCB, uint32 delay) {
+	if (!pCB) {
+		Stop();
+		return;
+	}
+
 	SetPeriodicFn([=]() { pCB->TimerCallback(); }, delay);
 }
 

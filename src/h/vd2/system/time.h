@@ -26,6 +26,8 @@
 #ifndef f_VD2_SYSTEM_TIME_H
 #define f_VD2_SYSTEM_TIME_H
 
+#include <atomic>
+
 #include <vd2/system/vdtypes.h>
 #include <vd2/system/atomic.h>
 #include <vd2/system/function.h>
@@ -40,11 +42,9 @@ class VDFunctionThunkInfo;
 uint32 VDGetCurrentTick();
 uint64 VDGetCurrentTick64();
 
-// VDGetPreciseTick: Retrieves high-performance timer (QueryPerformanceCounter in
-// Win32). This is very precise, often <1us, but often suffers from various bugs.
-// that make it undesirable for high-accuracy requirements. On x64 Windows it
-// can run at 1/2 speed when CPU throttling is enabled, and on some older buggy
-// chipsets it can skip around occasionally.
+// VDGetPreciseTick: Retrieves the platform high-performance monotonic timer.
+// Convert deltas with VDGetPreciseTicksPerSecond() or
+// VDGetPreciseSecondsPerTick(); the absolute epoch is platform-specific.
 uint64 VDGetPreciseTick();
 uint64 VDGetPreciseTicksPerSecondI();
 double VDGetPreciseTicksPerSecond();
@@ -55,14 +55,9 @@ double VDGetPreciseSecondsPerTick();
 // from 1ms to 10-15ms, although 1ms can be forced with timeBeginPeriod().
 uint32 VDGetAccurateTick();
 
-// VDCallbackTimer is an abstraction of the Windows multimedia timer.  As such, it
-// is rather expensive to instantiate, and should only be used for critical timing
-// needs... such as multimedia.  Basically, there should only really be one or two
-// of these running.  Win32 typically implements these as separate threads
-// triggered off a timer, so despite the outdated documentation -- which still hasn't
-// been updated from Windows 3.1 -- you can call almost any function from the
-// callback.  Execution time in the callback delays other timers, however, so the
-// callback should still execute as quickly as possible.
+// VDCallbackTimer is a high-accuracy periodic timer backed by a dedicated thread.
+// It is relatively expensive to instantiate and is intended for critical timing
+// needs such as multimedia. The callback should execute as quickly as possible.
 
 class VDINTERFACE IVDTimerCallback {
 public:
@@ -95,7 +90,7 @@ private:
 
 	VDSignal		msigExit;
 
-	volatile bool	mbExit;				// this doesn't really need to be atomic -- think about it
+	std::atomic<bool> mbExit { false };
 	bool			mbPrecise;
 };
 
@@ -119,6 +114,8 @@ protected:
 	uint32				mTimerId;
 	bool				mbPeriodic;
 	VDFunctionThunkInfo	*mpThunk;
+	void			*mpNativeTimer = nullptr;
+	void			*mpNativeRunLoop = nullptr;
 	vdfunction<void()>	mpFn;
 };
 

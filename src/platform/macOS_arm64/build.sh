@@ -151,6 +151,7 @@ portable_test_sources=(
 	src/ATTest/source/TestSystem_Text.cpp
 	src/ATTest/source/TestSystem_Thread.cpp
 	src/ATTest/source/TestSystem_Thunk.cpp
+	src/ATTest/source/TestSystem_Time.cpp
 	src/ATTest/source/TestSystem_TLS.cpp
 	src/ATTest/source/TestSystem_VDAlloc.cpp
 	src/ATTest/source/TestSystem_VDFunction.cpp
@@ -183,6 +184,7 @@ portable_test_sources=(
 	src/platform/macOS_arm64/system/source/text.mm
 	src/platform/macOS_arm64/system/source/thread.cpp
 	src/platform/macOS_arm64/system/source/thunk.cpp
+	src/platform/macOS_arm64/system/source/time.cpp
 	src/platform/macOS_arm64/system/source/tls.cpp
 	src/platform/macOS_arm64/system/source/vdalloc.cpp
 	src/platform/macOS_arm64/system/source/function.cpp
