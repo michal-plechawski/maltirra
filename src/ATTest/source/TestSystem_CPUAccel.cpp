@@ -4,6 +4,12 @@
 #include <vd2/system/cpuaccel.h>
 
 namespace {
+#if VD_CPU_X86 || VD_CPU_X64
+	constexpr long kSupportedExtensionMask = CPUF_SUPPORTS_MASK;
+#else
+	constexpr long kSupportedExtensionMask = VDCPUF_SUPPORTS_MASK;
+#endif
+
 	struct CPUExtensionStateGuard {
 		long mFlags;
 
@@ -18,7 +24,7 @@ bool ATTestSystemCPUAccel(ATPortableTestContext& context) {
 	const CPUExtensionStateGuard stateGuard { originalFlags };
 	const long detectedFlags = CPUCheckForExtensions();
 
-	AT_PORTABLE_TEST_ASSERT(context, !(detectedFlags & ~VDCPUF_SUPPORTS_MASK));
+	AT_PORTABLE_TEST_ASSERT(context, !(detectedFlags & ~kSupportedExtensionMask));
 	AT_PORTABLE_TEST_ASSERT(context, CPUEnableExtensions(0) == 0);
 	AT_PORTABLE_TEST_ASSERT(context, CPUGetEnabledExtensions() == 0);
 	AT_PORTABLE_TEST_ASSERT(context, VDCheckAllExtensionsEnabled(0));
@@ -30,7 +36,7 @@ bool ATTestSystemCPUAccel(ATPortableTestContext& context) {
 		AT_PORTABLE_TEST_ASSERT(context, CPUGetEnabledExtensions() == firstFlag);
 		AT_PORTABLE_TEST_ASSERT(context, VDCheckAllExtensionsEnabled((uint32)firstFlag));
 
-		const uint32 otherFlags = (uint32)(VDCPUF_SUPPORTS_MASK & ~firstFlag);
+		const uint32 otherFlags = (uint32)(kSupportedExtensionMask & ~firstFlag);
 		if (otherFlags)
 			AT_PORTABLE_TEST_ASSERT(context, !VDCheckAllExtensionsEnabled(otherFlags));
 	}
