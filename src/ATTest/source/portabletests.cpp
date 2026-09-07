@@ -7,6 +7,7 @@ bool ATTestSystemBitMath(ATPortableTestContext& context);
 bool ATTestSystemConstexpr(ATPortableTestContext& context);
 bool ATTestSystemHalfFloat(ATPortableTestContext& context);
 bool ATTestSystemInt128(ATPortableTestContext& context);
+bool ATTestSystemMath(ATPortableTestContext& context);
 bool ATTestSystemRefCount(ATPortableTestContext& context);
 bool ATTestSystemStrUtil(ATPortableTestContext& context);
 bool ATTestSystemTLS(ATPortableTestContext& context);
@@ -20,6 +21,7 @@ const ATPortableTestCase *ATGetPortableTests(size_t& count) {
 		{ "System_Constexpr", ATTestSystemConstexpr },
 		{ "System_HalfFloat", ATTestSystemHalfFloat },
 		{ "System_Int128", ATTestSystemInt128 },
+		{ "System_Math", ATTestSystemMath },
 		{ "System_RefCount", ATTestSystemRefCount },
 		{ "System_StrUtil", ATTestSystemStrUtil },
 		{ "System_TLS", ATTestSystemTLS },

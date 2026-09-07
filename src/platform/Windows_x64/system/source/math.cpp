@@ -24,6 +24,7 @@
 //		distribution.
 
 #include <stdafx.h>
+#include <bit>
 #include <math.h>
 #include <vd2/system/math.h>
 #include <vd2/system/int128.h>
@@ -161,7 +162,9 @@ invalid:
 #elif defined(VD_CPU_AMD64)
 	#if defined(VD_COMPILER_CLANG)
 		sint64 VDFractionScale64(uint64 a, uint32 b, uint32 c, uint32& remainder) {
-			return (sint64)(((__uint128_t)a * b) / c);
+			const __uint128_t product = (__uint128_t)a * b;
+			remainder = (uint32)(product % c);
+			return (sint64)(product / c);
 		}
 	#else
 		sint64 VDFractionScale64(uint64 a, uint32 b, uint32 c, uint32& remainder) {
@@ -214,37 +217,23 @@ invalid:
 #endif
 
 sint64 VDMulDiv64(sint64 a, sint64 b, sint64 c) {
-	bool flip = false;
-
-	if (a < 0) {
-		a = -a;
-		flip = true;
-	}
-
-	if (b < 0) {
-		b = -b;
-		flip = !flip;
-	}
-
-	if (c < 0) {
-		c = -c;
-		flip = !flip;
-	}
+	const bool negative = ((a < 0) != (b < 0)) != (c < 0);
+	const uint64 ua = a < 0 ? ~(uint64)a + 1 : (uint64)a;
+	const uint64 ub = b < 0 ? ~(uint64)b + 1 : (uint64)b;
+	const uint64 uc = c < 0 ? ~(uint64)c + 1 : (uint64)c;
 
 	uint64 rem;
-	uint64 v = VDUDiv128x64To64(VDUMul64x64To128((uint64)a, (uint64)b), (uint64)c, rem);
+	uint64 v = VDUDiv128x64To64(VDUMul64x64To128(ua, ub), uc, rem);
 
-	if ((rem+rem) >= (uint64)c)
+	if (rem >= uc - rem)
 		++v;
 
-	return flip ? -(sint64)v : (sint64)v;
+	return negative ? std::bit_cast<sint64>(~v + 1) : std::bit_cast<sint64>(v);
 }
 
-bool VDVerifyFiniteFloats(const float *p0, uint32 n) {
-	const uint32 *p = (const uint32 *)p0;
-
+bool VDVerifyFiniteFloats(const float *p, uint32 n) {
 	while(n--) {
-		uint32 v = *p++;
+		const uint32 v = std::bit_cast<uint32>(*p++);
 
 		// 00000000				zero
 		// 00000001-007FFFFF	denormal
