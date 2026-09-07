@@ -9,6 +9,7 @@ bool ATTestSystemHalfFloat(ATPortableTestContext& context);
 bool ATTestSystemRefCount(ATPortableTestContext& context);
 bool ATTestSystemTLS(ATPortableTestContext& context);
 bool ATTestSystemVDAlloc(ATPortableTestContext& context);
+bool ATTestSystemVDFunction(ATPortableTestContext& context);
 
 const ATPortableTestCase *ATGetPortableTests(size_t& count) {
 	static const ATPortableTestCase kTests[] = {
@@ -19,6 +20,7 @@ const ATPortableTestCase *ATGetPortableTests(size_t& count) {
 		{ "System_RefCount", ATTestSystemRefCount },
 		{ "System_TLS", ATTestSystemTLS },
 		{ "System_VDAlloc", ATTestSystemVDAlloc },
+		{ "System_VDFunction", ATTestSystemVDFunction },
 	};
 
 	count = sizeof kTests / sizeof kTests[0];
