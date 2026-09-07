@@ -52,6 +52,9 @@
 	<ClCompile Include="source\TestSystem_VDFunction.cpp">
 	  <Filter>Source Files</Filter>
 	</ClCompile>
+	<ClCompile Include="source\TestSystem_VDString.cpp">
+	  <Filter>Source Files</Filter>
+	</ClCompile>
 	<ClCompile Include="source\TestSystem_VDSTL.cpp">
 	  <Filter>Source Files</Filter>
 	</ClCompile>

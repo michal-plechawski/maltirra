@@ -31,10 +31,16 @@
 #endif
 
 #include <stdarg.h>
+#include <stdio.h>
 #include <stdlib.h>
+#include <wchar.h>
 #include <vd2/system/vdtypes.h>
 
-#define vdvsnprintf _vsnprintf
+#ifdef _MSC_VER
+	#define vdvsnprintf _vsnprintf
+#else
+	#define vdvsnprintf vsnprintf
+#endif
 
 #ifdef VD_COMPILER_GCC_MINGW
 	// MinGW doesn't define the correct standard version of (v)swprintf with
