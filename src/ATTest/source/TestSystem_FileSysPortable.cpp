@@ -95,14 +95,13 @@ bool ATTestSystemFileSys(ATPortableTestContext& context) {
 	AT_PORTABLE_TEST_ASSERT(context, VDFileIsPathEqual(L"/one//two/", L"\\one/two"));
 	AT_PORTABLE_TEST_ASSERT(context, !VDFileIsPathEqual(L"/One", L"/one"));
 #endif
-	AT_PORTABLE_TEST_ASSERT(context,
-		VDFileGetCanonicalPath(L"one/../../two")
 #if defined(_WIN32)
-			== L"..\\two"
+	const wchar_t *const ascendingPath = L"..\\two";
 #else
-			== L"../two"
+	const wchar_t *const ascendingPath = L"../two";
 #endif
-	);
+	AT_PORTABLE_TEST_ASSERT(context,
+		VDFileGetCanonicalPath(L"one/../../two") == ascendingPath);
 
 	static uint32 sequence = 0;
 	VDStringW baseName;
