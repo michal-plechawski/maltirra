@@ -147,6 +147,7 @@ portable_test_sources=(
 	src/ATTest/source/TestSystem_RefCount.cpp
 	src/ATTest/source/TestSystem_StrUtil.cpp
 	src/ATTest/source/TestSystem_Text.cpp
+	src/ATTest/source/TestSystem_Thread.cpp
 	src/ATTest/source/TestSystem_TLS.cpp
 	src/ATTest/source/TestSystem_VDAlloc.cpp
 	src/ATTest/source/TestSystem_VDFunction.cpp
@@ -175,6 +176,7 @@ portable_test_sources=(
 	src/platform/macOS_arm64/system/source/stdaccel.cpp
 	src/platform/macOS_arm64/system/source/strutil.cpp
 	src/platform/macOS_arm64/system/source/text.mm
+	src/platform/macOS_arm64/system/source/thread.cpp
 	src/platform/macOS_arm64/system/source/tls.cpp
 	src/platform/macOS_arm64/system/source/vdalloc.cpp
 	src/platform/macOS_arm64/system/source/function.cpp

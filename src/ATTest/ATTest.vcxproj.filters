@@ -58,6 +58,9 @@
 	<ClCompile Include="source\TestSystem_Text.cpp">
 	  <Filter>Source Files</Filter>
 	</ClCompile>
+	<ClCompile Include="source\TestSystem_Thread.cpp">
+	  <Filter>Source Files</Filter>
+	</ClCompile>
 	<ClCompile Include="source\TestSystem_TLS.cpp">
 	  <Filter>Source Files</Filter>
 	</ClCompile>

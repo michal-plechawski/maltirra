@@ -351,6 +351,9 @@ void VDSemaphore::Post() {
 
 ///////////////////////////////////////////////////////////////////////////////
 
+VDRWLock::~VDRWLock() {
+}
+
 void VDRWLock::LockExclusive() noexcept {
 	static_assert(sizeof(mpSRWLock) == sizeof(SRWLOCK));
 	static_assert(alignof(decltype(mpSRWLock)) == alignof(SRWLOCK));
@@ -363,6 +366,9 @@ void VDRWLock::UnlockExclusive() noexcept {
 }
 
 ///////////////////////////////////////////////////////////////////////////////
+
+VDConditionVariable::~VDConditionVariable() {
+}
 
 void VDConditionVariable::Wait(VDRWLock& rwLock) noexcept {
 	static_assert(sizeof(mpCondVar) == sizeof(CONDITION_VARIABLE));

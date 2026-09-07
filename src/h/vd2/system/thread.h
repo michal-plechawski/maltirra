@@ -171,7 +171,7 @@ class VDSignalBase {
 	VDSignalBase(const VDSignalBase&) = delete;
 	VDSignalBase& operator=(const VDSignalBase&) = delete;
 protected:
-	void *hEvent;
+	void *hEvent = nullptr;
 
 public:
 	VDSignalBase() = default;
@@ -233,6 +233,7 @@ class VDRWLock {
 
 public:
 	VDRWLock() = default;
+	~VDRWLock();
 
 	void LockExclusive() noexcept;
 	void UnlockExclusive() noexcept;
@@ -268,6 +269,7 @@ class VDConditionVariable {
 	VDConditionVariable& operator=(const VDConditionVariable&) = delete;
 public:
 	VDConditionVariable() = default;
+	~VDConditionVariable();
 
 	void Wait(VDRWLock& rwLock) noexcept;
 	void NotifyOne() noexcept;
