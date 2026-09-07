@@ -24,11 +24,22 @@
 //		distribution.
 
 #include <stdafx.h>
+#include <bit>
 #include <math.h>
 
 #include <vd2/system/fraction.h>
 #include <vd2/system/vdtypes.h>
 #include <vd2/system/math.h>
+
+namespace {
+	uint64 GetMagnitude(sint64 value) {
+		return value < 0 ? ~(uint64)value + 1 : (uint64)value;
+	}
+
+	sint64 ApplySign(uint64 value, bool negative) {
+		return std::bit_cast<sint64>(negative ? ~value + 1 : value);
+	}
+}
 
 VDFraction::VDFraction(double d) {
 	int xp;
@@ -192,62 +203,60 @@ VDFraction& VDFraction::operator/=(uint32 b) {
 
 sint64 VDFraction::scale64t(sint64 v) const {
 	uint32 r;
-	return v<0 ? -VDFractionScale64(-v, hi, lo, r) : VDFractionScale64(v, hi, lo, r);
+	const uint64 result = (uint64)VDFractionScale64(GetMagnitude(v), hi, lo, r);
+	return ApplySign(result, v < 0);
 }
 
 sint64 VDFraction::scale64u(sint64 v) const {
 	uint32 r;
-	if (v<0) {
-		v = -VDFractionScale64(-v, hi, lo, r);
-		return v;
-	} else {
-		v = +VDFractionScale64(+v, hi, lo, r);
-		return v + (r > 0);
-	}
+	uint64 result = (uint64)VDFractionScale64(GetMagnitude(v), hi, lo, r);
+
+	if (v >= 0 && r)
+		++result;
+
+	return ApplySign(result, v < 0);
 }
 
 sint64 VDFraction::scale64r(sint64 v) const {
 	uint32 r;
-	if (v<0) {
-		v = -VDFractionScale64(-v, hi, lo, r);
-		return v - (r >= (lo>>1) + (lo&1));
-	} else {
-		v = +VDFractionScale64(+v, hi, lo, r);
-		return v + (r >= (lo>>1) + (lo&1));
-	}
+	uint64 result = (uint64)VDFractionScale64(GetMagnitude(v), hi, lo, r);
+
+	if (r >= (lo >> 1) + (lo & 1))
+		++result;
+
+	return ApplySign(result, v < 0);
 }
 
 sint64 VDFraction::scale64it(sint64 v) const {
 	uint32 r;
-	return v<0 ? -VDFractionScale64(-v, lo, hi, r) : +VDFractionScale64(+v, lo, hi, r);
+	const uint64 result = (uint64)VDFractionScale64(GetMagnitude(v), lo, hi, r);
+	return ApplySign(result, v < 0);
 }
 
 sint64 VDFraction::scale64ir(sint64 v) const {
 	uint32 r;
-	if (v<0) {
-		v = -VDFractionScale64(-v, lo, hi, r);
-		return v - (r >= (hi>>1) + (hi&1));
-	} else {
-		v = +VDFractionScale64(+v, lo, hi, r);
-		return v + (r >= (hi>>1) + (hi&1));
-	}
+	uint64 result = (uint64)VDFractionScale64(GetMagnitude(v), lo, hi, r);
+
+	if (r >= (hi >> 1) + (hi & 1))
+		++result;
+
+	return ApplySign(result, v < 0);
 }
 
 sint64 VDFraction::scale64iu(sint64 v) const {
 	uint32 r;
-	if (v<0) {
-		v = -VDFractionScale64(-v, lo, hi, r);
-		return v;
-	} else {
-		v = +VDFractionScale64(+v, lo, hi, r);
-		return v + (r > 0);
-	}
+	uint64 result = (uint64)VDFractionScale64(GetMagnitude(v), lo, hi, r);
+
+	if (v >= 0 && r)
+		++result;
+
+	return ApplySign(result, v < 0);
 }
 
 ///////////////////////////////////////////////////////////////////////////
 
 uint32 VDFraction::roundup32ul() const {
-	return (hi + (lo-1)) / lo;
+	return (uint32)(((uint64)hi + lo - 1) / lo);
 }
 
 ///////////////////////////////////////////////////////////////////////////
