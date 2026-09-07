@@ -175,7 +175,15 @@ void VDException::vsetf(const char *format, va_list arguments) {
 		capacity = length > 0 ? (size_t)length + 1 : capacity * 2;
 	}
 
-	assign("<formatting error>");
+	const size_t length = strlen(format);
+	char *buffer = Alloc(length + 2);
+	if (buffer) {
+		buffer[0] = '<';
+		memcpy(buffer + 1, format, length);
+		buffer[length + 1] = '>';
+		buffer[length + 2] = 0;
+		MakeWide();
+	}
 }
 
 void VDException::vwsetf(const wchar_t *format, va_list arguments) {
@@ -206,7 +214,15 @@ void VDException::vwsetf(const wchar_t *format, va_list arguments) {
 		capacity = length > 0 ? (size_t)length + 1 : capacity * 2;
 	}
 
-	assign(L"<formatting error>");
+	const size_t length = wcslen(format);
+	wchar_t *buffer = AllocWide(length + 2);
+	if (buffer) {
+		buffer[0] = L'<';
+		memcpy(buffer + 1, format, sizeof(wchar_t) * length);
+		buffer[length + 1] = L'>';
+		buffer[length + 2] = 0;
+		MakeNarrow();
+	}
 }
 
 void VDException::post(VDExceptionPostContext context, const char *title) const noexcept {

@@ -72,6 +72,10 @@ bool ATTestSystemError(ATPortableTestContext& context) {
 	AT_PORTABLE_TEST_ASSERT(context, !wmemcmp(formatted.wc_str(), L"wide:", 5));
 	AT_PORTABLE_TEST_ASSERT(context, formatted.wc_str()[603] == L'y');
 
+	VDException invalidWideConversion("%ls", L"\uFFFE");
+	AT_PORTABLE_TEST_ASSERT(context, !strcmp(invalidWideConversion.c_str(), "<%ls>"));
+	AT_PORTABLE_TEST_ASSERT(context, !wcscmp(invalidWideConversion.wc_str(), L"<%ls>"));
+
 	formatted.setf("");
 	AT_PORTABLE_TEST_ASSERT(context, !formatted.empty());
 	AT_PORTABLE_TEST_ASSERT(context, !formatted.visible());
