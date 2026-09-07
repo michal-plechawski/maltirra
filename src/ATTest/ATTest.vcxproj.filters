@@ -52,6 +52,9 @@
 	<ClCompile Include="source\TestSystem_Memory.cpp">
 	  <Filter>Source Files</Filter>
 	</ClCompile>
+	<ClCompile Include="source\TestSystem_RegistryMemory.cpp">
+	  <Filter>Source Files</Filter>
+	</ClCompile>
 	<ClCompile Include="source\TestSystem_RefCount.cpp">
 	  <Filter>Source Files</Filter>
 	</ClCompile>

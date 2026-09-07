@@ -128,6 +128,7 @@
     <ClInclude Include="..\h\vd2\system\refcount.h" />
     <ClInclude Include="..\h\VD2\system\registry.h" />
     <ClInclude Include="..\h\vd2\system\registrymemory.h" />
+    <ClInclude Include="source\registrymemoryimpl.inl" />
     <ClInclude Include="..\h\vd2\system\seh.h" />
     <ClInclude Include="..\h\vd2\system\vdstl_block.h" />
     <ClInclude Include="..\h\vd2\system\vdstl_fastdeque.h" />

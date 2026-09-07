@@ -251,6 +251,9 @@
     <ClInclude Include="..\h\vd2\system\registrymemory.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="source\registrymemoryimpl.inl">
+      <Filter>Source Files</Filter>
+    </ClInclude>
     <ClInclude Include="..\h\vd2\system\seh.h">
       <Filter>Header Files</Filter>
     </ClInclude>

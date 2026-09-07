@@ -145,6 +145,7 @@ portable_test_sources=(
 	src/ATTest/source/TestSystem_LinearAlloc.cpp
 	src/ATTest/source/TestSystem_MathPortable.cpp
 	src/ATTest/source/TestSystem_Memory.cpp
+	src/ATTest/source/TestSystem_RegistryMemory.cpp
 	src/ATTest/source/TestSystem_RefCount.cpp
 	src/ATTest/source/TestSystem_StrUtil.cpp
 	src/ATTest/source/TestSystem_Text.cpp
@@ -174,6 +175,7 @@ portable_test_sources=(
 	src/platform/macOS_arm64/system/source/linearalloc.cpp
 	src/platform/macOS_arm64/system/source/math.cpp
 	src/platform/macOS_arm64/system/source/memory.cpp
+	src/platform/macOS_arm64/system/source/registrymemory.cpp
 	src/platform/macOS_arm64/system/source/refcount.cpp
 	src/platform/macOS_arm64/system/source/stdaccel.cpp
 	src/platform/macOS_arm64/system/source/strutil.cpp
