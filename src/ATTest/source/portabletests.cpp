@@ -6,6 +6,7 @@ bool ATTestSystemBinary(ATPortableTestContext& context);
 bool ATTestSystemBitMath(ATPortableTestContext& context);
 bool ATTestSystemConstexpr(ATPortableTestContext& context);
 bool ATTestSystemFraction(ATPortableTestContext& context);
+bool ATTestSystemHash(ATPortableTestContext& context);
 bool ATTestSystemHalfFloat(ATPortableTestContext& context);
 bool ATTestSystemInt128(ATPortableTestContext& context);
 bool ATTestSystemMath(ATPortableTestContext& context);
@@ -21,6 +22,7 @@ const ATPortableTestCase *ATGetPortableTests(size_t& count) {
 		{ "System_BitMath", ATTestSystemBitMath },
 		{ "System_Constexpr", ATTestSystemConstexpr },
 		{ "System_Fraction", ATTestSystemFraction },
+		{ "System_Hash", ATTestSystemHash },
 		{ "System_HalfFloat", ATTestSystemHalfFloat },
 		{ "System_Int128", ATTestSystemInt128 },
 		{ "System_Math", ATTestSystemMath },

@@ -16,6 +16,9 @@
 	<ClCompile Include="source\TestSystem_Fraction.cpp">
 	  <Filter>Source Files</Filter>
 	</ClCompile>
+	<ClCompile Include="source\TestSystem_Hash.cpp">
+	  <Filter>Source Files</Filter>
+	</ClCompile>
 	<ClCompile Include="source\TestSystem_HalfFloat.cpp">
 	  <Filter>Source Files</Filter>
 	</ClCompile>

@@ -70,8 +70,12 @@ uint32 VDHashString32I(const char *s, uint32 len) {
 	uint32 hash = 2166136261U;
 
 	for(uint32 i=0; i<len; ++i) {
+		uint32 c = (unsigned char)*s++;
+		if (c >= 'A' && c <= 'Z')
+			c += 'a' - 'A';
+
 		hash *= 16777619;
-		hash ^= (uint32)tolower((unsigned char)*s++);
+		hash ^= c;
 	}
 
 	return hash;
@@ -87,8 +91,12 @@ uint32 VDHashString32I(const wchar_t *s, uint32 len) {
 	uint32 hash = 2166136261U;
 
 	for(uint32 i=0; i<len; ++i) {
+		uint32 c = (uint32)*s++;
+		if (c >= L'A' && c <= L'Z')
+			c += L'a' - L'A';
+
 		hash *= 16777619;
-		hash ^= (uint32)towlower(*s++);
+		hash ^= c;
 	}
 
 	return hash;
@@ -134,7 +142,7 @@ vduint128 VDHash128(const void *data0, size_t len) {
 	//----------
 	// body
 
-	const uint8 * tail = (const uint8*)(data + nblocks*16);
+	const uint8 *tail = nblocks ? data + nblocks * 16 : data;
 
 	for(ptrdiff_t offset = -(ptrdiff_t)(nblocks << 4);
 		offset;
@@ -172,26 +180,26 @@ vduint128 VDHash128(const void *data0, size_t len) {
 	uint32 k4 = 0;
 
 	switch(len & 15) {
-	case 15:	k4 ^= tail[14] << 16;
-	case 14:	k4 ^= tail[13] << 8;
+	case 15:	k4 ^= (uint32)tail[14] << 16;
+	case 14:	k4 ^= (uint32)tail[13] << 8;
 	case 13:	k4 ^= tail[12] << 0;
 				k4 *= c4; k4  = ROTL32(k4,18); k4 *= c1; h4 ^= k4;
 
-	case 12:	k3 ^= tail[11] << 24;
-	case 11:	k3 ^= tail[10] << 16;
-	case 10:	k3 ^= tail[ 9] << 8;
+	case 12:	k3 ^= (uint32)tail[11] << 24;
+	case 11:	k3 ^= (uint32)tail[10] << 16;
+	case 10:	k3 ^= (uint32)tail[ 9] << 8;
 	case  9:	k3 ^= tail[ 8] << 0;
 				k3 *= c3; k3  = ROTL32(k3,17); k3 *= c4; h3 ^= k3;
 
-	case  8:	k2 ^= tail[ 7] << 24;
-	case  7:	k2 ^= tail[ 6] << 16;
-	case  6:	k2 ^= tail[ 5] << 8;
+	case  8:	k2 ^= (uint32)tail[ 7] << 24;
+	case  7:	k2 ^= (uint32)tail[ 6] << 16;
+	case  6:	k2 ^= (uint32)tail[ 5] << 8;
 	case  5:	k2 ^= tail[ 4] << 0;
 				k2 *= c2; k2  = ROTL32(k2,16); k2 *= c3; h2 ^= k2;
 
-	case  4:	k1 ^= tail[ 3] << 24;
-	case  3:	k1 ^= tail[ 2] << 16;
-	case  2:	k1 ^= tail[ 1] << 8;
+	case  4:	k1 ^= (uint32)tail[ 3] << 24;
+	case  3:	k1 ^= (uint32)tail[ 2] << 16;
+	case  2:	k1 ^= (uint32)tail[ 1] << 8;
 	case  1:	k1 ^= tail[ 0] << 0;
 				k1 *= c1; k1  = ROTL32(k1,15); k1 *= c2; h1 ^= k1;
 	};
