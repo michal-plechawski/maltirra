@@ -251,12 +251,13 @@ VDAssertResult VDAssertPtr(const char *exp, const char *file, int line) {
 void VDProtectedAutoScopeICLWorkaround() {}
 
 void VDDebugPrint(const char *format, ...) {
-	char buf[4096];
+	char buf[4096] = {};
 
 	va_list val;
 	va_start(val, format);
 	_vsnprintf(buf, sizeof buf, format, val);
 	va_end(val);
+	buf[sizeof buf - 1] = 0;
 	Sleep(0);
 	OutputDebugStringA(buf);
 }
