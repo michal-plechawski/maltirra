@@ -134,6 +134,7 @@ portable_test_sources=(
 	src/ATTest/source/TestSystem_Constexpr.cpp
 	src/ATTest/source/TestSystem_HalfFloat.cpp
 	src/ATTest/source/TestSystem_RefCount.cpp
+	src/ATTest/source/TestSystem_StrUtil.cpp
 	src/ATTest/source/TestSystem_TLS.cpp
 	src/ATTest/source/TestSystem_VDAlloc.cpp
 	src/ATTest/source/TestSystem_VDFunction.cpp
@@ -142,6 +143,7 @@ portable_test_sources=(
 	src/platform/macOS_arm64/system/source/constexpr.cpp
 	src/platform/macOS_arm64/system/source/halffloat.cpp
 	src/platform/macOS_arm64/system/source/refcount.cpp
+	src/platform/macOS_arm64/system/source/strutil.cpp
 	src/platform/macOS_arm64/system/source/tls.cpp
 	src/platform/macOS_arm64/system/source/vdalloc.cpp
 	src/platform/macOS_arm64/system/source/function.cpp
