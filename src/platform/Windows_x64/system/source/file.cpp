@@ -126,15 +126,24 @@ bool VDFile::tryOpen(const wchar_t *pwszFilename, uint32 flags) {
 }
 
 bool VDFile::openAlways(const wchar_t *pwszFilename, uint32 flags) {
-	uint32 err = open_internal(NULL, pwszFilename, flags);
+	const uint32 createFlags = (flags & ~kCreationMask) | kCreateNew;
+	uint32 err = open_internal(NULL, pwszFilename, createFlags);
 
-	if (err == ERROR_ALREADY_EXISTS)
-		return true;
+	if (!err)
+		return false;
+
+	if (err == ERROR_FILE_EXISTS || err == ERROR_ALREADY_EXISTS) {
+		const uint32 existingFlags = (flags & ~kCreationMask) | kOpenExisting;
+		err = open_internal(NULL, pwszFilename, existingFlags);
+
+		if (!err)
+			return true;
+	}
 
 	if (err)
 		throw VDWin32Exception(L"Cannot open file \"%ls\":\n%%s", err, pwszFilename);
 
-	return true;
+	return false;
 }
 
 uint32 VDFile::open_internal(const char *pszFilename, const wchar_t *pwszFilename, uint32 flags) {
@@ -381,7 +390,7 @@ bool VDFile::skipNT(sint64 delta) {
 
 	char buf[1024];
 
-	if (delta <= sizeof buf) {
+	if (delta > 0 && delta <= sizeof buf) {
 		return (long)delta == readData(buf, (long)delta);
 	} else
 		return seekNT(delta, kSeekCur);
