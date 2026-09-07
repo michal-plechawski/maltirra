@@ -23,58 +23,61 @@
 //	3.	This notice may not be removed or altered from any source
 //		distribution.
 
-#include <stdafx.h>
-#include <vd2/system/vdstl.h>
+#include <cmath>
+#include <utility>
+#include <vector>
+
 #include <vd2/system/vectors.h>
 
 bool VDSolveLinearEquation(double *src, int n, ptrdiff_t stride_elements, double *b, double tolerance) {
 	if (n <= 0)
 		return n == 0;
 
-	vdfastvector<double *> array(n);
-	double **m = &array[0];
-	int i, j, k;
+	std::vector<double *> rows((size_t)n);
+	double **m = rows.data();
 
-	for(i=0; i<n; ++i) {
+	for(int i = 0; i < n; ++i) {
 		m[i] = src;
 		src += stride_elements;
 	}
 
-	// factor U
-	for(i=0; i<n; ++i) {
+	// Factor U with partial pivoting.
+	for(int i = 0; i < n; ++i) {
 		int best = i;
 
-		for(j=i+1; j<n; ++j) {
-			if (fabs(m[best][i]) < fabs(m[j][i]))
+		for(int j = i + 1; j < n; ++j) {
+			if (std::fabs(m[best][i]) < std::fabs(m[j][i]))
 				best = j;
 		}
 
 		std::swap(m[i], m[best]);
 		std::swap(b[i], b[best]);
 
-		if (fabs(m[i][i]) < tolerance)
+		if (std::fabs(m[i][i]) < tolerance)
 			return false;
 
-		double f = 1.0 / m[i][i];
+		const double factor = 1.0 / m[i][i];
 
 		m[i][i] = 1.0;
 
-		for(j=i+1; j<n; ++j)
-			m[i][j] *= f;
+		for(int j = i + 1; j < n; ++j)
+			m[i][j] *= factor;
 
-		b[i] *= f;
+		b[i] *= factor;
 
-		for(j=i+1; j<n; ++j) {
+		for(int j = i + 1; j < n; ++j) {
 			b[j] -= b[i] * m[j][i];
-			for(k=n-1; k>=i; --k)
+
+			for(int k = n - 1; k >= i; --k)
 				m[j][k] -= m[i][k] * m[j][i];
 		}
 	}
 
-	// factor L
-	for(i=n-1; i>=0; --i)
-		for(j=i-1; j>=0; --j)
+	// Factor L.
+	for(int i = n - 1; i >= 0; --i) {
+		for(int j = i - 1; j >= 0; --j)
 			b[j] -= b[i] * m[j][i];
+	}
 
 	return true;
 }
