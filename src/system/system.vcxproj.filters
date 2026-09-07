@@ -272,6 +272,9 @@
     <ClInclude Include="..\h\vd2\system\thunk.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="source\thunkstatic.inl">
+      <Filter>Source Files</Filter>
+    </ClInclude>
     <ClInclude Include="..\h\vd2\system\time.h">
       <Filter>Header Files</Filter>
     </ClInclude>

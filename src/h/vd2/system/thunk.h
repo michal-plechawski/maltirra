@@ -87,9 +87,9 @@ T VDGetThunkFunction(VDFunctionThunkInfo *p) {
 // used since we need to preallocate thunks. The function types used, respectively, are
 // TIMERPROC, WNDPROC, and HOOKPROC.
 #if VD_PTR_SIZE > 4
-typedef void    (*VDThunkTypeT)(void *pThis, const void *pData, void *a, unsigned b, unsigned __int64 c, unsigned long d);
-typedef __int64 (*VDThunkTypeW)(void *pThis, const void *pData, void *a, unsigned b, unsigned __int64 c, __int64 d);
-typedef __int64 (*VDThunkTypeH)(void *pThis, const void *pData, int a, unsigned __int64 b, __int64 c);
+typedef void   (*VDThunkTypeT)(void *pThis, const void *pData, void *a, unsigned b, uint64 c, unsigned long d);
+typedef sint64 (*VDThunkTypeW)(void *pThis, const void *pData, void *a, unsigned b, uint64 c, sint64 d);
+typedef sint64 (*VDThunkTypeH)(void *pThis, const void *pData, int a, uint64 b, sint64 c);
 #else
 typedef void (*VDThunkTypeT)(void *pThis, const void *pData, void *a, unsigned b, unsigned c, unsigned long d);
 typedef long (*VDThunkTypeW)(void *pThis, const void *pData, void *a, unsigned b, unsigned c, long d);
@@ -101,7 +101,7 @@ VDFunctionThunkInfo *VDCreateFunctionThunkFromMethod(void *pThis, void *pData, s
 VDFunctionThunkInfo *VDCreateFunctionThunkFromMethod(void *pThis, void *pData, size_t nData, VDThunkTypeH pfn);
 
 template<class T, typename T_Handle, typename T_1, typename T_2, typename T_3>
-VDFunctionThunkInfo *VDCreateFunctionThunkFromMethod(T *pThis, void (T::*method)(T_Handle *, T_1, T_2, T_3), bool stdcall_thunk) {
+VDFunctionThunkInfo *VDCreateFunctionThunkFromMethod(T *pThis, void (T::*method)(T_Handle *, T_1, T_2, T_3), bool) {
 	return VDCreateFunctionThunkFromMethod(pThis,
 		&method,
 		sizeof method,
@@ -112,7 +112,7 @@ VDFunctionThunkInfo *VDCreateFunctionThunkFromMethod(T *pThis, void (T::*method)
 }
 
 template<class T, typename T_R, typename T_Handle, typename T_1, typename T_2, typename T_3>
-VDFunctionThunkInfo *VDCreateFunctionThunkFromMethod(T *pThis, T_R (T::*method)(T_Handle *, T_1, T_2, T_3), bool stdcall_thunk) {
+VDFunctionThunkInfo *VDCreateFunctionThunkFromMethod(T *pThis, T_R (T::*method)(T_Handle *, T_1, T_2, T_3), bool) {
 	return VDCreateFunctionThunkFromMethod(pThis,
 		&method,
 		sizeof method,
@@ -123,7 +123,7 @@ VDFunctionThunkInfo *VDCreateFunctionThunkFromMethod(T *pThis, T_R (T::*method)(
 }
 
 template<class T, typename T_R, typename T_1, typename T_2, typename T_3>
-VDFunctionThunkInfo *VDCreateFunctionThunkFromMethod(T *pThis, T_R (T::*method)(T_1, T_2, T_3), bool stdcall_thunk) {
+VDFunctionThunkInfo *VDCreateFunctionThunkFromMethod(T *pThis, T_R (T::*method)(T_1, T_2, T_3), bool) {
 	return VDCreateFunctionThunkFromMethod(pThis,
 		&method,
 		sizeof method,

@@ -143,6 +143,7 @@
     <ClInclude Include="source\textimpl.inl" />
     <ClInclude Include="..\h\VD2\system\thread.h" />
     <ClInclude Include="..\h\vd2\system\thunk.h" />
+    <ClInclude Include="source\thunkstatic.inl" />
     <ClInclude Include="..\h\vd2\system\time.h" />
     <ClInclude Include="..\h\VD2\system\tls.h" />
     <ClInclude Include="..\h\vd2\system\unknown.h" />
