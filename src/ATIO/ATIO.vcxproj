@@ -9,11 +9,11 @@
     <ClCompile Include="..\platform\Windows_x64\ATIO\source\audioreaderflac_x86.cpp" />
     <ClCompile Include="source\audioreadervorbis.cpp" />
     <ClCompile Include="source\audioutils.cpp" />
-    <ClCompile Include="source\cartridgeimage.cpp" />
+    <ClCompile Include="..\platform\Windows_x64\ATIO\source\cartridgeimage.cpp" />
     <ClCompile Include="source\cartridgetypes.cpp" />
-    <ClCompile Include="source\cassetteaudiofilters.cpp" />
+    <ClCompile Include="..\platform\Windows_x64\ATIO\source\cassetteaudiofilters.cpp" />
     <ClCompile Include="source\cassetteblock.cpp" />
-    <ClCompile Include="source\cassettedecoder.cpp" />
+    <ClCompile Include="..\platform\Windows_x64\ATIO\source\cassettedecoder.cpp" />
     <ClCompile Include="source\cassetteimage.cpp" />
     <ClCompile Include="source\partitiondiskview.cpp" />
     <ClCompile Include="source\partitiontable.cpp" />
@@ -35,8 +35,8 @@
       <PrecompiledHeader>Create</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="source\vorbisbitreader.cpp" />
-    <ClCompile Include="source\vorbisdecoder.cpp" />
-    <ClCompile Include="source\vorbismisc.cpp" />
+    <ClCompile Include="..\platform\Windows_x64\ATIO\source\vorbisdecoder.cpp" />
+    <ClCompile Include="..\platform\Windows_x64\ATIO\source\vorbismisc.cpp" />
     <ClCompile Include="source\wav.cpp" />
     <ClCompile Include="source\audioreaderwav.cpp" />
   </ItemGroup>

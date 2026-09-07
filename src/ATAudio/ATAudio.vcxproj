@@ -23,7 +23,7 @@
   <PropertyGroup Label="UserMacros" />
   <ItemGroup>
     <ClCompile Include="source\audioconvolutionplayer.cpp" />
-    <ClCompile Include="source\audiofilters.cpp" />
+    <ClCompile Include="..\platform\Windows_x64\ATAudio\source\audiofilters.cpp" />
     <ClCompile Include="..\platform\Windows_x64\ATAudio\source\audiooutput.cpp" />
     <ClCompile Include="..\platform\Windows_x64\ATAudio\source\audiooutwasapi.cpp" />
     <ClCompile Include="..\platform\Windows_x64\ATAudio\source\audiooutwaveout.cpp" />

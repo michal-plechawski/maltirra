@@ -51,7 +51,7 @@
     <ClCompile Include="source\diskfsutil.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="source\cartridgeimage.cpp">
+    <ClCompile Include="..\platform\Windows_x64\ATIO\source\cartridgeimage.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="source\cartridgetypes.cpp">
@@ -72,7 +72,7 @@
     <ClCompile Include="source\savestate.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="source\cassettedecoder.cpp">
+    <ClCompile Include="..\platform\Windows_x64\ATIO\source\cassettedecoder.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="source\atfs.cpp">
@@ -108,10 +108,10 @@
     <ClCompile Include="source\vorbisbitreader.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="source\vorbisdecoder.cpp">
+    <ClCompile Include="..\platform\Windows_x64\ATIO\source\vorbisdecoder.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="source\vorbismisc.cpp">
+    <ClCompile Include="..\platform\Windows_x64\ATIO\source\vorbismisc.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="source\audioreadervorbis.cpp">
@@ -120,7 +120,7 @@
     <ClCompile Include="source\audioutils.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="source\cassetteaudiofilters.cpp">
+    <ClCompile Include="..\platform\Windows_x64\ATIO\source\cassetteaudiofilters.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="source\audioreader.cpp">

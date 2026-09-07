@@ -29,7 +29,7 @@
     <ClCompile Include="source\blt_reference.cpp" />
     <ClCompile Include="source\blt_reference_pal.cpp" />
     <ClCompile Include="source\blt_reference_rgb.cpp" />
-    <ClCompile Include="source\blt_reference_yuv.cpp" />
+    <ClCompile Include="..\platform\Windows_x64\Kasumi\source\blt_reference_yuv.cpp" />
     <ClCompile Include="source\blt_reference_yuv2yuv.cpp" />
     <ClCompile Include="source\blt_reference_yuvrev.cpp" />
     <ClCompile Include="source\blt_setup.cpp" />
