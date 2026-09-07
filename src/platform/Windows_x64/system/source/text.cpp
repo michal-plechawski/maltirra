@@ -48,6 +48,8 @@ int VDTextWToA(char *dst, int max_dst, const wchar_t *src, int max_src) {
 	*dst = 0;
 
 	int len = WideCharToMultiByte(CP_ACP, 0, src, max_src, dst, max_dst, NULL, NULL);
+	if (!len)
+		*dst = 0;
 
 	// remove null terminator if source was null-terminated (source
 	// length was provided)
@@ -62,6 +64,8 @@ int VDTextAToW(wchar_t *dst, int max_dst, const char *src, int max_src) {
 	*dst = 0;
 
 	int len = MultiByteToWideChar(CP_ACP, 0, src, max_src, dst, max_dst);
+	if (!len)
+		*dst = 0;
 
 	// remove null terminator if source was null-terminated (source
 	// length was provided)
