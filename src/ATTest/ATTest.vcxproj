@@ -2,7 +2,31 @@
 <Project DefaultTargets="Build" ToolsVersion="12.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="../Build/ProjectConfigurations.props" />
   <ItemGroup>
-    <ClCompile Include="..\platform\Windows_x64\ATTest\source\blob.cpp" />
+	<ClCompile Include="source\portabletests.cpp">
+	  <PrecompiledHeader>NotUsing</PrecompiledHeader>
+	</ClCompile>
+	<ClCompile Include="source\TestSystem_Binary.cpp">
+	  <PrecompiledHeader>NotUsing</PrecompiledHeader>
+	</ClCompile>
+	<ClCompile Include="source\TestSystem_BitMath.cpp">
+	  <PrecompiledHeader>NotUsing</PrecompiledHeader>
+	</ClCompile>
+	<ClCompile Include="source\TestSystem_Constexpr.cpp">
+	  <PrecompiledHeader>NotUsing</PrecompiledHeader>
+	</ClCompile>
+	<ClCompile Include="source\TestSystem_HalfFloat.cpp">
+	  <PrecompiledHeader>NotUsing</PrecompiledHeader>
+	</ClCompile>
+	<ClCompile Include="source\TestSystem_RefCount.cpp">
+	  <PrecompiledHeader>NotUsing</PrecompiledHeader>
+	</ClCompile>
+	<ClCompile Include="source\TestSystem_TLS.cpp">
+	  <PrecompiledHeader>NotUsing</PrecompiledHeader>
+	</ClCompile>
+	<ClCompile Include="source\TestSystem_VDAlloc.cpp">
+	  <PrecompiledHeader>NotUsing</PrecompiledHeader>
+	</ClCompile>
+	<ClCompile Include="..\platform\Windows_x64\ATTest\source\blob.cpp" />
     <ClCompile Include="..\platform\Windows_x64\ATTest\source\main.cpp" />
     <ClCompile Include="..\platform\Windows_x64\ATTest\source\stdafx.cpp">
       <PrecompiledHeader>Create</PrecompiledHeader>
@@ -35,7 +59,8 @@
     <ClCompile Include="..\platform\Windows_x64\ATTest\source\TestSystem_Filesys.cpp" />
     <ClCompile Include="..\platform\Windows_x64\ATTest\source\TestSystem_Function.cpp" />
     <ClCompile Include="..\platform\Windows_x64\ATTest\source\TestSystem_Int128.cpp" />
-    <ClCompile Include="..\platform\Windows_x64\ATTest\source\TestSystem_Math.cpp" />
+	<ClCompile Include="..\platform\Windows_x64\ATTest\source\TestSystem_Math.cpp" />
+	<ClCompile Include="..\platform\Windows_x64\ATTest\source\TestSystem_Portable.cpp" />
     <ClCompile Include="..\platform\Windows_x64\ATTest\source\TestSystem_FastVector.cpp" />
     <ClCompile Include="..\platform\Windows_x64\ATTest\source\TestSystem_VecMath.cpp" />
     <ClCompile Include="..\platform\Windows_x64\ATTest\source\TestSystem_Vector.cpp" />
@@ -46,7 +71,8 @@
     <ClCompile Include="..\platform\Windows_x64\ATTest\source\utils.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\h\at\attest\test.h" />
+	<ClInclude Include="..\h\at\attest\portabletest.h" />
+	<ClInclude Include="..\h\at\attest\test.h" />
     <ClInclude Include="..\platform\Windows_x64\ATTest\h\blob.h" />
     <ClInclude Include="..\platform\Windows_x64\ATTest\h\stdafx.h" />
     <ClInclude Include="..\platform\Windows_x64\ATTest\h\test.h" />

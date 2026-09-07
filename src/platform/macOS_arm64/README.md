@@ -11,6 +11,7 @@ Run it on Apple Silicon macOS with:
 bash src/platform/macOS_arm64/build.sh
 ```
 
-Objects and the build manifest are written to `obj/macOS_arm64`. Object reuse
+Objects and the build manifest are written to `obj/macOS_arm64`. The portable
+test runner is written to `out/macOS_arm64/AltirraPortableTests`. Object reuse
 is content-based, so a restored GitHub Actions cache remains useful after a
 fresh checkout with different file timestamps.

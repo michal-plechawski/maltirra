@@ -270,7 +270,7 @@ inline double VDReadUnalignedBED(const void *p) {
 	union {
 		uint64 i;
 		double d;
-	} conv = {VDSwizzleU64(*(const uint32 *)p)};
+	} conv = {VDSwizzleU64(*(const uint64 *)p)};
 	return conv.d;
 }
 

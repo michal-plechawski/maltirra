@@ -47,10 +47,15 @@ jobs:
       - name: Compile non-Windows sources
         run: bash src/platform/macOS_arm64/build.sh
 
-      - name: Upload compile manifest
+      - name: Run portable tests
+        run: out/macOS_arm64/AltirraPortableTests
+
+      - name: Upload macOS ARM64 build artifacts
         uses: actions/upload-artifact@v7
         with:
-          name: altirra-macos-arm64-compile-${{ github.sha }}
-          path: obj/macOS_arm64/build-manifest.txt
+          name: altirra-macos-arm64-${{ github.sha }}
+          path: |
+            obj/macOS_arm64/build-manifest.txt
+            out/macOS_arm64/AltirraPortableTests
           if-no-files-found: error
           retention-days: 14

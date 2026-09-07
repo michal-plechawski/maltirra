@@ -294,7 +294,7 @@ constexpr float VDCxSin(float v) {
 
 constexpr float VDCxCos(float v) {
 	if consteval {
-		return VDCxNarrowToFloat(VDCxSinPiD(v * 0.31830988618379067153776752674503));
+		return VDCxNarrowToFloat(VDCxCosPiD(v * 0.31830988618379067153776752674503));
 	} else {
 		return cosf(v);
 	}

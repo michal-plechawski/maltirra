@@ -6,6 +6,7 @@ cd "$repository_root"
 
 compiler=${CXX:-clang++}
 build_root=${BUILD_ROOT:-$repository_root/obj/macOS_arm64}
+output_root=${OUTPUT_ROOT:-$repository_root/out/macOS_arm64}
 
 common_flags=(
 	-std=c++23
@@ -97,17 +98,18 @@ headers_hash=$(
 )
 
 compiler_version=$($compiler --version)
-script_hash=$(shasum -a 256 "${BASH_SOURCE[0]}" | awk '{print $1}')
+build_format_version=1
 MACOS_ARM64_BUILD_SIGNATURE=$(printf '%s\n%s\n%s\n%s\n' \
 	"$compiler_version" \
 	"${common_flags[*]}" \
 	"$headers_hash" \
-	"$script_hash" |
+	"$build_format_version" |
 	shasum -a 256 |
 	awk '{print $1}')
 
 export CXX="$compiler"
 export BUILD_ROOT="$build_root"
+export OUTPUT_ROOT="$output_root"
 export MACOS_ARM64_BUILD_SIGNATURE
 
 source_list="$build_root/sources.txt"
@@ -122,12 +124,41 @@ printf 'Compiling %s C++ translation units with %s parallel jobs.\n' "$source_co
 tr '\n' '\0' < "$source_list" |
 	xargs -0 -P "$jobs" -n 1 "$BASH_SOURCE" --compile-one
 
+mkdir -p "$output_root"
+portable_test_executable="$output_root/AltirraPortableTests"
+portable_test_sources=(
+	src/platform/macOS_arm64/ATTest/source/main.cpp
+	src/ATTest/source/portabletests.cpp
+	src/ATTest/source/TestSystem_Binary.cpp
+	src/ATTest/source/TestSystem_BitMath.cpp
+	src/ATTest/source/TestSystem_Constexpr.cpp
+	src/ATTest/source/TestSystem_HalfFloat.cpp
+	src/ATTest/source/TestSystem_RefCount.cpp
+	src/ATTest/source/TestSystem_TLS.cpp
+	src/ATTest/source/TestSystem_VDAlloc.cpp
+	src/platform/macOS_arm64/system/source/binary.cpp
+	src/platform/macOS_arm64/system/source/bitmath.cpp
+	src/platform/macOS_arm64/system/source/constexpr.cpp
+	src/platform/macOS_arm64/system/source/halffloat.cpp
+	src/platform/macOS_arm64/system/source/refcount.cpp
+	src/platform/macOS_arm64/system/source/tls.cpp
+	src/platform/macOS_arm64/system/source/vdalloc.cpp
+)
+portable_test_objects=()
+
+for test_source in "${portable_test_sources[@]}"; do
+	portable_test_objects+=("$build_root/$test_source.o")
+done
+
+"$compiler" -arch arm64 "${portable_test_objects[@]}" -o "$portable_test_executable"
+
 manifest="$build_root/build-manifest.txt"
 {
 	printf 'platform=macOS_arm64\n'
 	printf 'compiler=%s\n' "$(printf '%s\n' "$compiler_version" | head -n 1)"
 	printf 'translation_units=%s\n' "$source_count"
 	printf 'build_signature=%s\n' "$MACOS_ARM64_BUILD_SIGNATURE"
+	printf 'portable_test_executable=%s\n' "${portable_test_executable#$repository_root/}"
 	printf '\nobjects:\n'
 	while IFS= read -r source_file; do
 		object_file="$build_root/$source_file.o"
