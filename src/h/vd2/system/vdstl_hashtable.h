@@ -26,6 +26,11 @@
 #ifndef f_VD2_SYSTEM_VDSTL_HASHTABLE_H
 #define f_VD2_SYSTEM_VDSTL_HASHTABLE_H
 
+#include <cstddef>
+#include <iterator>
+#include <type_traits>
+#include <vd2/system/vdtypes.h>
+
 size_t VDComputePrimeBucketCount(size_t minBucketCount);
 
 ///////////////////////////////////////////////////////////////////////////////

@@ -22,6 +22,7 @@ bool ATTestSystemVDFunction(ATPortableTestContext& context);
 bool ATTestSystemVDString(ATPortableTestContext& context);
 bool ATTestSystemVDSTL(ATPortableTestContext& context);
 bool ATTestSystemVDSTLHash(ATPortableTestContext& context);
+bool ATTestSystemVDSTLHashTable(ATPortableTestContext& context);
 bool ATTestSystemVectors(ATPortableTestContext& context);
 
 const ATPortableTestCase *ATGetPortableTests(size_t& count) {
@@ -46,6 +47,7 @@ const ATPortableTestCase *ATGetPortableTests(size_t& count) {
 		{ "System_VDString", ATTestSystemVDString },
 		{ "System_VDSTL", ATTestSystemVDSTL },
 		{ "System_VDSTLHash", ATTestSystemVDSTLHash },
+		{ "System_VDSTLHashTable", ATTestSystemVDSTLHashTable },
 		{ "System_Vectors", ATTestSystemVectors },
 	};
 

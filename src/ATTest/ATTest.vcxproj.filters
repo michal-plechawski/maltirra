@@ -64,6 +64,9 @@
 	<ClCompile Include="source\TestSystem_VDSTLHash.cpp">
 	  <Filter>Source Files</Filter>
 	</ClCompile>
+	<ClCompile Include="source\TestSystem_VDSTLHashTable.cpp">
+	  <Filter>Source Files</Filter>
+	</ClCompile>
 	<ClCompile Include="source\TestSystem_Vectors.cpp">
 	  <Filter>Source Files</Filter>
 	</ClCompile>
