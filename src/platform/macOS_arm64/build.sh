@@ -132,6 +132,7 @@ portable_test_sources=(
 	src/ATTest/source/TestSystem_Binary.cpp
 	src/ATTest/source/TestSystem_BitMath.cpp
 	src/ATTest/source/TestSystem_Constexpr.cpp
+	src/ATTest/source/TestSystem_CPUAccel.cpp
 	src/ATTest/source/TestSystem_Fraction.cpp
 	src/ATTest/source/TestSystem_Hash.cpp
 	src/ATTest/source/TestSystem_HalfFloat.cpp
@@ -147,6 +148,7 @@ portable_test_sources=(
 	src/platform/macOS_arm64/system/source/binary.cpp
 	src/platform/macOS_arm64/system/source/bitmath.cpp
 	src/platform/macOS_arm64/system/source/constexpr.cpp
+	src/platform/macOS_arm64/system/source/cpuaccel.cpp
 	src/platform/macOS_arm64/system/source/Fraction.cpp
 	src/platform/macOS_arm64/system/source/hash.cpp
 	src/platform/macOS_arm64/system/source/halffloat.cpp

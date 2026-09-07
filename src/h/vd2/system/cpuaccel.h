@@ -26,6 +26,8 @@
 #ifndef f_VD2_SYSTEM_CPUACCEL_H
 #define f_VD2_SYSTEM_CPUACCEL_H
 
+#include <vd2/system/vdtypes.h>
+
 #if VD_CPU_X86 || VD_CPU_X64
 static constexpr auto CPUF_SUPPORTS_MMX			= (0x00000004L);
 static constexpr auto CPUF_SUPPORTS_INTEGER_SSE	= (0x00000008L);
