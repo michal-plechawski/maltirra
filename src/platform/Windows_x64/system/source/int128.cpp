@@ -551,21 +551,19 @@ const vdint128 vdint128::operator*(const vdint128& x) const {
 }
 
 const vdint128 vdint128::operator/(int x) const {
-	vdint128 r;
-	sint64 accum;
+	const bool negativeDividend = q[1] < 0;
+	const bool negativeDivisor = x < 0;
+	vduint128 magnitude(*this);
 
-	r.d[3] = d[3] / x;
-	
-	accum = ((sint64)(d[3] % x) << 32) + d[2];
-	r.d[2] = (sint32)(accum / x);
+	if (negativeDividend)
+		magnitude = -magnitude;
 
-	accum = ((accum % x) << 32) + d[1];
-	r.d[1] = (sint32)(accum / x);
+	const uint32 divisorMagnitude = negativeDivisor
+		? (uint32)(-(sint64)x)
+		: (uint32)x;
+	const vdint128 result(magnitude / divisorMagnitude);
 
-	accum = ((accum % x) << 32) + d[0];
-	r.d[0] = (sint32)(accum / x);
-
-	return r;
+	return negativeDividend != negativeDivisor ? -result : result;
 }
 
 vdint128::operator double() const {
