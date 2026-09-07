@@ -131,6 +131,7 @@ portable_test_sources=(
 	src/ATTest/source/portabletests.cpp
 	src/ATTest/source/TestSystem_Binary.cpp
 	src/ATTest/source/TestSystem_BitMath.cpp
+	src/ATTest/source/TestSystem_Cache.cpp
 	src/ATTest/source/TestSystem_CommandLine.cpp
 	src/ATTest/source/TestSystem_Constexpr.cpp
 	src/ATTest/source/TestSystem_CPUAccel.cpp
@@ -158,6 +159,7 @@ portable_test_sources=(
 	src/ATTest/source/TestSystem_Vectors.cpp
 	src/platform/macOS_arm64/system/source/binary.cpp
 	src/platform/macOS_arm64/system/source/bitmath.cpp
+	src/platform/macOS_arm64/system/source/cache.cpp
 	src/platform/macOS_arm64/system/source/cmdline.cpp
 	src/platform/macOS_arm64/system/source/constexpr.cpp
 	src/platform/macOS_arm64/system/source/cpuaccel.cpp

@@ -10,6 +10,9 @@
 	<ClCompile Include="source\TestSystem_BitMath.cpp">
 	  <Filter>Source Files</Filter>
 	</ClCompile>
+	<ClCompile Include="source\TestSystem_Cache.cpp">
+	  <Filter>Source Files</Filter>
+	</ClCompile>
 	<ClCompile Include="source\TestSystem_CommandLine.cpp">
 	  <Filter>Source Files</Filter>
 	</ClCompile>

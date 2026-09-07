@@ -101,6 +101,7 @@
     <ClInclude Include="..\h\vd2\system\binary.h" />
     <ClInclude Include="..\h\vd2\system\bitmath.h" />
     <ClInclude Include="..\h\vd2\system\cache.h" />
+    <ClInclude Include="source\cacheimpl.inl" />
     <ClInclude Include="..\h\vd2\system\cmdline.h" />
     <ClInclude Include="..\h\vd2\system\color.h" />
     <ClInclude Include="..\h\vd2\system\constexpr.h" />

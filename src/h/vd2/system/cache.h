@@ -48,21 +48,25 @@ class vdfixedhashmap_iterator {
 public:
 	typedef	vdfixedhashmap_node	node;
 
-	bool operator==(vdfixedhashmap_iterator& x) const { return mpNode == x.mpNode; }
-	bool operator!=(vdfixedhashmap_iterator& x) const { return mpNode != x.mpNode; }
+	bool operator==(const vdfixedhashmap_iterator& x) const { return mpNode == x.mpNode; }
+	bool operator!=(const vdfixedhashmap_iterator& x) const { return mpNode != x.mpNode; }
 
 	V& operator*() const { return *static_cast<V *>((node *)mpNode); }
 	V *operator->() const { return static_cast<V *>((node *)mpNode); }
 
 	vdfixedhashmap_iterator& operator++() {
-		do {
-			mpNode = ((node *)mpNode)->mpHashNext;
-			if (mpNode != mpTableNode)
-				break;
+		if (!mpNode)
+			return *this;
 
-			++mpTableNode;
+		mpNode = mpNode->mpHashNext;
+		while(mpNode == mpTableNode) {
+			if (++mpTableNode == mpTableEnd) {
+				mpNode = NULL;
+				break;
+			}
+
 			mpNode = mpTableNode->mpHashNext;
-		} while(mpNode);
+		}
 
 		return *this;
 	}
@@ -76,6 +80,7 @@ public:
 public:
 	vdfixedhashmap_node *mpNode;
 	vdfixedhashmap_node *mpTableNode;
+	vdfixedhashmap_node *mpTableEnd;
 };
 
 template<class K, class V, class Hash = vdhash<K>, int N = 256>
@@ -93,15 +98,20 @@ public:
 	}
 
 	iterator begin() {
-		int i;
-		for(i=0; i<N && !m.mpTable[i]; ++i)
-			;
-		iterator it = { m.mpTable[i].mpFirst, &m.mpTable[i] };
-		return it;
+		for(int i = 0; i < N; ++i) {
+			node *bucket = &m.mpTable[i];
+
+			if (bucket->mpHashNext != bucket) {
+				iterator it = { bucket->mpHashNext, bucket, m.mpTable + N };
+				return it;
+			}
+		}
+
+		return end();
 	}
 
 	iterator end() {
-		iterator it = { NULL, NULL };
+		iterator it = { NULL, m.mpTable + N, m.mpTable + N };
 		return it;
 	}
 
@@ -123,7 +133,7 @@ public:
 		node *r = &m.mpTable[htidx];
 		for(node *p = r->mpHashNext; p != r; p = p->mpHashNext) {
 			if (static_cast<V *>(p)->mHashKey == key) {
-				iterator it = { p, &m.mpTable[htidx] };
+				iterator it = { p, &m.mpTable[htidx], m.mpTable + N };
 				return it;
 			}
 		}
@@ -141,7 +151,7 @@ public:
 		p->mpHashNext = n;
 		n->mpHashPrev = p;
 
-		iterator it = { p, &m.mpTable[htidx] };
+		iterator it = { p, &m.mpTable[htidx], m.mpTable + N };
 		return it;
 	}
 
@@ -154,7 +164,7 @@ public:
 	}
 
 	void erase(iterator it) {
-		erase(it.mpNode);
+		erase(static_cast<V *>(it.mpNode));
 	}
 
 protected:
@@ -211,6 +221,7 @@ public:
 	void NotifyFree(VDCachedObject *pObject);
 
 protected:
+	VDCachedObject *AllocateLocked(sint64 key);
 	void Evict(uint32 level);
 
 protected:
