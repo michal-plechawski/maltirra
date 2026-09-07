@@ -12,6 +12,7 @@ bool ATTestSystemDate(ATPortableTestContext& context);
 bool ATTestSystemDebug(ATPortableTestContext& context);
 bool ATTestSystemError(ATPortableTestContext& context);
 bool ATTestSystemEvent(ATPortableTestContext& context);
+bool ATTestSystemFileSys(ATPortableTestContext& context);
 bool ATTestSystemFraction(ATPortableTestContext& context);
 bool ATTestSystemHash(ATPortableTestContext& context);
 bool ATTestSystemHalfFloat(ATPortableTestContext& context);
@@ -47,6 +48,7 @@ const ATPortableTestCase *ATGetPortableTests(size_t& count) {
 		{ "System_Debug", ATTestSystemDebug },
 		{ "System_Error", ATTestSystemError },
 		{ "System_Event", ATTestSystemEvent },
+		{ "System_FileSys", ATTestSystemFileSys },
 		{ "System_Fraction", ATTestSystemFraction },
 		{ "System_Hash", ATTestSystemHash },
 		{ "System_HalfFloat", ATTestSystemHalfFloat },

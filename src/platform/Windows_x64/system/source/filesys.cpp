@@ -599,7 +599,7 @@ void VDRemoveDirectory(const wchar_t *path) {
 		const wchar_t c = path[l-1];
 
 		if (c == L'/' || c == L'\\') {
-			VDCreateDirectory(VDStringW(path, l-1).c_str());
+			VDRemoveDirectory(VDStringW(path, l-1).c_str());
 			return;
 		}
 	}
