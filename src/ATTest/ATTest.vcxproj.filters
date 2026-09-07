@@ -16,6 +16,9 @@
 	<ClCompile Include="source\TestSystem_CPUAccel.cpp">
 	  <Filter>Source Files</Filter>
 	</ClCompile>
+	<ClCompile Include="source\TestSystem_Error.cpp">
+	  <Filter>Source Files</Filter>
+	</ClCompile>
 	<ClCompile Include="source\TestSystem_Fraction.cpp">
 	  <Filter>Source Files</Filter>
 	</ClCompile>

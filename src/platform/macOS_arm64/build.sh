@@ -115,7 +115,7 @@ export MACOS_ARM64_BUILD_SIGNATURE
 source_list="$build_root/sources.txt"
 find src \
 	-path src/platform/Windows_x64 -prune -o \
-	-type f -name '*.cpp' -print |
+	-type f \( -name '*.cpp' -o -name '*.mm' \) -print |
 	LC_ALL=C sort > "$source_list"
 
 source_count=$(wc -l < "$source_list" | tr -d ' ')
@@ -133,6 +133,7 @@ portable_test_sources=(
 	src/ATTest/source/TestSystem_BitMath.cpp
 	src/ATTest/source/TestSystem_Constexpr.cpp
 	src/ATTest/source/TestSystem_CPUAccel.cpp
+	src/ATTest/source/TestSystem_Error.cpp
 	src/ATTest/source/TestSystem_Fraction.cpp
 	src/ATTest/source/TestSystem_Hash.cpp
 	src/ATTest/source/TestSystem_HalfFloat.cpp
@@ -149,6 +150,8 @@ portable_test_sources=(
 	src/platform/macOS_arm64/system/source/bitmath.cpp
 	src/platform/macOS_arm64/system/source/constexpr.cpp
 	src/platform/macOS_arm64/system/source/cpuaccel.cpp
+	src/platform/macOS_arm64/system/source/Error.cpp
+	src/platform/macOS_arm64/system/source/error_macos.mm
 	src/platform/macOS_arm64/system/source/Fraction.cpp
 	src/platform/macOS_arm64/system/source/hash.cpp
 	src/platform/macOS_arm64/system/source/halffloat.cpp
@@ -168,7 +171,7 @@ for test_source in "${portable_test_sources[@]}"; do
 	portable_test_objects+=("$build_root/$test_source.o")
 done
 
-"$compiler" -arch arm64 "${portable_test_objects[@]}" -o "$portable_test_executable"
+"$compiler" -arch arm64 "${portable_test_objects[@]}" -framework AppKit -o "$portable_test_executable"
 
 manifest="$build_root/build-manifest.txt"
 {

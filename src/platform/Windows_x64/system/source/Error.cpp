@@ -173,67 +173,69 @@ void VDException::wsetf(const wchar_t *f, ...) {
 }
 
 void VDException::vsetf(const char *f, va_list val) {
-	char *buf = Alloc(256);
-	if (!buf)
-		return;
+	size_t capacity = 256;
 
-	int len = vsnprintf(buf, 256, f, val);
-	if (len == 0) {
-		// don't keep empty strings
-		clear();
-
-		mpMessage = "";
-		mpMessageW = L"";
-		return;
-	}
-
-	if (len >= 256) {
-		buf = Alloc(len + 1);
+	while(capacity <= 1024 * 1024) {
+		char *buf = Alloc(capacity - 1);
 		if (!buf)
-			len = -1;
-		else
-			len = vsnprintf(buf, len + 1, f, val);
+			return;
+
+		va_list copy;
+		va_copy(copy, val);
+		const int len = vsnprintf(buf, capacity, f, copy);
+		va_end(copy);
+
+		if (!len) {
+			// don't keep empty strings
+			clear();
+
+			mpMessage = "";
+			mpMessageW = L"";
+			return;
+		}
+
+		if (len > 0 && (size_t)len < capacity) {
+			MakeWide();
+			return;
+		}
+
+		capacity = len > 0 ? (size_t)len + 1 : capacity * 2;
 	}
 
-	if (len < 0) {
-		clear();
-
-		setf("<%s>", f);
-	} else {
-		MakeWide();
-	}
+	assign("<formatting error>");
 }
 
 void VDException::vwsetf(const wchar_t *f, va_list val) {
-	wchar_t *buf = AllocWide(256);
-	if (!buf)
-		return;
+	size_t capacity = 256;
 
-	int len = vswprintf(buf, 256, f, val);
-	if (len == 0) {
-		// don't keep empty strings
-		clear();
-
-		mpMessage = "";
-		mpMessageW = L"";
-		return;
-	}
-
-	if (len >= 256) {
-		buf = AllocWide(len + 1);
+	while(capacity <= 1024 * 1024) {
+		wchar_t *buf = AllocWide(capacity - 1);
 		if (!buf)
-			len = -1;
-		else
-			len = vswprintf(buf, len + 1, f, val);
+			return;
+
+		va_list copy;
+		va_copy(copy, val);
+		const int len = vswprintf(buf, capacity, f, copy);
+		va_end(copy);
+
+		if (!len) {
+			// don't keep empty strings
+			clear();
+
+			mpMessage = "";
+			mpMessageW = L"";
+			return;
+		}
+
+		if (len > 0 && (size_t)len < capacity) {
+			MakeNarrow();
+			return;
+		}
+
+		capacity = len > 0 ? (size_t)len + 1 : capacity * 2;
 	}
 
-	if (len < 0) {
-		clear();
-
-		wsetf(L"<%ls>", f);
-	} else {
-		MakeNarrow();
-	}
+	assign(L"<formatting error>");
 }
 
 void VDException::post(HWND hWndParent, const char *title) const noexcept {
@@ -252,7 +254,8 @@ const wchar_t *VDException::wc_str() const noexcept {
 }
 
 void VDException::set_hidden() {
-	mpBuffer->mbHidden = true;
+	if (mpBuffer)
+		mpBuffer->mbHidden = true;
 }
 
 bool VDException::visible() const noexcept {
