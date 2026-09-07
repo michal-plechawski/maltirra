@@ -28,6 +28,9 @@
 	<ClCompile Include="source\TestSystem_MathPortable.cpp">
 	  <Filter>Source Files</Filter>
 	</ClCompile>
+	<ClCompile Include="source\TestSystem_Memory.cpp">
+	  <Filter>Source Files</Filter>
+	</ClCompile>
 	<ClCompile Include="source\TestSystem_RefCount.cpp">
 	  <Filter>Source Files</Filter>
 	</ClCompile>
