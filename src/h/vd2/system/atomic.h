@@ -63,13 +63,13 @@ public:
 	VDAtomicInt() {}
 	VDAtomicInt(int v) : n(v) {}
 
-	bool operator!() const { return !n; }
-	bool operator!=(int v) const  { return n!=v; }
-	bool operator==(int v) const { return n==v; }
-	bool operator<=(int v) const { return n<=v; }
-	bool operator>=(int v) const { return n>=v; }
-	bool operator<(int v) const { return n<v; }
-	bool operator>(int v) const { return n>v; }
+	bool operator!() const { return !staticRead(&n); }
+	bool operator!=(int v) const  { return staticRead(&n)!=v; }
+	bool operator==(int v) const { return staticRead(&n)==v; }
+	bool operator<=(int v) const { return staticRead(&n)<=v; }
+	bool operator>=(int v) const { return staticRead(&n)>=v; }
+	bool operator<(int v) const { return staticRead(&n)<v; }
+	bool operator>(int v) const { return staticRead(&n)>v; }
 
 	///////////////////////////////
 
@@ -79,6 +79,18 @@ public:
 			return (int)_InterlockedExchange((volatile long *)dst, v);
 		#elif defined(VD_COMPILER_CLANG)
 			return __sync_lock_test_and_set((int *)dst, v);
+		#else
+			#error not implemented
+		#endif
+	}
+
+	/// Atomically reads an integer from memory.
+	static inline int staticRead(const volatile int *src) {
+		#if defined(VD_COMPILER_MSVC)
+			return (int)_InterlockedCompareExchange(
+				(volatile long *)const_cast<volatile int *>(src), 0, 0);
+		#elif defined(VD_COMPILER_CLANG)
+			return __atomic_load_n(src, __ATOMIC_SEQ_CST);
 		#else
 			#error not implemented
 		#endif
@@ -157,7 +169,7 @@ public:
 
 	///////////////////////////////
 
-	int operator=(int v) { n = v; return v; }
+	int operator=(int v) { staticExchange(&n, v); return v; }
 
 	int operator++()		{ return staticAdd(&n, 1); }
 	int operator--()		{ return staticAdd(&n, -1); }
@@ -184,7 +196,7 @@ public:
 
 	void operator^=(int v) {
 		__sync_fetch_and_xor(&n, v);
-	}	
+	}
 
 #else
 	/// Atomic bitwise AND.
@@ -210,7 +222,7 @@ public:
 #endif
 
 	operator int() const {
-		return n;
+		return staticRead(&n);
 	}
 
 	/// Atomic exchange.
@@ -291,7 +303,7 @@ public:
 	/// Atomic exchange.
 	bool xchg(bool v) {
 		const uint32 mask = ((uint32)0xFF << (8 * (int)((size_t)&n & 3)));
-		const int andval = (int)~mask; 
+		const int andval = (int)~mask;
 		const int orval = v ? (int)(mask & 0x01010101) : 0;
 		volatile int *p = (volatile int *)((uintptr)&n & ~(uintptr)3);
 
