@@ -18,6 +18,7 @@ bool ATTestSystemStrUtil(ATPortableTestContext& context);
 bool ATTestSystemTLS(ATPortableTestContext& context);
 bool ATTestSystemVDAlloc(ATPortableTestContext& context);
 bool ATTestSystemVDFunction(ATPortableTestContext& context);
+bool ATTestSystemVDSTL(ATPortableTestContext& context);
 bool ATTestSystemVectors(ATPortableTestContext& context);
 
 const ATPortableTestCase *ATGetPortableTests(size_t& count) {
@@ -38,6 +39,7 @@ const ATPortableTestCase *ATGetPortableTests(size_t& count) {
 		{ "System_TLS", ATTestSystemTLS },
 		{ "System_VDAlloc", ATTestSystemVDAlloc },
 		{ "System_VDFunction", ATTestSystemVDFunction },
+		{ "System_VDSTL", ATTestSystemVDSTL },
 		{ "System_Vectors", ATTestSystemVectors },
 	};
 

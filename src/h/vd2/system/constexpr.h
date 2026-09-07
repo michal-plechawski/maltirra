@@ -29,6 +29,7 @@
 #include <iterator>
 #include <type_traits>
 #include <math.h>
+#include <vd2/system/vdtypes.h>
 
 template<typename T, T N> struct VDCxPrint;
 

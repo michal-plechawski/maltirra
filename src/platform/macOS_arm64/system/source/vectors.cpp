@@ -25,15 +25,15 @@
 
 #include <cmath>
 #include <utility>
-#include <vector>
 
+#include <vd2/system/vdstl.h>
 #include <vd2/system/vectors.h>
 
 bool VDSolveLinearEquation(double *src, int n, ptrdiff_t stride_elements, double *b, double tolerance) {
 	if (n <= 0)
 		return n == 0;
 
-	std::vector<double *> rows((size_t)n);
+	vdfastvector<double *> rows(n);
 	double **m = rows.data();
 
 	for(int i = 0; i < n; ++i) {
