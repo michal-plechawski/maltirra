@@ -134,6 +134,7 @@ portable_test_sources=(
 	src/ATTest/source/TestSystem_CommandLine.cpp
 	src/ATTest/source/TestSystem_Constexpr.cpp
 	src/ATTest/source/TestSystem_CPUAccel.cpp
+	src/ATTest/source/TestSystem_Date.cpp
 	src/ATTest/source/TestSystem_Error.cpp
 	src/ATTest/source/TestSystem_Event.cpp
 	src/ATTest/source/TestSystem_Fraction.cpp
@@ -158,6 +159,7 @@ portable_test_sources=(
 	src/platform/macOS_arm64/system/source/cmdline.cpp
 	src/platform/macOS_arm64/system/source/constexpr.cpp
 	src/platform/macOS_arm64/system/source/cpuaccel.cpp
+	src/platform/macOS_arm64/system/source/date.mm
 	src/platform/macOS_arm64/system/source/Error.cpp
 	src/platform/macOS_arm64/system/source/error_macos.mm
 	src/platform/macOS_arm64/system/source/event.cpp

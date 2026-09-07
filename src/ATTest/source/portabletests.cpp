@@ -7,6 +7,7 @@ bool ATTestSystemBitMath(ATPortableTestContext& context);
 bool ATTestSystemCommandLine(ATPortableTestContext& context);
 bool ATTestSystemConstexpr(ATPortableTestContext& context);
 bool ATTestSystemCPUAccel(ATPortableTestContext& context);
+bool ATTestSystemDate(ATPortableTestContext& context);
 bool ATTestSystemError(ATPortableTestContext& context);
 bool ATTestSystemEvent(ATPortableTestContext& context);
 bool ATTestSystemFraction(ATPortableTestContext& context);
@@ -34,6 +35,7 @@ const ATPortableTestCase *ATGetPortableTests(size_t& count) {
 		{ "System_CommandLine", ATTestSystemCommandLine },
 		{ "System_Constexpr", ATTestSystemConstexpr },
 		{ "System_CPUAccel", ATTestSystemCPUAccel },
+		{ "System_Date", ATTestSystemDate },
 		{ "System_Error", ATTestSystemError },
 		{ "System_Event", ATTestSystemEvent },
 		{ "System_Fraction", ATTestSystemFraction },
