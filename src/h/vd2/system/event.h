@@ -26,6 +26,9 @@
 #ifndef f_VD2_SYSTEM_EVENT_H
 #define f_VD2_SYSTEM_EVENT_H
 
+#include <type_traits>
+#include <utility>
+
 // Because Visual C++ uses different pointer-to-member representations for
 // different inheritance regimes, we have to include a whole lot of stupid
 // logic to detect and switch code paths based on the inheritance used.
