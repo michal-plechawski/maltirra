@@ -139,6 +139,16 @@
 						(((uint64)value & 0x000000000000FF00) << 40) +
 						(((uint64)value & 0x00000000000000FF) << 56));
 	}
+
+	inline constexpr uint32 VDRotateLeftU32(uint32 value, int bits) {
+		const unsigned shift = (unsigned)bits & 31;
+		return (value << shift) | (value >> ((32 - shift) & 31));
+	}
+
+	inline constexpr uint32 VDRotateRightU32(uint32 value, int bits) {
+		const unsigned shift = (unsigned)bits & 31;
+		return (value >> shift) | (value << ((32 - shift) & 31));
+	}
 #endif
 
 #if defined(__clang__) || defined(__GNUC__)

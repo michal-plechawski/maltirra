@@ -44,22 +44,22 @@
     <ClInclude Include="h\stdafx.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\h\at\atuicontrols\uibutton.h">
+    <ClInclude Include="..\..\..\h\at\atuicontrols\uibutton.h">
       <Filter>Interface Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\h\at\atuicontrols\uilabel.h">
+    <ClInclude Include="..\..\..\h\at\atuicontrols\uilabel.h">
       <Filter>Interface Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\h\at\atuicontrols\uilistview.h">
+    <ClInclude Include="..\..\..\h\at\atuicontrols\uilistview.h">
       <Filter>Interface Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\h\at\atuicontrols\uislider.h">
+    <ClInclude Include="..\..\..\h\at\atuicontrols\uislider.h">
       <Filter>Interface Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\h\at\atuicontrols\uitextedit.h">
+    <ClInclude Include="..\..\..\h\at\atuicontrols\uitextedit.h">
       <Filter>Interface Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\h\at\atuicontrols\uiimage.h">
+    <ClInclude Include="..\..\..\h\at\atuicontrols\uiimage.h">
       <Filter>Interface Header Files</Filter>
     </ClInclude>
   </ItemGroup>

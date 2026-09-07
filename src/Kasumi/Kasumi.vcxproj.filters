@@ -118,25 +118,25 @@
     <ClCompile Include="source\uberblit_swizzle.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="source\uberblit_swizzle_x86.cpp">
+    <ClCompile Include="..\platform\Windows_x64\Kasumi\source\uberblit_swizzle_x86.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="source\uberblit_ycbcr_generic.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="source\uberblit_ycbcr_x86.cpp">
+    <ClCompile Include="..\platform\Windows_x64\Kasumi\source\uberblit_ycbcr_x86.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="source\blt_spanutils_x86.cpp">
+    <ClCompile Include="..\platform\Windows_x64\Kasumi\source\blt_spanutils_x86.cpp">
       <Filter>Source Files %28x86%29</Filter>
     </ClCompile>
-    <ClCompile Include="source\blt_x86.cpp">
+    <ClCompile Include="..\platform\Windows_x64\Kasumi\source\blt_x86.cpp">
       <Filter>Source Files %28x86%29</Filter>
     </ClCompile>
-    <ClCompile Include="source\resample_stages_x86.cpp">
+    <ClCompile Include="..\platform\Windows_x64\Kasumi\source\resample_stages_x86.cpp">
       <Filter>Source Files %28x86%29</Filter>
     </ClCompile>
-    <ClCompile Include="source\uberblit_resample_special_x86.cpp">
+    <ClCompile Include="..\platform\Windows_x64\Kasumi\source\uberblit_resample_special_x86.cpp">
       <Filter>Source Files %28x86%29</Filter>
     </ClCompile>
     <ClCompile Include="..\platform\Windows_x64\Kasumi\source\resample_stages_x64.cpp">

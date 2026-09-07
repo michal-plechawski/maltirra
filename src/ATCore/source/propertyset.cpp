@@ -19,6 +19,7 @@
 //	archive for details.
 
 #include <stdafx.h>
+#include <cerrno>
 #include <vd2/system/Error.h>
 #include <vd2/system/vdalloc.h>
 #include <at/atcore/propertyset.h>

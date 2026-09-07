@@ -26,7 +26,13 @@ void ATConsoleOutput::operator()(const char *format, ...) {
 	va_list val;
 
 	va_start(val, format);
-	if ((unsigned)_vsnprintf(buf, 3072, format, val) < 3072)
+	#ifdef _MSC_VER
+		const int result = _vsnprintf(buf, 3072, format, val);
+	#else
+		const int result = vsnprintf(buf, 3072, format, val);
+	#endif
+
+	if ((unsigned)result < 3072)
 		WriteLine(buf);
 	va_end(val);
 }

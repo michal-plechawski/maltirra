@@ -26,6 +26,7 @@
 #ifndef f_VD2_SYSTEM_DATE_H
 #define f_VD2_SYSTEM_DATE_H
 
+#include <cmath>
 #include <vd2/system/vdtypes.h>
 
 class VDStringW;
@@ -53,7 +54,7 @@ struct VDDateInterval {
 		if consteval {
 			return VDDateInterval{ (int64)(f < 0 ? f * kVDDateSecondsToTicks<float> - 0.5f : f * kVDDateSecondsToTicks<float> + 0.5f) };
 		} else {
-			return VDDateInterval{ (int64)llrintf(f * kVDDateSecondsToTicks<float>) };
+			return VDDateInterval{ (int64)::llrintf(f * kVDDateSecondsToTicks<float>) };
 		}
 	}
 

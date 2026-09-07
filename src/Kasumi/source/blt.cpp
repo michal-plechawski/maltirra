@@ -18,7 +18,6 @@
 
 #include <stdafx.h>
 #include <vector>
-#include <malloc.h>
 #include <vd2/system/memory.h>
 #include <vd2/system/cpuaccel.h>
 #include <vd2/system/vdstl.h>
@@ -171,12 +170,8 @@ bool VDNOINLINE VDPixmapBltTwoStage(const VDPixmap& dst, const VDPixmap& src, vd
 	VDPixmap linedst(dst);
 	VDPixmap linetmp = {};
 
-	if (w < 1024) {
-		linetmp.data = _alloca(sizeof(uint32) * w);
-	} else {
-		tempBuf.resize(w + 1);
-		linetmp.data = tempBuf.data();
-	}
+	tempBuf.resize(w + 1);
+	linetmp.data = tempBuf.data();
 	linetmp.pitch = 0;
 	linetmp.format = kPixFormat_YUV444_XVYU;
 	linetmp.w = w;

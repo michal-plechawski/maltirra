@@ -91,7 +91,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Support Code Projects", "Su
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Native Projects", "Native Projects", "{A4C9836C-018B-4DF7-9B8B-858E19F91CBF}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ATUIControls", "ATUIControls\ATUIControls.vcxproj", "{A8F7990A-8A96-4112-AE3F-35E5B9EC87B5}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ATUIControls", "platform\Windows_x64\ATUIControls\ATUIControls.vcxproj", "{A8F7990A-8A96-4112-AE3F-35E5B9EC87B5}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ATEmulation", "ATEmulation\ATEmulation.vcxproj", "{C5CE2EA8-264A-443B-96E7-9B29118215D3}"
 EndProject

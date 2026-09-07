@@ -65,7 +65,7 @@
 		#define VD_CPU_X64		1
 	#elif defined(_M_IX86) || defined(__i386__)
 		#define VD_CPU_X86		1
-	#elif defined(_M_ARM64)
+	#elif defined(_M_ARM64) || defined(__aarch64__) || defined(__arm64__)
 		#define VD_CPU_ARM64	1
 	#endif
 #endif
@@ -247,8 +247,8 @@ extern void VDDebugPrint(const char *format, ...);
 		#define VDASSERT(exp)		((void)0)
 		#define VDASSERTPTR(exp)	((void)0)
 	#elif defined(__GNUC__)
-		#define VDASSERT(exp)		__builtin_expect(0 != (exp), 1)
-		#define VDASSERTPTR(exp)	__builtin_expect(0 != (exp), 1)
+		#define VDASSERT(exp)		__builtin_expect(static_cast<bool>(exp), 1)
+		#define VDASSERTPTR(exp)	__builtin_expect(static_cast<bool>(exp), 1)
 	#endif
 
 	#define VDFAIL(str)			(void)(str)

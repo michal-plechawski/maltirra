@@ -107,8 +107,8 @@ void ATNetUdpStack::SendDatagram(uint32 srcIpAddr, uint16 srcPort, uint32 dstIpA
 		srcIpAddr = GetIpAddress();
 
 	uint32 frameLen = dataLen + 22 + 8;
-	void *frame = _alloca(frameLen + 2);
-	uint8 *dst = (uint8 *)frame + 2;
+	vdblock<uint8> frame(frameLen + 2);
+	uint8 *dst = frame.data() + 2;
 
 	// encode EtherType and IPv4 header
 	ATIPv4HeaderInfo iphdr;
@@ -155,7 +155,7 @@ void ATNetUdpStack::SendDatagram(uint32 srcIpAddr, uint16 srcPort, uint32 dstIpA
 		memcpy(dst, data, dataLen);
 
 	if (dstHwAddr)
-		mpIpStack->SendFrame(*dstHwAddr, (char *)frame + 2, frameLen);
+		mpIpStack->SendFrame(*dstHwAddr, (char *)frame.data() + 2, frameLen);
 	else
-		mpIpStack->SendFrame(dstIpAddr, (char *)frame + 2, frameLen);
+		mpIpStack->SendFrame(dstIpAddr, (char *)frame.data() + 2, frameLen);
 }

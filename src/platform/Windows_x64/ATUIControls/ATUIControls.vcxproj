@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="../Build/ProjectConfigurations.props" />
+  <Import Project="../../../Build/ProjectConfigurations.props" />
   <ItemGroup>
     <ClCompile Include="source\stdafx.cpp">
       <PrecompiledHeader>Create</PrecompiledHeader>
@@ -13,12 +13,12 @@
     <ClCompile Include="source\uitextedit.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\h\at\atuicontrols\uibutton.h" />
-    <ClInclude Include="..\h\at\atuicontrols\uiimage.h" />
-    <ClInclude Include="..\h\at\atuicontrols\uilabel.h" />
-    <ClInclude Include="..\h\at\atuicontrols\uilistview.h" />
-    <ClInclude Include="..\h\at\atuicontrols\uislider.h" />
-    <ClInclude Include="..\h\at\atuicontrols\uitextedit.h" />
+    <ClInclude Include="..\..\..\h\at\atuicontrols\uibutton.h" />
+    <ClInclude Include="..\..\..\h\at\atuicontrols\uiimage.h" />
+    <ClInclude Include="..\..\..\h\at\atuicontrols\uilabel.h" />
+    <ClInclude Include="..\..\..\h\at\atuicontrols\uilistview.h" />
+    <ClInclude Include="..\..\..\h\at\atuicontrols\uislider.h" />
+    <ClInclude Include="..\..\..\h\at\atuicontrols\uitextedit.h" />
     <ClInclude Include="h\stdafx.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
@@ -26,7 +26,7 @@
     <Keyword>Win32Proj</Keyword>
     <RootNamespace>ATUIControls</RootNamespace>
   </PropertyGroup>
-  <Import Project="..\Build\PlatformSetup.props" />
+  <Import Project="..\..\..\Build\PlatformSetup.props" />
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
@@ -38,7 +38,7 @@
   </ImportGroup>
   <ImportGroup Label="PropertySheets">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
-    <Import Project="..\Build\Altirra.props" />
+    <Import Project="..\..\..\Build\Altirra.props" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup />

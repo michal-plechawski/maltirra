@@ -21,6 +21,7 @@
 
 #include <stdafx.h>
 #include <at/atcore/decmath.h>
+#include <cmath>
 
 bool ATDecFloat::SetDouble(double v) {
 	uint8 bias = 0x40;
@@ -36,9 +37,9 @@ bool ATDecFloat::SetDouble(double v) {
 	}
 
 	static const double invln100 = 0.2171472409516259138255644594583025411471985029018332830572268916;
-	double x = floor(log(v) * invln100);
+	double x = std::floor(std::log(v) * invln100);
 	int ix = (int)x;
-	double mantissa = v * pow(100.0, 4-x);
+	double mantissa = v * std::pow(100.0, 4-x);
 
 	// compensate for roundoff
 	if (mantissa >= 10000000000.0) {

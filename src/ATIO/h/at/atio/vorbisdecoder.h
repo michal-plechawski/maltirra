@@ -17,6 +17,7 @@
 #ifndef f_AT_ATIO_VORBISDECODER_H
 #define f_AT_ATIO_VORBISDECODER_H
 
+#include <vd2/system/binary.h>
 #include <vd2/system/vdstl.h>
 #include <at/atcore/fft.h>
 #include <at/atio/vorbisbitreader.h>
@@ -92,7 +93,7 @@ struct ATVorbisCodeBook {
 	bool IsValidForVQ() const { return !mVQValues.empty(); }
 
 	static uint32_t Rev32(uint32_t v) {
-		v = _byteswap_ulong(v);
+		v = VDSwizzleU32(v);
 
 		v = ((v & 0x55555555) << 1) + ((v & 0xAAAAAAAA) >> 1);
 		v = ((v & 0x33333333) << 2) + ((v & 0xCCCCCCCC) >> 2);

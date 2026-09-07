@@ -16,6 +16,7 @@
 
 #include <stdafx.h>
 #include <vd2/system/binary.h>
+#include <vd2/system/bitmath.h>
 #include <vd2/system/cpuaccel.h>
 #include <vd2/system/error.h>
 #include <vd2/system/file.h>
@@ -242,8 +243,7 @@ VDFORCEINLINE uint32 ATAudioReaderFLAC::BitReader::GetUnaryValue() {
 	} else
 #endif
 	{
-		unsigned long oneBitPos;
-		_BitScanReverse(&oneBitPos, bitAccum);
+		const int oneBitPos = VDFindHighestSetBitFast(bitAccum);
 
 #if VD_CPU_ARM64
 		// This is more optimal for ARM64, as the compiler doesn't realize

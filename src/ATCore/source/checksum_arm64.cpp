@@ -96,11 +96,11 @@ void ATChecksumUpdateSHA256_NEON(ATChecksumStateSHA256& VDRESTRICT state, const 
 		for(uint32 i = 0; i < 64; ++i) {
 			uint32 T1
 				= state2.H[7]
-				+ (_rotr(state2.H[4], 6) ^ _rotr(state2.H[4], 11) ^ _rotr(state2.H[4], 25))
+				+ (VDRotateRightU32(state2.H[4], 6) ^ VDRotateRightU32(state2.H[4], 11) ^ VDRotateRightU32(state2.H[4], 25))
 				+ (state2.H[6] ^ ((state2.H[5] ^ state2.H[6]) & state2.H[4])) + W[i];
 
 			uint32 T2
-				= (_rotr(state2.H[0], 2) ^ _rotr(state2.H[0], 13) ^ _rotr(state2.H[0], 22))
+				= (VDRotateRightU32(state2.H[0], 2) ^ VDRotateRightU32(state2.H[0], 13) ^ VDRotateRightU32(state2.H[0], 22))
 				+ ((state2.H[0] & state2.H[1]) ^ (state2.H[0] & state2.H[2]) ^ (state2.H[1] & state2.H[2]));
 
 			state2.H[7] = state2.H[6];

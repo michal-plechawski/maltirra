@@ -26,7 +26,6 @@
 #include <string.h>
 #include <stdio.h>
 #include <math.h>
-#include <tchar.h>
 #include <vd2/system/function.h>
 #include <vd2/system/linearalloc.h>
 #include <vd2/system/refcount.h>

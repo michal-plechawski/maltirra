@@ -114,7 +114,7 @@
     <None Include="source\athelp.hhw" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\ATHelpBuilder\ATHelpBuilder.vcxproj">
+    <ProjectReference Include="..\platform\Windows_x64\ATHelpBuilder\ATHelpBuilder.vcxproj">
       <Project>{2e82f9c0-cd0e-445f-899f-8a71338096be}</Project>
       <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
     </ProjectReference>

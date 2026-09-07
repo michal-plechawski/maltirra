@@ -1,0 +1,56 @@
+name: macOS ARM64
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: macos-arm64-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  compile:
+    name: Compile portable sources
+    runs-on: macos-15
+    timeout-minutes: 45
+
+    steps:
+      - name: Check out sources
+        uses: actions/checkout@v7
+
+      - name: Verify Apple Silicon toolchain
+        id: toolchain
+        run: |
+          if [[ "$(uname -m)" != arm64 ]]; then
+            echo "Expected an ARM64 runner, got $(uname -m)." >&2
+            exit 1
+          fi
+
+          clang++ --version
+          toolchain_hash=$(clang++ --version | shasum -a 256 | cut -c1-16)
+          echo "cache-key=apple-clang-$toolchain_hash" >> "$GITHUB_OUTPUT"
+
+      - name: Restore macOS ARM64 object cache
+        uses: actions/cache@v5
+        with:
+          path: obj/macOS_arm64/
+          key: altirra-v1-${{ runner.os }}-${{ runner.arch }}-${{ steps.toolchain.outputs.cache-key }}-${{ hashFiles('src/**') }}
+          restore-keys: |
+            altirra-v1-${{ runner.os }}-${{ runner.arch }}-${{ steps.toolchain.outputs.cache-key }}-
+
+      - name: Compile non-Windows sources
+        run: bash src/platform/macOS_arm64/build.sh
+
+      - name: Upload compile manifest
+        uses: actions/upload-artifact@v7
+        with:
+          name: altirra-macos-arm64-compile-${{ github.sha }}
+          path: obj/macOS_arm64/build-manifest.txt
+          if-no-files-found: error
+          retention-days: 14

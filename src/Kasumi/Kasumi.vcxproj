@@ -69,24 +69,24 @@
     <ClCompile Include="source\uberblit_resample.cpp" />
     <ClCompile Include="source\uberblit_resample_special.cpp" />
     <ClCompile Include="source\uberblit_swizzle.cpp" />
-    <ClCompile Include="source\uberblit_swizzle_x86.cpp">
+    <ClCompile Include="..\platform\Windows_x64\Kasumi\source\uberblit_swizzle_x86.cpp">
       <ExcludedFromBuild Condition="'$(Platform)'!='Win32'">true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="source\uberblit_ycbcr_generic.cpp" />
     <ClCompile Include="..\platform\Windows_x64\Kasumi\source\uberblit_ycbcr_sse2_intrin.cpp" />
-    <ClCompile Include="source\uberblit_ycbcr_x86.cpp">
+    <ClCompile Include="..\platform\Windows_x64\Kasumi\source\uberblit_ycbcr_x86.cpp">
       <ExcludedFromBuild Condition="'$(Platform)'!='Win32'">true</ExcludedFromBuild>
     </ClCompile>
-    <ClCompile Include="source\blt_spanutils_x86.cpp">
+    <ClCompile Include="..\platform\Windows_x64\Kasumi\source\blt_spanutils_x86.cpp">
       <ExcludedFromBuild Condition="'$(Platform)'!='Win32'">true</ExcludedFromBuild>
     </ClCompile>
-    <ClCompile Include="source\blt_x86.cpp">
+    <ClCompile Include="..\platform\Windows_x64\Kasumi\source\blt_x86.cpp">
       <ExcludedFromBuild Condition="'$(Platform)'!='Win32'">true</ExcludedFromBuild>
     </ClCompile>
-    <ClCompile Include="source\resample_stages_x86.cpp">
+    <ClCompile Include="..\platform\Windows_x64\Kasumi\source\resample_stages_x86.cpp">
       <ExcludedFromBuild Condition="'$(Platform)'!='Win32'">true</ExcludedFromBuild>
     </ClCompile>
-    <ClCompile Include="source\uberblit_resample_special_x86.cpp">
+    <ClCompile Include="..\platform\Windows_x64\Kasumi\source\uberblit_resample_special_x86.cpp">
       <ExcludedFromBuild Condition="'$(Platform)'!='Win32'">true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="..\platform\Windows_x64\Kasumi\source\resample_stages_x64.cpp">

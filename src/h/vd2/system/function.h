@@ -29,6 +29,7 @@
 #include <vd2/system/vdtypes.h>
 #include <functional>
 #include <cstddef>
+#include <type_traits>
 
 #ifdef _MSC_VER
 	#pragma warning(push)
