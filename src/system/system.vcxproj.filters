@@ -182,6 +182,9 @@
     <ClInclude Include="source\cacheimpl.inl">
       <Filter>Source Files</Filter>
     </ClInclude>
+    <ClInclude Include="source\filestream.inl">
+      <Filter>Source Files</Filter>
+    </ClInclude>
     <ClInclude Include="..\h\vd2\system\cmdline.h">
       <Filter>Header Files</Filter>
     </ClInclude>

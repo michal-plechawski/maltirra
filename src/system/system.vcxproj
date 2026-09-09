@@ -112,6 +112,7 @@
     <ClInclude Include="..\h\VD2\system\Error.h" />
     <ClInclude Include="..\h\vd2\system\event.h" />
     <ClInclude Include="..\h\vd2\system\file.h" />
+    <ClInclude Include="source\filestream.inl" />
     <ClInclude Include="..\h\vd2\system\fileasync.h" />
     <ClInclude Include="..\h\VD2\system\filesys.h" />
     <ClInclude Include="..\h\vd2\system\filewatcher.h" />

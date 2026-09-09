@@ -37,6 +37,9 @@
 	<ClCompile Include="source\TestSystem_File.cpp">
 	  <Filter>Source Files</Filter>
 	</ClCompile>
+	<ClCompile Include="source\TestSystem_FileStream.cpp">
+	  <Filter>Source Files</Filter>
+	</ClCompile>
 	<ClCompile Include="source\TestSystem_FileSysPortable.cpp">
 	  <Filter>Source Files</Filter>
 	</ClCompile>
