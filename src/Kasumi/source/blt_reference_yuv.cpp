@@ -790,7 +790,7 @@ void VDCDECL VDPixmapBlt_YUVPlanar_decode_reference(const VDPixmap& dst, const V
 	case 0:		// 4:4:4, 4:2:2
 	case 1:
 		break;
-	case 2:		// 4:2:0 (centered) 
+	case 2:		// 4:2:0 (centered)
 		vfunc = vert_expand2x_centered;
 		vert_buffer_size = w>>1;
 		yaccum = 6;

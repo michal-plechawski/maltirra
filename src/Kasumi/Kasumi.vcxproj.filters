@@ -58,7 +58,7 @@
     <ClCompile Include="source\blt_reference_rgb.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\platform\Windows_x64\Kasumi\source\blt_reference_yuv.cpp">
+    <ClCompile Include="source\blt_reference_yuv.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="source\blt_reference_yuv2yuv.cpp">
