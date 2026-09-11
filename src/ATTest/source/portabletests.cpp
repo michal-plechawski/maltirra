@@ -2,6 +2,7 @@
 
 #include <at/attest/portabletest.h>
 
+bool ATTestAltirraInputDefs(ATPortableTestContext& context);
 bool ATTestCoreChecksum(ATPortableTestContext& context);
 bool ATTestCoreFFT(ATPortableTestContext& context);
 bool ATTestCoreTimerService(ATPortableTestContext& context);
@@ -56,6 +57,7 @@ bool ATTestSystemZip(ATPortableTestContext& context);
 
 const ATPortableTestCase *ATGetPortableTests(size_t& count) {
 	static const ATPortableTestCase kTests[] = {
+		{ "Altirra_InputDefs", ATTestAltirraInputDefs },
 		{ "Core_Checksum", ATTestCoreChecksum },
 		{ "Core_FFT", ATTestCoreFFT },
 		{ "Core_TimerService", ATTestCoreTimerService },

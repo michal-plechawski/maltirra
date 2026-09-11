@@ -1039,7 +1039,7 @@
     <ClCompile Include="..\platform\Windows_x64\Altirra\source\printer1020.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\platform\Windows_x64\Altirra\source\inputdefs.cpp">
+    <ClCompile Include="source\inputdefs.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\platform\Windows_x64\Altirra\source\inputmap.cpp">
@@ -1773,7 +1773,7 @@
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\printer1020.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\platform\Windows_x64\Altirra\h\inputdefs.h">
+    <ClInclude Include="h\inputdefs.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\inputmap.h">

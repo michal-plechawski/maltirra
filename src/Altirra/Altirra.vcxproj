@@ -96,7 +96,7 @@
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\diskvirtimagebase.h" />
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\errordecode.h" />
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\fdc.h" />
-    <ClInclude Include="..\platform\Windows_x64\Altirra\h\inputdefs.h" />
+    <ClInclude Include="h\inputdefs.h" />
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\inputmap.h" />
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\mediamanager.h" />
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\multiplexer.h" />
@@ -272,7 +272,9 @@
     <ClCompile Include="..\platform\Windows_x64\Altirra\source\iderawimage.cpp" />
     <ClCompile Include="..\platform\Windows_x64\Altirra\source\idevhdimage.cpp" />
     <ClCompile Include="..\platform\Windows_x64\Altirra\source\inputcontroller.cpp" />
-    <ClCompile Include="..\platform\Windows_x64\Altirra\source\inputdefs.cpp" />
+    <ClCompile Include="source\inputdefs.cpp">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+    </ClCompile>
     <ClCompile Include="..\platform\Windows_x64\Altirra\source\inputmanager.cpp" />
     <ClCompile Include="..\platform\Windows_x64\Altirra\source\inputmap.cpp" />
     <ClCompile Include="..\platform\Windows_x64\Altirra\source\irqcontroller.cpp" />

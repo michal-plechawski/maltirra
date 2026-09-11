@@ -5,6 +5,10 @@
 	<ClCompile Include="source\portabletests.cpp">
 	  <PrecompiledHeader>NotUsing</PrecompiledHeader>
 	</ClCompile>
+	<ClCompile Include="source\TestAltirra_InputDefsPortable.cpp">
+	  <AdditionalIncludeDirectories>$(ProjectDir)..\Altirra\h;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+	  <PrecompiledHeader>NotUsing</PrecompiledHeader>
+	</ClCompile>
 	<ClCompile Include="source\TestSystem_Binary.cpp">
 	  <PrecompiledHeader>NotUsing</PrecompiledHeader>
 	</ClCompile>
