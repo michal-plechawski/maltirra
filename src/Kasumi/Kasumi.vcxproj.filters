@@ -124,6 +124,9 @@
     <ClCompile Include="source\uberblit_ycbcr_generic.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="source\uberblit_ycbcr_neon.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
     <ClCompile Include="..\platform\Windows_x64\Kasumi\source\uberblit_ycbcr_x86.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -252,6 +255,9 @@
     <ClInclude Include="h\uberblit_ycbcr.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="h\uberblit_ycbcr_accel.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
     <ClInclude Include="h\uberblit_ycbcr_generic.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -266,9 +272,6 @@
     </ClInclude>
     <ClInclude Include="h\stdafx.h">
       <Filter>Precompiled Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\platform\Windows_x64\Kasumi\h\uberblit_ycbcr_sse2_intrin.h">
-      <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="h\resample_stages_arm64.h">
       <Filter>Header Files</Filter>

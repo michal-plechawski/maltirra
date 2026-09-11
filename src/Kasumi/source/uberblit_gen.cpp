@@ -40,8 +40,8 @@
 	#include "uberblit_resample_special_x86.h"
 #endif
 
-#if VD_CPU_X86 || VD_CPU_X64
-	#include "uberblit_ycbcr_sse2_intrin.h"
+#if VD_CPU_X86 || VD_CPU_X64 || VD_CPU_ARM64
+	#include "uberblit_ycbcr_accel.h"
 #endif
 
 void VDPixmapGenerate(void *dst, ptrdiff_t pitch, sint32 bpr, sint32 height, IVDPixmapGen *gen, int genIndex) {
@@ -1425,8 +1425,8 @@ void VDPixmapUberBlitterGenerator::rgb32_to_ycbcr709() {
 
 	IVDPixmapGen *src = nullptr;
 
-#if VD_CPU_X86 || VD_CPU_X64
-	VDPixmapGenRGB32ToYCbCr709_SSE2 *src2 = new VDPixmapGenRGB32ToYCbCr709_SSE2;
+#if VD_CPU_X86 || VD_CPU_X64 || VD_CPU_ARM64
+	VDPixmapGenRGB32ToYCbCr709_Accel *src2 = new VDPixmapGenRGB32ToYCbCr709_Accel;
 	src2->Init(args[0].mpSrc, args[0].mSrcIndex);
 	src = src2;
 #endif

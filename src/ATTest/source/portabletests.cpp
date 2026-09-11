@@ -6,6 +6,7 @@ bool ATTestCoreChecksum(ATPortableTestContext& context);
 bool ATTestCoreFFT(ATPortableTestContext& context);
 bool ATTestCoreTimerService(ATPortableTestContext& context);
 bool ATTestKasumiResolve4x(ATPortableTestContext& context);
+bool ATTestKasumiYCbCr709(ATPortableTestContext& context);
 bool ATTestKasumiYUVReference(ATPortableTestContext& context);
 bool ATTestSystemBinary(ATPortableTestContext& context);
 bool ATTestSystemBitMath(ATPortableTestContext& context);
@@ -54,6 +55,7 @@ const ATPortableTestCase *ATGetPortableTests(size_t& count) {
 		{ "Core_FFT", ATTestCoreFFT },
 		{ "Core_TimerService", ATTestCoreTimerService },
 		{ "Kasumi_Resolve4x", ATTestKasumiResolve4x },
+		{ "Kasumi_YCbCr709", ATTestKasumiYCbCr709 },
 		{ "Kasumi_YUVReference", ATTestKasumiYUVReference },
 		{ "System_Binary", ATTestSystemBinary },
 		{ "System_BitMath", ATTestSystemBitMath },

@@ -19,25 +19,9 @@
 
 #if VD_CPU_X86 || VD_CPU_X64
 #include <intrin.h>
-#include "uberblit_ycbcr_sse2_intrin.h"
+#include "uberblit_ycbcr_accel.h"
 
-void VDPixmapGenRGB32ToYCbCr709_SSE2::Init(IVDPixmapGen *src, uint32 srcindex) {
-	InitSource(src, srcindex);
-}
-
-void VDPixmapGenRGB32ToYCbCr709_SSE2::Start() {
-	StartWindow(mWidth, 3);
-}
-
-const void *VDPixmapGenRGB32ToYCbCr709_SSE2::GetRow(sint32 y, uint32 index) {
-	return (const uint8 *)VDPixmapGenWindowBasedOneSource::GetRow(y, index) + mWindowPitch * index;
-}
-
-uint32 VDPixmapGenRGB32ToYCbCr709_SSE2::GetType(uint32 output) const {
-	return (mpSrc->GetType(mSrcIndex) & ~(kVDPixType_Mask | kVDPixSpace_Mask)) | kVDPixType_8 | kVDPixSpace_YCC_709;
-}
-
-void VDPixmapGenRGB32ToYCbCr709_SSE2::Compute(void *dst0, sint32 y) {
+void VDPixmapGenRGB32ToYCbCr709_Accel::Compute(void *dst0, sint32 y) {
 	__m128i rb_to_y  = _mm_set1_epi32(( 5983 << 16) + 2032);
 	__m128i rb_to_cb = _mm_set1_epi32((-3298 << 16) + 14392);
 	__m128i rb_to_cr = _mm_set1_epi32((14392 << 16) - 1320 + 65536);

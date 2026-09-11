@@ -73,6 +73,7 @@
       <ExcludedFromBuild Condition="'$(Platform)'!='Win32'">true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="source\uberblit_ycbcr_generic.cpp" />
+    <ClCompile Include="source\uberblit_ycbcr_neon.cpp" />
     <ClCompile Include="..\platform\Windows_x64\Kasumi\source\uberblit_ycbcr_sse2_intrin.cpp" />
     <ClCompile Include="..\platform\Windows_x64\Kasumi\source\uberblit_ycbcr_x86.cpp">
       <ExcludedFromBuild Condition="'$(Platform)'!='Win32'">true</ExcludedFromBuild>
@@ -129,8 +130,8 @@
     <ClInclude Include="h\uberblit_swizzle.h" />
     <ClInclude Include="h\uberblit_swizzle_x86.h" />
     <ClInclude Include="h\uberblit_ycbcr.h" />
+    <ClInclude Include="h\uberblit_ycbcr_accel.h" />
     <ClInclude Include="h\uberblit_ycbcr_generic.h" />
-    <ClInclude Include="..\platform\Windows_x64\Kasumi\h\uberblit_ycbcr_sse2_intrin.h" />
     <ClInclude Include="h\uberblit_ycbcr_x86.h" />
     <ClInclude Include="..\h\vd2\Kasumi\blitter.h" />
     <ClInclude Include="..\h\vd2\Kasumi\resample_kernels.h" />

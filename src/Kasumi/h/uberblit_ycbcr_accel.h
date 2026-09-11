@@ -15,20 +15,33 @@
 //	You should have received a copy of the GNU General Public License along
 //	with this program. If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef f_VD2_KASUMI_UBERBLIT_YCBCR_SSE2_INTRIN_H
-#define f_VD2_KASUMI_UBERBLIT_YCBCR_SSE2_INTRIN_H
+#ifndef f_VD2_KASUMI_UBERBLIT_YCBCR_ACCEL_H
+#define f_VD2_KASUMI_UBERBLIT_YCBCR_ACCEL_H
 
-#if VD_CPU_X86 || VD_CPU_X64
+#if VD_CPU_X86 || VD_CPU_X64 || VD_CPU_ARM64
 
 #include "uberblit.h"
 #include "uberblit_ycbcr.h"
 
-class VDPixmapGenRGB32ToYCbCr709_SSE2 final : public VDPixmapGenWindowBasedOneSource {
+class VDPixmapGenRGB32ToYCbCr709_Accel final : public VDPixmapGenWindowBasedOneSource {
 public:
-	void Init(IVDPixmapGen *src, uint32 srcindex);
-	void Start() override;
-	const void *GetRow(sint32 y, uint32 index) override;
-	uint32 GetType(uint32 output) const override;
+	void Init(IVDPixmapGen *src, uint32 srcindex) {
+		InitSource(src, srcindex);
+	}
+
+	void Start() override {
+		StartWindow(mWidth, 3);
+	}
+
+	const void *GetRow(sint32 y, uint32 index) override {
+		return (const uint8 *)VDPixmapGenWindowBasedOneSource::GetRow(y, index)
+			+ mWindowPitch * index;
+	}
+
+	uint32 GetType(uint32 output) const override {
+		return (mpSrc->GetType(mSrcIndex) & ~(kVDPixType_Mask | kVDPixSpace_Mask))
+			| kVDPixType_8 | kVDPixSpace_YCC_709;
+	}
 
 private:
 	void Compute(void *dst0, sint32 y) override;
