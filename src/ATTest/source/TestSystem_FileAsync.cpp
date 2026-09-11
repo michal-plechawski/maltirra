@@ -116,23 +116,25 @@ bool ATTestSystemFileAsync(ATPortableTestContext& context) {
 				bulkData[i] = static_cast<uint8>((i * 29 + 7) & 0xFF);
 
 			AT_PORTABLE_TEST_ASSERT(context, VDRemoveFile(path.c_str()));
-			file->SetPreemptiveExtend(false);
-			file->Open(path.c_str(), 2, 4096);
-			file->FastWrite(bulkData.data(), static_cast<uint32>(bulkData.size()));
+			std::unique_ptr<IVDFileAsync> bulkFile(VDCreateFileAsync(mode));
+			bulkFile->Open(path.c_str(), 2, 4096);
+			bulkFile->FastWrite(bulkData.data(), static_cast<uint32>(bulkData.size()));
 			AT_PORTABLE_TEST_ASSERT(context,
-				file->GetFastWritePos() == static_cast<sint64>(bulkData.size()));
-			file->FastWriteEnd();
-			file->Truncate(static_cast<sint64>(bulkData.size()));
-			file->Close();
+				bulkFile->GetFastWritePos() == static_cast<sint64>(bulkData.size()));
+			bulkFile->FastWriteEnd();
+			bulkFile->Truncate(static_cast<sint64>(bulkData.size()));
+			bulkFile->Close();
 			AT_PORTABLE_TEST_ASSERT(context,
 				VDAsyncFileHasContents(path.c_str(), bulkData.data(), bulkData.size()));
 		}
 
 		const VDStringW safePath = sandbox.GetModePath(modeValue, true);
-		file->Open(safePath.c_str(), 2, 4096);
-		file->FastWrite("truncate-me", 11);
-		file->SafeTruncateAndClose(7);
-		AT_PORTABLE_TEST_ASSERT(context, !file->IsOpen());
+		std::unique_ptr<IVDFileAsync> safeWriter(VDCreateFileAsync(mode));
+		safeWriter->SetPreemptiveExtend(true);
+		safeWriter->Open(safePath.c_str(), 2, 4096);
+		safeWriter->FastWrite("truncate-me", 11);
+		safeWriter->SafeTruncateAndClose(7);
+		AT_PORTABLE_TEST_ASSERT(context, !safeWriter->IsOpen());
 		VDFile safeFile(safePath.c_str(), nsVDFile::kRead | nsVDFile::kOpenExisting);
 		AT_PORTABLE_TEST_ASSERT(context, safeFile.size() == 7);
 	}
