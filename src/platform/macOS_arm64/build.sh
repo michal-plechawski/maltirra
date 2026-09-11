@@ -140,6 +140,7 @@ portable_test_sources=(
 	src/ATTest/source/TestSystem_Error.cpp
 	src/ATTest/source/TestSystem_Event.cpp
 	src/ATTest/source/TestSystem_File.cpp
+	src/ATTest/source/TestSystem_FileAsync.cpp
 	src/ATTest/source/TestSystem_FileStream.cpp
 	src/ATTest/source/TestSystem_FileWatcher.cpp
 	src/ATTest/source/TestSystem_FileSysPortable.cpp
@@ -178,6 +179,7 @@ portable_test_sources=(
 	src/platform/macOS_arm64/system/source/error_macos.mm
 	src/platform/macOS_arm64/system/source/event.cpp
 	src/platform/macOS_arm64/system/source/file.cpp
+	src/platform/macOS_arm64/system/source/fileasync.cpp
 	src/platform/macOS_arm64/system/source/filestream.cpp
 	src/platform/macOS_arm64/system/source/filewatcher.cpp
 	src/platform/macOS_arm64/system/source/filesys.cpp
