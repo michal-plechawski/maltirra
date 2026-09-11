@@ -1493,7 +1493,7 @@ void VDPixmapResolve4x_Scalar(void *dst, ptrdiff_t dstpitch, const void *src, pt
 				sumb += src3[0]*src3[0] + src3[4]*src3[4] + src3[ 8]*src3[ 8] + src3[12]*src3[12];
 				sumg += src3[1]*src3[1] + src3[5]*src3[5] + src3[ 9]*src3[ 9] + src3[13]*src3[13];
 				sumr += src3[2]*src3[2] + src3[6]*src3[6] + src3[10]*src3[10] + src3[14]*src3[14];
-				suma += src3[3]*src3[3] + src3[7]*src3[7] + src3[11]*src3[11] + src3[15]*src3[15];
+				suma += src3[3] + src3[7] + src3[11] + src3[15];
 
 				src3 += srcpitch;
 			}
