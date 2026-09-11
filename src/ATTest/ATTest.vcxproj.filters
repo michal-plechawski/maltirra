@@ -4,6 +4,9 @@
 	<ClCompile Include="source\portabletests.cpp">
 	  <Filter>Source Files</Filter>
 	</ClCompile>
+	<ClCompile Include="source\TestAltirra_ConstantsPortable.cpp">
+	  <Filter>Source Files</Filter>
+	</ClCompile>
 	<ClCompile Include="source\TestAltirra_InputDefsPortable.cpp">
 	  <Filter>Source Files</Filter>
 	</ClCompile>

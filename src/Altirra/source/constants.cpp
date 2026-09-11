@@ -14,15 +14,15 @@
 //	You should have received a copy of the GNU General Public License along
 //	with this program. If not, see <http://www.gnu.org/licenses/>.
 
-#include <stdafx.h>
+#include <vd2/system/vdstl.h>
 #include <at/atcore/enumparseimpl.h>
 #include "constants.h"
 
 AT_DEFINE_ENUM_TABLE_BEGIN(ATHLEProgramLoadMode)
-	{ kATHLEProgramLoadMode_Default, "default" }, 
-	{ kATHLEProgramLoadMode_Type3Poll, "type3poll" }, 
-	{ kATHLEProgramLoadMode_Deferred, "deferred" }, 
-	{ kATHLEProgramLoadMode_DiskBoot, "diskboot" }, 
+	{ kATHLEProgramLoadMode_Default, "default" },
+	{ kATHLEProgramLoadMode_Type3Poll, "type3poll" },
+	{ kATHLEProgramLoadMode_Deferred, "deferred" },
+	{ kATHLEProgramLoadMode_DiskBoot, "diskboot" },
 AT_DEFINE_ENUM_TABLE_END(ATHLEProgramLoadMode, kATHLEProgramLoadMode_Default)
 
 AT_DEFINE_ENUM_TABLE_BEGIN(ATMemoryMode)

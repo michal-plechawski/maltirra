@@ -72,7 +72,7 @@
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\compatdb.h" />
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\compatedb.h" />
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\compatengine.h" />
-    <ClInclude Include="..\platform\Windows_x64\Altirra\h\constants.h" />
+    <ClInclude Include="h\constants.h" />
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\cputracer.h" />
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\customdevice.h" />
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\customdevicevmtypes.h" />
@@ -203,7 +203,9 @@
     <ClCompile Include="..\platform\Windows_x64\Altirra\source\compatedb.cpp" />
     <ClCompile Include="..\platform\Windows_x64\Altirra\source\compatengine.cpp" />
     <ClCompile Include="..\platform\Windows_x64\Altirra\source\console.cpp" />
-    <ClCompile Include="..\platform\Windows_x64\Altirra\source\constants.cpp" />
+    <ClCompile Include="source\constants.cpp">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+    </ClCompile>
     <ClCompile Include="..\platform\Windows_x64\Altirra\source\covox.cpp" />
     <ClCompile Include="..\platform\Windows_x64\Altirra\source\cpu.cpp" />
     <ClCompile Include="..\platform\Windows_x64\Altirra\source\cpu6502.cpp" />

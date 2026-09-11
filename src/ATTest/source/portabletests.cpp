@@ -2,6 +2,7 @@
 
 #include <at/attest/portabletest.h>
 
+bool ATTestAltirraConstants(ATPortableTestContext& context);
 bool ATTestAltirraInputDefs(ATPortableTestContext& context);
 bool ATTestAltirraPNG(ATPortableTestContext& context);
 bool ATTestCoreChecksum(ATPortableTestContext& context);
@@ -58,6 +59,7 @@ bool ATTestSystemZip(ATPortableTestContext& context);
 
 const ATPortableTestCase *ATGetPortableTests(size_t& count) {
 	static const ATPortableTestCase kTests[] = {
+		{ "Altirra_Constants", ATTestAltirraConstants },
 		{ "Altirra_InputDefs", ATTestAltirraInputDefs },
 		{ "Altirra_PNG", ATTestAltirraPNG },
 		{ "Core_Checksum", ATTestCoreChecksum },
