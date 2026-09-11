@@ -21,7 +21,8 @@
 
 void VDPixmapResolve4x_SSE2(void *dst, ptrdiff_t dstpitch, const void *src, ptrdiff_t srcpitch, uint32 w, uint32 h) {
 	__m128i mask = _mm_set1_epi16(0x00ff);
-	__m128i alphamask = _mm_set_epi16(-1, 0, 0 ,0, -1, 0, 0, 0);
+	__m128i alphamask = _mm_set_epi16(-1, -1, 0, 0, -1, -1, 0, 0);
+	__m128i alphaone = _mm_set1_epi16(1);
 
 	do {
 		uint32 *__restrict dst2 = (uint32 *)dst;
@@ -41,16 +42,19 @@ void VDPixmapResolve4x_SSE2(void *dst, ptrdiff_t dstpitch, const void *src, ptrd
 
 				__m128i pxrb = _mm_and_si128(c, mask);
 				__m128i pxag = _mm_srli_epi16(c, 8);
+				__m128i mulag = _mm_or_si128(
+					_mm_andnot_si128(alphamask, pxag),
+					_mm_and_si128(alphamask, alphaone));
 
 				sumrb = _mm_add_epi32(sumrb, _mm_madd_epi16(pxrb, pxrb));
-				sumag = _mm_add_epi32(sumag, _mm_madd_epi16(pxag, _mm_or_si128(pxag, alphamask)));
+				sumag = _mm_add_epi32(sumag, _mm_madd_epi16(pxag, mulag));
 			}
 
 			// sumrb = r1b1r0b0
 			// sumag = a1g1a0g0
 
 			__m128i sum = _mm_add_epi32(_mm_unpacklo_epi32(sumrb, sumag), _mm_unpackhi_epi32(sumrb, sumag));
-			__m128 avgf = _mm_mul_ps(_mm_cvtepi32_ps(sum), _mm_set_ps(-1.0f / 16.0f, 1.0f / 16.0f, 1.0f / 16.0f, 1.0f / 16.0f));
+			__m128 avgf = _mm_mul_ps(_mm_cvtepi32_ps(sum), _mm_set1_ps(1.0f / 16.0f));
 			__m128 avgf2 = _mm_sqrt_ps(avgf);
 
 			avgf2 = _mm_shuffle_ps(avgf2, _mm_shuffle_ps(avgf, avgf2, _MM_SHUFFLE(3, 2, 3, 2)), _MM_SHUFFLE(1, 2, 1, 0));
