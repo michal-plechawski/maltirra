@@ -11,9 +11,7 @@
 
 #include <at/attest/portabletest.h>
 
-#if defined(_WIN32)
-#include <windows.h>
-#else
+#if defined(__APPLE__)
 #include <CoreFoundation/CoreFoundation.h>
 #endif
 
@@ -63,6 +61,7 @@ namespace {
 		return false;
 	}
 
+#if defined(__APPLE__)
 	class VDFileWatcherTestCallback final : public IVDFileWatcherCallback {
 	public:
 		bool OnFileUpdated(const wchar_t *path) override {
@@ -78,19 +77,11 @@ namespace {
 	bool VDPumpFileWatcherCallback(VDFileWatcherTestCallback& callback) {
 		const uint64 deadline = VDGetCurrentTick64() + 4000;
 		while(callback.mCallCount < 2 && VDGetCurrentTick64() < deadline) {
-#if defined(_WIN32)
-			MSG message;
-			while(PeekMessageW(&message, nullptr, 0, 0, PM_REMOVE)) {
-				TranslateMessage(&message);
-				DispatchMessageW(&message);
-			}
-			MsgWaitForMultipleObjectsEx(0, nullptr, 50, QS_ALLINPUT, MWMO_INPUTAVAILABLE);
-#else
 			CFRunLoopRunInMode(kCFRunLoopDefaultMode, 0.05, true);
-#endif
 		}
 		return callback.mCallCount >= 2;
 	}
+#endif
 }
 
 bool ATTestSystemFileWatcher(ATPortableTestContext& context) {
@@ -118,6 +109,7 @@ bool ATTestSystemFileWatcher(ATPortableTestContext& context) {
 	AT_PORTABLE_TEST_ASSERT(context, !watcher.IsActive());
 	AT_PORTABLE_TEST_ASSERT(context, !watcher.Wait(0));
 
+#if defined(__APPLE__)
 	VDFileWatcherTestCallback callback;
 	watcher.Init(sandbox.mFilePath.c_str(), &callback);
 	VDWriteWatcherTestFile(sandbox.mFilePath.c_str(), "callback-update");
@@ -126,6 +118,7 @@ bool ATTestSystemFileWatcher(ATPortableTestContext& context) {
 	AT_PORTABLE_TEST_ASSERT(context,
 		VDFileIsPathEqual(callback.mPath.c_str(), sandbox.mFilePath.c_str()));
 	watcher.Shutdown();
+#endif
 
 	watcher.Init(sandbox.mCreatedPath.c_str(), nullptr);
 	VDWriteWatcherTestFile(sandbox.mCreatedPath.c_str(), "created");
