@@ -196,7 +196,9 @@
     <ClCompile Include="..\platform\Windows_x64\Altirra\source\cmdtools.cpp" />
     <ClCompile Include="..\platform\Windows_x64\Altirra\source\cmdview.cpp" />
     <ClCompile Include="..\platform\Windows_x64\Altirra\source\cmdwindow.cpp" />
-    <ClCompile Include="..\platform\Windows_x64\Altirra\source\common_png.cpp" />
+    <ClCompile Include="source\common_png.cpp">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+    </ClCompile>
     <ClCompile Include="..\platform\Windows_x64\Altirra\source\compatdb.cpp" />
     <ClCompile Include="..\platform\Windows_x64\Altirra\source\compatedb.cpp" />
     <ClCompile Include="..\platform\Windows_x64\Altirra\source\compatengine.cpp" />
@@ -513,7 +515,7 @@
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\cartridge.h" />
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\cassette.h" />
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\cheatengine.h" />
-    <ClInclude Include="..\platform\Windows_x64\Altirra\h\common_png.h" />
+    <ClInclude Include="h\common_png.h" />
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\console.h" />
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\covox.h" />
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\cpu.h" />

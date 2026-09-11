@@ -132,6 +132,7 @@ portable_test_sources=(
 	src/platform/macOS_arm64/ATTest/source/main.cpp
 	src/ATTest/source/portabletests.cpp
 	src/ATTest/source/TestAltirra_InputDefsPortable.cpp
+	src/ATTest/source/TestAltirra_PNGPortable.cpp
 	src/ATTest/source/TestCore_ChecksumPortable.cpp
 	src/ATTest/source/TestCore_FFTPortable.cpp
 	src/ATTest/source/TestCore_TimerServicePortable.cpp
@@ -190,6 +191,7 @@ portable_test_sources=(
 	src/ATCore/source/fft.cpp
 	src/ATCore/source/fft_neon.cpp
 	src/ATCore/source/fft_scalar.cpp
+	src/Altirra/source/common_png.cpp
 	src/Altirra/source/inputdefs.cpp
 	src/ATIO/source/audioreaderflac_arm64.cpp
 	src/ATIO/source/cartridgeimage.cpp

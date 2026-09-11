@@ -16,9 +16,28 @@
 //	along with this program; if not, write to the Free Software
 //	Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
-#include <stdafx.h>
-#include "common_png.h"
+#ifndef f_VD2_MEIA_COMMON_PNG_H
+#define f_VD2_MEIA_COMMON_PNG_H
+
+#include <cstdlib>
+#include <vd2/system/vdtypes.h>
 
 namespace nsVDPNG {
-	extern const uint8 kPNGSignature[8]={137,80,78,71,13,10,26,10};
+	extern const uint8 kPNGSignature[8];
+
+	inline int PNGPaethPredictor(int a, int b, int c) {
+		int p  = a + b - c;
+		int pa = std::abs(p - a);
+		int pb = std::abs(p - b);
+		int pc = std::abs(p - c);
+
+		if (pa <= pb && pa <= pc)
+			return a;
+		else if (pb <= pc)
+			return b;
+		else
+			return c;
+	}
 };
+
+#endif

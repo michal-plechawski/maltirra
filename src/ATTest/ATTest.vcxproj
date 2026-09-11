@@ -6,7 +6,9 @@
 	  <PrecompiledHeader>NotUsing</PrecompiledHeader>
 	</ClCompile>
 	<ClCompile Include="source\TestAltirra_InputDefsPortable.cpp">
-	  <AdditionalIncludeDirectories>$(ProjectDir)..\Altirra\h;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+	  <PrecompiledHeader>NotUsing</PrecompiledHeader>
+	</ClCompile>
+	<ClCompile Include="source\TestAltirra_PNGPortable.cpp">
 	  <PrecompiledHeader>NotUsing</PrecompiledHeader>
 	</ClCompile>
 	<ClCompile Include="source\TestSystem_Binary.cpp">
@@ -238,7 +240,7 @@
   <PropertyGroup Label="UserMacros" />
   <ItemDefinitionGroup>
     <ClCompile>
-      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories);$(ProjectDir)..\platform\Windows_x64\Altirra\h;$(ProjectDir)..\ATIO\h</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories);$(ProjectDir)..\Altirra\h;$(ProjectDir)..\platform\Windows_x64\Altirra\h;$(ProjectDir)..\ATIO\h</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>

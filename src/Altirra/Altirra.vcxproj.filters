@@ -91,7 +91,7 @@
     <ClCompile Include="..\platform\Windows_x64\Altirra\source\cheatengine.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\platform\Windows_x64\Altirra\source\common_png.cpp">
+    <ClCompile Include="source\common_png.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\platform\Windows_x64\Altirra\source\console.cpp">
@@ -1134,7 +1134,7 @@
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\cheatengine.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\platform\Windows_x64\Altirra\h\common_png.h">
+    <ClInclude Include="h\common_png.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\console.h">
