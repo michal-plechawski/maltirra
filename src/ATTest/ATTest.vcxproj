@@ -122,6 +122,9 @@
 	<ClCompile Include="source\TestSystem_Vectors.cpp">
 	  <PrecompiledHeader>NotUsing</PrecompiledHeader>
 	</ClCompile>
+	<ClCompile Include="source\TestSystem_ZipPortable.cpp">
+	  <PrecompiledHeader>NotUsing</PrecompiledHeader>
+	</ClCompile>
 	<ClCompile Include="..\platform\Windows_x64\ATTest\source\blob.cpp" />
     <ClCompile Include="..\platform\Windows_x64\ATTest\source\main.cpp" />
     <ClCompile Include="..\platform\Windows_x64\ATTest\source\stdafx.cpp">

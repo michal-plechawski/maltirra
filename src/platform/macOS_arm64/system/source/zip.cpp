@@ -23,8 +23,12 @@
 //	3.	This notice may not be removed or altered from any source
 //		distribution.
 
-#include <stdafx.h>
+#include <algorithm>
+#include <cstring>
+#include <iterator>
+#include <limits>
 #include <numeric>
+#include <utility>
 #include <vd2/system/vdtypes.h>
 #include <vd2/system/zip.h>
 #include <vd2/system/binary.h>
@@ -39,10 +43,11 @@
 #include <intrin.h>
 #elif defined(VD_CPU_ARM64)
 #include <vd2/system/cpuaccel.h>
-#include <intrin.h>
 #include <arm_neon.h>
 
-#if !VD_COMPILER_MSVC
+#if VD_COMPILER_MSVC
+#include <intrin.h>
+#else
 #include <arm_acle.h>
 #endif
 
@@ -644,14 +649,14 @@ uint32 VDCRC32Update_ARM64_CRC32(uint32 crc, const void *src, size_t len) {
 	if (len >= 64) {
 		size_t numLargeBlocks = len >> 6;
 		do {
-			crc = __crc32d(crc, *((uint64 *)src + 0));
-			crc = __crc32d(crc, *((uint64 *)src + 1));
-			crc = __crc32d(crc, *((uint64 *)src + 2));
-			crc = __crc32d(crc, *((uint64 *)src + 3));
-			crc = __crc32d(crc, *((uint64 *)src + 4));
-			crc = __crc32d(crc, *((uint64 *)src + 5));
-			crc = __crc32d(crc, *((uint64 *)src + 6));
-			crc = __crc32d(crc, *((uint64 *)src + 7));
+			crc = __crc32d(crc, VDReadUnalignedU64((const uint8 *)src + 0));
+			crc = __crc32d(crc, VDReadUnalignedU64((const uint8 *)src + 8));
+			crc = __crc32d(crc, VDReadUnalignedU64((const uint8 *)src + 16));
+			crc = __crc32d(crc, VDReadUnalignedU64((const uint8 *)src + 24));
+			crc = __crc32d(crc, VDReadUnalignedU64((const uint8 *)src + 32));
+			crc = __crc32d(crc, VDReadUnalignedU64((const uint8 *)src + 40));
+			crc = __crc32d(crc, VDReadUnalignedU64((const uint8 *)src + 48));
+			crc = __crc32d(crc, VDReadUnalignedU64((const uint8 *)src + 56));
 			src = (const char *)src + 64;
 		} while(--numLargeBlocks);
 
@@ -660,7 +665,7 @@ uint32 VDCRC32Update_ARM64_CRC32(uint32 crc, const void *src, size_t len) {
 
 	// do small blocks
 	while(len >= 8) {
-		crc = __crc32d(crc, *(uint64 *)src);
+		crc = __crc32d(crc, VDReadUnalignedU64(src));
 		src = (const char *)src + 8;
 		len -= 8;
 	}
@@ -898,7 +903,7 @@ void VDDeflateHuffmanTable::BuildCode(int depth_limit) {
 
 		for(int i = depth_limit-2; overallocation > 0; ) {
 			if (i < 0)
-				__debugbreak();
+				VDBREAK;
 
 			if (mCodesPerLen[i]) {
 				--mCodesPerLen[i];
@@ -917,7 +922,7 @@ void VDDeflateHuffmanTable::BuildCode(int depth_limit) {
 
 		for(int i = 1; underallocation > 0; ) {
 			if (i < 0 || i > 15)
-				__debugbreak();
+				VDBREAK;
 			if (mCodesPerLen[i] && (0x8000>>i) <= underallocation) {
 				underallocation -= (0x8000>>i);
 				--mCodesPerLen[i];

@@ -168,6 +168,7 @@ portable_test_sources=(
 	src/ATTest/source/TestSystem_VDSTLHash.cpp
 	src/ATTest/source/TestSystem_VDSTLHashTable.cpp
 	src/ATTest/source/TestSystem_Vectors.cpp
+	src/ATTest/source/TestSystem_ZipPortable.cpp
 	src/platform/macOS_arm64/system/source/binary.cpp
 	src/platform/macOS_arm64/system/source/bitmath.cpp
 	src/platform/macOS_arm64/system/source/cache.cpp
@@ -209,6 +210,7 @@ portable_test_sources=(
 	src/platform/macOS_arm64/system/source/vdstl_hash.cpp
 	src/platform/macOS_arm64/system/source/vdstl_hashtable.cpp
 	src/platform/macOS_arm64/system/source/vectors.cpp
+	src/platform/macOS_arm64/system/source/zip.cpp
 )
 portable_test_objects=()
 

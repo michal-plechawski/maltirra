@@ -94,6 +94,8 @@ public:
 		mpBuffer = &src;
 		mBitsLeft = 0;
 		mBitAccum = 0;
+		mpSrc = nullptr;
+		mpSrcLimit = nullptr;
 	}
 
 	void CheckEOF();
@@ -289,7 +291,7 @@ protected:
 
 	static constexpr uint32 kBufferSize = T_Enhanced ? 131072 : 65536;
 	static constexpr uint32 kBufferMask = kBufferSize - 1;
-	
+
 	// +32 bytes so we can overrun a copy
 	uint8	mBuffer[kBufferSize + 32] {};
 

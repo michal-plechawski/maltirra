@@ -121,6 +121,9 @@
 	<ClCompile Include="source\TestSystem_Vectors.cpp">
 	  <Filter>Source Files</Filter>
 	</ClCompile>
+	<ClCompile Include="source\TestSystem_ZipPortable.cpp">
+	  <Filter>Source Files</Filter>
+	</ClCompile>
     <Filter Include="Source Files">
       <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
       <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>

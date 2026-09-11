@@ -41,6 +41,7 @@ bool ATTestSystemVDSTL(ATPortableTestContext& context);
 bool ATTestSystemVDSTLHash(ATPortableTestContext& context);
 bool ATTestSystemVDSTLHashTable(ATPortableTestContext& context);
 bool ATTestSystemVectors(ATPortableTestContext& context);
+bool ATTestSystemZip(ATPortableTestContext& context);
 
 const ATPortableTestCase *ATGetPortableTests(size_t& count) {
 	static const ATPortableTestCase kTests[] = {
@@ -83,6 +84,7 @@ const ATPortableTestCase *ATGetPortableTests(size_t& count) {
 		{ "System_VDSTLHash", ATTestSystemVDSTLHash },
 		{ "System_VDSTLHashTable", ATTestSystemVDSTLHashTable },
 		{ "System_Vectors", ATTestSystemVectors },
+		{ "System_Zip", ATTestSystemZip },
 	};
 
 	count = sizeof kTests / sizeof kTests[0];
