@@ -131,6 +131,7 @@ portable_test_sources=(
 	src/ATTest/source/portabletests.cpp
 	src/ATTest/source/TestCore_ChecksumPortable.cpp
 	src/ATTest/source/TestCore_FFTPortable.cpp
+	src/ATTest/source/TestCore_TimerServicePortable.cpp
 	src/ATTest/source/TestSystem_Binary.cpp
 	src/ATTest/source/TestSystem_BitMath.cpp
 	src/ATTest/source/TestSystem_Cache.cpp
@@ -173,9 +174,11 @@ portable_test_sources=(
 	src/ATTest/source/TestSystem_ZipPortable.cpp
 	src/ATCore/source/checksum.cpp
 	src/ATCore/source/checksum_arm64.cpp
+	src/ATCore/source/asyncdispatcherimpl.cpp
 	src/ATCore/source/fft.cpp
 	src/ATCore/source/fft_neon.cpp
 	src/ATCore/source/fft_scalar.cpp
+	src/platform/macOS_arm64/ATCore/source/timerserviceimpl_macos.cpp
 	src/platform/macOS_arm64/system/source/binary.cpp
 	src/platform/macOS_arm64/system/source/bitmath.cpp
 	src/platform/macOS_arm64/system/source/cache.cpp

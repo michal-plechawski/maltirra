@@ -40,6 +40,9 @@
 	<ClCompile Include="source\TestCore_FFTPortable.cpp">
 	  <Filter>Source Files</Filter>
 	</ClCompile>
+	<ClCompile Include="source\TestCore_TimerServicePortable.cpp">
+	  <Filter>Source Files</Filter>
+	</ClCompile>
 	<ClCompile Include="source\TestSystem_File.cpp">
 	  <Filter>Source Files</Filter>
 	</ClCompile>
