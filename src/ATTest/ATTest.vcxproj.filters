@@ -73,6 +73,9 @@
 	<ClCompile Include="source\TestSystem_Process.cpp">
 	  <Filter>Source Files</Filter>
 	</ClCompile>
+	<ClCompile Include="source\TestSystem_Registry.cpp">
+	  <Filter>Source Files</Filter>
+	</ClCompile>
 	<ClCompile Include="source\TestSystem_RegistryMemory.cpp">
 	  <Filter>Source Files</Filter>
 	</ClCompile>

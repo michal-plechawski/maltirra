@@ -109,7 +109,7 @@ void VDRegistryProviderW32::CloseKey(void *key) {
 
 bool VDRegistryProviderW32::SetBool(void *key, const char *pszName, bool val) {
 	DWORD dw = val;
-	
+
 	return !RegSetValueExA((HKEY)key, pszName, 0, REG_DWORD, (const BYTE *)&dw, sizeof dw);
 }
 
@@ -241,15 +241,15 @@ bool VDRegistryProviderW32::GetBinary(void *key, const char *pszName, char *buf,
 }
 
 bool VDRegistryProviderW32::RemoveValue(void *key, const char *name) {
-	return 0 != RegDeleteValueA((HKEY)key, name);
+	return ERROR_SUCCESS == RegDeleteValueA((HKEY)key, name);
 }
 
 bool VDRegistryProviderW32::RemoveKey(void *key, const char *name) {
-	return 0 != RegDeleteKeyA((HKEY)key, name);
+	return ERROR_SUCCESS == RegDeleteKeyA((HKEY)key, name);
 }
 
 bool VDRegistryProviderW32::RemoveKeyRecursive(void *key, const char *name) {
-	return 0 != SHDeleteKeyA((HKEY)key, name);
+	return ERROR_SUCCESS == SHDeleteKeyA((HKEY)key, name);
 }
 
 void *VDRegistryProviderW32::EnumKeysBegin(void *key) {

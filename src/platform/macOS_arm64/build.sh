@@ -152,6 +152,7 @@ portable_test_sources=(
 	src/ATTest/source/TestSystem_MathPortable.cpp
 	src/ATTest/source/TestSystem_Memory.cpp
 	src/ATTest/source/TestSystem_Process.cpp
+	src/ATTest/source/TestSystem_Registry.cpp
 	src/ATTest/source/TestSystem_RegistryMemory.cpp
 	src/ATTest/source/TestSystem_RefCount.cpp
 	src/ATTest/source/TestSystem_StrUtil.cpp
@@ -191,6 +192,7 @@ portable_test_sources=(
 	src/platform/macOS_arm64/system/source/math.cpp
 	src/platform/macOS_arm64/system/source/memory.cpp
 	src/platform/macOS_arm64/system/source/process.cpp
+	src/platform/macOS_arm64/system/source/registry.cpp
 	src/platform/macOS_arm64/system/source/registrymemory.cpp
 	src/platform/macOS_arm64/system/source/refcount.cpp
 	src/platform/macOS_arm64/system/source/stdaccel.cpp
@@ -216,6 +218,7 @@ done
 
 "$compiler" -arch arm64 "${portable_test_objects[@]}" \
 	-framework AppKit \
+	-framework CoreFoundation \
 	-framework CoreServices \
 	-o "$portable_test_executable"
 
