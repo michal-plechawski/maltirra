@@ -15,6 +15,7 @@
 //	with this program. If not, see <http://www.gnu.org/licenses/>.
 
 #include <stdafx.h>
+#include <vd2/system/binary.h>
 #include <vd2/system/vdtypes.h>
 
 #ifdef VD_CPU_ARM64
@@ -30,6 +31,15 @@ namespace {
 		dst.resize(src.size() + 8, 0);
 
 		std::transform(src.begin(), src.end(), dst.begin(), [](sint32 v) { return (sint16)v; });
+	}
+
+	uint8x8_t LoadFourU8(const void *source) {
+		return vcreate_u8(VDReadUnalignedU32(source));
+	}
+
+	int16x4_t LoadFourU8AsS16(const void *source) {
+		return vreinterpret_s16_u16(
+			vget_low_u16(vmovl_u8(LoadFourU8(source))));
 	}
 }
 
@@ -148,7 +158,8 @@ void VDResamplerSeparableTableRowStageNEON::Filter(void *dst, const void *src, s
 			if constexpr (T_FilterSizeOddPair) {
 				uint8x8_t px01 = vld1_u8(src2);
 				int16x8_t pxw01 = vreinterpretq_s16_u16(vmovl_u8(px01));
-				int16x4_t coeff01 = vcreate_s16(*(uint32 *)filter2);
+				int16x4_t coeff01 =
+					vcreate_s16(VDReadUnalignedU32(filter2));
 
 				accum = vmlal_lane_s16(accum, vget_low_s16(pxw01), coeff01, 0);
 				accum = vmlal_high_lane_s16(accum, pxw01, coeff01, 1);
@@ -242,7 +253,12 @@ void VDResamplerSeparableTableColStageNEON::Filter(uint8 *VDRESTRICT dst, const 
 
 			if constexpr (std::is_same_v<T_FilterSize, size_t>) {
 				for(size_t i = 8; i < filterSize; i += 2) {
-					int16x4_t moreCoeffs = vcreate_s16(*(uint32 *)&filter[i]);
+					px0 = vreinterpretq_s16_u16(vmovl_u8(
+						vld1_u8((const uint8 *)src[i] + xoffset)));
+					px1 = vreinterpretq_s16_u16(vmovl_u8(
+						vld1_u8((const uint8 *)src[i + 1] + xoffset)));
+					int16x4_t moreCoeffs =
+						vcreate_s16(VDReadUnalignedU32(&filter[i]));
 
 					accum1 = vmlal_lane_s16(accum1, vget_low_s16(px0), moreCoeffs, 0);
 					accum2 = vmlal_high_lane_s16(accum2, px0, moreCoeffs, 0);
@@ -263,36 +279,57 @@ void VDResamplerSeparableTableColStageNEON::Filter(uint8 *VDRESTRICT dst, const 
 	if (w & 1) {
 		int32x4_t accum;
 
-		accum = vmull_laneq_s16(vreinterpret_s16_u16(vget_low_u16(vmovl_u8(vcreate_u8(*(uint32 *)((const uint8 *)src[0] + xoffset))))), baseFilter, 0);
-		accum = vmlal_laneq_s16(accum, vreinterpret_s16_u16(vget_low_u16(vmovl_u8(vcreate_u8(*(uint32 *)((const uint8 *)src[1] + xoffset))))), baseFilter, 1);
+		accum = vmull_laneq_s16(
+			LoadFourU8AsS16((const uint8 *)src[0] + xoffset), baseFilter, 0);
+		accum = vmlal_laneq_s16(
+			accum, LoadFourU8AsS16((const uint8 *)src[1] + xoffset), baseFilter, 1);
 
 		if constexpr (filterMinSize >= 4) {
-			accum = vmlal_laneq_s16(accum, vreinterpret_s16_u16(vget_low_u16(vmovl_u8(vcreate_u8(*(uint32 *)((const uint8 *)src[2] + xoffset))))), baseFilter, 2);
-			accum = vmlal_laneq_s16(accum, vreinterpret_s16_u16(vget_low_u16(vmovl_u8(vcreate_u8(*(uint32 *)((const uint8 *)src[3] + xoffset))))), baseFilter, 3);
+			accum = vmlal_laneq_s16(
+				accum, LoadFourU8AsS16((const uint8 *)src[2] + xoffset), baseFilter, 2);
+			accum = vmlal_laneq_s16(
+				accum, LoadFourU8AsS16((const uint8 *)src[3] + xoffset), baseFilter, 3);
 		}
 
 		if constexpr (filterMinSize >= 6) {
-			accum = vmlal_laneq_s16(accum, vreinterpret_s16_u16(vget_low_u16(vmovl_u8(vcreate_u8(*(uint32 *)((const uint8 *)src[2] + xoffset))))), baseFilter, 4);
-			accum = vmlal_laneq_s16(accum, vreinterpret_s16_u16(vget_low_u16(vmovl_u8(vcreate_u8(*(uint32 *)((const uint8 *)src[3] + xoffset))))), baseFilter, 5);
+			accum = vmlal_laneq_s16(
+				accum, LoadFourU8AsS16((const uint8 *)src[4] + xoffset), baseFilter, 4);
+			accum = vmlal_laneq_s16(
+				accum, LoadFourU8AsS16((const uint8 *)src[5] + xoffset), baseFilter, 5);
 		}
 
 		if constexpr (filterMinSize >= 8) {
-			accum = vmlal_laneq_s16(accum, vreinterpret_s16_u16(vget_low_u16(vmovl_u8(vcreate_u8(*(uint32 *)((const uint8 *)src[2] + xoffset))))), baseFilter, 6);
-			accum = vmlal_laneq_s16(accum, vreinterpret_s16_u16(vget_low_u16(vmovl_u8(vcreate_u8(*(uint32 *)((const uint8 *)src[3] + xoffset))))), baseFilter, 7);
+			accum = vmlal_laneq_s16(
+				accum, LoadFourU8AsS16((const uint8 *)src[6] + xoffset), baseFilter, 6);
+			accum = vmlal_laneq_s16(
+				accum, LoadFourU8AsS16((const uint8 *)src[7] + xoffset), baseFilter, 7);
 
 			if constexpr (std::is_same_v<T_FilterSize, size_t>) {
 				for(size_t i = 8; i < filterSize; i += 2) {
-					int16x4_t moreCoeffs = vcreate_s16(*(uint32 *)&filter[i]);
+					int16x4_t moreCoeffs =
+						vcreate_s16(VDReadUnalignedU32(&filter[i]));
 
-					accum = vmlal_lane_s16(accum, vreinterpret_s16_u16(vget_low_u16(vmovl_u8(vcreate_u8(*(uint32 *)((const uint8 *)src[i+0] + xoffset))))), moreCoeffs, 0);
-					accum = vmlal_lane_s16(accum, vreinterpret_s16_u16(vget_low_u16(vmovl_u8(vcreate_u8(*(uint32 *)((const uint8 *)src[i+1] + xoffset))))), moreCoeffs, 1);
+					accum = vmlal_lane_s16(
+						accum,
+						LoadFourU8AsS16((const uint8 *)src[i + 0] + xoffset),
+						moreCoeffs,
+						0);
+					accum = vmlal_lane_s16(
+						accum,
+						LoadFourU8AsS16((const uint8 *)src[i + 1] + xoffset),
+						moreCoeffs,
+						1);
 				}
 			}
 		}
 
 		int16x4_t accum2 = vqrshrn_n_s32(accum, 14);
 
-		*(uint32 *)dst = vget_lane_u32(vreinterpret_u32_u8(vqmovun_s16(vcombine_s16(accum2, accum2))), 0);
+		VDWriteUnalignedU32(
+			dst,
+			vget_lane_u32(
+				vreinterpret_u32_u8(vqmovun_s16(vcombine_s16(accum2, accum2))),
+				0));
 
 		dst += 4;
 		xoffset += 4;
@@ -549,15 +586,19 @@ void VDResamplerSeparableTableRowStage8NEON::Process(void *dst, const void *src,
 		} else {
 			do {
 				// gather four pairs of adjacent samples to filter
-				size_t offset0 = *(const uint32 *)(rowFilter + 0);
-				size_t offset1 = *(const uint32 *)(rowFilter + 2);
-				size_t offset2 = *(const uint32 *)(rowFilter + 4);
-				size_t offset3 = *(const uint32 *)(rowFilter + 6);
+				size_t offset0 = VDReadUnalignedU32(rowFilter + 0);
+				size_t offset1 = VDReadUnalignedU32(rowFilter + 2);
+				size_t offset2 = VDReadUnalignedU32(rowFilter + 4);
+				size_t offset3 = VDReadUnalignedU32(rowFilter + 6);
 
-				uint16x4_t srcVector = vdup_n_u16(*(const uint16 *)((const uint8 *)src + offset0));
-				srcVector = vset_lane_u16(*(const uint16 *)((const uint8 *)src + offset1), srcVector, 1);
-				srcVector = vset_lane_u16(*(const uint16 *)((const uint8 *)src + offset2), srcVector, 2);
-				srcVector = vset_lane_u16(*(const uint16 *)((const uint8 *)src + offset3), srcVector, 3);
+				uint16x4_t srcVector = vdup_n_u16(
+					VDReadUnalignedU16((const uint8 *)src + offset0));
+				srcVector = vset_lane_u16(
+					VDReadUnalignedU16((const uint8 *)src + offset1), srcVector, 1);
+				srcVector = vset_lane_u16(
+					VDReadUnalignedU16((const uint8 *)src + offset2), srcVector, 2);
+				srcVector = vset_lane_u16(
+					VDReadUnalignedU16((const uint8 *)src + offset3), srcVector, 3);
 
 				// filter and then pairwise add
 				int16x8_t srcVector2 = vreinterpretq_s16_u16(vmovl_u8(srcVector));
@@ -570,7 +611,8 @@ void VDResamplerSeparableTableRowStage8NEON::Process(void *dst, const void *src,
 				int16x4_t accum2 = vqrshrn_n_s32(accum, 14);
 				uint8x8_t accum3 = vqmovun_s16(vcombine_s16(accum2, accum2));
 
-				*(uint32 *)dst8 = vget_lane_u32(vreinterpret_u32_u8(accum3), 0);
+				VDWriteUnalignedU32(
+					dst8, vget_lane_u32(vreinterpret_u32_u8(accum3), 0));
 
 				rowFilter += 16;
 				dst8 += 4;
@@ -583,7 +625,7 @@ void VDResamplerSeparableTableRowStage8NEON::Process(void *dst, const void *src,
 	if (kquads == 1) {
 		while(w--) {
 			const uint8 *VDRESTRICT src2 = (const uint8 *)src + (uint16)rowFilter[0];
-			int16x4_t v = vreinterpret_s16_u16(vget_low_u8(vmovl_u8(vreinterpret_u8_u32(vdup_n_u32(*(uint32 *)src2)))));
+			int16x4_t v = LoadFourU8AsS16(src2);
 			int16x4_t coeffs = vld1_s16(rowFilter + 4);
 			int32x4_t accum = vmull_s16(v, coeffs);
 
@@ -603,7 +645,7 @@ void VDResamplerSeparableTableRowStage8NEON::Process(void *dst, const void *src,
 			int32x4_t accum = vdupq_n_s32(0);
 			uint32 i = kquads;
 			do {
-				int16x4_t v = vreinterpret_s16_u16(vget_low_u16(vmovl_u8(vreinterpret_u8_u32(vdup_n_u32(*(uint32 *)src2)))));
+				int16x4_t v = LoadFourU8AsS16(src2);
 				int16x4_t coeffs = vld1_s16(rowFilter);
 				accum = vmlal_s16(accum, v, coeffs);
 
@@ -709,28 +751,38 @@ namespace {
 		uint32 xoffsetLimit2 = xoffset + n*4;
 		while(xoffset < xoffsetLimit2) {
 			// this section is critical and must be unrolled
-			int32x4_t accum = vmull_laneq_s16(vreinterpret_s16_u16(vget_low_u16(vmovl_u8(vreinterpret_u8_u32(vdup_n_u32(*(uint32 *)(rows[0] + xoffset)))))), rowFilter, 0);
-			accum = vmlal_laneq_s16(accum, vreinterpret_s16_u16(vget_low_u16(vmovl_u8(vreinterpret_u8_u32(vdup_n_u32(*(uint32 *)(rows[1] + xoffset)))))), rowFilter, 1);
+			int32x4_t accum = vmull_laneq_s16(
+				LoadFourU8AsS16(rows[0] + xoffset), rowFilter, 0);
+			accum = vmlal_laneq_s16(
+				accum, LoadFourU8AsS16(rows[1] + xoffset), rowFilter, 1);
 
 			if constexpr(T_Rows >= 4) {
-				accum = vmlal_laneq_s16(accum, vreinterpret_s16_u16(vget_low_u16(vmovl_u8(vreinterpret_u8_u32(vdup_n_u32(*(uint32 *)(rows[2] + xoffset)))))), rowFilter, 2);
-				accum = vmlal_laneq_s16(accum, vreinterpret_s16_u16(vget_low_u16(vmovl_u8(vreinterpret_u8_u32(vdup_n_u32(*(uint32 *)(rows[3] + xoffset)))))), rowFilter, 3);
+				accum = vmlal_laneq_s16(
+					accum, LoadFourU8AsS16(rows[2] + xoffset), rowFilter, 2);
+				accum = vmlal_laneq_s16(
+					accum, LoadFourU8AsS16(rows[3] + xoffset), rowFilter, 3);
 			}
 
 			if constexpr(T_Rows >= 6) {
-				accum = vmlal_laneq_s16(accum, vreinterpret_s16_u16(vget_low_u16(vmovl_u8(vreinterpret_u8_u32(vdup_n_u32(*(uint32 *)(rows[4] + xoffset)))))), rowFilter, 4);
-				accum = vmlal_laneq_s16(accum, vreinterpret_s16_u16(vget_low_u16(vmovl_u8(vreinterpret_u8_u32(vdup_n_u32(*(uint32 *)(rows[5] + xoffset)))))), rowFilter, 5);
+				accum = vmlal_laneq_s16(
+					accum, LoadFourU8AsS16(rows[4] + xoffset), rowFilter, 4);
+				accum = vmlal_laneq_s16(
+					accum, LoadFourU8AsS16(rows[5] + xoffset), rowFilter, 5);
 			}
 
 			if constexpr(T_Rows >= 8) {
-				accum = vmlal_laneq_s16(accum, vreinterpret_s16_u16(vget_low_u16(vmovl_u8(vreinterpret_u8_u32(vdup_n_u32(*(uint32 *)(rows[6] + xoffset)))))), rowFilter, 6);
-				accum = vmlal_laneq_s16(accum, vreinterpret_s16_u16(vget_low_u16(vmovl_u8(vreinterpret_u8_u32(vdup_n_u32(*(uint32 *)(rows[7] + xoffset)))))), rowFilter, 7);
+				accum = vmlal_laneq_s16(
+					accum, LoadFourU8AsS16(rows[6] + xoffset), rowFilter, 6);
+				accum = vmlal_laneq_s16(
+					accum, LoadFourU8AsS16(rows[7] + xoffset), rowFilter, 7);
 			}
 
 			int16x4_t accum2 = vqrshrn_n_s32(accum, 14);
 			uint8x8_t accum3 = vqmovun_s16(vcombine_s16(accum2, accum2));
 
-			*(uint32 *)(dst + xoffset) = vget_lane_u32(vreinterpret_u32_u8(accum3), 0);
+			VDWriteUnalignedU32(
+				dst + xoffset,
+				vget_lane_u32(vreinterpret_u32_u8(accum3), 0));
 
 			xoffset += 4;
 		}
@@ -769,14 +821,16 @@ namespace {
 		}
 
 		if (n & 1) {
-			uint8x8_t v0 = vreinterpret_u8_u32(vdup_n_u32(*(uint32 *)(row0 + xoffset)));
-			uint8x8_t v1 = vreinterpret_u8_u32(vdup_n_u32(*(uint32 *)(row1 + xoffset)));
+			uint8x8_t v0 = LoadFourU8(row0 + xoffset);
+			uint8x8_t v1 = LoadFourU8(row1 + xoffset);
 
 			// filter two sets of four pairs of pixels
 			uint16x8_t accum = vmlal_u8(vmull_u8(v0, coeff0), v1, coeff1);
 
 			uint8x8_t accum2 = vqrshrn_n_u16(accum, 7);
-			*(uint32 *)(dst + xoffset) = vget_lane_u32(vreinterpret_u32_u8(accum2), 0);
+			VDWriteUnalignedU32(
+				dst + xoffset,
+				vget_lane_u32(vreinterpret_u32_u8(accum2), 0));
 		}
 	}
 }
@@ -820,31 +874,13 @@ void VDResamplerSeparableTableColStage8NEON::Process(void *dst0, const void *con
 						size_t j = 0;
 
 						do {
-							int16x4_t c0 = vreinterpret_s16_u16(
-								vget_low_u16(
-									vmovl_u8(
-										vreinterpret_u8_u32(
-											vdup_n_u32(
-												*(uint32 *)(src[j+0] + xoffset)
-											)
-										)
-									)
-								)
-							);
+							int16x4_t c0 =
+								LoadFourU8AsS16(src[j + 0] + xoffset);
+							int16x4_t c1 =
+								LoadFourU8AsS16(src[j + 1] + xoffset);
 
-							int16x4_t c1 = vreinterpret_s16_u16(
-								vget_low_u16(
-									vmovl_u8(
-										vreinterpret_u8_u32(
-											vdup_n_u32(
-												*(uint32 *)(src[j+1] + xoffset)
-											)
-										)
-									)
-								)
-							);
-
-							int16x4_t coeff = vreinterpret_s16_u32(vdup_n_u32(*(uint32 *)&filter[j]));
+							int16x4_t coeff = vreinterpret_s16_u32(
+								vdup_n_u32(VDReadUnalignedU32(&filter[j])));
 							accum = vmlal_lane_s16(accum, c1, coeff, 1);
 							accum = vmlal_lane_s16(accum, c0, coeff, 0);
 
@@ -854,7 +890,9 @@ void VDResamplerSeparableTableColStage8NEON::Process(void *dst0, const void *con
 						int16x4_t accum2 = vqrshrn_n_s32(accum, 14);
 						uint8x8_t accum3 = vqmovun_s16(vcombine_s16(accum2, accum2));
 
-						*(uint32 *)(dst + xoffset) = vget_lane_u32(vreinterpret_u32_u8(accum3), 0);
+						VDWriteUnalignedU32(
+							dst + xoffset,
+							vget_lane_u32(vreinterpret_u32_u8(accum3), 0));
 
 						xoffset += 4;
 					}

@@ -133,6 +133,7 @@ portable_test_sources=(
 	src/ATTest/source/TestCore_FFTPortable.cpp
 	src/ATTest/source/TestCore_TimerServicePortable.cpp
 	src/ATTest/source/TestKasumi_Resolve4xPortable.cpp
+	src/ATTest/source/TestKasumi_ResampleStagesPortable.cpp
 	src/ATTest/source/TestKasumi_YCbCr709Portable.cpp
 	src/ATTest/source/TestKasumi_YUVReferencePortable.cpp
 	src/ATTest/source/TestSystem_Binary.cpp
@@ -186,6 +187,10 @@ portable_test_sources=(
 	src/Kasumi/source/pixmaputils.cpp
 	src/Kasumi/source/region.cpp
 	src/Kasumi/source/region_neon.cpp
+	src/Kasumi/source/resample_kernels.cpp
+	src/Kasumi/source/resample_stages.cpp
+	src/Kasumi/source/resample_stages_arm64.cpp
+	src/Kasumi/source/resample_stages_reference.cpp
 	src/Kasumi/source/uberblit_ycbcr_neon.cpp
 	src/platform/macOS_arm64/ATCore/source/timerserviceimpl_macos.cpp
 	src/platform/macOS_arm64/system/source/binary.cpp

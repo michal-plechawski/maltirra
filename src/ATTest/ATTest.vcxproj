@@ -47,6 +47,10 @@
 	<ClCompile Include="source\TestKasumi_Resolve4xPortable.cpp">
 	  <PrecompiledHeader>NotUsing</PrecompiledHeader>
 	</ClCompile>
+	<ClCompile Include="source\TestKasumi_ResampleStagesPortable.cpp">
+	  <AdditionalIncludeDirectories>$(ProjectDir)..\Kasumi\h;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+	  <PrecompiledHeader>NotUsing</PrecompiledHeader>
+	</ClCompile>
 	<ClCompile Include="source\TestKasumi_YCbCr709Portable.cpp">
 	  <PrecompiledHeader>NotUsing</PrecompiledHeader>
 	</ClCompile>

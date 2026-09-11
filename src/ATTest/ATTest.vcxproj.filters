@@ -46,6 +46,9 @@
 	<ClCompile Include="source\TestKasumi_Resolve4xPortable.cpp">
 	  <Filter>Source Files</Filter>
 	</ClCompile>
+	<ClCompile Include="source\TestKasumi_ResampleStagesPortable.cpp">
+	  <Filter>Source Files</Filter>
+	</ClCompile>
 	<ClCompile Include="source\TestKasumi_YCbCr709Portable.cpp">
 	  <Filter>Source Files</Filter>
 	</ClCompile>
