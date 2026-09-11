@@ -2,6 +2,7 @@
 
 #include <at/attest/portabletest.h>
 
+bool ATTestCoreChecksum(ATPortableTestContext& context);
 bool ATTestSystemBinary(ATPortableTestContext& context);
 bool ATTestSystemBitMath(ATPortableTestContext& context);
 bool ATTestSystemCache(ATPortableTestContext& context);
@@ -45,6 +46,7 @@ bool ATTestSystemZip(ATPortableTestContext& context);
 
 const ATPortableTestCase *ATGetPortableTests(size_t& count) {
 	static const ATPortableTestCase kTests[] = {
+		{ "Core_Checksum", ATTestCoreChecksum },
 		{ "System_Binary", ATTestSystemBinary },
 		{ "System_BitMath", ATTestSystemBitMath },
 		{ "System_Cache", ATTestSystemCache },

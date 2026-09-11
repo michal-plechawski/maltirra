@@ -2,8 +2,11 @@
 
 #include <stdio.h>
 #include <at/attest/portabletest.h>
+#include <vd2/system/cpuaccel.h>
 
 int main() {
+	CPUEnableExtensions(CPUCheckForExtensions());
+
 	size_t testCount = 0;
 	const ATPortableTestCase *tests = ATGetPortableTests(testCount);
 	int failures = 0;
@@ -23,5 +26,6 @@ int main() {
 	}
 
 	printf("Portable tests complete. Tests: %zu, failures: %d\n", testCount, failures);
+	VDCPUCleanupExtensions();
 	return failures ? 1 : 0;
 }

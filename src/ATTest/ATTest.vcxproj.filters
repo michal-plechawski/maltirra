@@ -34,6 +34,9 @@
 	<ClCompile Include="source\TestSystem_Event.cpp">
 	  <Filter>Source Files</Filter>
 	</ClCompile>
+	<ClCompile Include="source\TestCore_ChecksumPortable.cpp">
+	  <Filter>Source Files</Filter>
+	</ClCompile>
 	<ClCompile Include="source\TestSystem_File.cpp">
 	  <Filter>Source Files</Filter>
 	</ClCompile>
