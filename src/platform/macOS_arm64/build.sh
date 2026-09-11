@@ -132,6 +132,7 @@ portable_test_sources=(
 	src/ATTest/source/TestCore_ChecksumPortable.cpp
 	src/ATTest/source/TestCore_FFTPortable.cpp
 	src/ATTest/source/TestCore_TimerServicePortable.cpp
+	src/ATTest/source/TestIO_FLACAccelPortable.cpp
 	src/ATTest/source/TestKasumi_Resolve4xPortable.cpp
 	src/ATTest/source/TestKasumi_ResampleStagesPortable.cpp
 	src/ATTest/source/TestKasumi_YCbCr709Portable.cpp
@@ -182,6 +183,7 @@ portable_test_sources=(
 	src/ATCore/source/fft.cpp
 	src/ATCore/source/fft_neon.cpp
 	src/ATCore/source/fft_scalar.cpp
+	src/ATIO/source/audioreaderflac_arm64.cpp
 	src/Kasumi/source/blt_reference_yuv.cpp
 	src/Kasumi/source/blt_spanutils.cpp
 	src/Kasumi/source/pixmaputils.cpp

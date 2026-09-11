@@ -41,7 +41,7 @@ void ATFLACReconstructLPC_Narrow_NEON_Impl(sint32 *__restrict y, uint32 n, const
 	int16x8_t coeffz = vmovq_n_s16(0);
 	int16x8_t coeff0 = coeffz;
 	int16x8_t coeff1;
-	
+
 	// load coefficients and pack to s16
 	const auto loadPack = [](const sint32 *p) {
 		return vcombine_s16(vqmovn_s32(vld1q_s32(p)), vqmovn_s32(vld1q_s32(p + 4)));
@@ -148,7 +148,7 @@ void ATFLACReconstructLPC_Medium_NEON_Impl(sint32 *__restrict y, uint32 n, const
 	int32x4_t coeff5 = coeffz;
 	int32x4_t coeff6 = coeffz;
 	int32x4_t coeff7 = coeffz;
-	
+
 	// load coefficients
 	const sint32 *__restrict lpcCoeffsEnd = lpcCoeffs + ((Order + 3) & ~3);
 	                          coeff7 = vld1q_s32(&lpcCoeffsEnd[- 4]);
@@ -184,7 +184,7 @@ void ATFLACReconstructLPC_Medium_NEON_Impl(sint32 *__restrict y, uint32 n, const
 	int32x4_t pipe7 = pipez;
 
 	for(uint32 i = 0; i < Order; ++i) {
-		const sint16 v = y[i];
+		const sint32 v = y[i];
 
 		{
 		                          pipe7 = vextq_s32(pipe6, pipe7, 3);
@@ -287,7 +287,7 @@ template<int Order>
 void ATFLACReconstructLPC_Wide_NEON_Impl(sint32 *__restrict y, uint32 n, const sint32 *__restrict lpcCoeffs, int qlpShift) {
 	static constexpr int OrderQuads = (Order+3) >> 2;
 	int32x4_t coeffs[OrderQuads];
-	
+
 	// load coefficients
 	for(int i=0; i<OrderQuads; ++i)
 		coeffs[i] = vld1q_s32(lpcCoeffs + 4*i);
@@ -296,7 +296,7 @@ void ATFLACReconstructLPC_Wide_NEON_Impl(sint32 *__restrict y, uint32 n, const s
 		// compute dot product
 		int64x2_t vsrc;
 		int64x2_t vacc;
-		
+
 		                          vsrc = vld1q_s32(y +  0);
 		                          vacc = vmull_s32     (      vget_low_s32(vsrc), vget_low_s32(coeffs[0]));
 		if constexpr (Order >  2) vacc = vmlal_high_s32(vacc,              vsrc ,              coeffs[0] );
