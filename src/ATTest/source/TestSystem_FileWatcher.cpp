@@ -103,6 +103,7 @@ bool ATTestSystemFileWatcher(ATPortableTestContext& context) {
 	watcher.Init(sandbox.mFilePath.c_str(), nullptr);
 	AT_PORTABLE_TEST_ASSERT(context, watcher.IsActive());
 	AT_PORTABLE_TEST_ASSERT(context, !watcher.Wait(0));
+	VDThreadSleep(50);
 	VDWriteWatcherTestFile(sandbox.mFilePath.c_str(), "updated-content");
 	AT_PORTABLE_TEST_ASSERT(context, watcher.Wait(5000));
 	watcher.Shutdown();
