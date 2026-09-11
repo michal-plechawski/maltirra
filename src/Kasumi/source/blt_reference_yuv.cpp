@@ -19,17 +19,11 @@
 #include <stdafx.h>
 #include <vd2/system/vdtypes.h>
 #include <vd2/system/vdstl.h>
-#include <vd2/system/cpuaccel.h>
 #include <vd2/system/memory.h>
-#include <vd2/system/intrin.h>
 #include <vd2/Kasumi/pixmap.h>
 #include <vd2/Kasumi/pixmaputils.h>
 
 #include "blt_spanutils.h"
-
-#ifdef _M_IX86
-	#include "blt_spanutils_x86.h"
-#endif
 
 using namespace nsVDPixmapSpanUtils;
 
@@ -754,13 +748,6 @@ namespace {
 	typedef void (VDCDECL *tpYUVPlanarVertDecoder)(uint8 *dst, const uint8 *const *srcs, sint32 w, uint8 phase);
 }
 
-#ifdef _M_IX86
-	extern "C" void __cdecl vdasm_pixblt_YUV444Planar_to_XRGB1555_scan_MMX(void *dst, const uint8 *y, const uint8 *cb, const uint8 *cr, uint32 count);
-	extern "C" void __cdecl vdasm_pixblt_YUV444Planar_to_RGB565_scan_MMX(void *dst, const uint8 *y, const uint8 *cb, const uint8 *cr, uint32 count);
-	extern "C" void __cdecl vdasm_pixblt_YUV444Planar_to_XRGB8888_scan_MMX(void *dst, const uint8 *y, const uint8 *cb, const uint8 *cr, uint32 count);
-#endif
-
-
 void VDCDECL VDPixmapBlt_YUVPlanar_decode_reference(const VDPixmap& dst, const VDPixmap& src, vdpixsize w, vdpixsize h) {
 	const VDPixmapFormatInfo& srcinfo = VDPixmapGetInfo(src.format);
 	int hbits = srcinfo.auxwbits;
@@ -812,24 +799,6 @@ void VDCDECL VDPixmapBlt_YUVPlanar_decode_reference(const VDPixmap& dst, const V
 	--yleft;
 
 	tpYUVPlanarFinalDecoder dfunc = NULL;
-
-#ifdef _M_IX86
-	uint32 cpuflags = CPUGetEnabledExtensions();
-
-	if (cpuflags & CPUF_SUPPORTS_MMX) {
-		if (cpuflags & CPUF_SUPPORTS_INTEGER_SSE) {
-			if (vfunc == vert_expand2x_centered)
-				vfunc = vert_expand2x_centered_ISSE;
-		}
-
-		switch(dst.format) {
-		case nsVDPixmap::kPixFormat_XRGB1555:	dfunc = vdasm_pixblt_YUV444Planar_to_XRGB1555_scan_MMX;	break;
-		case nsVDPixmap::kPixFormat_RGB565:		dfunc = vdasm_pixblt_YUV444Planar_to_RGB565_scan_MMX;	break;
-		case nsVDPixmap::kPixFormat_XRGB8888:	dfunc = vdasm_pixblt_YUV444Planar_to_XRGB8888_scan_MMX;	break;
-		}
-	}
-#endif
-
 	bool halfchroma = false;
 
 	if (!dfunc) {
@@ -889,14 +858,6 @@ void VDCDECL VDPixmapBlt_YUVPlanar_decode_reference(const VDPixmap& dst, const V
 		VDNEVERHERE;
 		return;
 	}
-
-#ifdef _M_IX86
-	if (cpuflags & CPUF_SUPPORTS_INTEGER_SSE) {
-		if (hfunc == horiz_expand2x_coaligned)
-			hfunc = horiz_expand2x_coaligned_ISSE;
-	}
-#endif
-
 	uint32 chroma_srcwidth = -(-w >> srcinfo.auxwbits);
 	horiz_buffer_size = (horiz_buffer_size + 15) & ~15;
 	vert_buffer_size = (vert_buffer_size + 15) & ~15;
@@ -974,12 +935,6 @@ void VDCDECL VDPixmapBlt_YUVPlanar_decode_reference(const VDPixmap& dst, const V
 
 		yaccum += yinc;
 	}
-
-#ifdef _M_IX86
-	if (cpuflags & CPUF_SUPPORTS_MMX) {
-		_mm_empty();
-	}
-#endif
 }
 
 namespace {
@@ -1015,16 +970,6 @@ namespace {
 			VDNEVERHERE;
 			return;
 		}
-
-#ifdef _M_IX86
-		uint32 cpuflags = CPUGetEnabledExtensions();
-
-		if (cpuflags & CPUF_SUPPORTS_INTEGER_SSE) {
-			if (hfunc == horiz_expand2x_coaligned)
-				hfunc = horiz_expand2x_coaligned_ISSE;
-		}
-#endif
-
 		int winsize, winposnext, winstep;
 
 		switch(yshift) {
@@ -1061,14 +1006,6 @@ namespace {
 			VDNEVERHERE;
 			return;
 		}
-
-#ifdef _M_IX86
-		if (cpuflags & CPUF_SUPPORTS_INTEGER_SSE) {
-			if (vfunc == vert_expand2x_centered)
-				vfunc = vert_expand2x_centered_ISSE;
-		}
-#endif
-
 		int dsth = -(-h >> dstinfo.auxhbits);
 		int srch = -(-h >> srcinfo.auxhbits);
 		int dstw = -(-w >> dstinfo.auxwbits);
@@ -1108,12 +1045,6 @@ namespace {
 			winposnext += winstep;
 			vdptrstep(dst, dstpitch);
 		} while(--dsth);
-
-#ifdef _M_IX86
-		if (cpuflags & CPUF_SUPPORTS_MMX) {
-			_mm_empty();
-		}
-#endif
 	}
 }
 
