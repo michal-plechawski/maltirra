@@ -60,6 +60,12 @@
     <ClCompile Include="..\platform\Windows_x64\ATIO\source\cartridgeimage_x86.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="source\cassetteaudiofilters.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\platform\Windows_x64\ATIO\source\cassetteaudiofilters_x86.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
     <ClCompile Include="source\cartridgetypes.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -124,9 +130,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="source\audioutils.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\platform\Windows_x64\ATIO\source\cassetteaudiofilters.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="source\audioreader.cpp">
@@ -213,6 +216,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="h\at\atio\cassetteaudiofilters.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="h\at\atio\internal\cassetteaudiofilters.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="h\at\atio\internal\cartridgeimage.h">

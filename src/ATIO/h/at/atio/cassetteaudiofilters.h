@@ -17,9 +17,10 @@
 #ifndef f_AT_ATIO_CASSETTEAUDIOFILTERS_H
 #define f_AT_ATIO_CASSETTEAUDIOFILTERS_H
 
-#include <at/atcore/fft.h>
 #include <vd2/system/Error.h>
 #include <vd2/system/thread.h>
+#include <vd2/system/vdstl.h>
+#include <at/atcore/fft.h>
 
 class IATAudioReader;
 

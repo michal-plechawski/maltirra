@@ -22,6 +22,7 @@
 #include <at/atcore/configvar.h>
 #include <at/atio/audioreader.h>
 #include <at/atio/cassetteaudiofilters.h>
+#include <at/atio/internal/cassetteaudiofilters.h>
 
 ATConfigVarFloat g_ATCVTapeDecodeCompensationRate("tape.decode.compensation_rate", 0.05f);
 ATConfigVarFloat g_ATCVTapeDecodeCompensationThreshold("tape.decode.compensation_threshold", 2.0f);
@@ -48,61 +49,6 @@ uint32 ATCassetteAudioSource::ReadAudio(sint16 (*dst)[2], uint32 n) {
 ////////////////////////////////////////////////////////////////////////////////
 
 namespace {
-#if VD_CPU_X86 || VD_CPU_X64
-	void minMax16x2_SSE2(const sint16 * VDRESTRICT src, uint32 n, sint32& minvL, sint32& maxvL, sint32& minvR, sint32& maxvR) {
-		// We do unaligned loads from this array, so it's important that we
-		// avoid data cache unit (DCU) split penalties on older CPUs.
-		static const __declspec(align(64)) uint64 window_table[6] = {
-			0, 0, (uint64)0 - 1, (uint64)0 - 1, 0, 0
-		};
-
-		const __m128i * VDRESTRICT src128 = (const __m128i *)((uintptr)src & ~(uintptr)15);
-		const __m128i * VDRESTRICT srcend128 = (const __m128i *)((uintptr)(src + n*2) & ~(uintptr)15);
-		const ptrdiff_t leftOffset = (ptrdiff_t)((uintptr)src & 15);
-		const __m128i leftMask = _mm_loadu_si128((const __m128i *)((const char *)window_table + 16 - leftOffset));
-		const ptrdiff_t rightOffset = (ptrdiff_t)((uintptr)(src + n * 2) & 15);
-		const __m128i rightMask = _mm_loadu_si128((const __m128i *)((const char *)window_table + 32 - rightOffset));
-
-		__m128i minAcc = _mm_insert_epi16(_mm_cvtsi32_si128(minvL), minvR, 1);
-		__m128i maxAcc = _mm_insert_epi16(_mm_cvtsi32_si128(maxvL), maxvR, 1);
-
-		if (src128 != srcend128) {
-			__m128i vleft = _mm_and_si128(*src128++, leftMask);
-			minAcc = _mm_min_epi16(minAcc, vleft);
-			maxAcc = _mm_max_epi16(maxAcc, vleft);
-
-			while(src128 != srcend128) {
-				__m128i vmid = *src128++;
-
-				minAcc = _mm_min_epi16(minAcc, vmid);
-				maxAcc = _mm_max_epi16(maxAcc, vmid);
-			}
-
-			if (rightOffset) {
-				__m128i vright = _mm_and_si128(*src128, rightMask);
-				minAcc = _mm_min_epi16(minAcc, vright);
-				maxAcc = _mm_max_epi16(maxAcc, vright);
-			}
-		} else {
-			__m128i v = _mm_and_si128(src128[0], _mm_and_si128(leftMask, rightMask));
-
-			minAcc = _mm_min_epi16(minAcc, v);
-			maxAcc = _mm_max_epi16(maxAcc, v);
-		}
-
-		// four four accumulators
-		minAcc = _mm_min_epi16(minAcc, _mm_shuffle_epi32(minAcc, 0xEE));
-		maxAcc = _mm_max_epi16(maxAcc, _mm_shuffle_epi32(maxAcc, 0xEE));
-		minAcc = _mm_min_epi16(minAcc, _mm_shuffle_epi32(minAcc, 0x55));
-		maxAcc = _mm_max_epi16(maxAcc, _mm_shuffle_epi32(maxAcc, 0x55));
-
-		minvL = (sint16)_mm_extract_epi16(minAcc, 0);
-		minvR = (sint16)_mm_extract_epi16(minAcc, 1);
-		maxvL = (sint16)_mm_extract_epi16(maxAcc, 0);
-		maxvR = (sint16)_mm_extract_epi16(maxAcc, 1);
-	}
-#endif
-
 	void minMax16x2_scalar(const sint16 * VDRESTRICT src, uint32 n, sint32& minvL, sint32& maxvL, sint32& minvR, sint32& maxvR) {
 		for(uint32 i=0; i<n; ++i) {
 			sint32 vL = src[0];
@@ -119,7 +65,7 @@ namespace {
 	void minMax16x2(const sint16 * VDRESTRICT src, uint32 n, sint32& minvL, sint32& maxvL, sint32& minvR, sint32& maxvR) {
 #if VD_CPU_X86 || VD_CPU_X64
 		if (SSE2_enabled)
-			minMax16x2_SSE2(src, n, minvL, maxvL, minvR, maxvR);
+			ATCassetteAudioMinMax16x2_SSE2(src, n, minvL, maxvL, minvR, maxvR);
 		else
 #endif
 			minMax16x2_scalar(src, n, minvL, maxvL, minvR, maxvR);
@@ -279,43 +225,6 @@ namespace {
 		return accum;
 	}
 
-#if VD_CPU_X86 || VD_CPU_X64
-	uint64 resample16x2_SSE2(sint16 *d, const sint16 *s, uint32 count, uint64 accum, sint64 inc) {
-		__m128i round = _mm_set1_epi32(0x2000);
-
-		do {
-			const __m128i *VDRESTRICT s2 = (const __m128i *)(s + (size_t)(accum >> 32)*2);
-			const __m128i *VDRESTRICT f = (const __m128i *)kernel[(uint32)accum >> 27];
-
-			__m128i frac = _mm_shufflelo_epi16(_mm_cvtsi32_si128((accum >> 12) & 0x7FFF), 0);
-			__m128i cdiff = _mm_mulhi_epi16(_mm_sub_epi16(f[1], f[0]), _mm_shuffle_epi32(frac, 0));
-			__m128i coeff16 = _mm_add_epi16(f[0], _mm_add_epi16(cdiff, cdiff));
-
-			accum += inc;
-
-			__m128i x0 = _mm_loadu_si128(s2);
-			__m128i x1 = _mm_loadu_si128(s2 + 1);
-
-			__m128i y0 = _mm_shufflehi_epi16(_mm_shufflelo_epi16(x0, 0xd8), 0xd8);
-			__m128i y1 = _mm_shufflehi_epi16(_mm_shufflelo_epi16(x1, 0xd8), 0xd8);
-
-			__m128i z0 = _mm_madd_epi16(y0, _mm_shuffle_epi32(coeff16, 0x50));
-			__m128i z1 = _mm_madd_epi16(y1, _mm_shuffle_epi32(coeff16, 0xfa));
-
-			__m128i a = _mm_add_epi32(z0, z1);
-			__m128i b = _mm_add_epi32(a, _mm_shuffle_epi32(a, 0xee));
-			__m128i r = _mm_srai_epi32(_mm_add_epi32(b, round), 14);
-
-			__m128i result = _mm_packs_epi32(r, r);
-
-			*(int *)d = _mm_cvtsi128_si32(result);
-			d += 2;
-		} while(--count);
-
-		return accum;
-	}
-#endif
-
 #if VD_CPU_ARM64
 	uint64 resample16x2_NEON(sint16 *d, const sint16 *s, uint32 count, uint64 accum, sint64 inc) {
 		do {
@@ -352,13 +261,36 @@ namespace {
 		return resample16x2_NEON(d, s, count, accum, inc);
 #elif VD_CPU_X86 || VD_CPU_X64
 		if (SSE2_enabled)
-			return resample16x2_SSE2(d, s, count, accum, inc);
+			return ATCassetteAudioResample16x2_SSE2(
+				d, s, count, accum, inc, kernel);
 		else
 			return resample16x2_scalar(d, s, count, accum, inc);
 #else
 			return resample16x2_scalar(d, s, count, accum, inc);
 #endif
 	}
+}
+
+void ATCassetteAudioMinMax16x2_Reference(
+	const sint16 *src, uint32 n,
+	sint32& minvL, sint32& maxvL, sint32& minvR, sint32& maxvR) {
+	minMax16x2_scalar(src, n, minvL, maxvL, minvR, maxvR);
+}
+
+void ATCassetteAudioMinMax16x2_Accelerated(
+	const sint16 *src, uint32 n,
+	sint32& minvL, sint32& maxvL, sint32& minvR, sint32& maxvR) {
+	minMax16x2(src, n, minvL, maxvL, minvR, maxvR);
+}
+
+uint64 ATCassetteAudioResample16x2_Reference(
+	sint16 *dst, const sint16 *src, uint32 count, uint64 accum, sint64 inc) {
+	return resample16x2_scalar(dst, src, count, accum, inc);
+}
+
+uint64 ATCassetteAudioResample16x2_Accelerated(
+	sint16 *dst, const sint16 *src, uint32 count, uint64 accum, sint64 inc) {
+	return resample16x2(dst, src, count, accum, inc);
 }
 
 ATCassetteAudioResampler::ATCassetteAudioResampler(IATCassetteAudioSource& source, uint64 sampleStepF32)
@@ -538,7 +470,7 @@ uint32 ATCassetteAudioFSKSpeedCompensator::ReadAudio(sint16 (*dst)[2], uint32 n)
 
 			// slide down the input window
 			const uint32 basePos = std::min<uint32>(mInputLevel - kFFTSize, (uint32)(mOutputAccum >> 32));
-			
+
 			// panic if we're trying to consume more than we have
 			if (basePos > mInputLevel)
 				VDRaiseInternalFailure();

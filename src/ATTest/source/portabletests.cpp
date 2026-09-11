@@ -6,6 +6,7 @@ bool ATTestCoreChecksum(ATPortableTestContext& context);
 bool ATTestCoreFFT(ATPortableTestContext& context);
 bool ATTestCoreTimerService(ATPortableTestContext& context);
 bool ATTestIOCartridgeImage(ATPortableTestContext& context);
+bool ATTestIOCassetteAudioFilters(ATPortableTestContext& context);
 bool ATTestIOFLACAccel(ATPortableTestContext& context);
 bool ATTestKasumiResolve4x(ATPortableTestContext& context);
 bool ATTestKasumiResampleStages(ATPortableTestContext& context);
@@ -58,6 +59,7 @@ const ATPortableTestCase *ATGetPortableTests(size_t& count) {
 		{ "Core_FFT", ATTestCoreFFT },
 		{ "Core_TimerService", ATTestCoreTimerService },
 		{ "IO_CartridgeImage", ATTestIOCartridgeImage },
+		{ "IO_CassetteAudioFilters", ATTestIOCassetteAudioFilters },
 		{ "IO_FLACAccel", ATTestIOFLACAccel },
 		{ "Kasumi_Resolve4x", ATTestKasumiResolve4x },
 		{ "Kasumi_ResampleStages", ATTestKasumiResampleStages },
