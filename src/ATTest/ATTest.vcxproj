@@ -41,6 +41,9 @@
 	<ClCompile Include="source\TestSystem_FileStream.cpp">
 	  <PrecompiledHeader>NotUsing</PrecompiledHeader>
 	</ClCompile>
+	<ClCompile Include="source\TestSystem_FileWatcher.cpp">
+	  <PrecompiledHeader>NotUsing</PrecompiledHeader>
+	</ClCompile>
 	<ClCompile Include="source\TestSystem_FileSysPortable.cpp">
 	  <PrecompiledHeader>NotUsing</PrecompiledHeader>
 	</ClCompile>

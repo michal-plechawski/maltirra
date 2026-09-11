@@ -141,6 +141,7 @@ portable_test_sources=(
 	src/ATTest/source/TestSystem_Event.cpp
 	src/ATTest/source/TestSystem_File.cpp
 	src/ATTest/source/TestSystem_FileStream.cpp
+	src/ATTest/source/TestSystem_FileWatcher.cpp
 	src/ATTest/source/TestSystem_FileSysPortable.cpp
 	src/ATTest/source/TestSystem_Fraction.cpp
 	src/ATTest/source/TestSystem_Hash.cpp
@@ -178,6 +179,7 @@ portable_test_sources=(
 	src/platform/macOS_arm64/system/source/event.cpp
 	src/platform/macOS_arm64/system/source/file.cpp
 	src/platform/macOS_arm64/system/source/filestream.cpp
+	src/platform/macOS_arm64/system/source/filewatcher.cpp
 	src/platform/macOS_arm64/system/source/filesys.cpp
 	src/platform/macOS_arm64/system/source/Fraction.cpp
 	src/platform/macOS_arm64/system/source/hash.cpp
@@ -210,7 +212,10 @@ for test_source in "${portable_test_sources[@]}"; do
 	portable_test_objects+=("$build_root/$test_source.o")
 done
 
-"$compiler" -arch arm64 "${portable_test_objects[@]}" -framework AppKit -o "$portable_test_executable"
+"$compiler" -arch arm64 "${portable_test_objects[@]}" \
+	-framework AppKit \
+	-framework CoreServices \
+	-o "$portable_test_executable"
 
 manifest="$build_root/build-manifest.txt"
 {

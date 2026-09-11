@@ -9,6 +9,9 @@
 #include <vd2/system/VDString.h>
 
 class VDFunctionThunkInfo;
+#if !defined(_WIN32)
+struct VDFileWatcherState;
+#endif
 
 class IVDFileWatcherCallback {
 public:
@@ -29,6 +32,7 @@ public:
 	bool Wait(uint32 delay = 0xFFFFFFFFU);
 
 protected:
+#if defined(_WIN32)
 #if VD_PTR_SIZE > 4
 	void StaticTimerCallback(void *, unsigned, unsigned __int64, unsigned long);
 #else
@@ -46,6 +50,9 @@ protected:
 	bool mbThunksInited;
 	VDFunctionThunkInfo *mpThunk;
 	uint32 mTimerId;
+#else
+	VDFileWatcherState *mpState;
+#endif
 };
 
 #endif
