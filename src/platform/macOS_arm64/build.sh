@@ -135,6 +135,7 @@ portable_test_sources=(
 	src/ATTest/source/TestCore_TimerServicePortable.cpp
 	src/ATTest/source/TestIO_CartridgeImagePortable.cpp
 	src/ATTest/source/TestIO_CassetteAudioFiltersPortable.cpp
+	src/ATTest/source/TestIO_CassetteDecoderPortable.cpp
 	src/ATTest/source/TestIO_FLACAccelPortable.cpp
 	src/ATTest/source/TestKasumi_Resolve4xPortable.cpp
 	src/ATTest/source/TestKasumi_ResampleStagesPortable.cpp
@@ -192,6 +193,7 @@ portable_test_sources=(
 	src/ATIO/source/cartridgeimage_arm64.cpp
 	src/ATIO/source/cartridgetypes.cpp
 	src/ATIO/source/cassetteaudiofilters.cpp
+	src/ATIO/source/cassettedecoder.cpp
 	src/Kasumi/source/blt_reference_yuv.cpp
 	src/Kasumi/source/blt_spanutils.cpp
 	src/Kasumi/source/pixmaputils.cpp

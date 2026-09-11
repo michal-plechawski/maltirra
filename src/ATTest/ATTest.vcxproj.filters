@@ -52,6 +52,9 @@
 	<ClCompile Include="source\TestIO_CassetteAudioFiltersPortable.cpp">
 	  <Filter>Source Files</Filter>
 	</ClCompile>
+	<ClCompile Include="source\TestIO_CassetteDecoderPortable.cpp">
+	  <Filter>Source Files</Filter>
+	</ClCompile>
 	<ClCompile Include="source\TestKasumi_Resolve4xPortable.cpp">
 	  <Filter>Source Files</Filter>
 	</ClCompile>

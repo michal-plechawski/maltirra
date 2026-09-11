@@ -16,7 +16,8 @@
     <ClCompile Include="source\cassetteaudiofilters.cpp" />
     <ClCompile Include="..\platform\Windows_x64\ATIO\source\cassetteaudiofilters_x86.cpp" />
     <ClCompile Include="source\cassetteblock.cpp" />
-    <ClCompile Include="..\platform\Windows_x64\ATIO\source\cassettedecoder.cpp" />
+    <ClCompile Include="source\cassettedecoder.cpp" />
+    <ClCompile Include="..\platform\Windows_x64\ATIO\source\cassettedecoder_x86.cpp" />
     <ClCompile Include="source\cassetteimage.cpp" />
     <ClCompile Include="source\partitiondiskview.cpp" />
     <ClCompile Include="source\partitiontable.cpp" />
@@ -67,6 +68,7 @@
     <ClInclude Include="h\at\atio\audioutils.h" />
     <ClInclude Include="h\at\atio\cassetteaudiofilters.h" />
     <ClInclude Include="h\at\atio\internal\cassetteaudiofilters.h" />
+    <ClInclude Include="h\at\atio\internal\cassettedecoder.h" />
     <ClInclude Include="h\at\atio\internal\cartridgeimage.h" />
     <ClInclude Include="h\at\atio\tapepiecetable.h" />
     <ClInclude Include="h\at\atio\audioreaderwav.h" />

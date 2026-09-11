@@ -22,6 +22,7 @@
 #include <at/atcore/configvar.h>
 #include <at/atio/cassettedecoder.h>
 #include <at/atio/cassetteimage.h>		// for constants
+#include <at/atio/internal/cassettedecoder.h>
 
 #ifdef VD_CPU_ARM64
 #include <arm_neon.h>
@@ -48,6 +49,9 @@ void ATCassetteDecoderFSK::Reset() {
 
 template<bool T_DoAnalysis>
 void ATCassetteDecoderFSK::Process(const sint16 *samples, uint32 n, uint32 *bitfield, uint32 bitoffset, float *adest) {
+	if (!n)
+		return;
+
 	static constexpr float sin_0_24 = 0;
 	static constexpr float sin_1_24 = 0.25881904510252076234889883762405f;
 	static constexpr float sin_2_24 = 0.5f;
@@ -82,21 +86,6 @@ void ATCassetteDecoderFSK::Process(const sint16 *samples, uint32 n, uint32 *bitf
 		}
 	} kRotTab;
 
-#if defined(VD_CPU_X86) || defined(VD_CPU_X64)
-	static constexpr struct RotTabSSE2 {
-		alignas(16) sint16 vec[24][8] {};
-
-		constexpr RotTabSSE2() {
-			for(int i=0; i<24; ++i) {
-				for(int j=0; j<4; ++j) {
-					vec[i][j*2+0] =  kRotTab.vec[i][j];
-					vec[i][j*2+1] = -kRotTab.vec[i][j];
-				}
-			}
-		}
-	} kRotTabSSE2;
-#endif
-
 #if defined(VD_CPU_ARM64)
 	static constexpr struct RotTabNEON {
 		sint16 vec[24][4] {};
@@ -113,13 +102,19 @@ void ATCassetteDecoderFSK::Process(const sint16 *samples, uint32 n, uint32 *bitf
 	} kRotTabNEON;
 #endif
 
-	uint32 bitaccum = 0;
-	uint32 bitcounter = 32 - bitoffset;
 	const float markGain = g_ATCVTapeDecodeFSKMarkGain;
 
 #if defined(VD_CPU_X86) || defined(VD_CPU_X64)
-	__m128i acc01 = _mm_loadu_si128((const __m128i *)&mAcc + 0);
-#elif defined(VD_CPU_ARM64)
+	ATCassetteDecoderFSKProcessSSE2(
+		samples, n, bitfield, bitoffset, adest, T_DoAnalysis,
+		&mAcc.m0R, mIndex, mHistory, markGain, kRotTab.vec);
+	return;
+#endif
+
+	uint32 bitaccum = 0;
+	uint32 bitcounter = 32 - bitoffset;
+
+#if defined(VD_CPU_ARM64)
 	int32x4_t acc01 = vld1q_s32(&mAcc.m0R);
 #endif
 
@@ -160,23 +155,7 @@ void ATCassetteDecoderFSK::Process(const sint16 *samples, uint32 n, uint32 *bitf
 		if (mIndex == 24)
 			mIndex = 0;
 
-#if defined(VD_CPU_X86) || defined(VD_CPU_X64)
-		// advance sliding window
-		const sint32 x0 = mHistory[hpos1];
-		const __m128i x01 = _mm_shuffle_epi32(_mm_insert_epi16(_mm_insert_epi16(_mm_setzero_si128(), (uint16)x1, 0), (uint16)x0, 1), 0);
-
-		mHistory[hpos1] = x1;
-
-		acc01 = _mm_add_epi32(acc01, _mm_madd_epi16(x01, _mm_load_si128((const __m128i *)kRotTabSSE2.vec[hpos1])));
-
-		// compute mark/space magnitudes
-		__m128 resp = _mm_cvtepi32_ps(acc01);
-		resp = _mm_mul_ps(resp, resp);
-		resp = _mm_add_ps(resp, _mm_shuffle_ps(resp, resp, 0b0'10'11'00'01));
-
-		const float zero = _mm_cvtss_f32(resp);
-		const float one = _mm_cvtss_f32(_mm_movehl_ps(resp, resp)) * markGain;
-#elif defined(VD_CPU_ARM64)
+#if defined(VD_CPU_ARM64)
 		// advance sliding window
 		const sint32 x0 = mHistory[hpos1];
 		mHistory[hpos1] = x1;
@@ -238,15 +217,67 @@ void ATCassetteDecoderFSK::Process(const sint16 *samples, uint32 n, uint32 *bitf
 	if (bitcounter < 32)
 		*bitfield++ |= bitaccum << bitcounter;
 
-#if defined(VD_CPU_X86) || defined(VD_CPU_X64)
-	_mm_storeu_si128((__m128i *)&mAcc + 0, acc01);
-#elif defined(VD_CPU_ARM64)
+#if defined(VD_CPU_ARM64)
 	vst1q_s32(&mAcc.m0R, acc01);
 #endif
 }
 
 template void ATCassetteDecoderFSK::Process<false>(const sint16 *samples, uint32 n, uint32 *bitfield, uint32 bitoffset, float *adest);
 template void ATCassetteDecoderFSK::Process<true>(const sint16 *samples, uint32 n, uint32 *bitfield, uint32 bitoffset, float *adest);
+
+///////////////////////////////////////////////////////////////////////////////
+
+void ATCassetteDecoderFIRInit(
+	ATCassetteDecoderFIRState& state, const float history[16]) {
+	memcpy(state.mValues, history, sizeof(state.mValues));
+}
+
+#if !(VD_CPU_X86 || VD_CPU_X64)
+float ATCassetteDecoderFIRProcess(
+	ATCassetteDecoderFIRState& state, float sample) {
+#if VD_CPU_ARM64
+	float32x4_t hpf0 = vld1q_f32(state.mValues + 0);
+	float32x4_t hpf1 = vld1q_f32(state.mValues + 4);
+	float32x4_t hpf2 = vld1q_f32(state.mValues + 8);
+	float32x4_t hpf3 = vld1q_f32(state.mValues + 12);
+
+	hpf0 = vmlaq_n_f32(
+		hpf0, vld1q_f32(kATCassetteDecoderHPFKernel + 0), sample);
+	hpf1 = vmlaq_n_f32(
+		hpf1, vld1q_f32(kATCassetteDecoderHPFKernel + 4), sample);
+	hpf2 = vmlaq_n_f32(
+		hpf2, vld1q_f32(kATCassetteDecoderHPFKernel + 8), sample);
+	hpf3 = vmlaq_n_f32(
+		hpf3, vld1q_f32(kATCassetteDecoderHPFKernel + 12), sample);
+
+	const float result = vgetq_lane_f32(hpf0, 0);
+	hpf0 = vextq_f32(hpf0, hpf1, 1);
+	hpf1 = vextq_f32(hpf1, hpf2, 1);
+	hpf2 = vextq_f32(hpf2, hpf3, 1);
+	hpf3 = vextq_f32(hpf3, vmovq_n_f32(0), 1);
+
+	vst1q_f32(state.mValues + 0, hpf0);
+	vst1q_f32(state.mValues + 4, hpf1);
+	vst1q_f32(state.mValues + 8, hpf2);
+	vst1q_f32(state.mValues + 12, hpf3);
+	return result;
+#else
+	for(int i = 0; i < 16; ++i)
+		state.mValues[i] += sample * kATCassetteDecoderHPFKernel[i];
+
+	const float result = state.mValues[0];
+	for(int i = 0; i < 15; ++i)
+		state.mValues[i] = state.mValues[i + 1];
+	state.mValues[15] = 0;
+	return result;
+#endif
+}
+#endif
+
+void ATCassetteDecoderFIRStore(
+	float history[16], const ATCassetteDecoderFIRState& state) {
+	memcpy(history, state.mValues, sizeof(state.mValues));
+}
 
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -286,6 +317,7 @@ void ATCassetteDecoderTurbo::Reset() {
 	mBitAccum = 0;
 	mBitCounter = 32;
 	mWrittenBits = 0;
+	mbCurrentState = false;
 
 	mPostFilterWindowIdx = 0;
 	mbLastStable = true;
@@ -324,37 +356,10 @@ void ATCassetteDecoderTurbo::Process(const sint16 *samples, uint32 n, float *ade
 
 	mWrittenBits += n;
 
-#if VD_CPU_X86 || VD_CPU_X64
-	[[maybe_unused]] __m128 hpf0;
-	[[maybe_unused]] __m128 hpf1;
-	[[maybe_unused]] __m128 hpf2;
-	[[maybe_unused]] __m128 hpf3;
+	[[maybe_unused]] ATCassetteDecoderFIRState hpf;
 
-	if constexpr (T_PreFilter == PreFilterType::HP_FIR) {
-		hpf0 = _mm_loadu_ps(mHPFWindow + 0);
-		hpf1 = _mm_loadu_ps(mHPFWindow + 4);
-		hpf2 = _mm_loadu_ps(mHPFWindow + 8);
-		hpf3 = _mm_loadu_ps(mHPFWindow + 12);
-	}
-#elif VD_CPU_ARM64
-	[[maybe_unused]] float32x4_t hpf0;
-	[[maybe_unused]] float32x4_t hpf1;
-	[[maybe_unused]] float32x4_t hpf2;
-	[[maybe_unused]] float32x4_t hpf3;
-
-	if constexpr (T_PreFilter == PreFilterType::HP_FIR) {
-		hpf0 = vld1q_f32(mHPFWindow +  0);
-		hpf1 = vld1q_f32(mHPFWindow +  4);
-		hpf2 = vld1q_f32(mHPFWindow +  8);
-		hpf3 = vld1q_f32(mHPFWindow + 12);
-	}
-#else
-	[[maybe_unused]] float hpf[16];
-
-	if constexpr (T_PreFilter == PrefilterType::HP_FIR) {
-		memcpy(hpf, mHPFWindow, sizeof hpf);
-	}
-#endif
+	if constexpr (T_PreFilter == PreFilterType::HP_FIR)
+		ATCassetteDecoderFIRInit(hpf, mHPFWindow);
 
 	do {
 		float x = *samples;
@@ -374,56 +379,7 @@ void ATCassetteDecoderTurbo::Process(const sint16 *samples, uint32 n, float *ade
 			// care about, apply a high-pass filter at ~3.8KHz. This is just a
 			// simple single-pole filter with soft falloff so it doesn't distort too much.
 
-			alignas(16) static constexpr float kHPFKernel[16] {
-				-0.0123454f, -0.0246906f, -0.0370356f, -0.0493802f,
-				-0.0617247f, -0.0740689f, -0.0864128f, 0.901243f,
-				-0.0864091f, -0.074062f, -0.061715f, -0.0493684f,
-				-0.037022f, -0.0246758f, -0.0123299f, 0
-			};
-
-#if VD_CPU_X86 || VD_CPU_X64
-			__m128 xv = _mm_set1_ps(x);
-			hpf0 = _mm_add_ps(hpf0, _mm_mul_ps(_mm_load_ps(kHPFKernel +  0), xv));
-			hpf1 = _mm_add_ps(hpf1, _mm_mul_ps(_mm_load_ps(kHPFKernel +  4), xv));
-			hpf2 = _mm_add_ps(hpf2, _mm_mul_ps(_mm_load_ps(kHPFKernel +  8), xv));
-			hpf3 = _mm_add_ps(hpf3, _mm_mul_ps(_mm_load_ps(kHPFKernel + 12), xv));
-
-			x = _mm_cvtss_f32(hpf0);
-			hpf0 = _mm_move_ss(hpf0, hpf1);
-			hpf1 = _mm_move_ss(hpf1, hpf2);
-			hpf2 = _mm_move_ss(hpf2, hpf3);
-
-			hpf0 = _mm_shuffle_ps(hpf0, hpf0, 0b0'00'11'10'01);
-			hpf1 = _mm_shuffle_ps(hpf1, hpf1, 0b0'00'11'10'01);
-			hpf2 = _mm_shuffle_ps(hpf2, hpf2, 0b0'00'11'10'01);
-
-			hpf3 = _mm_castsi128_ps(_mm_srli_si128(_mm_castps_si128(hpf3), 4));
-#elif VD_CPU_ARM64
-			hpf0 = vmlaq_n_f32(hpf0, vld1q_f32(kHPFKernel +  0), x);
-			hpf1 = vmlaq_n_f32(hpf1, vld1q_f32(kHPFKernel +  4), x);
-			hpf2 = vmlaq_n_f32(hpf2, vld1q_f32(kHPFKernel +  8), x);
-			hpf3 = vmlaq_n_f32(hpf3, vld1q_f32(kHPFKernel + 12), x);
-
-			x = vgetq_lane_f32(hpf0, 0);
-			hpf0 = vextq_f32(hpf0, hpf1, 1);
-			hpf1 = vextq_f32(hpf1, hpf2, 1);
-			hpf2 = vextq_f32(hpf2, hpf3, 1);
-			hpf3 = vextq_f32(hpf3, vmovq_n_f32(0), 1);
-#else
-			// VS2019 does well at autovectorizing this accumulation loop.
-			// Unfortunately, it barfs on the shift loop below it for both x86
-			// and ARM64, which is why we need the hand-vectorized versions above.
-			for(int i=0; i<16; ++i) {
-				hpf[i] += x * kHPFKernel[i];
-			}
-
-			x = hpf[0];
-
-			for(int i=0; i<15; ++i)
-				hpf[i] = hpf[i+1];
-
-			hpf[15] = 0;
-#endif
+			x = ATCassetteDecoderFIRProcess(hpf, x);
 		}
 
 		if constexpr (T_Detector == DetectorType::Slope) {
@@ -544,23 +500,14 @@ void ATCassetteDecoderTurbo::Process(const sint16 *samples, uint32 n, float *ade
 	mBitCounter = bitcounter;
 
 	if constexpr (T_PreFilter == PreFilterType::HP_FIR) {
-#if VD_CPU_X86 || VD_CPU_X64
-		_mm_storeu_ps(mHPFWindow +  0, hpf0);
-		_mm_storeu_ps(mHPFWindow +  4, hpf1);
-		_mm_storeu_ps(mHPFWindow +  8, hpf2);
-		_mm_storeu_ps(mHPFWindow + 12, hpf3);
-#elif VD_CPU_ARM64
-		vst1q_f32(mHPFWindow +  0, hpf0);
-		vst1q_f32(mHPFWindow +  4, hpf1);
-		vst1q_f32(mHPFWindow +  8, hpf2);
-		vst1q_f32(mHPFWindow + 12, hpf3);
-#else
-		memcpy(mHPFWindow, hpf, sizeof mHPFWindow);
-#endif
+		ATCassetteDecoderFIRStore(mHPFWindow, hpf);
 	}
 }
 
 void ATCassetteDecoderTurbo::Process(const sint16 *samples, uint32 n, float *adest) {
+	if (!n)
+		return;
+
 	mBitfield.resize((mWrittenBits + n + 31) >> 5, 0);
 
 	(this->*mpAlgorithm)(samples, n, adest);
@@ -626,6 +573,9 @@ vdfastvector<uint32> ATCassetteDecoderTurbo::Finalize() {
 
 		case ATCassetteTurboDecodeAlgorithm::PeakFilterBalanceHiLo:
 			rebalance(std::true_type());
+			break;
+
+		default:
 			break;
 	}
 

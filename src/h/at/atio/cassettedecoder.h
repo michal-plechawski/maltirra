@@ -19,6 +19,7 @@
 #ifndef f_AT_ATIO_CASSETTEDECODER_H
 #define f_AT_ATIO_CASSETTEDECODER_H
 
+#include <vd2/system/vdstl.h>
 #include <at/atio/cassetteimage.h>
 
 class VDBufferedWriteStream;

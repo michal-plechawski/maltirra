@@ -25,6 +25,7 @@
 #include <vd2/system/vdtypes.h>
 
 class VDStringSpanA;
+class VDStringSpanW;
 
 struct ATEnumLookupTable;
 template<typename T> const ATEnumLookupTable& ATGetEnumLookupTable() = delete;
