@@ -140,7 +140,7 @@ void ATFFT_DIT_Radix4_AVX2(float *y0, const float *w4, int N) {
 
 	const float *__restrict w1 = w4;
 	float *__restrict y1 = y0;
-	
+
 	__m256 two = _mm256_set1_ps(2.0f);
 
 	for(int i=0; i<N; i += step*4) {
@@ -169,7 +169,7 @@ void ATFFT_DIT_Radix4_AVX2(float *y0, const float *w4, int N) {
 			__m256 r3  = _mm256_load_ps(y1+step*3);
 			__m256 i3  = _mm256_load_ps(y1+step*3+8);
 			__m256 rw3 = _mm256_load_ps(w2+32);
-			__m256 iw3 = _mm256_load_ps(w2+40);			
+			__m256 iw3 = _mm256_load_ps(w2+40);
 
 			__m256 r6 = _mm256_fmsub_ps(r3, rw3, _mm256_fmsub_ps(i3, iw3, rt2));
 			__m256 i6 = _mm256_fmadd_ps(r3, iw3, _mm256_fmadd_ps(i3, rw3, it2));
@@ -409,7 +409,7 @@ void ATFFT_DIT_R2C_AVX2(float *dst0, const float *src0, const float *w, int N) {
 VD_CPU_TARGET("avx2,fma")
 void ATFFT_DIF_C2R_AVX2(float *dst0, const float *x, const float *w, int N) {
 	float *__restrict dst = dst0;
-	
+
 	const __m256 half = _mm256_set1_ps(0.5f);
 	const __m256 nhalf = _mm256_set1_ps(-0.5f);
 	const __m256 sign = _mm256_castsi256_ps(_mm256_set1_epi32(0x80000000));
@@ -618,7 +618,7 @@ void ATFFT_DIF_Radix4_AVX2(float *y0, const float *w4, int N) {
 			__m256 itA = _mm256_fmsub_ps(iA, rw2, _mm256_mul_ps(rA, iw2));
 
 			__m256 rw3 = _mm256_load_ps(w2+32);
-			__m256 iw3 = _mm256_load_ps(w2+40);			
+			__m256 iw3 = _mm256_load_ps(w2+40);
 			__m256 rtB = _mm256_fmadd_ps(rB, rw3, _mm256_mul_ps(iB, iw3));
 			__m256 itB = _mm256_fmsub_ps(iB, rw3, _mm256_mul_ps(rB, iw3));
 
@@ -768,26 +768,31 @@ void ATFFT_DIF_Radix4_AVX2(float *y0, const float *w4, int N, int logStep) {
 
 VD_CPU_TARGET("avx2,fma")
 void ATFFT_MultiplyAdd_AVX2(float *VDRESTRICT dst, const float *VDRESTRICT src1, const float *VDRESTRICT src2, int N) {
-	const int N2 = N >> 1;
-	for(int i=0; i<N2; ++i) {
-		const __m256 ri1 = _mm256_load_ps(src1);
+	const float dc = dst[0] + src1[0] * src2[0];
+	const float nyquist = dst[1] + src1[1] * src2[1];
+	const int N8 = N >> 3;
+	for(int i=0; i<N8; ++i) {
+		const __m256 ri1 = _mm256_loadu_ps(src1);
 		src1 += 8;
 
-		const __m256 ri2 = _mm256_load_ps(src2);
+		const __m256 ri2 = _mm256_loadu_ps(src2);
 		src2 += 8;
 
 		//    r      i
 		//  r1*r2  i1*r2
 		// -i1*i2  r1*i2
 
-		_mm256_store_ps(
+		_mm256_storeu_ps(
 			dst,
-			_mm256_fmsubadd_ps(
-				ri1,
-				_mm256_moveldup_ps(ri2),
-				_mm256_mul_ps(
-					_mm256_permute_ps(ri1, _MM_SHUFFLE(2, 3, 0, 1)),
-					_mm256_movehdup_ps(ri2)
+			_mm256_add_ps(
+				_mm256_loadu_ps(dst),
+				_mm256_fmaddsub_ps(
+					ri1,
+					_mm256_moveldup_ps(ri2),
+					_mm256_mul_ps(
+						_mm256_permute_ps(ri1, _MM_SHUFFLE(2, 3, 0, 1)),
+						_mm256_movehdup_ps(ri2)
+					)
 				)
 			)
 		);
@@ -797,20 +802,9 @@ void ATFFT_MultiplyAdd_AVX2(float *VDRESTRICT dst, const float *VDRESTRICT src1,
 
 	// patch DC and Nyquist values
 	// first two values are real DC and fsc*0.5, rest are complex
-	dst -= 8*N2;
-	src1 -= 8*N2;
-	src2 -= 8*N2;
-
-	const __m256 zero = _mm256_setzero_ps();
-	_mm256_store_pd((double *)dst,
-		_mm256_castps_pd(
-			_mm256_fmadd_ps(
-				_mm256_castpd_ps(_mm256_broadcast_sd((const double *)src1)),
-				_mm256_castpd_ps(_mm256_broadcast_sd((const double *)src2)),
-				_mm256_castpd_ps(_mm256_broadcast_sd((const double *)dst ))
-			)
-		)
-	);
+	dst -= N;
+	dst[0] = dc;
+	dst[1] = nyquist;
 }
 
 /////////////////////////////////////////////////////////////////////////////

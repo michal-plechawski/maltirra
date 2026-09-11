@@ -99,7 +99,7 @@ void ATFFT_DIT_Radix4_SSE2(float *y0, const float *w4, int N) {
 			__m128 r3  = _mm_load_ps(y1+step3);
 			__m128 i3  = _mm_load_ps(y1+step3+4);
 			__m128 rw3 = _mm_load_ps(w2+16);
-			__m128 iw3 = _mm_load_ps(w2+20);			
+			__m128 iw3 = _mm_load_ps(w2+20);
 			__m128 rt3 = _mm_sub_ps(_mm_mul_ps(r3, rw3), _mm_mul_ps(i3, iw3));
 			__m128 it3 = _mm_add_ps(_mm_mul_ps(r3, iw3), _mm_mul_ps(i3, rw3));
 
@@ -274,7 +274,7 @@ void ATFFT_DIT_R2C_SSE2(float *dst0, const float *src0, const float *w, int N) {
 
 void ATFFT_DIF_C2R_SSE2(float *dst0, const float *x, const float *w, int N) {
 	float *__restrict dst = dst0;
-	
+
 	const __m128 half = _mm_set1_ps(0.5f);
 	const __m128 nhalf = _mm_set1_ps(-0.5f);
 	const __m128 sign = _mm_castsi128_ps(_mm_set1_epi32(0x80000000));
@@ -453,7 +453,7 @@ void ATFFT_DIF_Radix4_SSE2(float *y0, const float *w4, int N) {
 			__m128 itA = _mm_sub_ps(_mm_mul_ps(iA, rw2), _mm_mul_ps(rA, iw2));
 
 			__m128 rw3 = _mm_load_ps(w2+16);
-			__m128 iw3 = _mm_load_ps(w2+20);			
+			__m128 iw3 = _mm_load_ps(w2+20);
 			__m128 rtB = _mm_add_ps(_mm_mul_ps(rB, rw3), _mm_mul_ps(iB, iw3));
 			__m128 itB = _mm_sub_ps(_mm_mul_ps(iB, rw3), _mm_mul_ps(rB, iw3));
 
@@ -596,13 +596,15 @@ void ATFFT_DIF_Radix4_SSE2(float *y0, const float *w4, int N, int logStep) {
 /////////////////////////////////////////////////////////////////////////////
 
 void ATFFT_MultiplyAdd_SSE2(float *VDRESTRICT dst, const float *VDRESTRICT src1, const float *VDRESTRICT src2, int N) {
-	const int N2 = N >> 1;
+	const float dc = dst[0] + src1[0] * src2[0];
+	const float nyquist = dst[1] + src1[1] * src2[1];
+	const int N4 = N >> 2;
 	const __m128 inv_even = _mm_castsi128_ps(_mm_set_epi32(0, 0x80000000, 0, 0x80000000));
-	for(int i=0; i<N2; ++i) {
-		const __m128 ri1 = _mm_load_ps(src1);
+	for(int i=0; i<N4; ++i) {
+		const __m128 ri1 = _mm_loadu_ps(src1);
 		src1 += 4;
 
-		const __m128 ri2 = _mm_load_ps(src2);
+		const __m128 ri2 = _mm_loadu_ps(src2);
 		src2 += 4;
 
 		//    r      i
@@ -613,9 +615,9 @@ void ATFFT_MultiplyAdd_SSE2(float *VDRESTRICT dst, const float *VDRESTRICT src1,
 		const __m128 ii2 = _mm_shuffle_ps(ri2, ri2, 0b0'11'11'01'01);
 		const __m128 nir1 = _mm_xor_ps(_mm_shuffle_ps(ri1, ri1, 0b0'10'11'00'01), inv_even);
 
-		_mm_store_ps(dst,
+		_mm_storeu_ps(dst,
 			_mm_add_ps(
-				_mm_load_ps(dst),
+				_mm_loadu_ps(dst),
 				_mm_add_ps(_mm_mul_ps(ri1, rr2), _mm_mul_ps(nir1, ii2))
 			)
 		);
@@ -625,20 +627,9 @@ void ATFFT_MultiplyAdd_SSE2(float *VDRESTRICT dst, const float *VDRESTRICT src1,
 
 	// patch DC and Nyquist values
 	// first two values are real DC and fsc*0.5, rest are complex
-	dst -= 4*N2;
-	src1 -= 4*N2;
-	src2 -= 4*N2;
-
-	const __m128 zero = _mm_setzero_ps();
-	_mm_storel_pi((__m64 *)dst,
-		_mm_add_ps(
-			_mm_loadl_pi(zero, (const __m64 *)dst),
-			_mm_mul_ps(
-				_mm_loadl_pi(zero, (const __m64 *)src1),
-				_mm_loadl_pi(zero, (const __m64 *)src2)
-			)
-		)
-	);
+	dst -= N;
+	dst[0] = dc;
+	dst[1] = nyquist;
 }
 
 /////////////////////////////////////////////////////////////////////////////

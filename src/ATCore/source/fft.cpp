@@ -92,6 +92,8 @@ void ATFFT_DIF_Radix8_NEON(float *dst0, const float *src0, const uint32 *order0,
 void ATFFT_DIT_R2C_NEON(float *dst0, const float *src0, const float *w, int N);
 void ATFFT_DIF_C2R_NEON(float *dst0, const float *x, const float *w, int N);
 
+void ATFFT_MultiplyAdd_NEON(float *VDRESTRICT dst, const float *VDRESTRICT src1, const float *VDRESTRICT src2, int N);
+
 void ATFFT_IMDCT_PreTransform_NEON(float *dst, const float *src, const float *w, size_t N);
 void ATFFT_IMDCT_PostTransform_NEON(float *dst, const float *src, const float *w, size_t N);
 
@@ -474,7 +476,7 @@ void ATFFTBase::ReserveImpl(ATFFTAllocator& allocator, uint32 N, bool imdct, boo
 	const int N4 = N >> 2;
 	const int N16 = N >> 4;
 	int step = N16;
-	
+
 	size_t tableIdx = 0;
 
 	if (imdct) {
@@ -593,7 +595,7 @@ void ATFFTBase::ForwardImpl(float *dst, const float *src) {
 
 		lstep += 2;
 	}
-		
+
 	// run radix-2 stages
 	for(size_t i=0; i<mNumRadix2Stages; ++i) {
 		#if defined(ATFFT_USE_SSE2)
@@ -671,7 +673,7 @@ void ATFFTBase::InverseImpl(float *dst, const float *src) {
 		#else
 			ATFFT_DIF_Radix2_Scalar(work, (--stageTablesEnd)->mpFloatTable, N, lstep);
 		#endif
-		
+
 		--lstep;
 	}
 
@@ -709,6 +711,8 @@ void ATFFTBase::MultiplyAddImpl(float *dst, const float *src1, const float *src2
 			ATFFT_MultiplyAdd_AVX2(dst, src1, src2, N);
 		else
 			ATFFT_MultiplyAdd_SSE2(dst, src1, src2, N);
+	#elif defined(ATFFT_USE_NEON)
+		ATFFT_MultiplyAdd_NEON(dst, src1, src2, N);
 	#else
 		ATFFT_MultiplyAdd_Scalar(dst, src1, src2, N);
 	#endif

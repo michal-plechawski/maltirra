@@ -106,7 +106,7 @@ void ATFFT_DIT_Radix4_NEON(float *y0, const float *w4, int N) {
 			float32x4_t r3  = vld1q_f32(y4);
 			float32x4_t i3  = vld1q_f32(y4+4);
 			float32x4_t rw3 = vld1q_f32(w2+16);
-			float32x4_t iw3 = vld1q_f32(w2+20);			
+			float32x4_t iw3 = vld1q_f32(w2+20);
 			float32x4_t rt3 = vfmsq_f32(vmulq_f32(r3, rw3), i3, iw3);
 			float32x4_t it3 = vfmaq_f32(vmulq_f32(r3, iw3), i3, rw3);
 
@@ -291,7 +291,7 @@ void ATFFT_DIT_R2C_NEON(float *dst0, const float *src0, const float *w, int N) {
 
 void ATFFT_DIF_C2R_NEON(float *dst0, const float *x, const float *w, int N) {
 	float *VDRESTRICT dst = dst0;
-	
+
 	const float32x4_t half = vmovq_n_f32(0.5f);
 	const float32x4_t nhalf = vmovq_n_f32(-0.5f);
 	const uint32x4_t sign = vmovq_n_u32(0x80000000);
@@ -483,7 +483,7 @@ void ATFFT_DIF_Radix4_NEON(float *y0, const float *w4, int N) {
 			float32x4_t itA = vfmsq_f32(vmulq_f32(iA, rw2), rA, iw2);
 
 			float32x4_t rw3 = vld1q_f32(w2+16);
-			float32x4_t iw3 = vld1q_f32(w2+20);			
+			float32x4_t iw3 = vld1q_f32(w2+20);
 			float32x4_t rtB = vfmaq_f32(vmulq_f32(rB, rw3), iB, iw3);
 			float32x4_t itB = vfmsq_f32(vmulq_f32(iB, rw3), rB, iw3);
 
@@ -631,9 +631,11 @@ void ATFFT_DIF_Radix4_NEON(float *y0, const float *w4, int N, int logStep) {
 /////////////////////////////////////////////////////////////////////////////
 
 void ATFFT_MultiplyAdd_NEON(float *VDRESTRICT dst, const float *VDRESTRICT src1, const float *VDRESTRICT src2, int N) {
-	const int N2 = N >> 1;
+	const float dc = dst[0] + src1[0] * src2[0];
+	const float nyquist = dst[1] + src1[1] * src2[1];
+	const int N4 = N >> 2;
 	const uint32x4_t inv_even = vshll_n_u16(vmov_n_u64(0x0000800000008000ULL), 16);
-	for(int i=0; i<N2; ++i) {
+	for(int i=0; i<N4; ++i) {
 		const float32x4_t ri1 = vld1q_f32(src1);
 		src1 += 4;
 
@@ -661,11 +663,9 @@ void ATFFT_MultiplyAdd_NEON(float *VDRESTRICT dst, const float *VDRESTRICT src1,
 
 	// patch DC and Nyquist values
 	// first two values are real DC and fsc*0.5, rest are complex
-	dst -= 4*N2;
-	src1 -= 4*N2;
-	src2 -= 4*N2;
-
-	vst1_f32(dst, vmla_f32(vld1_f32(dst), vld1_f32(src1), vld1_f32(src2)));
+	dst -= N;
+	dst[0] = dc;
+	dst[1] = nyquist;
 }
 
 /////////////////////////////////////////////////////////////////////////////
