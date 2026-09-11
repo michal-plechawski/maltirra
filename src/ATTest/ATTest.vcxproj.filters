@@ -46,6 +46,9 @@
 	<ClCompile Include="source\TestIO_FLACAccelPortable.cpp">
 	  <Filter>Source Files</Filter>
 	</ClCompile>
+	<ClCompile Include="source\TestIO_CartridgeImagePortable.cpp">
+	  <Filter>Source Files</Filter>
+	</ClCompile>
 	<ClCompile Include="source\TestKasumi_Resolve4xPortable.cpp">
 	  <Filter>Source Files</Filter>
 	</ClCompile>

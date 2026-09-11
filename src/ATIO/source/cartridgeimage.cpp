@@ -23,6 +23,7 @@
 #include <at/atcore/checksum.h>
 #include <at/atcore/vfs.h>
 #include <at/atio/cartridgeimage.h>
+#include <at/atio/internal/cartridgeimage.h>
 
 namespace {
 	void DeinterleaveAtraxSDX64K(uint8 *p) {
@@ -160,57 +161,18 @@ namespace {
 		}
 	}
 
-#if defined(VD_CPU_X86) || defined(VD_CPU_X64)
 	uint32 ComputeByteSum32(const uint8 *src, size_t len) {
-		uint32 sum = 0;
-
-		if (len >= 1024) {
-			uint32 align = (0U - (uint32)(uintptr)src) & 15;
-			len -= align;
-
-			while(align--)
-				sum += *src++;
-
-			uint32 blocks = len >> 6;
-			len &= 0x3f;
-
-			__m128i zero = _mm_setzero_si128();
-			__m128i acc0 = zero;
-			__m128i acc1 = zero;
-			while(blocks--) {
-				__m128i x0 = _mm_load_si128((const __m128i *)(src +  0));
-				__m128i x1 = _mm_load_si128((const __m128i *)(src + 16));
-				__m128i x2 = _mm_load_si128((const __m128i *)(src + 32));
-				__m128i x3 = _mm_load_si128((const __m128i *)(src + 48));
-				src += 64;
-
-				acc0 = _mm_add_epi32(acc0, _mm_sad_epu8(x0, zero));
-				acc1 = _mm_add_epi32(acc1, _mm_sad_epu8(x1, zero));
-				acc0 = _mm_add_epi32(acc0, _mm_sad_epu8(x2, zero));
-				acc1 = _mm_add_epi32(acc1, _mm_sad_epu8(x3, zero));
-			}
-
-			__m128i acc = _mm_add_epi32(acc0, acc1);
-			__m128i acchi = _mm_castps_si128(_mm_movehl_ps(_mm_undefined_ps(), _mm_castsi128_ps(acc)));
-
-			sum += (uint32)_mm_cvtsi128_si32(_mm_add_epi32(acc, acchi));
-		}
-
-		while(len--)
-			sum += *src++;
-
-		return sum;
-	}
+#if VD_CPU_X86 || VD_CPU_X64 || VD_CPU_ARM64
+		return ATComputeCartridgeImageByteSum32(src, len);
 #else
-	uint32 ComputeByteSum32(const uint8 *src, size_t len) {
 		uint32 sum = 0;
 
 		while(len--)
 			sum += *src++;
 
 		return sum;
-	}
 #endif
+	}
 }
 
 class ATCartridgeImage final : public vdrefcounted<IATCartridgeImage> {
@@ -488,6 +450,9 @@ bool ATCartridgeImage::Load(const wchar_t *path, IVDRandomAccessStream& stream, 
 		memcpy(&mCARTROM[4096], &mCARTROM[0], 4096);
 		memset(&mCARTROM[0], 0xFF, 4096);
 		break;
+
+	default:
+		break;
 	}
 
 	if (path)
@@ -551,7 +516,7 @@ bool ATLoadCartridgeImage(const wchar_t *path, IATCartridgeImage **ppImage) {
 	VDFileStream f(path);
 
 	return ATLoadCartridgeImage(path, f, nullptr, ppImage);
-}	
+}
 
 bool ATLoadCartridgeImage(const wchar_t *origPath, IVDRandomAccessStream& stream, ATCartLoadContext *loadCtx, IATCartridgeImage **ppImage) {
 	vdrefptr<ATCartridgeImage> cartImage(new ATCartridgeImage);
@@ -599,6 +564,9 @@ void ATSaveCartridgeImage(IATCartridgeImage *image, const wchar_t *path, bool in
 		case kATCartridgeMode_RightSlot_4K:
 			size = 4096;
 			src += 4096;
+			break;
+
+		default:
 			break;
 	}
 
