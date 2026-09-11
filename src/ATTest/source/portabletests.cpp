@@ -22,6 +22,7 @@ bool ATTestSystemInt128(ATPortableTestContext& context);
 bool ATTestSystemLinearAlloc(ATPortableTestContext& context);
 bool ATTestSystemMath(ATPortableTestContext& context);
 bool ATTestSystemMemory(ATPortableTestContext& context);
+bool ATTestSystemProcess(ATPortableTestContext& context);
 bool ATTestSystemRegistryMemory(ATPortableTestContext& context);
 bool ATTestSystemRefCount(ATPortableTestContext& context);
 bool ATTestSystemStrUtil(ATPortableTestContext& context);
@@ -60,6 +61,7 @@ const ATPortableTestCase *ATGetPortableTests(size_t& count) {
 		{ "System_LinearAlloc", ATTestSystemLinearAlloc },
 		{ "System_Math", ATTestSystemMath },
 		{ "System_Memory", ATTestSystemMemory },
+		{ "System_Process", ATTestSystemProcess },
 		{ "System_RegistryMemory", ATTestSystemRegistryMemory },
 		{ "System_RefCount", ATTestSystemRefCount },
 		{ "System_StrUtil", ATTestSystemStrUtil },

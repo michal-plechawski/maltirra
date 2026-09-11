@@ -26,11 +26,11 @@
 #ifndef f_VD2_SYSTEM_PROCESS_H
 #define f_VD2_SYSTEM_PROCESS_H
 
-/// Simple asynchronous program launch. The current directory
-/// defaults to the windows directory to prevent inadvernent locking. The
-/// program path is automatically quoted in the command line and separated
-/// from the optional arguments by a space. The arguments should not
-/// include argv[0], which is automatically included.
+/// Simple asynchronous program launch. On Windows, the current directory
+/// defaults to the Windows directory to prevent inadvertent locking. The
+/// program path becomes argv[0]. Windows appends the optional argument string
+/// verbatim; other platforms split it using compatible C runtime quote and
+/// backslash rules.
 void VDLaunchProgram(const wchar_t *path, const wchar_t *args = nullptr);
 
 #endif	// f_VD2_SYSTEM_PROCESS_H
