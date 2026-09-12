@@ -853,7 +853,7 @@
     <ClCompile Include="..\platform\Windows_x64\Altirra\source\uiconfdevparfilewriter.cpp">
       <Filter>Source Files - Device Configuration UI</Filter>
     </ClCompile>
-    <ClCompile Include="..\platform\Windows_x64\Altirra\source\pokeytrace.cpp">
+    <ClCompile Include="source\pokeytrace.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\platform\Windows_x64\Altirra\source\pokeysavecompat.cpp">
@@ -1623,7 +1623,7 @@
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\updatefeed.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\platform\Windows_x64\Altirra\h\pokeytrace.h">
+    <ClInclude Include="h\pokeytrace.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\pokeysavecompat.h">

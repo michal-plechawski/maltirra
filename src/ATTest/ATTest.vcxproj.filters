@@ -31,6 +31,9 @@
 	<ClCompile Include="source\TestAltirra_PrinterFontsPortable.cpp">
 	  <Filter>Source Files</Filter>
 	</ClCompile>
+	<ClCompile Include="source\TestAltirra_PokeyTracePortable.cpp">
+	  <Filter>Source Files</Filter>
+	</ClCompile>
 	<ClCompile Include="source\TestAltirra_TracePortable.cpp">
 	  <Filter>Source Files</Filter>
 	</ClCompile>

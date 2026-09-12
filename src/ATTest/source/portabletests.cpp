@@ -11,6 +11,7 @@ bool ATTestAltirraHostDeviceUtils(ATPortableTestContext& context);
 bool ATTestAltirraPNG(ATPortableTestContext& context);
 bool ATTestAltirraPrinter1020Font(ATPortableTestContext& context);
 bool ATTestAltirraPrinterFonts(ATPortableTestContext& context);
+bool ATTestAltirraPokeyTrace(ATPortableTestContext& context);
 bool ATTestAltirraTrace(ATPortableTestContext& context);
 bool ATTestAltirraTraceTape(ATPortableTestContext& context);
 bool ATTestAltirraSimEventManager(ATPortableTestContext& context);
@@ -78,6 +79,7 @@ const ATPortableTestCase *ATGetPortableTests(size_t& count) {
 		{ "Altirra_PNG", ATTestAltirraPNG },
 		{ "Altirra_Printer1020Font", ATTestAltirraPrinter1020Font },
 		{ "Altirra_PrinterFonts", ATTestAltirraPrinterFonts },
+		{ "Altirra_PokeyTrace", ATTestAltirraPokeyTrace },
 		{ "Altirra_Trace", ATTestAltirraTrace },
 		{ "Altirra_TraceTape", ATTestAltirraTraceTape },
 		{ "Altirra_SimEventManager", ATTestAltirraSimEventManager },

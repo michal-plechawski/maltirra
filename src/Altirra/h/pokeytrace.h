@@ -14,16 +14,22 @@
 //	You should have received a copy of the GNU General Public License along
 //	with this program. If not, see <http://www.gnu.org/licenses/>.
 
-#include <stdafx.h>
-#include "pokeytrace.h"
-#include "trace.h"
+#ifndef f_AT_POKEYTRACE_H
+#define f_AT_POKEYTRACE_H
 
-ATPokeyTracer::ATPokeyTracer(ATTraceContext& context) {
-	ATTraceCollection *coll = context.mpCollection;
+#include <at/ataudio/pokey.h>
 
-	mpTraceChannelIrq = coll->AddGroup(L"POKEY")->AddSimpleChannel(context.mBaseTime, context.mBaseTickScale, L"IRQ");
-}
+class ATTraceChannelSimple;
+struct ATTraceContext;
 
-void ATPokeyTracer::AddIRQ(uint64 start, uint64 end) {
-	mpTraceChannelIrq->AddTickEvent(start, end, L"IRQ", kATTraceColor_Default);
-}
+class ATPokeyTracer final : public IATPokeyTraceOutput {
+public:
+	ATPokeyTracer(ATTraceContext& context);
+
+	void AddIRQ(uint64 start, uint64 end) override;
+
+private:
+	ATTraceChannelSimple *mpTraceChannelIrq = nullptr;
+};
+
+#endif
