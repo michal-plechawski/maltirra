@@ -133,6 +133,7 @@ portable_test_sources=(
 	src/ATTest/source/portabletests.cpp
 	src/ATTest/source/TestAltirra_ArtifactingFiltersPortable.cpp
 	src/ATTest/source/TestAltirra_ConstantsPortable.cpp
+	src/ATTest/source/TestAltirra_CPUMemoryPortable.cpp
 	src/ATTest/source/TestAltirra_ErrorDecodePortable.cpp
 	src/ATTest/source/TestAltirra_InputDefsPortable.cpp
 	src/ATTest/source/TestAltirra_InputMapPortable.cpp

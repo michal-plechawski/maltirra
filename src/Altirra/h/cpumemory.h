@@ -18,9 +18,7 @@
 #ifndef f_AT_CPUMEMORY_H
 #define f_AT_CPUMEMORY_H
 
-#ifndef VDFORCEINLINE
-#define VDFORCEINLINE __forceinline
-#endif
+#include <vd2/system/vdtypes.h>
 
 #define ATCPUMEMISSPECIAL(addr) (((addr) & 1) != 0)
 
@@ -83,7 +81,7 @@ public:
 		uintptr readPage = (*(*mpCPUReadBankMap)[bank])[address >> 8];
 		return ATCPUMEMISSPECIAL(readPage) ? CPUExtReadByte(address, bank) : *(const uint8 *)(readPage + address);
 	}
-	
+
 	sint32 ExtReadByteAccel(uint16 address, uint8 bank, bool chipOK) {
 		uintptr readPage = (*(*mpCPUReadBankMap)[bank])[address >> 8];
 		return ATCPUMEMISSPECIAL(readPage) ? CPUExtReadByteAccel(address, bank, chipOK) : *(const uint8 *)(readPage + address);

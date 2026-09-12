@@ -10,6 +10,9 @@
 	<ClCompile Include="source\TestAltirra_ConstantsPortable.cpp">
 	  <Filter>Source Files</Filter>
 	</ClCompile>
+	<ClCompile Include="source\TestAltirra_CPUMemoryPortable.cpp">
+	  <Filter>Source Files</Filter>
+	</ClCompile>
 	<ClCompile Include="source\TestAltirra_ErrorDecodePortable.cpp">
 	  <Filter>Source Files</Filter>
 	</ClCompile>

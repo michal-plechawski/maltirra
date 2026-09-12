@@ -1152,7 +1152,7 @@
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\cpuhookmanager.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\platform\Windows_x64\Altirra\h\cpumemory.h">
+    <ClInclude Include="h\cpumemory.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\cpustates.h">
