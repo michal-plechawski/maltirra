@@ -1254,7 +1254,7 @@
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\joystick.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\platform\Windows_x64\Altirra\h\kerneldb.h">
+    <ClInclude Include="h\kerneldb.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\kmkjzide.h">

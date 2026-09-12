@@ -1,9 +1,8 @@
 #ifndef AT_KERNELDB_H
 #define AT_KERNELDB_H
 
+#include <cpumemory.h>
 #include <at/atcore/ksyms.h>
-#include "cpu.h"
-#include "cpumemory.h"
 
 struct ATMemoryAdapter {
 	ATCPUEmulatorMemory *mpMem;

@@ -25,6 +25,9 @@
 	<ClCompile Include="source\TestAltirra_HostDeviceUtilsPortable.cpp">
 	  <Filter>Source Files</Filter>
 	</ClCompile>
+	<ClCompile Include="source\TestAltirra_KernelDBPortable.cpp">
+	  <Filter>Source Files</Filter>
+	</ClCompile>
 	<ClCompile Include="source\TestAltirra_PNGPortable.cpp">
 	  <Filter>Source Files</Filter>
 	</ClCompile>

@@ -9,6 +9,7 @@ bool ATTestAltirraErrorDecode(ATPortableTestContext& context);
 bool ATTestAltirraInputDefs(ATPortableTestContext& context);
 bool ATTestAltirraInputMap(ATPortableTestContext& context);
 bool ATTestAltirraHostDeviceUtils(ATPortableTestContext& context);
+bool ATTestAltirraKernelDB(ATPortableTestContext& context);
 bool ATTestAltirraPNG(ATPortableTestContext& context);
 bool ATTestAltirraPrinter1020Font(ATPortableTestContext& context);
 bool ATTestAltirraPrinterFonts(ATPortableTestContext& context);
@@ -78,6 +79,7 @@ const ATPortableTestCase *ATGetPortableTests(size_t& count) {
 		{ "Altirra_InputDefs", ATTestAltirraInputDefs },
 		{ "Altirra_InputMap", ATTestAltirraInputMap },
 		{ "Altirra_HostDeviceUtils", ATTestAltirraHostDeviceUtils },
+		{ "Altirra_KernelDB", ATTestAltirraKernelDB },
 		{ "Altirra_PNG", ATTestAltirraPNG },
 		{ "Altirra_Printer1020Font", ATTestAltirraPrinter1020Font },
 		{ "Altirra_PrinterFonts", ATTestAltirraPrinterFonts },

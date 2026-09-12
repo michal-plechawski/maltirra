@@ -138,6 +138,7 @@ portable_test_sources=(
 	src/ATTest/source/TestAltirra_InputDefsPortable.cpp
 	src/ATTest/source/TestAltirra_InputMapPortable.cpp
 	src/ATTest/source/TestAltirra_HostDeviceUtilsPortable.cpp
+	src/ATTest/source/TestAltirra_KernelDBPortable.cpp
 	src/ATTest/source/TestAltirra_PNGPortable.cpp
 	src/ATTest/source/TestAltirra_Printer1020FontPortable.cpp
 	src/ATTest/source/TestAltirra_PrinterFontsPortable.cpp

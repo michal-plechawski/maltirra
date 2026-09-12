@@ -580,7 +580,7 @@
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\inputmanager.h" />
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\irqcontroller.h" />
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\joystick.h" />
-    <ClInclude Include="..\platform\Windows_x64\Altirra\h\kerneldb.h" />
+    <ClInclude Include="h\kerneldb.h" />
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\kmkjzide.h" />
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\memorymanager.h" />
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\mio.h" />
