@@ -1,4 +1,5 @@
-#include <stdafx.h>
+#include <cstring>
+#include <cwchar>
 #include <vd2/system/VDString.h>
 #include "hostdeviceutils.h"
 
@@ -26,7 +27,7 @@ namespace {
 		L"LPT7",
 		L"LPT8",
 		L"LPT9",
-		NULL
+		nullptr
 	};
 }
 

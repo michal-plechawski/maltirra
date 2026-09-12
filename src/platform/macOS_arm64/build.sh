@@ -136,6 +136,7 @@ portable_test_sources=(
 	src/ATTest/source/TestAltirra_ErrorDecodePortable.cpp
 	src/ATTest/source/TestAltirra_InputDefsPortable.cpp
 	src/ATTest/source/TestAltirra_InputMapPortable.cpp
+	src/ATTest/source/TestAltirra_HostDeviceUtilsPortable.cpp
 	src/ATTest/source/TestAltirra_PNGPortable.cpp
 	src/ATTest/source/TestAltirra_Printer1020FontPortable.cpp
 	src/ATTest/source/TestAltirra_PrinterFontsPortable.cpp
@@ -209,6 +210,7 @@ portable_test_sources=(
 	src/Altirra/source/errordecode.cpp
 	src/Altirra/source/inputdefs.cpp
 	src/Altirra/source/inputmap.cpp
+	src/Altirra/source/hostdeviceutils.cpp
 	src/Altirra/source/printer1020font.cpp
 	src/Altirra/source/printerfont.cpp
 	src/Altirra/source/trace.cpp

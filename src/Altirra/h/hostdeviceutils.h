@@ -18,6 +18,9 @@
 #ifndef f_AT_HOSTFILEUTILS_H
 #define f_AT_HOSTFILEUTILS_H
 
+#include <cwchar>
+#include <vd2/system/VDString.h>
+
 bool ATHostDeviceIsDevice(const wchar_t *s);
 
 inline bool ATHostDeviceIsPathWild(const wchar_t *s) {
@@ -42,4 +45,4 @@ inline bool ATHostDeviceIsValidPathCharWideLFN(wchar_t c) {
 
 void ATHostDeviceEncodeName(VDStringA& encodedName, const wchar_t *hostName, bool useLongNameEncoding, bool useLongNames);
 
-#endif
+#endif // f_AT_HOSTFILEUTILS_H

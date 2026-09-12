@@ -273,7 +273,9 @@
     <ClCompile Include="..\platform\Windows_x64\Altirra\source\hleprogramloader.cpp" />
     <ClCompile Include="..\platform\Windows_x64\Altirra\source\hleutils.cpp" />
     <ClCompile Include="..\platform\Windows_x64\Altirra\source\hostdevice.cpp" />
-    <ClCompile Include="..\platform\Windows_x64\Altirra\source\hostdeviceutils.cpp" />
+    <ClCompile Include="source\hostdeviceutils.cpp">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+    </ClCompile>
     <ClCompile Include="..\platform\Windows_x64\Altirra\source\ide.cpp" />
     <ClCompile Include="..\platform\Windows_x64\Altirra\source\idediskdevices.cpp" />
     <ClCompile Include="..\platform\Windows_x64\Altirra\source\idephysdisk.cpp" />
@@ -567,7 +569,7 @@
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\hleprogramloader.h" />
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\hleutils.h" />
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\hostdevice.h" />
-    <ClInclude Include="..\platform\Windows_x64\Altirra\h\hostdeviceutils.h" />
+    <ClInclude Include="h\hostdeviceutils.h" />
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\ide.h" />
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\idephysdisk.h" />
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\iderawimage.h" />

@@ -193,7 +193,7 @@
     <ClCompile Include="..\platform\Windows_x64\Altirra\source\hostdevice.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\platform\Windows_x64\Altirra\source\hostdeviceutils.cpp">
+    <ClCompile Include="source\hostdeviceutils.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\platform\Windows_x64\Altirra\source\ide.cpp">
@@ -1227,7 +1227,7 @@
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\hostdevice.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\platform\Windows_x64\Altirra\h\hostdeviceutils.h">
+    <ClInclude Include="h\hostdeviceutils.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\ide.h">
