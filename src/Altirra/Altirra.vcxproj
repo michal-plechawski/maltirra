@@ -495,7 +495,9 @@
     <ClCompile Include="..\platform\Windows_x64\Altirra\source\vgmplayer.cpp" />
     <ClCompile Include="..\platform\Windows_x64\Altirra\source\vgmwriter.cpp" />
     <ClCompile Include="..\platform\Windows_x64\Altirra\source\videostillimage.cpp" />
-    <ClCompile Include="..\platform\Windows_x64\Altirra\source\videomanager.cpp" />
+    <ClCompile Include="source\videomanager.cpp">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+    </ClCompile>
     <ClCompile Include="..\platform\Windows_x64\Altirra\source\videowriter.cpp" />
     <ClCompile Include="..\platform\Windows_x64\Altirra\source\virtualscreen.cpp" />
     <ClCompile Include="..\platform\Windows_x64\Altirra\source\warpos.cpp" />
@@ -627,7 +629,7 @@
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\veronica.h" />
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\vgmplayer.h" />
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\vgmwriter.h" />
-    <ClInclude Include="..\platform\Windows_x64\Altirra\h\videomanager.h" />
+    <ClInclude Include="h\videomanager.h" />
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\videostillimage.h" />
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\warpos.h" />
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\xelcf.h" />

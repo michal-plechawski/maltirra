@@ -14,7 +14,9 @@
 //	You should have received a copy of the GNU General Public License along
 //	with this program. If not, see <http://www.gnu.org/licenses/>.
 
-#include <stdafx.h>
+#include <algorithm>
+#include <cstring>
+#include <vd2/system/VDString.h>
 #include "videomanager.h"
 
 void ATVideoManager::ResetActivityCounters() {
@@ -83,12 +85,12 @@ void ATVideoManager::AddVideoOutput(IATDeviceVideoOutput *output) {
 		output, output->GetActivityCounter()
 	};
 
-	uint32 index = (uint32)mOutputs.size();
 	auto it = std::lower_bound(mOutputs.begin(), mOutputs.end(), newEntry,
 		[](const OutputInfo& a, const OutputInfo& b) {
 			return VDStringSpanW(a.mpOutput->GetDisplayName()).comparei(b.mpOutput->GetDisplayName()) < 0;
 		}
 	);
+	const uint32 index = (uint32)(it - mOutputs.begin());
 
 	mOutputs.insert(it, newEntry);
 

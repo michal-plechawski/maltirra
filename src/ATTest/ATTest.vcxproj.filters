@@ -16,6 +16,9 @@
 	<ClCompile Include="source\TestAltirra_PNGPortable.cpp">
 	  <Filter>Source Files</Filter>
 	</ClCompile>
+	<ClCompile Include="source\TestAltirra_VideoManagerPortable.cpp">
+	  <Filter>Source Files</Filter>
+	</ClCompile>
 	<ClCompile Include="source\TestSystem_Binary.cpp">
 	  <Filter>Source Files</Filter>
 	</ClCompile>

@@ -54,4 +54,4 @@ private:
 	ATNotifyList<const vdfunction<void(uint32 index)> *> mOnRemovingOutput;
 };
 
-#endif
+#endif // f_AT_VIDEOMANAGER_H
