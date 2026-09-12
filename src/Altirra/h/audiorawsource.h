@@ -22,15 +22,13 @@
 #include <at/atcore/audiomixer.h>
 #include <at/atcore/audiosource.h>
 
-class IATAudioOutput;
-
 class ATAudioRawSource final : public IATSyncAudioSource {
 	ATAudioRawSource(const ATAudioRawSource&) = delete;
 	ATAudioRawSource& operator=(const ATAudioRawSource&) = delete;
 public:
 	ATAudioRawSource();
 	~ATAudioRawSource();
-	
+
 	void Init(IATAudioMixer *mixer);
 	void Shutdown();
 

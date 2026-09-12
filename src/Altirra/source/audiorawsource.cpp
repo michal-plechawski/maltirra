@@ -15,10 +15,8 @@
 //	along with this program; if not, write to the Free Software
 //	Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
-#include <stdafx.h>
-#include <vd2/system/binary.h>
+#include <algorithm>
 #include <at/atcore/wraptime.h>
-#include <at/ataudio/audiooutput.h>
 #include "audiorawsource.h"
 
 ATAudioRawSource::ATAudioRawSource() {
@@ -68,8 +66,10 @@ void ATAudioRawSource::WriteAudio(const ATSyncAudioMixInfo& mixInfo) {
 	// get accumulated
 	const uint32 endIndex = (uint32)mLevelEdges.size();
 
-	while(mNextEdgeIndex < endIndex && ATWrapTime{mLevelEdges[mNextEdgeIndex].mTime} <= baseTime)
-		mLevelEdges[mNextEdgeIndex++].mTime = baseTime;
+	// Keep mNextEdgeIndex unchanged: these clamped edges still need to be mixed.
+	uint32 clampIndex = mNextEdgeIndex;
+	while(clampIndex < endIndex && ATWrapTime{mLevelEdges[clampIndex].mTime} <= baseTime)
+		mLevelEdges[clampIndex++].mTime = baseTime;
 
 	// find appropriate end point for mixing
 	auto itEnd = std::upper_bound(mLevelEdges.begin() + mNextEdgeIndex, mLevelEdges.end(), ATSyncAudioEdge{ baseTime + timeSpan - 1, 0 },

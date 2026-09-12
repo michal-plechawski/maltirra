@@ -132,6 +132,7 @@ portable_test_sources=(
 	src/platform/macOS_arm64/ATTest/source/main.cpp
 	src/ATTest/source/portabletests.cpp
 	src/ATTest/source/TestAltirra_ArtifactingFiltersPortable.cpp
+	src/ATTest/source/TestAltirra_AudioRawSourcePortable.cpp
 	src/ATTest/source/TestAltirra_ConstantsPortable.cpp
 	src/ATTest/source/TestAltirra_CPUMemoryPortable.cpp
 	src/ATTest/source/TestAltirra_ErrorDecodePortable.cpp
@@ -209,6 +210,7 @@ portable_test_sources=(
 	src/ATCore/source/fft_scalar.cpp
 	src/ATCore/source/notifylist.cpp
 	src/Altirra/source/artifacting_filters.cpp
+	src/Altirra/source/audiorawsource.cpp
 	src/Altirra/source/common_png.cpp
 	src/Altirra/source/constants.cpp
 	src/Altirra/source/errordecode.cpp
