@@ -17,8 +17,13 @@
 #ifndef f_AT_INPUTMAP_H
 #define f_AT_INPUTMAP_H
 
+#include <initializer_list>
+#include <vd2/system/VDString.h>
 #include <vd2/system/refcount.h>
+#include <vd2/system/vdstl.h>
 #include "inputdefs.h"
+
+class VDRegistryKey;
 
 class ATInputMap final : public vdrefcounted<IVDRefCount> {
 public:
@@ -81,4 +86,4 @@ protected:
 	bool mbQuickMap;
 };
 
-#endif
+#endif // f_AT_INPUTMAP_H

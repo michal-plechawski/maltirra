@@ -16,6 +16,9 @@
 	<ClCompile Include="source\TestAltirra_InputDefsPortable.cpp">
 	  <Filter>Source Files</Filter>
 	</ClCompile>
+	<ClCompile Include="source\TestAltirra_InputMapPortable.cpp">
+	  <Filter>Source Files</Filter>
+	</ClCompile>
 	<ClCompile Include="source\TestAltirra_PNGPortable.cpp">
 	  <Filter>Source Files</Filter>
 	</ClCompile>

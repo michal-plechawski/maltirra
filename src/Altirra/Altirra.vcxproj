@@ -97,7 +97,7 @@
     <ClInclude Include="h\errordecode.h" />
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\fdc.h" />
     <ClInclude Include="h\inputdefs.h" />
-    <ClInclude Include="..\platform\Windows_x64\Altirra\h\inputmap.h" />
+    <ClInclude Include="h\inputmap.h" />
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\mediamanager.h" />
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\multiplexer.h" />
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\ostracing.h" />
@@ -284,7 +284,9 @@
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="..\platform\Windows_x64\Altirra\source\inputmanager.cpp" />
-    <ClCompile Include="..\platform\Windows_x64\Altirra\source\inputmap.cpp" />
+    <ClCompile Include="source\inputmap.cpp">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+    </ClCompile>
     <ClCompile Include="..\platform\Windows_x64\Altirra\source\irqcontroller.cpp" />
     <ClCompile Include="..\platform\Windows_x64\Altirra\source\joystick.cpp" />
     <ClCompile Include="..\platform\Windows_x64\Altirra\source\kmkjzide.cpp" />
