@@ -8,6 +8,7 @@ bool ATTestAltirraCPUMemory(ATPortableTestContext& context);
 bool ATTestAltirraErrorDecode(ATPortableTestContext& context);
 bool ATTestAltirraInputDefs(ATPortableTestContext& context);
 bool ATTestAltirraInputMap(ATPortableTestContext& context);
+bool ATTestAltirraHLEUtils(ATPortableTestContext& context);
 bool ATTestAltirraHostDeviceUtils(ATPortableTestContext& context);
 bool ATTestAltirraKernelDB(ATPortableTestContext& context);
 bool ATTestAltirraPNG(ATPortableTestContext& context);
@@ -78,6 +79,7 @@ const ATPortableTestCase *ATGetPortableTests(size_t& count) {
 		{ "Altirra_ErrorDecode", ATTestAltirraErrorDecode },
 		{ "Altirra_InputDefs", ATTestAltirraInputDefs },
 		{ "Altirra_InputMap", ATTestAltirraInputMap },
+		{ "Altirra_HLEUtils", ATTestAltirraHLEUtils },
 		{ "Altirra_HostDeviceUtils", ATTestAltirraHostDeviceUtils },
 		{ "Altirra_KernelDB", ATTestAltirraKernelDB },
 		{ "Altirra_PNG", ATTestAltirraPNG },

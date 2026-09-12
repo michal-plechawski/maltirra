@@ -137,6 +137,7 @@ portable_test_sources=(
 	src/ATTest/source/TestAltirra_ErrorDecodePortable.cpp
 	src/ATTest/source/TestAltirra_InputDefsPortable.cpp
 	src/ATTest/source/TestAltirra_InputMapPortable.cpp
+	src/ATTest/source/TestAltirra_HLEUtilsPortable.cpp
 	src/ATTest/source/TestAltirra_HostDeviceUtilsPortable.cpp
 	src/ATTest/source/TestAltirra_KernelDBPortable.cpp
 	src/ATTest/source/TestAltirra_PNGPortable.cpp
@@ -211,6 +212,7 @@ portable_test_sources=(
 	src/Altirra/source/common_png.cpp
 	src/Altirra/source/constants.cpp
 	src/Altirra/source/errordecode.cpp
+	src/Altirra/source/hleutils.cpp
 	src/Altirra/source/inputdefs.cpp
 	src/Altirra/source/inputmap.cpp
 	src/Altirra/source/hostdeviceutils.cpp

@@ -22,4 +22,4 @@ struct ATKernelDatabase;
 
 void ATClearPokeyTimersOnDiskIo(ATKernelDatabase& kdb);
 
-#endif	// f_AT_HLEUTILS_H
+#endif // f_AT_HLEUTILS_H

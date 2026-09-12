@@ -187,7 +187,7 @@
     <ClCompile Include="..\platform\Windows_x64\Altirra\source\hleprogramloader.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\platform\Windows_x64\Altirra\source\hleutils.cpp">
+    <ClCompile Include="source\hleutils.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\platform\Windows_x64\Altirra\source\hostdevice.cpp">
@@ -1221,7 +1221,7 @@
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\hleprogramloader.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\platform\Windows_x64\Altirra\h\hleutils.h">
+    <ClInclude Include="h\hleutils.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\hostdevice.h">

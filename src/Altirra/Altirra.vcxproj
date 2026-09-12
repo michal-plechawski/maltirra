@@ -271,7 +271,9 @@
     <ClCompile Include="..\platform\Windows_x64\Altirra\source\hlefastboothook.cpp" />
     <ClCompile Include="..\platform\Windows_x64\Altirra\source\hlefpaccelerator.cpp" />
     <ClCompile Include="..\platform\Windows_x64\Altirra\source\hleprogramloader.cpp" />
-    <ClCompile Include="..\platform\Windows_x64\Altirra\source\hleutils.cpp" />
+    <ClCompile Include="source\hleutils.cpp">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+    </ClCompile>
     <ClCompile Include="..\platform\Windows_x64\Altirra\source\hostdevice.cpp" />
     <ClCompile Include="source\hostdeviceutils.cpp">
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
@@ -569,7 +571,7 @@
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\hlefastboothook.h" />
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\hlefpaccelerator.h" />
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\hleprogramloader.h" />
-    <ClInclude Include="..\platform\Windows_x64\Altirra\h\hleutils.h" />
+    <ClInclude Include="h\hleutils.h" />
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\hostdevice.h" />
     <ClInclude Include="h\hostdeviceutils.h" />
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\ide.h" />
