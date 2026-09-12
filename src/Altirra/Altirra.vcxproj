@@ -336,7 +336,9 @@
     <ClCompile Include="..\platform\Windows_x64\Altirra\source\settings.cpp" />
     <ClCompile Include="..\platform\Windows_x64\Altirra\source\side.cpp" />
     <ClCompile Include="..\platform\Windows_x64\Altirra\source\side3.cpp" />
-    <ClCompile Include="..\platform\Windows_x64\Altirra\source\simeventmanager.cpp" />
+    <ClCompile Include="source\simeventmanager.cpp">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+    </ClCompile>
     <ClCompile Include="..\platform\Windows_x64\Altirra\source\simulator.cpp" />
     <ClCompile Include="..\platform\Windows_x64\Altirra\source\sio2sd.cpp" />
     <ClCompile Include="..\platform\Windows_x64\Altirra\source\siomanager.cpp" />
@@ -643,7 +645,7 @@
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\rtime8.h" />
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\savestate.h" />
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\side.h" />
-    <ClInclude Include="..\platform\Windows_x64\Altirra\h\simeventmanager.h" />
+    <ClInclude Include="h\simeventmanager.h" />
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\simulator.h" />
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\siomanager.h" />
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\slightsid.h" />

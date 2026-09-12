@@ -137,6 +137,7 @@ portable_test_sources=(
 	src/ATTest/source/TestAltirra_PNGPortable.cpp
 	src/ATTest/source/TestAltirra_TracePortable.cpp
 	src/ATTest/source/TestAltirra_TraceTapePortable.cpp
+	src/ATTest/source/TestAltirra_SimEventManagerPortable.cpp
 	src/ATTest/source/TestAltirra_VideoManagerPortable.cpp
 	src/ATTest/source/TestCore_ChecksumPortable.cpp
 	src/ATTest/source/TestCore_FFTPortable.cpp
@@ -204,6 +205,7 @@ portable_test_sources=(
 	src/Altirra/source/inputdefs.cpp
 	src/Altirra/source/trace.cpp
 	src/Altirra/source/tracetape.cpp
+	src/Altirra/source/simeventmanager.cpp
 	src/Altirra/source/videomanager.cpp
 	src/ATIO/source/audioreaderflac_arm64.cpp
 	src/ATIO/source/cartridgeimage.cpp

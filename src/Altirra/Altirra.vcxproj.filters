@@ -283,7 +283,7 @@
     <ClCompile Include="..\platform\Windows_x64\Altirra\source\side.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\platform\Windows_x64\Altirra\source\simeventmanager.cpp">
+    <ClCompile Include="source\simeventmanager.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\platform\Windows_x64\Altirra\source\simulator.cpp">
@@ -1308,7 +1308,7 @@
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\side.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\platform\Windows_x64\Altirra\h\simeventmanager.h">
+    <ClInclude Include="h\simeventmanager.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\simulator.h">

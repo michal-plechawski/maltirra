@@ -103,4 +103,4 @@ protected:
 	uint32		mEventCallbackLists[kATSimEventCount - 1] = {};
 };
 
-#endif	// f_AT_SIMEVENTMANAGER_H
+#endif // f_AT_SIMEVENTMANAGER_H

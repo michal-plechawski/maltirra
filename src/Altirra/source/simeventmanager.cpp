@@ -15,7 +15,7 @@
 //	along with this program; if not, write to the Free Software
 //	Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
-#include <stdafx.h>
+#include <algorithm>
 #include "simeventmanager.h"
 
 ATSimulatorEventManager::ATSimulatorEventManager() {
@@ -168,7 +168,9 @@ void ATSimulatorEventManager::NotifyEvent(ATSimulatorEvent ev) {
 
 	while(it.mEventIdx) {
 		const auto& e = mEventCallbackTable[it.mEventIdx - 1];
-		const auto& fn = e.mpFunction;
+		// A callback may add or remove callbacks, reallocating the table or
+		// clearing its own entry. Keep the callable alive for this invocation.
+		vdfunction<void()> fn = e.mpFunction;
 
 		it.mEventIdx = e.mNext;
 
