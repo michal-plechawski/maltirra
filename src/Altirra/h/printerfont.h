@@ -91,4 +91,4 @@ extern const ATPrinterFont1029 g_ATPrinterFont1029;
 extern const ATPrinterFont825Prop g_ATPrinterFont825Prop;
 extern const ATPrinterFont825Mono g_ATPrinterFont825Mono;
 
-#endif
+#endif // f_AT_PRINTERFONT_H

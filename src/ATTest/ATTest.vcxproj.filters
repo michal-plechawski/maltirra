@@ -22,6 +22,9 @@
 	<ClCompile Include="source\TestAltirra_Printer1020FontPortable.cpp">
 	  <Filter>Source Files</Filter>
 	</ClCompile>
+	<ClCompile Include="source\TestAltirra_PrinterFontsPortable.cpp">
+	  <Filter>Source Files</Filter>
+	</ClCompile>
 	<ClCompile Include="source\TestAltirra_TracePortable.cpp">
 	  <Filter>Source Files</Filter>
 	</ClCompile>

@@ -1012,7 +1012,7 @@
     <ClCompile Include="..\platform\Windows_x64\Altirra\source\printerbase.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\platform\Windows_x64\Altirra\source\printerfont.cpp">
+    <ClCompile Include="source\printerfont.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\platform\Windows_x64\Altirra\source\uiconfdevprinter.cpp">
@@ -1743,7 +1743,7 @@
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\printerbase.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\platform\Windows_x64\Altirra\h\printerfont.h">
+    <ClInclude Include="h\printerfont.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\printer.h">
