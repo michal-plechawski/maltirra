@@ -14,7 +14,9 @@
 //	You should have received a copy of the GNU General Public License along
 //	with this program. If not, see <http://www.gnu.org/licenses/>.
 
-#include <stdafx.h>
+#include <algorithm>
+#include <cmath>
+#include <cstring>
 #include "artifacting_filters.h"
 
 void ATFilterKernelSetBicubic(ATFilterKernel& k, float offset, float A) {
@@ -42,6 +44,9 @@ void ATFilterKernelConvolve(ATFilterKernel& r, const ATFilterKernel& x, const AT
 	size_t n = y.mCoeffs.size();
 
 	r.mCoeffs.clear();
+	if (!m || !n)
+		return;
+
 	r.mCoeffs.resize(m + n - 1, 0);
 
 	float *dst = r.mCoeffs.data();
@@ -60,6 +65,9 @@ void ATFilterKernelConvolve(ATFilterKernel& r, const ATFilterKernel& x, const AT
 void ATFilterKernelReverse(ATFilterKernel& r) {
 	const int n = (int)r.mCoeffs.size();
 
+	if (!n)
+		return;
+
 	r.mOffset = -(r.mOffset + n - 1);
 
 	const int n2 = n >> 1;
@@ -75,6 +83,9 @@ void ATFilterKernelReverse(ATFilterKernel& r) {
 }
 
 float ATFilterKernelEvaluate(const ATFilterKernel& k, const float *src) {
+	if (k.mCoeffs.empty())
+		return 0;
+
 	src += k.mOffset;
 
 	ATFilterKernel::Coeffs::const_iterator it(k.mCoeffs.begin()), itEnd(k.mCoeffs.end());
@@ -136,6 +147,8 @@ void ATFilterKernelAccumulateWindow(const ATFilterKernel& k, float *dst, int off
 
 	if (hi > limit)
 		hi = limit;
+	if (lo >= hi)
+		return;
 
 	const float *src = k.mCoeffs.data();
 

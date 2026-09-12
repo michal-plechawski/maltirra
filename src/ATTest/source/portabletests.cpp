@@ -2,6 +2,7 @@
 
 #include <at/attest/portabletest.h>
 
+bool ATTestAltirraArtifactingFilters(ATPortableTestContext& context);
 bool ATTestAltirraConstants(ATPortableTestContext& context);
 bool ATTestAltirraErrorDecode(ATPortableTestContext& context);
 bool ATTestAltirraInputDefs(ATPortableTestContext& context);
@@ -64,6 +65,7 @@ bool ATTestSystemZip(ATPortableTestContext& context);
 
 const ATPortableTestCase *ATGetPortableTests(size_t& count) {
 	static const ATPortableTestCase kTests[] = {
+		{ "Altirra_ArtifactingFilters", ATTestAltirraArtifactingFilters },
 		{ "Altirra_Constants", ATTestAltirraConstants },
 		{ "Altirra_ErrorDecode", ATTestAltirraErrorDecode },
 		{ "Altirra_InputDefs", ATTestAltirraInputDefs },

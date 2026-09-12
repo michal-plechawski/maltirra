@@ -17,11 +17,12 @@
 #ifndef f_AT_ARTIFACTING_FILTERS_H
 #define f_AT_ARTIFACTING_FILTERS_H
 
+#include <initializer_list>
 #include <vd2/system/vdstl.h>
 
 struct ATFilterKernel {
 	typedef vdfastvector<float> Coeffs;
-	int mOffset;
+	int mOffset = 0;
 	Coeffs mCoeffs;
 
 	void Init(int off, std::initializer_list<float> vals) {
@@ -82,4 +83,4 @@ void ATFilterKernelEvalCubic4(float co[4], float offset, float A);
 ATFilterKernel ATFilterKernelSampleBicubic(const ATFilterKernel& src, float offset, float step, float A);
 ATFilterKernel ATFilterKernelSamplePoint(const ATFilterKernel& src, int offset, int step);
 
-#endif
+#endif // f_AT_ARTIFACTING_FILTERS_H

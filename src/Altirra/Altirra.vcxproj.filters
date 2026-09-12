@@ -982,7 +982,7 @@
     <ClCompile Include="..\platform\Windows_x64\Altirra\source\devxcmdrescandynamicdisk.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\platform\Windows_x64\Altirra\source\artifacting_filters.cpp">
+    <ClCompile Include="source\artifacting_filters.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\platform\Windows_x64\Altirra\source\disktrace.cpp">
@@ -1107,7 +1107,7 @@
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\artifacting.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\platform\Windows_x64\Altirra\h\artifacting_filters.h">
+    <ClInclude Include="h\artifacting_filters.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\audiomonitor.h">
