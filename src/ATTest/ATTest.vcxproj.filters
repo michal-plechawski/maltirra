@@ -19,6 +19,9 @@
 	<ClCompile Include="source\TestAltirra_TracePortable.cpp">
 	  <Filter>Source Files</Filter>
 	</ClCompile>
+	<ClCompile Include="source\TestAltirra_TraceTapePortable.cpp">
+	  <Filter>Source Files</Filter>
+	</ClCompile>
 	<ClCompile Include="source\TestAltirra_VideoManagerPortable.cpp">
 	  <Filter>Source Files</Filter>
 	</ClCompile>

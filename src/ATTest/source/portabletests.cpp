@@ -7,6 +7,7 @@ bool ATTestAltirraErrorDecode(ATPortableTestContext& context);
 bool ATTestAltirraInputDefs(ATPortableTestContext& context);
 bool ATTestAltirraPNG(ATPortableTestContext& context);
 bool ATTestAltirraTrace(ATPortableTestContext& context);
+bool ATTestAltirraTraceTape(ATPortableTestContext& context);
 bool ATTestAltirraVideoManager(ATPortableTestContext& context);
 bool ATTestCoreChecksum(ATPortableTestContext& context);
 bool ATTestCoreFFT(ATPortableTestContext& context);
@@ -67,6 +68,7 @@ const ATPortableTestCase *ATGetPortableTests(size_t& count) {
 		{ "Altirra_InputDefs", ATTestAltirraInputDefs },
 		{ "Altirra_PNG", ATTestAltirraPNG },
 		{ "Altirra_Trace", ATTestAltirraTrace },
+		{ "Altirra_TraceTape", ATTestAltirraTraceTape },
 		{ "Altirra_VideoManager", ATTestAltirraVideoManager },
 		{ "Core_Checksum", ATTestCoreChecksum },
 		{ "Core_FFT", ATTestCoreFFT },

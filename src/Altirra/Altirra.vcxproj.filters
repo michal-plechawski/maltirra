@@ -700,7 +700,7 @@
     <ClCompile Include="..\platform\Windows_x64\Altirra\source\xelcf.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\platform\Windows_x64\Altirra\source\tracetape.cpp">
+    <ClCompile Include="source\tracetape.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\platform\Windows_x64\Altirra\source\rapidus.cpp">
@@ -1524,7 +1524,7 @@
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\xelcf.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\platform\Windows_x64\Altirra\h\tracetape.h">
+    <ClInclude Include="h\tracetape.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\rapidus.h">

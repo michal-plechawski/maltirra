@@ -68,4 +68,4 @@ private:
 	bool mbTurbo;
 };
 
-#endif
+#endif // f_AT_TRACETAPE_H

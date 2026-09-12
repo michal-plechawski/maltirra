@@ -15,7 +15,8 @@
 //	along with this program; if not, write to the Free Software
 //	Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
-#include <stdafx.h>
+#include <algorithm>
+#include <iterator>
 #include "tracetape.h"
 
 ATTraceChannelTape::ATTraceChannelTape(uint64 tickOffset, double tickScale, const wchar_t *name, bool turbo, double samplesPerSec)
@@ -34,8 +35,8 @@ const ATTraceChannelTape::EventInfo& ATTraceChannelTape::GetLastEvent() const {
 void ATTraceChannelTape::AddEvent(uint64 start, EventType eventType, uint32 pos) {
 	mEvents.push_back(
 		EventInfo {
-			(double)(start - mTickOffset) * mTickScale,
-			1e+10,
+			(double)(sint64)(start - mTickOffset) * mTickScale,
+			kATTraceTime_Infinity,
 			eventType,
 			pos
 		}
@@ -44,7 +45,7 @@ void ATTraceChannelTape::AddEvent(uint64 start, EventType eventType, uint32 pos)
 
 void ATTraceChannelTape::TruncateLastEvent(uint64 tick) {
 	if (!mEvents.empty()) {
-		const double t = (double)(tick - mTickOffset) * mTickScale;
+		const double t = (double)(sint64)(tick - mTickOffset) * mTickScale;
 		EventInfo& ev = mEvents.back();
 
 		if (ev.mEndTime > t)
@@ -72,7 +73,7 @@ void ATTraceChannelTape::StartIteration(double startTime, double endTime, double
 	auto it = std::lower_bound(mEvents.cbegin(), mEvents.cend(), startTime,
 		[](const EventInfo& ev, double t) { return ev.mStartTime < t; });
 
-	if (it != mEvents.begin() && std::prev(it)->mEndTime > startTime - mIterThreshold)
+	if (it != mEvents.begin() && std::prev(it)->mEndTime > startTime - eventThreshold)
 		--it;
 
 	mIt = it;

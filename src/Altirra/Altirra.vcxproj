@@ -356,7 +356,9 @@
     <ClCompile Include="..\platform\Windows_x64\Altirra\source\traceimporta800.cpp" />
     <ClCompile Include="..\platform\Windows_x64\Altirra\source\traceio.cpp" />
     <ClCompile Include="..\platform\Windows_x64\Altirra\source\tracenative.cpp" />
-    <ClCompile Include="..\platform\Windows_x64\Altirra\source\tracetape.cpp" />
+    <ClCompile Include="source\tracetape.cpp">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+    </ClCompile>
     <ClCompile Include="..\platform\Windows_x64\Altirra\source\tracevideo.cpp" />
     <ClCompile Include="..\platform\Windows_x64\Altirra\source\ui.cpp" />
     <ClCompile Include="..\platform\Windows_x64\Altirra\source\uiabout.cpp" />
@@ -588,7 +590,7 @@
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\tracefileformat.h" />
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\traceio.h" />
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\tracenative.h" />
-    <ClInclude Include="..\platform\Windows_x64\Altirra\h\tracetape.h" />
+    <ClInclude Include="h\tracetape.h" />
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\tracevideo.h" />
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\uiaccessors.h" />
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\uicalibrationscreen.h" />
