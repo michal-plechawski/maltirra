@@ -8,6 +8,9 @@
 	<ClCompile Include="source\TestAltirra_ConstantsPortable.cpp">
 	  <PrecompiledHeader>NotUsing</PrecompiledHeader>
 	</ClCompile>
+	<ClCompile Include="source\TestAltirra_ErrorDecodePortable.cpp">
+	  <PrecompiledHeader>NotUsing</PrecompiledHeader>
+	</ClCompile>
 	<ClCompile Include="source\TestAltirra_InputDefsPortable.cpp">
 	  <PrecompiledHeader>NotUsing</PrecompiledHeader>
 	</ClCompile>

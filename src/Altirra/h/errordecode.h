@@ -26,4 +26,4 @@ struct ATDecodedError {
 
 vdfastvector<ATDecodedError> ATDecodeError(uint8 code);
 
-#endif
+#endif // f_AT_ERRORDECODE_H

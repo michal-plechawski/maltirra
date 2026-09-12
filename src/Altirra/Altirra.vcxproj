@@ -94,7 +94,7 @@
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\diskprofile.h" />
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\disktrace.h" />
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\diskvirtimagebase.h" />
-    <ClInclude Include="..\platform\Windows_x64\Altirra\h\errordecode.h" />
+    <ClInclude Include="h\errordecode.h" />
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\fdc.h" />
     <ClInclude Include="h\inputdefs.h" />
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\inputmap.h" />
@@ -255,7 +255,9 @@
     <ClCompile Include="..\platform\Windows_x64\Altirra\source\diskvirtimagesdfs.cpp" />
     <ClCompile Include="..\platform\Windows_x64\Altirra\source\dragoncart.cpp" />
     <ClCompile Include="..\platform\Windows_x64\Altirra\source\encode_png.cpp" />
-    <ClCompile Include="..\platform\Windows_x64\Altirra\source\errordecode.cpp" />
+    <ClCompile Include="source\errordecode.cpp">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+    </ClCompile>
     <ClCompile Include="..\platform\Windows_x64\Altirra\source\fdc.cpp" />
     <ClCompile Include="..\platform\Windows_x64\Altirra\source\firmwaredetect.cpp" />
     <ClCompile Include="..\platform\Windows_x64\Altirra\source\firmwaremanager.cpp" />
