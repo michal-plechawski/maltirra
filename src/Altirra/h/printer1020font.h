@@ -29,5 +29,5 @@ struct ATPrinterFont1020 {
 
 extern const ATPrinterFont1020 g_ATPrinterFont1020;
 
-#endif
+#endif // f_AT_PRINTER1020FONT_H
 

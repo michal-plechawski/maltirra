@@ -1033,7 +1033,7 @@
     <ClCompile Include="..\platform\Windows_x64\Altirra\source\printerttfencoder.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\platform\Windows_x64\Altirra\source\printer1020font.cpp">
+    <ClCompile Include="source\printer1020font.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\platform\Windows_x64\Altirra\source\printer1020.cpp">
@@ -1767,7 +1767,7 @@
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\printerttfencoder.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\platform\Windows_x64\Altirra\h\printer1020font.h">
+    <ClInclude Include="h\printer1020font.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\printer1020.h">

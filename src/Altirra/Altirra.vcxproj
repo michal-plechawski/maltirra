@@ -109,7 +109,7 @@
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\portmanager.h" />
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\printer.h" />
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\printer1020.h" />
-    <ClInclude Include="..\platform\Windows_x64\Altirra\h\printer1020font.h" />
+    <ClInclude Include="h\printer1020font.h" />
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\printerbase.h" />
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\printerfont.h" />
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\printeroutput.h" />
@@ -317,7 +317,9 @@
     <ClCompile Include="..\platform\Windows_x64\Altirra\source\portmanager.cpp" />
     <ClCompile Include="..\platform\Windows_x64\Altirra\source\printer.cpp" />
     <ClCompile Include="..\platform\Windows_x64\Altirra\source\printer1020.cpp" />
-    <ClCompile Include="..\platform\Windows_x64\Altirra\source\printer1020font.cpp" />
+    <ClCompile Include="source\printer1020font.cpp">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+    </ClCompile>
     <ClCompile Include="..\platform\Windows_x64\Altirra\source\printerbase.cpp" />
     <ClCompile Include="..\platform\Windows_x64\Altirra\source\printerfont.cpp" />
     <ClCompile Include="..\platform\Windows_x64\Altirra\source\printeroutput.cpp" />
