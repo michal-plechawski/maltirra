@@ -15,8 +15,8 @@
 //	along with this program; if not, write to the Free Software
 //	Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
-#include <stdafx.h>
-#include <at/atcpu/history.h>
+#include <algorithm>
+#include <iterator>
 #include "trace.h"
 
 ATTraceGroup::ATTraceGroup() {
@@ -198,7 +198,7 @@ void ATTraceChannelTickBased::StartIteration(double startTime, double endTime, d
 	auto it = std::lower_bound(mEvents.cbegin(), mEvents.cend(), startTime,
 		[](const SimpleEvent& ev, double t) { return ev.mStartTime < t; });
 
-	if (it != mEvents.begin() && std::prev(it)->mEndTime > startTime - mIterThreshold)
+	if (it != mEvents.begin() && std::prev(it)->mEndTime > startTime - eventThreshold)
 		--it;
 
 	mIt = it;
@@ -278,6 +278,13 @@ void ATTraceChannelStringTable::DecodeName(ATTraceEvent& ev, const void *data) c
 }
 
 ///////////////////////////////////////////////////////////////////////////
+
+ATTraceChannelFormatted::~ATTraceChannelFormatted() {
+	for(FormatterInfo& fi : mDeleters) {
+		if (fi.mpDeleter)
+			fi.mpDeleter(fi.mpData);
+	}
+}
 
 void ATTraceChannelFormatted::DecodeName(ATTraceEvent& ev, const void *data) const {
 	const FormatterInfo *fi = (const FormatterInfo *)data;

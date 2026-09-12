@@ -20,8 +20,14 @@
 #define f_TRACE_H
 
 #include <atomic>
+#include <new>
+#include <type_traits>
+#include <utility>
+#include <vd2/system/VDString.h>
 #include <vd2/system/linearalloc.h>
 #include <vd2/system/refcount.h>
+#include <vd2/system/unknown.h>
+#include <vd2/system/vdstl.h>
 
 class VDStringW;
 class ATTraceChannelSimple;
@@ -251,6 +257,7 @@ class ATTraceChannelFormatted final : public ATTraceChannelTickBased {
 
 public:
 	using ATTraceChannelTickBased::ATTraceChannelTickBased;
+	~ATTraceChannelFormatted() override;
 
 	template<typename Formatter>
 	void AddTickEvent(uint64 tickStart, uint64 tickEnd, Formatter f, uint32 color) {
@@ -329,4 +336,4 @@ private:
 	VDLinearAllocator mLinearAlloc;
 };
 
-#endif
+#endif // f_TRACE_H

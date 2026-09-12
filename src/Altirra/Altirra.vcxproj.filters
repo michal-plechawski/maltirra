@@ -679,7 +679,7 @@
     <ClCompile Include="..\platform\Windows_x64\Altirra\source\uitraceviewer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\platform\Windows_x64\Altirra\source\trace.cpp">
+    <ClCompile Include="source\trace.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\platform\Windows_x64\Altirra\source\cputracer.cpp">
@@ -1503,7 +1503,7 @@
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\browser.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\platform\Windows_x64\Altirra\h\trace.h">
+    <ClInclude Include="h\trace.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\cputracer.h">

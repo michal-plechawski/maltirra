@@ -347,7 +347,9 @@
     <ClCompile Include="..\platform\Windows_x64\Altirra\source\textdom.cpp" />
     <ClCompile Include="..\platform\Windows_x64\Altirra\source\texteditor.cpp" />
     <ClCompile Include="..\platform\Windows_x64\Altirra\source\thepill.cpp" />
-    <ClCompile Include="..\platform\Windows_x64\Altirra\source\trace.cpp" />
+    <ClCompile Include="source\trace.cpp">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+    </ClCompile>
     <ClCompile Include="..\platform\Windows_x64\Altirra\source\tracecpu.cpp" />
     <ClCompile Include="..\platform\Windows_x64\Altirra\source\tracefileencoding.cpp" />
     <ClCompile Include="..\platform\Windows_x64\Altirra\source\tracefileformat.cpp" />
@@ -580,7 +582,7 @@
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\sdrive.h" />
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\startuplogger.h" />
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\thepill.h" />
-    <ClInclude Include="..\platform\Windows_x64\Altirra\h\trace.h" />
+    <ClInclude Include="h\trace.h" />
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\tracecpu.h" />
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\tracefileencoding.h" />
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\tracefileformat.h" />
