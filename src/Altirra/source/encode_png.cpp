@@ -1,7 +1,9 @@
-#include <stdafx.h>
-#include <stdio.h>
+#include <cstring>
 #include <algorithm>
 #include <numeric>
+#include <vd2/system/Fraction.h>
+#include <vd2/system/vdalloc.h>
+#include <vd2/system/vdstl_fastvector.h>
 #include <vd2/system/zip.h>
 #include <vd2/system/error.h>
 #include <vd2/system/binary.h>
@@ -1058,7 +1060,7 @@ void VDImageEncoderPNG::Encode(const VDPixmap& px, const void *&p, uint32& len, 
 		phys.mPixelsPerUnitX = VDToBE32(par32.getLo());
 		phys.mPixelsPerUnitY = VDToBE32(par32.getHi());
 
-		VDWriteUnalignedBEU32(phys.mCRC, crcTable.CRC(&phys, 17));
+		VDWriteUnalignedBEU32(phys.mCRC, crcTable.CRC(&phys.mChunkType, 13));
 
 		mOutput.insert(mOutput.end(), (const uint8 *)&phys, (const uint8 *)&phys + 21);
 	}

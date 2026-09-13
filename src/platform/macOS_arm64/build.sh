@@ -147,6 +147,7 @@ portable_test_sources=(
 	src/ATTest/source/TestAltirra_HostDeviceUtilsPortable.cpp
 	src/ATTest/source/TestAltirra_KernelDBPortable.cpp
 	src/ATTest/source/TestAltirra_PNGPortable.cpp
+	src/ATTest/source/TestAltirra_PNGEncoderPortable.cpp
 	src/ATTest/source/TestAltirra_Printer1020FontPortable.cpp
 	src/ATTest/source/TestAltirra_PrinterFontsPortable.cpp
 	src/ATTest/source/TestAltirra_PokeyTracePortable.cpp
@@ -218,6 +219,7 @@ portable_test_sources=(
 	src/Altirra/source/artifacting_filters.cpp
 	src/Altirra/source/audiorawsource.cpp
 	src/Altirra/source/common_png.cpp
+	src/Altirra/source/encode_png.cpp
 	src/Altirra/source/constants.cpp
 	src/Altirra/source/diskvirtimagebase.cpp
 	src/Altirra/source/diskvirtimage.cpp
@@ -255,8 +257,17 @@ portable_test_sources=(
 	src/ATIO/source/cartridgetypes.cpp
 	src/ATIO/source/cassetteaudiofilters.cpp
 	src/ATIO/source/cassettedecoder.cpp
+	src/Kasumi/source/blt.cpp
+	src/Kasumi/source/blt_reference.cpp
+	src/Kasumi/source/blt_reference_pal.cpp
+	src/Kasumi/source/blt_reference_rgb.cpp
 	src/Kasumi/source/blt_reference_yuv.cpp
+	src/Kasumi/source/blt_reference_yuv2yuv.cpp
+	src/Kasumi/source/blt_reference_yuvrev.cpp
+	src/Kasumi/source/blt_setup.cpp
 	src/Kasumi/source/blt_spanutils.cpp
+	src/Kasumi/source/blt_spanutils_arm64.cpp
+	src/Kasumi/source/blt_uberblit.cpp
 	src/Kasumi/source/pixmaputils.cpp
 	src/Kasumi/source/region.cpp
 	src/Kasumi/source/region_neon.cpp
@@ -264,7 +275,15 @@ portable_test_sources=(
 	src/Kasumi/source/resample_stages.cpp
 	src/Kasumi/source/resample_stages_arm64.cpp
 	src/Kasumi/source/resample_stages_reference.cpp
+	src/Kasumi/source/stretchblt_reference.cpp
 	src/Kasumi/source/uberblit_ycbcr_neon.cpp
+	src/Kasumi/source/uberblit.cpp
+	src/Kasumi/source/uberblit_16f.cpp
+	src/Kasumi/source/uberblit_gen.cpp
+	src/Kasumi/source/uberblit_resample.cpp
+	src/Kasumi/source/uberblit_resample_special.cpp
+	src/Kasumi/source/uberblit_swizzle.cpp
+	src/Kasumi/source/uberblit_ycbcr_generic.cpp
 	src/platform/macOS_arm64/ATCore/source/timerserviceimpl_macos.cpp
 	src/platform/macOS_arm64/system/source/binary.cpp
 	src/platform/macOS_arm64/system/source/bitmath.cpp

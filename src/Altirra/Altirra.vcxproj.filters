@@ -154,7 +154,7 @@
     <ClCompile Include="..\platform\Windows_x64\Altirra\source\dragoncart.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\platform\Windows_x64\Altirra\source\encode_png.cpp">
+    <ClCompile Include="source\encode_png.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\platform\Windows_x64\Altirra\source\firmwaredetect.cpp">
@@ -1188,7 +1188,7 @@
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\dragoncart.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\platform\Windows_x64\Altirra\h\encode_png.h">
+    <ClInclude Include="h\encode_png.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\firmwaredetect.h">

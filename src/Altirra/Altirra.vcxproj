@@ -264,7 +264,9 @@
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="..\platform\Windows_x64\Altirra\source\dragoncart.cpp" />
-    <ClCompile Include="..\platform\Windows_x64\Altirra\source\encode_png.cpp" />
+    <ClCompile Include="source\encode_png.cpp">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+    </ClCompile>
     <ClCompile Include="source\errordecode.cpp">
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
     </ClCompile>
@@ -570,7 +572,7 @@
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\disasm.h" />
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\disk.h" />
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\dragoncart.h" />
-    <ClInclude Include="..\platform\Windows_x64\Altirra\h\encode_png.h" />
+    <ClInclude Include="h\encode_png.h" />
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\firmwaredetect.h" />
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\firmwaremanager.h" />
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\gtia.h" />
