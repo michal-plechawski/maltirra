@@ -148,6 +148,7 @@ portable_test_sources=(
 	src/ATTest/source/TestAltirra_KernelDBPortable.cpp
 	src/ATTest/source/TestAltirra_PNGPortable.cpp
 	src/ATTest/source/TestAltirra_PNGEncoderPortable.cpp
+	src/ATTest/source/TestAltirra_SaveStateTypesPortable.cpp
 	src/ATTest/source/TestAltirra_Printer1020FontPortable.cpp
 	src/ATTest/source/TestAltirra_PrinterFontsPortable.cpp
 	src/ATTest/source/TestAltirra_PokeyTracePortable.cpp
@@ -243,6 +244,7 @@ portable_test_sources=(
 	src/Altirra/source/printer1020font.cpp
 	src/Altirra/source/printerfont.cpp
 	src/Altirra/source/pokeytrace.cpp
+	src/Altirra/source/savestatetypes.cpp
 	src/Altirra/source/trace.cpp
 	src/Altirra/source/tracetape.cpp
 	src/Altirra/source/simeventmanager.cpp

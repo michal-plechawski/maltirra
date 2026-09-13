@@ -120,7 +120,7 @@
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\sapconverter.h" />
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\sapwriter.h" />
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\savestateio.h" />
-    <ClInclude Include="..\platform\Windows_x64\Altirra\h\savestatetypes.h" />
+    <ClInclude Include="h\savestatetypes.h" />
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\settings.h" />
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\side3.h" />
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\sio2sd.h" />
@@ -354,7 +354,9 @@
     <ClCompile Include="..\platform\Windows_x64\Altirra\source\sapwriter.cpp" />
     <ClCompile Include="..\platform\Windows_x64\Altirra\source\savestate.cpp" />
     <ClCompile Include="..\platform\Windows_x64\Altirra\source\savestateio.cpp" />
-    <ClCompile Include="..\platform\Windows_x64\Altirra\source\savestatetypes.cpp" />
+    <ClCompile Include="source\savestatetypes.cpp">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+    </ClCompile>
     <ClCompile Include="..\platform\Windows_x64\Altirra\source\scsidisk.cpp" />
     <ClCompile Include="..\platform\Windows_x64\Altirra\source\sdrive.cpp" />
     <ClCompile Include="..\platform\Windows_x64\Altirra\source\settings.cpp" />

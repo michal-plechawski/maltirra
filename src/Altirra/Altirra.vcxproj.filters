@@ -1024,7 +1024,7 @@
     <ClCompile Include="..\platform\Windows_x64\Altirra\source\uisavestate.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\platform\Windows_x64\Altirra\source\savestatetypes.cpp">
+    <ClCompile Include="source\savestatetypes.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\platform\Windows_x64\Altirra\source\printeroutput.cpp">
@@ -1755,7 +1755,7 @@
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\uisavestate.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\platform\Windows_x64\Altirra\h\savestatetypes.h">
+    <ClInclude Include="h\savestatetypes.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\printeroutput.h">
