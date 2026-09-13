@@ -7,6 +7,7 @@ bool ATTestAltirraAudioRawSource(ATPortableTestContext& context);
 bool ATTestAltirraConstants(ATPortableTestContext& context);
 bool ATTestAltirraCPUMemory(ATPortableTestContext& context);
 bool ATTestAltirraDiskVirtImageBase(ATPortableTestContext& context);
+bool ATTestAltirraDirectoryWatcher(ATPortableTestContext& context);
 bool ATTestAltirraErrorDecode(ATPortableTestContext& context);
 bool ATTestAltirraInputDefs(ATPortableTestContext& context);
 bool ATTestAltirraInputMap(ATPortableTestContext& context);
@@ -80,6 +81,7 @@ const ATPortableTestCase *ATGetPortableTests(size_t& count) {
 		{ "Altirra_Constants", ATTestAltirraConstants },
 		{ "Altirra_CPUMemory", ATTestAltirraCPUMemory },
 		{ "Altirra_DiskVirtImageBase", ATTestAltirraDiskVirtImageBase },
+		{ "Altirra_DirectoryWatcher", ATTestAltirraDirectoryWatcher },
 		{ "Altirra_ErrorDecode", ATTestAltirraErrorDecode },
 		{ "Altirra_InputDefs", ATTestAltirraInputDefs },
 		{ "Altirra_InputMap", ATTestAltirraInputMap },

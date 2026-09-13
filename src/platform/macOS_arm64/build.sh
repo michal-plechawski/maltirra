@@ -52,6 +52,7 @@ compile_one() {
 		-Isrc/"$component"/h \
 		-Isrc/"$component"/source \
 		-Isrc/"$component"/autogen \
+		-Isrc/platform/macOS_arm64/Altirra/h \
 		-Isrc/Altirra/h \
 		-Isrc/ATIO/h \
 		-Isrc/h \
@@ -100,7 +101,7 @@ headers_hash=$(
 )
 
 compiler_version=$($compiler --version)
-build_format_version=2
+build_format_version=3
 MACOS_ARM64_BUILD_SIGNATURE=$(printf '%s\n%s\n%s\n%s\n' \
 	"$compiler_version" \
 	"${common_flags[*]}" \
@@ -136,6 +137,7 @@ portable_test_sources=(
 	src/ATTest/source/TestAltirra_ConstantsPortable.cpp
 	src/ATTest/source/TestAltirra_CPUMemoryPortable.cpp
 	src/ATTest/source/TestAltirra_DiskVirtImageBasePortable.cpp
+	src/ATTest/source/TestAltirra_DirectoryWatcherPortable.cpp
 	src/ATTest/source/TestAltirra_ErrorDecodePortable.cpp
 	src/ATTest/source/TestAltirra_InputDefsPortable.cpp
 	src/ATTest/source/TestAltirra_InputMapPortable.cpp
@@ -215,6 +217,7 @@ portable_test_sources=(
 	src/Altirra/source/common_png.cpp
 	src/Altirra/source/constants.cpp
 	src/Altirra/source/diskvirtimagebase.cpp
+	src/platform/macOS_arm64/Altirra/source/directorywatcher.cpp
 	src/Altirra/source/errordecode.cpp
 	src/Altirra/source/hleutils.cpp
 	src/Altirra/source/inputdefs.cpp

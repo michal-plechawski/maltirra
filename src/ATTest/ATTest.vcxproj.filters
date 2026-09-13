@@ -19,6 +19,9 @@
 	<ClCompile Include="source\TestAltirra_DiskVirtImageBasePortable.cpp">
 	  <Filter>Source Files</Filter>
 	</ClCompile>
+	<ClCompile Include="source\TestAltirra_DirectoryWatcherPortable.cpp">
+	  <Filter>Source Files</Filter>
+	</ClCompile>
 	<ClCompile Include="source\TestAltirra_ErrorDecodePortable.cpp">
 	  <Filter>Source Files</Filter>
 	</ClCompile>
@@ -313,6 +316,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\platform\Windows_x64\ATTest\source\TestSystem_HashMap.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\platform\Windows_x64\Altirra\source\directorywatcher.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\platform\Windows_x64\ATTest\source\TestNet_NativeSockets.cpp">
