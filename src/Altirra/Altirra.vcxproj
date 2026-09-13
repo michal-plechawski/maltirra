@@ -254,7 +254,9 @@
     <ClCompile Include="..\platform\Windows_x64\Altirra\source\diskinterface.cpp" />
     <ClCompile Include="..\platform\Windows_x64\Altirra\source\diskprofile.cpp" />
     <ClCompile Include="..\platform\Windows_x64\Altirra\source\disktrace.cpp" />
-    <ClCompile Include="..\platform\Windows_x64\Altirra\source\diskvirtimage.cpp" />
+    <ClCompile Include="source\diskvirtimage.cpp">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+    </ClCompile>
     <ClCompile Include="source\diskvirtimagebase.cpp">
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
     </ClCompile>

@@ -145,7 +145,7 @@
     <ClCompile Include="..\platform\Windows_x64\Altirra\source\disk.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\platform\Windows_x64\Altirra\source\diskvirtimage.cpp">
+    <ClCompile Include="source\diskvirtimage.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\platform\Windows_x64\Altirra\source\diskvirtimagesdfs.cpp">

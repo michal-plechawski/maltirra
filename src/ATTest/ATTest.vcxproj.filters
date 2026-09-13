@@ -19,6 +19,9 @@
 	<ClCompile Include="source\TestAltirra_DiskVirtImageBasePortable.cpp">
 	  <Filter>Source Files</Filter>
 	</ClCompile>
+	<ClCompile Include="source\TestAltirra_DiskVirtImagePortable.cpp">
+	  <Filter>Source Files</Filter>
+	</ClCompile>
 	<ClCompile Include="source\TestAltirra_DirectoryWatcherPortable.cpp">
 	  <Filter>Source Files</Filter>
 	</ClCompile>

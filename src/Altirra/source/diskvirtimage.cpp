@@ -90,22 +90,29 @@
 // present on the disk.
 //
 
-#include <stdafx.h>
+#include <algorithm>
+#include <cctype>
+#include <cmath>
+#include <cstring>
 #include <vd2/system/binary.h>
 #include <vd2/system/math.h>
 #include <vd2/system/error.h>
 #include <vd2/system/file.h>
 #include <vd2/system/filesys.h>
 #include <vd2/system/strutil.h>
+#include <vd2/system/text.h>
 #include <vd2/system/time.h>
+#include <vd2/system/refcount.h>
+#include <vd2/system/vdstl.h>
+#include <vd2/system/VDString.h>
+#include <at/atcore/logging.h>
 #include <at/atio/diskimage.h>
 #include <at/atio/diskfsdos2util.h>
 #include "directorywatcher.h"
-#include "debuggerlog.h"
 #include "hostdeviceutils.h"
 #include "diskvirtimagebase.h"
 
-ATDebuggerLogChannel g_ATLCVDisk(false, false, "VDISK", "Virtual disk activity");
+ATLogChannel g_ATLCVDisk(false, false, "VDISK", "Virtual disk activity");
 
 class ATDiskImageVirtualFolder final : public ATDiskImageVirtualFolderBase, public IVDTimerCallback {
 public:

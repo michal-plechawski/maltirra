@@ -137,6 +137,7 @@ portable_test_sources=(
 	src/ATTest/source/TestAltirra_ConstantsPortable.cpp
 	src/ATTest/source/TestAltirra_CPUMemoryPortable.cpp
 	src/ATTest/source/TestAltirra_DiskVirtImageBasePortable.cpp
+	src/ATTest/source/TestAltirra_DiskVirtImagePortable.cpp
 	src/ATTest/source/TestAltirra_DirectoryWatcherPortable.cpp
 	src/ATTest/source/TestAltirra_ErrorDecodePortable.cpp
 	src/ATTest/source/TestAltirra_InputDefsPortable.cpp
@@ -218,6 +219,17 @@ portable_test_sources=(
 	src/Altirra/source/common_png.cpp
 	src/Altirra/source/constants.cpp
 	src/Altirra/source/diskvirtimagebase.cpp
+	src/Altirra/source/diskvirtimage.cpp
+	src/ATCore/source/logging.cpp
+	src/ATCore/source/vfs.cpp
+	src/ATIO/source/diskimage.cpp
+	src/ATIO/source/diskfsdos2.cpp
+	src/ATIO/source/diskfs.cpp
+	src/ATIO/source/diskfsarc.cpp
+	src/ATIO/source/diskfscpm.cpp
+	src/ATIO/source/diskfsdos3.cpp
+	src/ATIO/source/diskfssdx2.cpp
+	src/ATIO/source/diskfssdx2util.cpp
 	src/platform/macOS_arm64/Altirra/source/directorywatcher.cpp
 	src/Altirra/source/errordecode.cpp
 	src/Altirra/source/hleutils.cpp
