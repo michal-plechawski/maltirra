@@ -42,4 +42,4 @@ public:
 	void Save(const wchar_t *path, ATDiskImageFormat format) override;
 };
 
-#endif
+#endif // f_AT_DISKVIRTIMAGEBASE_H

@@ -135,6 +135,7 @@ portable_test_sources=(
 	src/ATTest/source/TestAltirra_AudioRawSourcePortable.cpp
 	src/ATTest/source/TestAltirra_ConstantsPortable.cpp
 	src/ATTest/source/TestAltirra_CPUMemoryPortable.cpp
+	src/ATTest/source/TestAltirra_DiskVirtImageBasePortable.cpp
 	src/ATTest/source/TestAltirra_ErrorDecodePortable.cpp
 	src/ATTest/source/TestAltirra_InputDefsPortable.cpp
 	src/ATTest/source/TestAltirra_InputMapPortable.cpp
@@ -213,6 +214,7 @@ portable_test_sources=(
 	src/Altirra/source/audiorawsource.cpp
 	src/Altirra/source/common_png.cpp
 	src/Altirra/source/constants.cpp
+	src/Altirra/source/diskvirtimagebase.cpp
 	src/Altirra/source/errordecode.cpp
 	src/Altirra/source/hleutils.cpp
 	src/Altirra/source/inputdefs.cpp

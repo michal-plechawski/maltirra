@@ -763,7 +763,7 @@
     <ClCompile Include="..\platform\Windows_x64\Altirra\source\uiconfdevxep80.cpp">
       <Filter>Source Files - Device Configuration UI</Filter>
     </ClCompile>
-    <ClCompile Include="..\platform\Windows_x64\Altirra\source\diskvirtimagebase.cpp">
+    <ClCompile Include="source\diskvirtimagebase.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\platform\Windows_x64\Altirra\source\uiconfdevamdc.cpp">
@@ -1572,7 +1572,7 @@
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\diskdriveamdc.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\platform\Windows_x64\Altirra\h\diskvirtimagebase.h">
+    <ClInclude Include="h\diskvirtimagebase.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\customdevice.h">

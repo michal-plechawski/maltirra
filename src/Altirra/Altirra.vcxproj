@@ -93,7 +93,7 @@
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\diskinterface.h" />
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\diskprofile.h" />
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\disktrace.h" />
-    <ClInclude Include="..\platform\Windows_x64\Altirra\h\diskvirtimagebase.h" />
+    <ClInclude Include="h\diskvirtimagebase.h" />
     <ClInclude Include="h\errordecode.h" />
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\fdc.h" />
     <ClInclude Include="h\inputdefs.h" />
@@ -255,7 +255,9 @@
     <ClCompile Include="..\platform\Windows_x64\Altirra\source\diskprofile.cpp" />
     <ClCompile Include="..\platform\Windows_x64\Altirra\source\disktrace.cpp" />
     <ClCompile Include="..\platform\Windows_x64\Altirra\source\diskvirtimage.cpp" />
-    <ClCompile Include="..\platform\Windows_x64\Altirra\source\diskvirtimagebase.cpp" />
+    <ClCompile Include="source\diskvirtimagebase.cpp">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+    </ClCompile>
     <ClCompile Include="..\platform\Windows_x64\Altirra\source\diskvirtimagesdfs.cpp" />
     <ClCompile Include="..\platform\Windows_x64\Altirra\source\dragoncart.cpp" />
     <ClCompile Include="..\platform\Windows_x64\Altirra\source\encode_png.cpp" />
