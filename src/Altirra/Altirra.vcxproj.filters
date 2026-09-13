@@ -940,7 +940,7 @@
     <ClCompile Include="..\platform\Windows_x64\Altirra\source\devxcmdexploredisk.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\platform\Windows_x64\Altirra\source\vbxestate.cpp">
+    <ClCompile Include="source\vbxestate.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\platform\Windows_x64\Altirra\source\uifrontend.cpp">
@@ -1695,7 +1695,7 @@
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\uidiskexplorer_win32.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\platform\Windows_x64\Altirra\h\vbxestate.h">
+    <ClInclude Include="h\vbxestate.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\uifrontend.h">

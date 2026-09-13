@@ -22,6 +22,7 @@ bool ATTestAltirraTrace(ATPortableTestContext& context);
 bool ATTestAltirraTraceTape(ATPortableTestContext& context);
 bool ATTestAltirraSimEventManager(ATPortableTestContext& context);
 bool ATTestAltirraVideoManager(ATPortableTestContext& context);
+bool ATTestAltirraVBXEState(ATPortableTestContext& context);
 bool ATTestCoreChecksum(ATPortableTestContext& context);
 bool ATTestCoreFFT(ATPortableTestContext& context);
 bool ATTestCoreTimerService(ATPortableTestContext& context);
@@ -96,6 +97,7 @@ const ATPortableTestCase *ATGetPortableTests(size_t& count) {
 		{ "Altirra_TraceTape", ATTestAltirraTraceTape },
 		{ "Altirra_SimEventManager", ATTestAltirraSimEventManager },
 		{ "Altirra_VideoManager", ATTestAltirraVideoManager },
+		{ "Altirra_VBXEState", ATTestAltirraVBXEState },
 		{ "Core_Checksum", ATTestCoreChecksum },
 		{ "Core_FFT", ATTestCoreFFT },
 		{ "Core_TimerService", ATTestCoreTimerService },

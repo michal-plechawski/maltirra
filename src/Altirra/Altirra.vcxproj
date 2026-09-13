@@ -513,7 +513,9 @@
     <ClCompile Include="..\platform\Windows_x64\Altirra\source\updatefeed.cpp" />
     <ClCompile Include="..\platform\Windows_x64\Altirra\source\updatefeed_win32.cpp" />
     <ClCompile Include="..\platform\Windows_x64\Altirra\source\vbxe.cpp" />
-    <ClCompile Include="..\platform\Windows_x64\Altirra\source\vbxestate.cpp" />
+    <ClCompile Include="source\vbxestate.cpp">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+    </ClCompile>
     <ClCompile Include="..\platform\Windows_x64\Altirra\source\verifier.cpp" />
     <ClCompile Include="..\platform\Windows_x64\Altirra\source\veronica.cpp" />
     <ClCompile Include="..\platform\Windows_x64\Altirra\source\vgmplayer.cpp" />
@@ -649,7 +651,7 @@
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\uitapeeditor.h" />
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\updatecheck.h" />
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\updatefeed.h" />
-    <ClInclude Include="..\platform\Windows_x64\Altirra\h\vbxestate.h" />
+    <ClInclude Include="h\vbxestate.h" />
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\veronica.h" />
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\vgmplayer.h" />
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\vgmwriter.h" />
