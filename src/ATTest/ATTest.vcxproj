@@ -237,9 +237,6 @@
     <ClCompile Include="..\platform\Windows_x64\ATTest\source\TestIO_Vorbis.cpp" />
     <ClCompile Include="..\platform\Windows_x64\ATTest\source\TestMisc_TTF.cpp" />
     <ClCompile Include="..\platform\Windows_x64\ATTest\source\TestNet_NativeDatagramLiveTest.cpp" />
-    <ClCompile Include="..\platform\Windows_x64\Altirra\source\directorywatcher.cpp">
-      <PrecompiledHeader>NotUsing</PrecompiledHeader>
-    </ClCompile>
     <ClCompile Include="..\platform\Windows_x64\ATTest\source\TestNet_NativeSockets.cpp" />
     <ClCompile Include="..\platform\Windows_x64\ATTest\source\TestSystem_CRC.cpp" />
     <ClCompile Include="..\platform\Windows_x64\ATTest\source\TestSystem_Exception.cpp" />
