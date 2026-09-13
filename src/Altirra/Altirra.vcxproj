@@ -260,7 +260,9 @@
     <ClCompile Include="source\diskvirtimagebase.cpp">
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="..\platform\Windows_x64\Altirra\source\diskvirtimagesdfs.cpp" />
+    <ClCompile Include="source\diskvirtimagesdfs.cpp">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+    </ClCompile>
     <ClCompile Include="..\platform\Windows_x64\Altirra\source\dragoncart.cpp" />
     <ClCompile Include="..\platform\Windows_x64\Altirra\source\encode_png.cpp" />
     <ClCompile Include="source\errordecode.cpp">

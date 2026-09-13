@@ -14,7 +14,10 @@
 //	You should have received a copy of the GNU General Public License along
 //	with this program. If not, see <http://www.gnu.org/licenses/>.
 
-#include <stdafx.h>
+#include <algorithm>
+#include <cctype>
+#include <cmath>
+#include <cstring>
 #include <vd2/system/binary.h>
 #include <vd2/system/bitmath.h>
 #include <vd2/system/math.h>
@@ -25,15 +28,20 @@
 #include <vd2/system/hash.h>
 #include <vd2/system/strutil.h>
 #include <vd2/system/time.h>
+#include <vd2/system/refcount.h>
+#include <vd2/system/text.h>
+#include <vd2/system/vdstl.h>
+#include <vd2/system/vdstl_hashset.h>
+#include <vd2/system/VDString.h>
 #include <at/atcore/configvar.h>
+#include <at/atcore/logging.h>
 #include <at/atio/diskimage.h>
 #include <at/atio/diskfssdx2util.h>
 #include "directorywatcher.h"
 #include "diskvirtimagebase.h"
-#include "debuggerlog.h"
 #include "hostdeviceutils.h"
 
-extern ATDebuggerLogChannel g_ATLCVDisk;
+extern ATLogChannel g_ATLCVDisk;
 
 ATConfigVarInt32 g_ATCVDiskVSDFSMaxFilesInDir("disk.vsdfs.max_files_in_dir", 256);
 
@@ -446,7 +454,7 @@ uint32 ATDiskImageVirtualFolderSDFS::GetSectorSize() const {
 }
 
 uint32 ATDiskImageVirtualFolderSDFS::GetSectorSize(uint32 virtIndex) const {
-	return virtIndex >= mBootSectorCount ? mBootSectorSize : mSectorSize;
+	return virtIndex < mBootSectorCount ? mBootSectorSize : mSectorSize;
 }
 
 uint32 ATDiskImageVirtualFolderSDFS::GetBootSectorCount() const {

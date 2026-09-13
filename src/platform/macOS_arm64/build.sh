@@ -138,6 +138,7 @@ portable_test_sources=(
 	src/ATTest/source/TestAltirra_CPUMemoryPortable.cpp
 	src/ATTest/source/TestAltirra_DiskVirtImageBasePortable.cpp
 	src/ATTest/source/TestAltirra_DiskVirtImagePortable.cpp
+	src/ATTest/source/TestAltirra_DiskVirtImageSDFSPortable.cpp
 	src/ATTest/source/TestAltirra_DirectoryWatcherPortable.cpp
 	src/ATTest/source/TestAltirra_ErrorDecodePortable.cpp
 	src/ATTest/source/TestAltirra_InputDefsPortable.cpp
@@ -220,6 +221,7 @@ portable_test_sources=(
 	src/Altirra/source/constants.cpp
 	src/Altirra/source/diskvirtimagebase.cpp
 	src/Altirra/source/diskvirtimage.cpp
+	src/Altirra/source/diskvirtimagesdfs.cpp
 	src/ATCore/source/logging.cpp
 	src/ATCore/source/vfs.cpp
 	src/ATIO/source/diskimage.cpp

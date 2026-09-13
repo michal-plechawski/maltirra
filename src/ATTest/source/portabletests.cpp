@@ -8,6 +8,7 @@ bool ATTestAltirraConstants(ATPortableTestContext& context);
 bool ATTestAltirraCPUMemory(ATPortableTestContext& context);
 bool ATTestAltirraDiskVirtImageBase(ATPortableTestContext& context);
 bool ATTestAltirraDiskVirtImage(ATPortableTestContext& context);
+bool ATTestAltirraDiskVirtImageSDFS(ATPortableTestContext& context);
 bool ATTestAltirraDirectoryWatcher(ATPortableTestContext& context);
 bool ATTestAltirraErrorDecode(ATPortableTestContext& context);
 bool ATTestAltirraInputDefs(ATPortableTestContext& context);
@@ -84,6 +85,7 @@ const ATPortableTestCase *ATGetPortableTests(size_t& count) {
 		{ "Altirra_CPUMemory", ATTestAltirraCPUMemory },
 		{ "Altirra_DiskVirtImageBase", ATTestAltirraDiskVirtImageBase },
 		{ "Altirra_DiskVirtImage", ATTestAltirraDiskVirtImage },
+		{ "Altirra_DiskVirtImageSDFS", ATTestAltirraDiskVirtImageSDFS },
 		{ "Altirra_DirectoryWatcher", ATTestAltirraDirectoryWatcher },
 		{ "Altirra_ErrorDecode", ATTestAltirraErrorDecode },
 		{ "Altirra_InputDefs", ATTestAltirraInputDefs },
