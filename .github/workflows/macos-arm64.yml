@@ -45,7 +45,24 @@ jobs:
             altirra-v1-${{ runner.os }}-${{ runner.arch }}-${{ steps.toolchain.outputs.cache-key }}-
 
       - name: Compile non-Windows sources
-        run: bash src/platform/macOS_arm64/build.sh
+        run: |
+          build_log="$RUNNER_TEMP/macos-arm64-build.log"
+          set +e
+          bash src/platform/macOS_arm64/build.sh 2>&1 | tee "$build_log"
+          build_exit=${PIPESTATUS[0]}
+          set -e
+
+          if (( build_exit != 0 )); then
+            details=$(grep -E '(^|[[:space:]])error:|Undefined symbols|ld: |fatal error:' "$build_log" | head -50 || true)
+            if [[ -z "$details" ]]; then
+              details=$(tail -50 "$build_log")
+            fi
+            details=${details//'%'/'%25'}
+            details=${details//$'\r'/'%0D'}
+            details=${details//$'\n'/'%0A'}
+            echo "::error title=macOS ARM64 build failed::$details"
+            exit "$build_exit"
+          fi
 
       - name: Run portable tests
         run: out/macOS_arm64/AltirraPortableTests
