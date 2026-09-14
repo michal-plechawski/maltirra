@@ -294,17 +294,34 @@ jobs:
         run: |
           $testExecutable = Join-Path $env:GITHUB_WORKSPACE 'out\ProfileAMD64\AltirraTest64.exe'
           if (-not (Test-Path -Path $testExecutable -PathType Leaf)) {
-            throw "Expected test runner was not created: $testExecutable"
+            Write-Host "::error title=Altirra test runner missing::Expected test runner was not created: $testExecutable"
+            exit 1
           }
 
-          # Handle a nonzero native exit code below so the test output can be annotated.
-          $PSNativeCommandUseErrorActionPreference = $false
-          $testOutput = & $testExecutable all 2>&1
-          $testExitCode = $LASTEXITCODE
+          $standardOutput = Join-Path $env:RUNNER_TEMP 'altirra-tests.stdout.txt'
+          $standardError = Join-Path $env:RUNNER_TEMP 'altirra-tests.stderr.txt'
+          try {
+            $testProcess = Start-Process -FilePath $testExecutable -ArgumentList 'all' `
+              -WorkingDirectory (Get-Location).Path -Wait -PassThru `
+              -RedirectStandardOutput $standardOutput -RedirectStandardError $standardError
+          } catch {
+            $message = "$($_.Exception.Message)".Replace('%', '%25').Replace("`r", '%0D').Replace("`n", '%0A')
+            Write-Host "::error title=Altirra test runner could not start::$message"
+            exit 1
+          }
+
+          $testExitCode = $testProcess.ExitCode
+          $testOutput = @(Get-Content -Path $standardOutput) + @(Get-Content -Path $standardError)
           $testOutput | ForEach-Object { Write-Host $_ }
 
           if ($testExitCode -ne 0) {
-            $details = ($testOutput | Select-Object -Last 50) -join "`n"
+            $failureLines = $testOutput |
+              Where-Object { "$_" -match '(?i)\b(fail(?:ed|ure)?|error|exception)\b' } |
+              Select-Object -Last 12
+            if (-not $failureLines) {
+              $failureLines = $testOutput | Select-Object -Last 12
+            }
+            $details = "exit code $testExitCode`n" + ($failureLines -join "`n")
             $details = $details.Replace('%', '%25').Replace("`r", '%0D').Replace("`n", '%0A')
             Write-Host "::error title=Altirra automatic tests failed::$details"
             exit $testExitCode
