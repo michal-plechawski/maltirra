@@ -297,6 +297,8 @@ jobs:
             throw "Expected test runner was not created: $testExecutable"
           }
 
+          # Handle a nonzero native exit code below so the test output can be annotated.
+          $PSNativeCommandUseErrorActionPreference = $false
           $testOutput = & $testExecutable all 2>&1
           $testExitCode = $LASTEXITCODE
           $testOutput | ForEach-Object { Write-Host $_ }
