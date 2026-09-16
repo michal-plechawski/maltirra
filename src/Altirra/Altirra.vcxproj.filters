@@ -592,7 +592,7 @@
     <ClCompile Include="..\platform\Windows_x64\Altirra\source\uiconfdevcorvus.cpp">
       <Filter>Source Files - Device Configuration UI</Filter>
     </ClCompile>
-    <ClCompile Include="..\platform\Windows_x64\Altirra\source\cartridgeport.cpp">
+    <ClCompile Include="source\cartridgeport.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\platform\Windows_x64\Altirra\source\uiconfmyide2.cpp">
@@ -1461,7 +1461,7 @@
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\settings.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\platform\Windows_x64\Altirra\h\cartridgeport.h">
+    <ClInclude Include="h\cartridgeport.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\pbidisk.h">

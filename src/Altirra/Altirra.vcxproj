@@ -67,7 +67,7 @@
     <ClInclude Include="h\blockdevdiskadapter.h" />
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\blockdevvirtfat32.h" />
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\browser.h" />
-    <ClInclude Include="..\platform\Windows_x64\Altirra\h\cartridgeport.h" />
+    <ClInclude Include="h\cartridgeport.h" />
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\cmdhelpers.h" />
     <ClInclude Include="h\compatdb.h" />
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\compatedb.h" />
@@ -193,7 +193,9 @@
     <ClCompile Include="..\platform\Windows_x64\Altirra\source\browser.cpp" />
     <ClCompile Include="..\platform\Windows_x64\Altirra\source\cartdetect.cpp" />
     <ClCompile Include="..\platform\Windows_x64\Altirra\source\cartridge.cpp" />
-    <ClCompile Include="..\platform\Windows_x64\Altirra\source\cartridgeport.cpp" />
+    <ClCompile Include="source\cartridgeport.cpp">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+    </ClCompile>
     <ClCompile Include="..\platform\Windows_x64\Altirra\source\cassette.cpp" />
     <ClCompile Include="..\platform\Windows_x64\Altirra\source\cheatengine.cpp" />
     <ClCompile Include="..\platform\Windows_x64\Altirra\source\cmdaudio.cpp" />

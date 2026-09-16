@@ -16,7 +16,7 @@
 //	along with this program; if not, write to the Free Software
 //	Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
-#include <stdafx.h>
+#include <algorithm>
 #include "cartridgeport.h"
 
 #include <at/atcore/devicecart.h>
@@ -129,38 +129,38 @@ void ATCartridgePort::RemoveCartridge(uint32 id, IATDeviceCartridge *cart) {
 }
 
 bool ATCartridgePort::IsLeftWindowEnabled(uint32 id) const {
-	VDASSERT(id != 0 && id <= mCarts.size());
+	VDASSERT(id != 0 && id < mCarts.size());
 	auto& cartInfo = mCarts[id];
 	VDASSERT(cartInfo.mpCart);
 
-	return mCarts[cartInfo.mCartPrev].mbLeftMapEnabled;
+	return cartInfo.mbLeftMapEnabled;
 }
 
 bool ATCartridgePort::IsRightWindowEnabled(uint32 id) const {
-	VDASSERT(id != 0 && id <= mCarts.size());
+	VDASSERT(id != 0 && id < mCarts.size());
 	auto& cartInfo = mCarts[id];
 	VDASSERT(cartInfo.mpCart);
 	
-	return mCarts[cartInfo.mCartPrev].mbRightMapEnabled;
+	return cartInfo.mbRightMapEnabled;
 }
 
 bool ATCartridgePort::IsCCTLEnabled(uint32 id) const {
-	VDASSERT(id != 0 && id <= mCarts.size());
+	VDASSERT(id != 0 && id < mCarts.size());
 	auto& cartInfo = mCarts[id];
 	VDASSERT(cartInfo.mpCart);
 	
-	return mCarts[cartInfo.mCartPrev].mbRightMapEnabled;
+	return cartInfo.mbCCTLEnabled;
 }
 
 void ATCartridgePort::EnablePassThrough(uint32 id, bool leftEnabled, bool rightEnabled, bool cctlEnabled) {
-	VDASSERT(id != 0 && id <= mCarts.size());
+	VDASSERT(id != 0 && id < mCarts.size());
 	VDASSERT(mCarts[id].mpCart);
 
 	EnableCartPassThroughInternal(id, leftEnabled, rightEnabled, cctlEnabled);
 }
 
 void ATCartridgePort::OnLeftWindowChanged(uint32 id, bool enabled) {
-	VDASSERT(id != 0 && id <= mCarts.size());
+	VDASSERT(id != 0 && id < mCarts.size());
 	auto& cartInfo = mCarts[id];
 
 	VDASSERT(cartInfo.mpCart);
@@ -174,7 +174,7 @@ void ATCartridgePort::OnLeftWindowChanged(uint32 id, bool enabled) {
 }
 
 bool ATCartridgePort::IsLeftWindowActiveDownstream(uint32 id) const {
-	VDASSERT(id != 0 && id <= mCarts.size());
+	VDASSERT(id != 0 && id < mCarts.size());
 	const auto& cartInfo = mCarts[id];
 
 	VDASSERT(cartInfo.mpCart);
@@ -226,13 +226,13 @@ void ATCartridgePort::EnableCartPassThroughInternal(uint32 id, bool leftEnabled,
 		nextCart.mpCart->SetCartEnables(leftEnabled, rightEnabled, cctlEnabled);
 
 		// update cumulative enables
-		if (!nextCart.mbLeftMapEnabled)
+		if (!nextCart.mbLeftMapPassThrough)
 			leftEnabled = false;
 
-		if (!nextCart.mbRightMapEnabled)
+		if (!nextCart.mbRightMapPassThrough)
 			rightEnabled = false;
 
-		if (!nextCart.mbCCTLEnabled)
+		if (!nextCart.mbCCTLPassThrough)
 			cctlEnabled = false;
 
 		nextId = nextCart.mCartNext;

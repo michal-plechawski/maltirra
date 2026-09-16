@@ -20,7 +20,7 @@
 #define AT_CARTRIDGEPORT_H
 
 #include <vd2/system/function.h>
-#include <vd2/system/vdstl.h>
+#include <vd2/system/vdstl_fastvector.h>
 #include <at/atcore/devicecart.h>
 
 class ATCartridgePort final : public IATDeviceCartridgePort {
