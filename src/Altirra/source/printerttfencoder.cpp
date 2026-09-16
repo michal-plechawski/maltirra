@@ -14,8 +14,10 @@
 //	You should have received a copy of the GNU General Public License along
 //	with this program. If not, see <http://www.gnu.org/licenses/>.
 
-#include <stdafx.h>
+#include <algorithm>
 #include <bit>
+#include <cstdlib>
+#include <cstring>
 #include <vd2/system/binary.h>
 #include <vd2/system/vdstl.h>
 #include "printerttfencoder.h"
@@ -557,28 +559,28 @@ void ATTrueTypeEncoder::WriteTableCmap() {
 			// hit a run of 8, or 4 at the end
 			uint32 encodeLen = runLength;
 
-			runLength = 0;
-
 			while(encodeLen < segmentLen) {
-				++encodeLen;
+				const uint32 nextRunStart = encodeLen;
+				uint32 nextRunLength = 1;
 
-				if (segmentMappings[encodeLen].GetOffset() == segmentMappings[encodeLen-1].GetOffset()) {
-					++runLength;
+				while(nextRunStart + nextRunLength < segmentLen &&
+					segmentMappings[nextRunStart + nextRunLength].GetOffset() ==
+						segmentMappings[nextRunStart].GetOffset())
+				{
+					++nextRunLength;
+				}
 
-					if (runLength >= 8) {
-						encodeLen -= runLength;
-						runLength = 0;
-						break;
-					}
-				} else
-					runLength = 1;
+				const bool runAtEnd = nextRunStart + nextRunLength == segmentLen;
+				if (nextRunLength >= 8 || (runAtEnd && nextRunLength >= 4))
+					break;
+
+				encodeLen += nextRunLength;
 			}
-
-			if (runLength >= 4)
-				encodeLen -= runLength;
 
 			endCode.push_back((uint16)(firstCh + encodeLen - 1));
 			idDelta.push_back(0);
+			// Store one plus the word offset temporarily so that zero remains the
+			// marker for a delta-only segment until offsets are finalized below.
 			idRangeOffset.push_back((uint16)(glyphIdArray.size() + 1));
 
 			for(uint32 i=0; i<encodeLen; ++i)
@@ -589,14 +591,18 @@ void ATTrueTypeEncoder::WriteTableCmap() {
 	}
 
 	// convert idRangeOffset[] from absolute to relative offsets
-	uint32 relOffset = 1;
+	// Start at two words because the sentinel segment is appended after this
+	// pass and will sit between the current range offset and glyph array.
+	uint32 relOffset = 2;
 	for(auto it = idRangeOffset.begin(), itEnd = idRangeOffset.end();
 		it != itEnd;)
 	{
 		--itEnd;
 
-		if (*itEnd)
-			*itEnd = *itEnd + relOffset;
+		if (*itEnd) {
+			const uint16 biasedGlyphWordOffset = *itEnd;
+			*itEnd = (uint16)((biasedGlyphWordOffset - 1 + relOffset) * 2);
+		}
 
 		++relOffset;
 	}
@@ -785,7 +791,7 @@ void ATTrueTypeEncoder::WriteTableGlyfLoca() {
 				sint32 dx = pt.mX - lastX;
 
 				if (dx) {
-					sint32 adx = abs(dx);
+					sint32 adx = std::abs(dx);
 
 					if (adx < 256) {
 						mTableBuffer.push_back((uint8)adx);
@@ -805,7 +811,7 @@ void ATTrueTypeEncoder::WriteTableGlyfLoca() {
 				sint32 dy = pt.mY - lastY;
 
 				if (dy) {
-					sint32 ady = abs(dy);
+					sint32 ady = std::abs(dy);
 
 					if (ady < 256) {
 						mTableBuffer.push_back((uint8)ady);

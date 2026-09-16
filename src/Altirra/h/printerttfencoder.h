@@ -18,6 +18,7 @@
 #define f_AT_PRINTERTTFENCODER_H
 
 #include <vd2/system/date.h>
+#include <vd2/system/vdstl.h>
 #include <vd2/system/vectors.h>
 
 enum class ATTrueTypeGlyphIndex : uint16 {};
