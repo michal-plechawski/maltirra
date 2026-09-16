@@ -14,7 +14,11 @@
 //	You should have received a copy of the GNU General Public License along
 //	with this program. If not, see <http://www.gnu.org/licenses/>.
 
-#include <stdafx.h>
+#include <algorithm>
+#include <cstring>
+#include <iterator>
+
+#include <vd2/system/math.h>
 #include <vd2/system/error.h>
 #include <vd2/system/strutil.h>
 #include <at/atcore/atascii.h>
@@ -797,7 +801,7 @@ void ATDevicePrinter::HandleFrameInternal(uint8 orientation, uint8 *buf, uint32 
 		} else {
 			if (mTranslationMode == ATPrinterPortTranslationMode::Default) {
 				for(uint32 i = 0; i < len; ++i)
-					buf[len] &= 0x7F;
+					buf[i] &= 0x7F;
 
 				if (eol)
 					buf[len - 1] = 0x0D;

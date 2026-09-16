@@ -124,6 +124,9 @@
 	<ClCompile Include="source\TestAltirra_PrinterOutputPortable.cpp">
 	  <Filter>Source Files</Filter>
 	</ClCompile>
+	<ClCompile Include="source\TestAltirra_PrintersPortable.cpp">
+	  <Filter>Source Files</Filter>
+	</ClCompile>
 	<ClCompile Include="source\TestAltirra_PrinterTTFEncoderPortable.cpp">
 	  <Filter>Source Files</Filter>
 	</ClCompile>

@@ -170,6 +170,7 @@ portable_test_sources=(
 	src/ATTest/source/TestAltirra_PrinterBasePortable.cpp
 	src/ATTest/source/TestAltirra_PrinterFontsPortable.cpp
 	src/ATTest/source/TestAltirra_PrinterOutputPortable.cpp
+	src/ATTest/source/TestAltirra_PrintersPortable.cpp
 	src/ATTest/source/TestAltirra_PrinterTTFEncoderPortable.cpp
 	src/ATTest/source/TestAltirra_PokeyTracePortable.cpp
 	src/ATTest/source/TestAltirra_SAPConverterPortable.cpp
@@ -239,9 +240,11 @@ portable_test_sources=(
 	src/ATCore/source/checksum.cpp
 	src/ATCore/source/checksum_arm64.cpp
 	src/ATCore/source/asyncdispatcherimpl.cpp
+	src/ATCore/source/atascii.cpp
 	src/ATCore/source/configvar.cpp
 	src/ATCore/source/consoleoutput.cpp
 	src/ATCore/source/deviceimpl.cpp
+	src/ATCore/source/deviceparentimpl.cpp
 	src/ATCore/source/enumparse.cpp
 	src/ATCore/source/fft.cpp
 	src/ATCore/source/fft_neon.cpp
@@ -291,6 +294,7 @@ portable_test_sources=(
 	src/Altirra/source/printerbase.cpp
 	src/Altirra/source/printerfont.cpp
 	src/Altirra/source/printeroutput.cpp
+	src/Altirra/source/printer.cpp
 	src/Altirra/source/printerttfencoder.cpp
 	src/Altirra/source/pokeytrace.cpp
 	src/Altirra/source/pokeysavecompat.cpp
