@@ -19,7 +19,9 @@
 #ifndef f_COMPATDB_H
 #define f_COMPATDB_H
 
+#include <utility>
 #include <vd2/system/vdtypes.h>
+#include <vd2/system/vdstl_fastvector.h>
 
 template<typename T>
 struct ATDBVector {

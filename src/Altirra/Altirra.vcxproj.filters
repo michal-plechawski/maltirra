@@ -622,7 +622,7 @@
     <ClCompile Include="..\platform\Windows_x64\Altirra\source\compatedb.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\platform\Windows_x64\Altirra\source\compatdb.cpp">
+    <ClCompile Include="source\compatdb.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\platform\Windows_x64\Altirra\source\uicompat.cpp">
@@ -1470,7 +1470,7 @@
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\compatedb.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\platform\Windows_x64\Altirra\h\compatdb.h">
+    <ClInclude Include="h\compatdb.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\uicompat.h">

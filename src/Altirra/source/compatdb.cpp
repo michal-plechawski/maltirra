@@ -16,7 +16,7 @@
 //	along with this program; if not, write to the Free Software
 //	Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
-#include "stdafx.h"
+#include <cstring>
 #include <unordered_map>
 #include <vd2/system/binary.h>
 #include "compatdb.h"
@@ -27,7 +27,8 @@ const char ATCompatDBHeader::kSignature[16] = {
 };
 
 bool ATCompatDBHeader::Validate(size_t len) const {
-	VDASSERT(len >= sizeof(*this));
+	if (len < sizeof(*this) || memcmp(mSignature, kSignature, sizeof mSignature))
+		return false;
 
 	// check supported version
 	if ((mVersion & 0xFFFFFF00) != 0x0200)
@@ -262,6 +263,7 @@ bool ATCompatIsLargeRuleType(ATCompatRuleType type) {
 		case kATCompatRuleType_DiskFileSHA256:
 		case kATCompatRuleType_DOSBootFileSHA256:
 		case kATCompatRuleType_ExeFileSHA256:
+		case kATCompatRuleType_TapeFileSHA256:
 			return true;
 
 		default:
@@ -289,8 +291,8 @@ namespace {
 		"writabledisk",
 		"nofloatingdatabus",
 		"cart52008k",
-		"cart520016konechip",
 		"cart520016ktwochip",
+		"cart520016konechip",
 		"cart520032k",
 		"60hz",
 		"50hz",
@@ -312,5 +314,5 @@ ATCompatKnownTag ATCompatGetKnownTagByKey(const char *key) {
 }
 
 const char *ATCompatGetKeyForKnownTag(ATCompatKnownTag knownTag) {
-	return ((uint32)knownTag - 1) < kATCompatKnownTagCount ? kKnownTagNames[knownTag - 1] : nullptr;
+	return ((uint32)knownTag - 1) < vdcountof(kKnownTagNames) ? kKnownTagNames[knownTag - 1] : nullptr;
 }

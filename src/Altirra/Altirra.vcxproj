@@ -69,7 +69,7 @@
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\browser.h" />
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\cartridgeport.h" />
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\cmdhelpers.h" />
-    <ClInclude Include="..\platform\Windows_x64\Altirra\h\compatdb.h" />
+    <ClInclude Include="h\compatdb.h" />
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\compatedb.h" />
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\compatengine.h" />
     <ClInclude Include="h\constants.h" />
@@ -211,7 +211,9 @@
     <ClCompile Include="source\common_png.cpp">
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="..\platform\Windows_x64\Altirra\source\compatdb.cpp" />
+    <ClCompile Include="source\compatdb.cpp">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+    </ClCompile>
     <ClCompile Include="..\platform\Windows_x64\Altirra\source\compatedb.cpp" />
     <ClCompile Include="..\platform\Windows_x64\Altirra\source\compatengine.cpp" />
     <ClCompile Include="..\platform\Windows_x64\Altirra\source\console.cpp" />
