@@ -18,6 +18,9 @@
 #ifndef f_SAPCONVERTER_H
 #define f_SAPCONVERTER_H
 
+#include <vd2/system/vdtypes.h>
+#include <vd2/system/vdstl_fastvector.h>
+
 void ATConvertSAPToPlayer(const void *sap, uint32 len, vdfastvector<uint8>& result);
 void ATConvertSAPToPlayer(const wchar_t *outputPath, const wchar_t *inputPath);
 

@@ -117,7 +117,7 @@
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\printertypes.h" />
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\profilerui.h" />
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\rapidus.h" />
-    <ClInclude Include="..\platform\Windows_x64\Altirra\h\sapconverter.h" />
+    <ClInclude Include="h\sapconverter.h" />
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\sapwriter.h" />
     <ClInclude Include="h\savestateio.h" />
     <ClInclude Include="h\savestatetypes.h" />
@@ -362,7 +362,9 @@
     <ClCompile Include="..\platform\Windows_x64\Altirra\source\rs232.cpp" />
     <ClCompile Include="..\platform\Windows_x64\Altirra\source\rtime8.cpp" />
     <ClCompile Include="..\platform\Windows_x64\Altirra\source\rverter.cpp" />
-    <ClCompile Include="..\platform\Windows_x64\Altirra\source\sapconverter.cpp" />
+    <ClCompile Include="source\sapconverter.cpp">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+    </ClCompile>
     <ClCompile Include="..\platform\Windows_x64\Altirra\source\sapwriter.cpp" />
     <ClCompile Include="source\savestate.cpp">
       <PrecompiledHeader>NotUsing</PrecompiledHeader>

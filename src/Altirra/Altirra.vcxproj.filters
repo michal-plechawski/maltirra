@@ -541,7 +541,7 @@
     <ClCompile Include="..\platform\Windows_x64\Altirra\source\sapwriter.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\platform\Windows_x64\Altirra\source\sapconverter.cpp">
+    <ClCompile Include="source\sapconverter.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\platform\Windows_x64\Altirra\source\devices.cpp">
@@ -1449,7 +1449,7 @@
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\sapwriter.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\platform\Windows_x64\Altirra\h\sapconverter.h">
+    <ClInclude Include="h\sapconverter.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\cmdhelpers.h">

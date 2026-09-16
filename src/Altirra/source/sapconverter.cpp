@@ -15,16 +15,22 @@
 //	along with this program; if not, write to the Free Software
 //	Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
-#include <stdafx.h>
+#include <algorithm>
+#include <cstdlib>
+#include <cstring>
+#include <iterator>
+
 #include <vd2/system/binary.h>
 #include <vd2/system/error.h>
 #include <vd2/system/file.h>
+#include <vd2/system/VDString.h>
+#include <vd2/system/vdstl_fastvector.h>
 
-#include "playsap-b.inl"
-#include "playsap-c.inl"
-#include "playsap-d-ntsc.inl"
-#include "playsap-d-pal.inl"
-#include "playsap-r.inl"
+#include "../autogen/playsap-b.inl"
+#include "../autogen/playsap-c.inl"
+#include "../autogen/playsap-d-ntsc.inl"
+#include "../autogen/playsap-d-pal.inl"
+#include "../autogen/playsap-r.inl"
 
 namespace {
 	void ATConvertATASCIIToINTERNAL(void *dst, const void *src, size_t len) {
