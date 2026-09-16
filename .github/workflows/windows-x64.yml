@@ -93,7 +93,20 @@ jobs:
           $madsDirectory = Join-Path $env:RUNNER_TEMP 'mads-2.1.0'
           $madsPath = Join-Path $madsDirectory 'mads.exe'
           New-Item -ItemType Directory -Path $madsDirectory -Force | Out-Null
-          Invoke-WebRequest -Uri $env:MADS_URL -OutFile $madsPath
+
+          for ($attempt = 1; $attempt -le 3; ++$attempt) {
+            try {
+              Invoke-WebRequest -Uri $env:MADS_URL -OutFile $madsPath
+              break
+            } catch {
+              if ($attempt -eq 3) {
+                throw
+              }
+
+              Write-Warning "MADS download attempt $attempt failed: $_"
+              Start-Sleep -Seconds (5 * $attempt)
+            }
+          }
 
           $actualHash = (Get-FileHash -Path $madsPath -Algorithm SHA256).Hash.ToLowerInvariant()
           if ($actualHash -ne $env:MADS_SHA256) {
@@ -225,7 +238,20 @@ jobs:
           $madsDirectory = Join-Path $env:RUNNER_TEMP 'mads-2.1.0'
           $madsPath = Join-Path $madsDirectory 'mads.exe'
           New-Item -ItemType Directory -Path $madsDirectory -Force | Out-Null
-          Invoke-WebRequest -Uri $env:MADS_URL -OutFile $madsPath
+
+          for ($attempt = 1; $attempt -le 3; ++$attempt) {
+            try {
+              Invoke-WebRequest -Uri $env:MADS_URL -OutFile $madsPath
+              break
+            } catch {
+              if ($attempt -eq 3) {
+                throw
+              }
+
+              Write-Warning "MADS download attempt $attempt failed: $_"
+              Start-Sleep -Seconds (5 * $attempt)
+            }
+          }
 
           $actualHash = (Get-FileHash -Path $madsPath -Algorithm SHA256).Hash.ToLowerInvariant()
           if ($actualHash -ne $env:MADS_SHA256) {
