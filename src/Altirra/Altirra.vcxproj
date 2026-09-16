@@ -354,7 +354,9 @@
     <ClCompile Include="..\platform\Windows_x64\Altirra\source\rverter.cpp" />
     <ClCompile Include="..\platform\Windows_x64\Altirra\source\sapconverter.cpp" />
     <ClCompile Include="..\platform\Windows_x64\Altirra\source\sapwriter.cpp" />
-    <ClCompile Include="..\platform\Windows_x64\Altirra\source\savestate.cpp" />
+    <ClCompile Include="source\savestate.cpp">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+    </ClCompile>
     <ClCompile Include="..\platform\Windows_x64\Altirra\source\savestateio.cpp" />
     <ClCompile Include="source\savestatetypes.cpp">
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
@@ -673,7 +675,7 @@
     <ClInclude Include="..\platform\Windows_x64\ATNativeUI\res\resource.h" />
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\rs232.h" />
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\rtime8.h" />
-    <ClInclude Include="..\platform\Windows_x64\Altirra\h\savestate.h" />
+    <ClInclude Include="h\savestate.h" />
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\side.h" />
     <ClInclude Include="h\simeventmanager.h" />
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\simulator.h" />

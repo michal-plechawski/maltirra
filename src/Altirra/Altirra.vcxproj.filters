@@ -277,7 +277,7 @@
     <ClCompile Include="..\platform\Windows_x64\Altirra\source\rtime8.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\platform\Windows_x64\Altirra\source\savestate.cpp">
+    <ClCompile Include="source\savestate.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\platform\Windows_x64\Altirra\source\side.cpp">
@@ -1302,7 +1302,7 @@
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\rtime8.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\platform\Windows_x64\Altirra\h\savestate.h">
+    <ClInclude Include="h\savestate.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\side.h">

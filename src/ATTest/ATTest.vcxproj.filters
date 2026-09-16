@@ -58,6 +58,9 @@
 	<ClCompile Include="source\TestAltirra_SaveStateTypesPortable.cpp">
 	  <Filter>Source Files</Filter>
 	</ClCompile>
+	<ClCompile Include="source\TestAltirra_SaveStateReaderPortable.cpp">
+	  <Filter>Source Files</Filter>
+	</ClCompile>
 	<ClCompile Include="source\TestAltirra_Printer1020FontPortable.cpp">
 	  <Filter>Source Files</Filter>
 	</ClCompile>

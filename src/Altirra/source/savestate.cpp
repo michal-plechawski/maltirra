@@ -14,7 +14,7 @@
 //	You should have received a copy of the GNU General Public License along
 //	with this program. If not, see <http://www.gnu.org/licenses/>.
 
-#include <stdafx.h>
+#include <cstring>
 #include <vd2/system/binary.h>
 #include <vd2/system/text.h>
 #include <vd2/system/VDString.h>
@@ -85,6 +85,8 @@ void ATSaveStateReader::DispatchChunk(ATSaveStateSection section, uint32 fcc) {
 		return;
 
 	HandlerEntry *he = it->second;
+	if (!he)
+		return;
 
 	do {
 		const ATSaveStateReadHandler *h = he->mpHandler;
