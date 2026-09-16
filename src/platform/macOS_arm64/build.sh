@@ -134,6 +134,7 @@ portable_test_sources=(
 	src/ATTest/source/portabletests.cpp
 	src/ATTest/source/TestAltirra_ArtifactingFiltersPortable.cpp
 	src/ATTest/source/TestAltirra_AudioRawSourcePortable.cpp
+	src/ATTest/source/TestAltirra_BlockDevDiskAdapterPortable.cpp
 	src/ATTest/source/TestAltirra_ConstantsPortable.cpp
 	src/ATTest/source/TestAltirra_CPUMemoryPortable.cpp
 	src/ATTest/source/TestAltirra_DiskVirtImageBasePortable.cpp
@@ -223,6 +224,7 @@ portable_test_sources=(
 	src/ATCore/source/propertyset.cpp
 	src/Altirra/source/artifacting_filters.cpp
 	src/Altirra/source/audiorawsource.cpp
+	src/Altirra/source/blockdevdiskadapter.cpp
 	src/Altirra/source/common_png.cpp
 	src/Altirra/source/encode_png.cpp
 	src/Altirra/source/constants.cpp

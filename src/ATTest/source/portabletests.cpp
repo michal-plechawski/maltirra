@@ -4,6 +4,7 @@
 
 bool ATTestAltirraArtifactingFilters(ATPortableTestContext& context);
 bool ATTestAltirraAudioRawSource(ATPortableTestContext& context);
+bool ATTestAltirraBlockDevDiskAdapter(ATPortableTestContext& context);
 bool ATTestAltirraConstants(ATPortableTestContext& context);
 bool ATTestAltirraCPUMemory(ATPortableTestContext& context);
 bool ATTestAltirraDiskVirtImageBase(ATPortableTestContext& context);
@@ -85,6 +86,7 @@ const ATPortableTestCase *ATGetPortableTests(size_t& count) {
 	static const ATPortableTestCase kTests[] = {
 		{ "Altirra_ArtifactingFilters", ATTestAltirraArtifactingFilters },
 		{ "Altirra_AudioRawSource", ATTestAltirraAudioRawSource },
+		{ "Altirra_BlockDevDiskAdapter", ATTestAltirraBlockDevDiskAdapter },
 		{ "Altirra_Constants", ATTestAltirraConstants },
 		{ "Altirra_CPUMemory", ATTestAltirraCPUMemory },
 		{ "Altirra_DiskVirtImageBase", ATTestAltirraDiskVirtImageBase },

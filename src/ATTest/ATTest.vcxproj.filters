@@ -10,6 +10,9 @@
 	<ClCompile Include="source\TestAltirra_AudioRawSourcePortable.cpp">
 	  <Filter>Source Files</Filter>
 	</ClCompile>
+	<ClCompile Include="source\TestAltirra_BlockDevDiskAdapterPortable.cpp">
+	  <Filter>Source Files</Filter>
+	</ClCompile>
 	<ClCompile Include="source\TestAltirra_ConstantsPortable.cpp">
 	  <Filter>Source Files</Filter>
 	</ClCompile>

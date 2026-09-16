@@ -817,7 +817,7 @@
     <ClCompile Include="..\platform\Windows_x64\Altirra\source\diskprofile.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\platform\Windows_x64\Altirra\source\blockdevdiskadapter.cpp">
+    <ClCompile Include="source\blockdevdiskadapter.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\platform\Windows_x64\Altirra\source\1090.cpp">
@@ -1602,7 +1602,7 @@
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\diskprofile.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\platform\Windows_x64\Altirra\h\blockdevdiskadapter.h">
+    <ClInclude Include="h\blockdevdiskadapter.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\1090.h">

@@ -64,7 +64,7 @@
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\autosavemanager.h" />
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\bit3.h" />
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\blackboxfloppy.h" />
-    <ClInclude Include="..\platform\Windows_x64\Altirra\h\blockdevdiskadapter.h" />
+    <ClInclude Include="h\blockdevdiskadapter.h" />
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\blockdevvirtfat32.h" />
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\browser.h" />
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\cartridgeport.h" />
@@ -180,7 +180,9 @@
     <ClCompile Include="..\platform\Windows_x64\Altirra\source\bkptmanager.cpp" />
     <ClCompile Include="..\platform\Windows_x64\Altirra\source\blackbox.cpp" />
     <ClCompile Include="..\platform\Windows_x64\Altirra\source\blackboxfloppy.cpp" />
-    <ClCompile Include="..\platform\Windows_x64\Altirra\source\blockdevdiskadapter.cpp" />
+    <ClCompile Include="source\blockdevdiskadapter.cpp">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+    </ClCompile>
     <ClCompile Include="..\platform\Windows_x64\Altirra\source\blockdevvirtfat32.cpp" />
     <ClCompile Include="..\platform\Windows_x64\Altirra\source\browser.cpp" />
     <ClCompile Include="..\platform\Windows_x64\Altirra\source\cartdetect.cpp" />
