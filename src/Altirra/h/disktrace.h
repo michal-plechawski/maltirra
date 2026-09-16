@@ -22,6 +22,7 @@
 
 class ATTraceChannelFormatted;
 class ATTraceGroup;
+class ATScheduler;
 class IATDiskImage;
 
 class ATDiskRotationTracer {

@@ -92,7 +92,7 @@
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\diskdrivexf551.h" />
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\diskinterface.h" />
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\diskprofile.h" />
-    <ClInclude Include="..\platform\Windows_x64\Altirra\h\disktrace.h" />
+    <ClInclude Include="h\disktrace.h" />
     <ClInclude Include="h\diskvirtimagebase.h" />
     <ClInclude Include="h\errordecode.h" />
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\fdc.h" />
@@ -267,7 +267,9 @@
     <ClCompile Include="..\platform\Windows_x64\Altirra\source\diskdrivexf551.cpp" />
     <ClCompile Include="..\platform\Windows_x64\Altirra\source\diskinterface.cpp" />
     <ClCompile Include="..\platform\Windows_x64\Altirra\source\diskprofile.cpp" />
-    <ClCompile Include="..\platform\Windows_x64\Altirra\source\disktrace.cpp" />
+    <ClCompile Include="source\disktrace.cpp">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+    </ClCompile>
     <ClCompile Include="source\diskvirtimage.cpp">
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
     </ClCompile>

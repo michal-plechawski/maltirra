@@ -40,6 +40,9 @@
 	<ClCompile Include="source\TestAltirra_DebuggerSettingsPortable.cpp">
 	  <Filter>Source Files</Filter>
 	</ClCompile>
+	<ClCompile Include="source\TestAltirra_DiskTracePortable.cpp">
+	  <Filter>Source Files</Filter>
+	</ClCompile>
 	<ClCompile Include="source\TestAltirra_DiskVirtImageBasePortable.cpp">
 	  <Filter>Source Files</Filter>
 	</ClCompile>

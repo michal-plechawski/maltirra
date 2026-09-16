@@ -985,7 +985,7 @@
     <ClCompile Include="source\artifacting_filters.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\platform\Windows_x64\Altirra\source\disktrace.cpp">
+    <ClCompile Include="source\disktrace.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\platform\Windows_x64\Altirra\source\1030full.cpp">
@@ -1734,7 +1734,7 @@
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\uidisplayaccessibility.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\platform\Windows_x64\Altirra\h\disktrace.h">
+    <ClInclude Include="h\disktrace.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\1030full.h">
