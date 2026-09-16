@@ -145,6 +145,7 @@ portable_test_sources=(
 	src/ATTest/source/TestAltirra_InputMapPortable.cpp
 	src/ATTest/source/TestAltirra_HLEUtilsPortable.cpp
 	src/ATTest/source/TestAltirra_HostDeviceUtilsPortable.cpp
+	src/ATTest/source/TestAltirra_IDERawImagePortable.cpp
 	src/ATTest/source/TestAltirra_KernelDBPortable.cpp
 	src/ATTest/source/TestAltirra_PNGPortable.cpp
 	src/ATTest/source/TestAltirra_PNGEncoderPortable.cpp
@@ -212,11 +213,13 @@ portable_test_sources=(
 	src/ATCore/source/checksum_arm64.cpp
 	src/ATCore/source/asyncdispatcherimpl.cpp
 	src/ATCore/source/configvar.cpp
+	src/ATCore/source/deviceimpl.cpp
 	src/ATCore/source/enumparse.cpp
 	src/ATCore/source/fft.cpp
 	src/ATCore/source/fft_neon.cpp
 	src/ATCore/source/fft_scalar.cpp
 	src/ATCore/source/notifylist.cpp
+	src/ATCore/source/propertyset.cpp
 	src/Altirra/source/artifacting_filters.cpp
 	src/Altirra/source/audiorawsource.cpp
 	src/Altirra/source/common_png.cpp
@@ -240,6 +243,7 @@ portable_test_sources=(
 	src/Altirra/source/hleutils.cpp
 	src/Altirra/source/inputdefs.cpp
 	src/Altirra/source/inputmap.cpp
+	src/Altirra/source/iderawimage.cpp
 	src/Altirra/source/hostdeviceutils.cpp
 	src/Altirra/source/printer1020font.cpp
 	src/Altirra/source/printerfont.cpp

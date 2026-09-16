@@ -65,4 +65,6 @@ protected:
 	ATBlockDeviceGeometry mGeometry = {};
 };
 
+void ATCreateDeviceHardDiskRawImage(const ATPropertySet& pset, IATDevice **dev);
+
 #endif

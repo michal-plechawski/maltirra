@@ -15,15 +15,31 @@
 //	along with this program; if not, write to the Free Software
 //	Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
-#include <stdafx.h>
+#include <algorithm>
+#include <cstring>
 #include <at/atcore/propertyset.h>
 #include <vd2/system/error.h>
 #include <vd2/system/filesys.h>
 #include "iderawimage.h"
 
-void ATCreateDeviceHardDiskRawImage(const ATPropertySet& pset, IATDevice **dev);
-
 extern const ATDeviceDefinition g_ATDeviceDefIDERawImage = { "hdrawimage", "harddisk", L"Hard disk image (raw file)", ATCreateDeviceHardDiskRawImage };
+
+void ATCreateDeviceHardDiskRawImage(const ATPropertySet& pset, IATDevice **dev) {
+	vdrefptr<ATIDERawImage> p(new ATIDERawImage);
+
+	p->Init(
+		pset.GetString("path", L""),
+		pset.GetBool("write_enabled"),
+		pset.GetBool("solid_state"),
+		pset.GetUint32("sectors"),
+		pset.GetUint32("cylinders"),
+		pset.GetUint32("heads"),
+		pset.GetUint32("sectors_per_track"));
+	p->SetSettings(pset);
+
+	*dev = p;
+	(*dev)->AddRef();
+}
 
 ATIDERawImage::ATIDERawImage()
 	: mSectorCount(0)
@@ -130,7 +146,7 @@ void ATIDERawImage::ReadSectors(void *data, uint32 lba, uint32 n) {
 	uint32 requested = n << 9;
 	uint32 actual = mFile.readData(data, requested);
 
-	if (requested < actual)
+	if (actual < requested)
 		memset((char *)data + actual, 0, requested - actual);
 }
 

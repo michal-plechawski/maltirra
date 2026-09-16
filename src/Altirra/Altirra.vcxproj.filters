@@ -202,7 +202,7 @@
     <ClCompile Include="..\platform\Windows_x64\Altirra\source\idephysdisk.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\platform\Windows_x64\Altirra\source\iderawimage.cpp">
+    <ClCompile Include="source\iderawimage.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\platform\Windows_x64\Altirra\source\idevhdimage.cpp">
@@ -1236,7 +1236,7 @@
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\idephysdisk.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\platform\Windows_x64\Altirra\h\iderawimage.h">
+    <ClInclude Include="h\iderawimage.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\idevhdimage.h">

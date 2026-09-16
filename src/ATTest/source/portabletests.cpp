@@ -15,6 +15,7 @@ bool ATTestAltirraInputDefs(ATPortableTestContext& context);
 bool ATTestAltirraInputMap(ATPortableTestContext& context);
 bool ATTestAltirraHLEUtils(ATPortableTestContext& context);
 bool ATTestAltirraHostDeviceUtils(ATPortableTestContext& context);
+bool ATTestAltirraIDERawImage(ATPortableTestContext& context);
 bool ATTestAltirraKernelDB(ATPortableTestContext& context);
 bool ATTestAltirraPNG(ATPortableTestContext& context);
 bool ATTestAltirraPNGEncoder(ATPortableTestContext& context);
@@ -94,6 +95,7 @@ const ATPortableTestCase *ATGetPortableTests(size_t& count) {
 		{ "Altirra_InputMap", ATTestAltirraInputMap },
 		{ "Altirra_HLEUtils", ATTestAltirraHLEUtils },
 		{ "Altirra_HostDeviceUtils", ATTestAltirraHostDeviceUtils },
+		{ "Altirra_IDERawImage", ATTestAltirraIDERawImage },
 		{ "Altirra_KernelDB", ATTestAltirraKernelDB },
 		{ "Altirra_PNG", ATTestAltirraPNG },
 		{ "Altirra_PNGEncoder", ATTestAltirraPNGEncoder },
