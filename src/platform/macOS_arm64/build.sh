@@ -152,6 +152,7 @@ portable_test_sources=(
 	src/ATTest/source/TestAltirra_PNGEncoderPortable.cpp
 	src/ATTest/source/TestAltirra_SaveStateTypesPortable.cpp
 	src/ATTest/source/TestAltirra_SaveStateReaderPortable.cpp
+	src/ATTest/source/TestAltirra_SaveStateIOPortable.cpp
 	src/ATTest/source/TestAltirra_Printer1020FontPortable.cpp
 	src/ATTest/source/TestAltirra_PrinterFontsPortable.cpp
 	src/ATTest/source/TestAltirra_PokeyTracePortable.cpp
@@ -246,6 +247,7 @@ portable_test_sources=(
 	src/ATIO/source/diskfsdos3.cpp
 	src/ATIO/source/diskfssdx2.cpp
 	src/ATIO/source/diskfssdx2util.cpp
+	src/ATIO/source/savestate.cpp
 	src/platform/macOS_arm64/Altirra/source/directorywatcher.cpp
 	src/Altirra/source/errordecode.cpp
 	src/Altirra/source/hleutils.cpp
@@ -259,6 +261,7 @@ portable_test_sources=(
 	src/Altirra/source/pokeysavecompat.cpp
 	src/Altirra/source/savestatetypes.cpp
 	src/Altirra/source/savestate.cpp
+	src/Altirra/source/savestateio.cpp
 	src/Altirra/source/trace.cpp
 	src/Altirra/source/tracecpu.cpp
 	src/Altirra/source/tracefileencoding.cpp
@@ -282,6 +285,11 @@ portable_test_sources=(
 	src/ATIO/source/cartridgetypes.cpp
 	src/ATIO/source/cassetteaudiofilters.cpp
 	src/ATIO/source/cassettedecoder.cpp
+	src/vdjson/source/jsonnametable.cpp
+	src/vdjson/source/jsonoutput.cpp
+	src/vdjson/source/jsonreader.cpp
+	src/vdjson/source/jsonvalue.cpp
+	src/vdjson/source/jsonwriter.cpp
 	src/Kasumi/source/blt.cpp
 	src/Kasumi/source/blt_reference.cpp
 	src/Kasumi/source/blt_reference_pal.cpp

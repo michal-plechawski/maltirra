@@ -14,8 +14,11 @@
 //	You should have received a copy of the GNU General Public License along
 //	with this program. If not, see <http://www.gnu.org/licenses/>.
 
-#include "stdafx.h"
+#include <algorithm>
+#include <cstdlib>
+#include <cstring>
 #include <future>
+#include <utility>
 #include <vd2/system/text.h>
 #include <vd2/system/zip.h>
 #include <vd2/vdjson/jsonoutput.h>
@@ -727,9 +730,9 @@ bool ATSnapObjectDeserializer::ReadObject(const char *key, const ATSerialization
 
 bool ATSnapObjectDeserializer::ReadInlineObject(const char *key, const ATSerializationTypeDef *type, int depth, IATSerializable*& value) {
 	VDJSONValueRef child = GetNextChild(key);
+	value = nullptr;
 
 	if (child.IsNull()) {
-		value = nullptr;
 		return true;
 	}
 
@@ -741,15 +744,30 @@ bool ATSnapObjectDeserializer::ReadInlineObject(const char *key, const ATSeriali
 		return false;
 
 	const ATSerializationTypeDef *def = ATSerializationFindType(VDTextWToA(typeRef.AsString()).c_str());
-	if (!def)
+	if (!def || (type && def != type))
 		return false;
 
-	value = ATSerializationCreateObject(*def).release();
-	if (!value)
+	vdrefptr<IATSerializable> object = ATSerializationCreateObject(*def);
+	if (!object)
 		return false;
 
-	ATDeserializer reader(*this, depth + 1);
-	value->Deserialize(reader);
+	const VDJSONValueRef previousParent = mParentValue;
+	const uint32 previousArrayIndex = mArrayIndex;
+	mParentValue = child;
+	mArrayIndex = 0;
+
+	try {
+		ATDeserializer reader(*this, depth + 1);
+		object->Deserialize(reader);
+	} catch(...) {
+		mParentValue = previousParent;
+		mArrayIndex = previousArrayIndex;
+		throw;
+	}
+
+	mParentValue = previousParent;
+	mArrayIndex = previousArrayIndex;
+	value = object.release();
 
 	return true;
 }

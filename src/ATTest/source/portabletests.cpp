@@ -22,6 +22,7 @@ bool ATTestAltirraPNG(ATPortableTestContext& context);
 bool ATTestAltirraPNGEncoder(ATPortableTestContext& context);
 bool ATTestAltirraSaveStateTypes(ATPortableTestContext& context);
 bool ATTestAltirraSaveStateReader(ATPortableTestContext& context);
+bool ATTestAltirraSaveStateIO(ATPortableTestContext& context);
 bool ATTestAltirraPrinter1020Font(ATPortableTestContext& context);
 bool ATTestAltirraPrinterFonts(ATPortableTestContext& context);
 bool ATTestAltirraPokeyTrace(ATPortableTestContext& context);
@@ -108,6 +109,7 @@ const ATPortableTestCase *ATGetPortableTests(size_t& count) {
 		{ "Altirra_PNGEncoder", ATTestAltirraPNGEncoder },
 		{ "Altirra_SaveStateTypes", ATTestAltirraSaveStateTypes },
 		{ "Altirra_SaveStateReader", ATTestAltirraSaveStateReader },
+		{ "Altirra_SaveStateIO", ATTestAltirraSaveStateIO },
 		{ "Altirra_Printer1020Font", ATTestAltirraPrinter1020Font },
 		{ "Altirra_PrinterFonts", ATTestAltirraPrinterFonts },
 		{ "Altirra_PokeyTrace", ATTestAltirraPokeyTrace },

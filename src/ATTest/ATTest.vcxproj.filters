@@ -64,6 +64,9 @@
 	<ClCompile Include="source\TestAltirra_SaveStateReaderPortable.cpp">
 	  <Filter>Source Files</Filter>
 	</ClCompile>
+	<ClCompile Include="source\TestAltirra_SaveStateIOPortable.cpp">
+	  <Filter>Source Files</Filter>
+	</ClCompile>
 	<ClCompile Include="source\TestAltirra_TraceFileFormatPortable.cpp">
 	  <Filter>Source Files</Filter>
 	</ClCompile>

@@ -376,7 +376,7 @@ bool VDJSONReader::ParseString() {
 					break;
 
 				case L'f':
-					c = (wchar_t)L'\b';
+					c = (wchar_t)L'\f';
 					break;
 
 				case L'n':
@@ -391,18 +391,64 @@ bool VDJSONReader::ParseString() {
 					c = (wchar_t)L'\t';
 					break;
 
-				case L'u':
-					for(int i=0; i<4; ++i) {
-						c = GetChar();
+				case L'u': {
+					auto readHexQuad = [this](uint32& value) {
+						value = 0;
 
-						if ((c < L'0' || c > '9') && (c < L'a' || c > 'f') && (c < L'A' || c > 'F'))
+						for(int i = 0; i < 4; ++i) {
+							const wchar_t digit = GetChar();
+							uint32 nibble;
+
+							if (digit >= L'0' && digit <= L'9')
+								nibble = digit - L'0';
+							else if (digit >= L'a' && digit <= L'f')
+								nibble = digit - L'a' + 10;
+							else if (digit >= L'A' && digit <= L'F')
+								nibble = digit - L'A' + 10;
+							else
+								return false;
+
+							value = (value << 4) + nibble;
+						}
+
+						return true;
+					};
+
+					uint32 codePoint;
+					if (!readHexQuad(codePoint))
+						return false;
+
+					if (codePoint >= 0xD800 && codePoint <= 0xDBFF) {
+						if (GetChar() != L'\\' || GetChar() != L'u')
 							return false;
+
+						uint32 lowSurrogate;
+						if (!readHexQuad(lowSurrogate) || lowSurrogate < 0xDC00 || lowSurrogate > 0xDFFF)
+							return false;
+
+						if constexpr (sizeof(wchar_t) > 2) {
+							codePoint = 0x10000 + ((codePoint - 0xD800) << 10) + (lowSurrogate - 0xDC00);
+						} else {
+							if (!AddNameChar((wchar_t)codePoint))
+								return false;
+
+							codePoint = lowSurrogate;
+						}
+					} else if (codePoint >= 0xDC00 && codePoint <= 0xDFFF) {
+						return false;
 					}
+
+					c = (wchar_t)codePoint;
 					break;
+				}
+
+				default:
+					return false;
 			}
 		}
 
-		AddNameChar(c);
+		if (!AddNameChar(c))
+			return false;
 	}
 
 	EndName();
@@ -530,7 +576,7 @@ wchar_t VDJSONReader::GetCharSlow() {
 				len += tc;
 			} else {
 				if (mbBigEndian) {
-					while(len < kInputBufferSize && mpSrcEnd - mpSrc > 4) {
+					while(len < kInputBufferSize && mpSrcEnd - mpSrc >= 4) {
 						uint32 c = ((uint32)mpSrc[0] << 24) + ((uint32)mpSrc[1] << 16) + ((uint32)mpSrc[2] << 8) + mpSrc[3];
 						mpSrc += 4;
 
@@ -556,7 +602,7 @@ wchar_t VDJSONReader::GetCharSlow() {
 						mInputBuffer[len++] = (wchar_t)c;
 					}
 				} else {
-					while(len < kInputBufferSize && mpSrcEnd - mpSrc > 4) {
+					while(len < kInputBufferSize && mpSrcEnd - mpSrc >= 4) {
 						uint32 c = ((uint32)mpSrc[3] << 24) + ((uint32)mpSrc[2] << 16) + ((uint32)mpSrc[1] << 8) + mpSrc[0];
 						mpSrc += 4;
 
@@ -586,7 +632,7 @@ wchar_t VDJSONReader::GetCharSlow() {
 		} else if (mbUTF16Mode) {
 			if constexpr (sizeof(wchar_t) > 2) {		// UTF-16 -> UTF-32 conversion
 				if (mbBigEndian) {
-					while(len < kInputBufferSize && (mpSrcEnd - mpSrc) > 2) {
+					while(len < kInputBufferSize && (mpSrcEnd - mpSrc) >= 2) {
 						uint32 c0 = ((uint32)mpSrc[0] << 8) + mpSrc[1];
 						mpSrc += 2;
 
@@ -599,18 +645,18 @@ wchar_t VDJSONReader::GetCharSlow() {
 							uint32 c1 = ((uint32)mpSrc[0] << 8) + mpSrc[1];
 							mpSrc += 2;
 
-							if ((c0 - 0xDC00) >= 0x0800) {
+							if ((c1 - 0xDC00) >= 0x0400) {
 								encodingError = true;
 								break;
 							}
 
-							c0 = (c0 << 10) + c1 - ((0xD800 << 10) + 0xDC00);
+							c0 = 0x10000 + (c0 << 10) + c1 - ((0xD800 << 10) + 0xDC00);
 						}
 
 						mInputBuffer[len++] = c0;
 					}
 				} else {
-					while(len < kInputBufferSize && (mpSrcEnd - mpSrc) > 2) {
+					while(len < kInputBufferSize && (mpSrcEnd - mpSrc) >= 2) {
 						uint32 c0 = ((uint32)mpSrc[1] << 8) + mpSrc[0];
 						mpSrc += 2;
 
@@ -623,12 +669,12 @@ wchar_t VDJSONReader::GetCharSlow() {
 							uint32 c1 = ((uint32)mpSrc[1] << 8) + mpSrc[0];
 							mpSrc += 2;
 
-							if ((c0 - 0xDC00) >= 0x0800) {
+							if ((c1 - 0xDC00) >= 0x0400) {
 								encodingError = true;
 								break;
 							}
 
-							c0 = (c0 << 10) + c1 - ((0xD800 << 10) + 0xDC00);
+							c0 = 0x10000 + (c0 << 10) + c1 - ((0xD800 << 10) + 0xDC00);
 						}
 
 						mInputBuffer[len++] = c0;
@@ -660,7 +706,7 @@ wchar_t VDJSONReader::GetCharSlow() {
 				if ((c >= 0x80 && c < 0xC2) || c >= 0xF5) {		// invalid: follower without leader or too high of a code point
 					encodingError = true;
 					break;
-				} else if (c >= 0xC2 && c < 0xDF) {		// U+0080 to U+07FF
+				} else if (c >= 0xC2 && c <= 0xDF) {		// U+0080 to U+07FF
 					if (mpSrc == mpSrcEnd) {
 						encodingError = true;
 						break;
@@ -672,7 +718,7 @@ wchar_t VDJSONReader::GetCharSlow() {
 						break;
 					}
 
-					d = ((c - 0xC0) << 6) + x0;
+					d = ((c - 0xC0) << 6) + x0 - 0x80;
 				} else if (c >= 0xE0 && c <= 0xEF) {	// U+0800 to U+FFFF
 					if (mpSrcEnd - mpSrc < 2) {
 						encodingError = true;
@@ -708,7 +754,7 @@ wchar_t VDJSONReader::GetCharSlow() {
 					}
 
 					uint32 e = ((uint32)(c - 0xF0) << 18) + (((uint32)x0 - 0x80) << 12) + (((uint32)x1 - 0x80) << 6) + (uint32)(x2 - 0x80);
-					if (e < 0x10000) {
+					if (e < 0x10000 || e >= 0x110000) {
 						encodingError = true;
 						break;
 					}
@@ -722,7 +768,8 @@ wchar_t VDJSONReader::GetCharSlow() {
 
 						mInputBuffer[len++] = (wchar_t)(0xD800 + (e >> 10));
 						d = (wchar_t)(0xDC00 + (e & 0x03FF));
-					}
+					} else
+						d = (wchar_t)e;
 				}
 
 				mInputBuffer[len++] = d;

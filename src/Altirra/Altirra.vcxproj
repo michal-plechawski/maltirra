@@ -119,7 +119,7 @@
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\rapidus.h" />
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\sapconverter.h" />
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\sapwriter.h" />
-    <ClInclude Include="..\platform\Windows_x64\Altirra\h\savestateio.h" />
+    <ClInclude Include="h\savestateio.h" />
     <ClInclude Include="h\savestatetypes.h" />
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\settings.h" />
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\side3.h" />
@@ -361,7 +361,9 @@
     <ClCompile Include="source\savestate.cpp">
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="..\platform\Windows_x64\Altirra\source\savestateio.cpp" />
+    <ClCompile Include="source\savestateio.cpp">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+    </ClCompile>
     <ClCompile Include="source\savestatetypes.cpp">
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
     </ClCompile>

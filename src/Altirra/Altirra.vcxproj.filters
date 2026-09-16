@@ -751,7 +751,7 @@
     <ClCompile Include="..\platform\Windows_x64\Altirra\source\cmdcassette.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\platform\Windows_x64\Altirra\source\savestateio.cpp">
+    <ClCompile Include="source\savestateio.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\platform\Windows_x64\Altirra\source\debuggersettings.cpp">
@@ -1563,7 +1563,7 @@
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\warpos.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\platform\Windows_x64\Altirra\h\savestateio.h">
+    <ClInclude Include="h\savestateio.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\debuggersettings.h">
