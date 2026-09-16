@@ -267,6 +267,7 @@ portable_test_sources=(
 	src/ATIO/source/diskfssdx2util.cpp
 	src/ATIO/source/savestate.cpp
 	src/platform/macOS_arm64/Altirra/source/directorywatcher.cpp
+	src/platform/macOS_arm64/Altirra/source/updatefeed_macos.cpp
 	src/Altirra/source/errordecode.cpp
 	src/Altirra/source/hleutils.cpp
 	src/Altirra/source/gtiatables.cpp
@@ -394,6 +395,7 @@ done
 	-framework AppKit \
 	-framework CoreFoundation \
 	-framework CoreServices \
+	-framework Security \
 	-o "$portable_test_executable"
 
 manifest="$build_root/build-manifest.txt"
