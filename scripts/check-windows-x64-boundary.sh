@@ -9,6 +9,9 @@ platform_include_pattern='^[[:space:]]*#[[:space:]]*include[[:space:]]*[<"][^>"]
 compiler_intrinsic_pattern='^[[:space:]]*#[[:space:]]*include[[:space:]]*[<"](intrin|emmintrin|immintrin|xmmintrin)[.]h[>"]'
 architecture_impl_pattern='(__m(64|128|256)|_mm[0-9]*_|_Interlocked|__shift(left|right)128)'
 
+# The trace codec intentionally keeps equivalent scalar, SSE, and NEON paths
+# together; it is architecture-dispatched and has no Windows dependency.
+
 include_violations=$(
   git grep -n -i -E \
     "$windows_include_pattern" \
@@ -32,6 +35,7 @@ architecture_impl_violations=$(
     "$architecture_impl_pattern" \
     -- src ':!src/platform/**' \
     ':!src/Shared/altirra.natvis' \
+    ':!src/Altirra/source/tracefileencoding.cpp' \
     ':!src/h/vd2/system/atomic.h' \
     ':!src/h/vd2/system/int128.h' \
     ':!src/h/vd2/system/math.h' || true
