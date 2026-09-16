@@ -17,6 +17,9 @@
 #ifndef f_AT_DEBUGGERSETTINGS_H
 #define f_AT_DEBUGGERSETTINGS_H
 
+#include <type_traits>
+#include <utility>
+#include <vd2/system/function.h>
 #include <vd2/system/vdstl.h>
 #include <at/atcore/enumparse.h>
 

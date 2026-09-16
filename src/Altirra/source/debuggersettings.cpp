@@ -14,7 +14,6 @@
 //	You should have received a copy of the GNU General Public License along
 //	with this program. If not, see <http://www.gnu.org/licenses/>.
 
-#include <stdafx.h>
 #include <vd2/system/registry.h>
 #include <at/atcore/enumparseimpl.h>
 #include "debuggersettings.h"
@@ -73,6 +72,11 @@ ATDebuggerSetting<T>::ATDebuggerSetting(const char *persistedName, const T& defa
 
 template<typename T>
 ATDebuggerSetting<T>& ATDebuggerSetting<T>::operator=(const T& value) {
+	if (!mbValueLoaded) {
+		Load(mpPersistedName, mValue);
+		mbValueLoaded = true;
+	}
+
 	if (mValue != value) {
 		mValue = value;
 
@@ -94,16 +98,20 @@ ATDebuggerSetting<T>& ATDebuggerSetting<T>::operator=(const T& value) {
 
 template<typename T>
 ATDebuggerSetting<T>::operator T() {
-	if (!mbValueLoaded)
+	if (!mbValueLoaded) {
 		Load(mpPersistedName, mValue);
+		mbValueLoaded = true;
+	}
 
 	return mValue;
 }
 
 template<typename T>
 void ATDebuggerSetting<T>::AddView(vdlist_node& node) {
-	if (!mbValueLoaded)
+	if (!mbValueLoaded) {
 		Load(mpPersistedName, mValue);
+		mbValueLoaded = true;
+	}
 
 	mViews.push_back(&node);
 

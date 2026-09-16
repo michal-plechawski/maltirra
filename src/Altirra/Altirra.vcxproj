@@ -77,7 +77,7 @@
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\customdevice.h" />
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\customdevicevmtypes.h" />
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\customdevice_win32.h" />
-    <ClInclude Include="..\platform\Windows_x64\Altirra\h\debuggersettings.h" />
+    <ClInclude Include="h\debuggersettings.h" />
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\decode_png.h" />
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\devicemanager.h" />
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\devxcmdcopypaste.h" />
@@ -240,7 +240,9 @@
     <ClCompile Include="..\platform\Windows_x64\Altirra\source\debuggerautotest.cpp" />
     <ClCompile Include="..\platform\Windows_x64\Altirra\source\debuggerexp.cpp" />
     <ClCompile Include="..\platform\Windows_x64\Altirra\source\debuggerlog.cpp" />
-    <ClCompile Include="..\platform\Windows_x64\Altirra\source\debuggersettings.cpp" />
+    <ClCompile Include="source\debuggersettings.cpp">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+    </ClCompile>
     <ClCompile Include="..\platform\Windows_x64\Altirra\source\debugtarget.cpp" />
     <ClCompile Include="..\platform\Windows_x64\Altirra\source\decmath.cpp" />
     <ClCompile Include="..\platform\Windows_x64\Altirra\source\decode_png.cpp" />
