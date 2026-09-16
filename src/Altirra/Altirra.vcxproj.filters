@@ -856,7 +856,7 @@
     <ClCompile Include="source\pokeytrace.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\platform\Windows_x64\Altirra\source\pokeysavecompat.cpp">
+    <ClCompile Include="source\pokeysavecompat.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\platform\Windows_x64\Altirra\source\portmanager.cpp">
@@ -1626,7 +1626,7 @@
     <ClInclude Include="h\pokeytrace.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\platform\Windows_x64\Altirra\h\pokeysavecompat.h">
+    <ClInclude Include="h\pokeysavecompat.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\portmanager.h">

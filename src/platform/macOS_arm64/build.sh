@@ -155,6 +155,7 @@ portable_test_sources=(
 	src/ATTest/source/TestAltirra_Printer1020FontPortable.cpp
 	src/ATTest/source/TestAltirra_PrinterFontsPortable.cpp
 	src/ATTest/source/TestAltirra_PokeyTracePortable.cpp
+	src/ATTest/source/TestAltirra_PokeySaveCompatPortable.cpp
 	src/ATTest/source/TestAltirra_TracePortable.cpp
 	src/ATTest/source/TestAltirra_TraceTapePortable.cpp
 	src/ATTest/source/TestAltirra_SimEventManagerPortable.cpp
@@ -215,6 +216,7 @@ portable_test_sources=(
 	src/ATCore/source/checksum_arm64.cpp
 	src/ATCore/source/asyncdispatcherimpl.cpp
 	src/ATCore/source/configvar.cpp
+	src/ATCore/source/consoleoutput.cpp
 	src/ATCore/source/deviceimpl.cpp
 	src/ATCore/source/enumparse.cpp
 	src/ATCore/source/fft.cpp
@@ -251,6 +253,7 @@ portable_test_sources=(
 	src/Altirra/source/printer1020font.cpp
 	src/Altirra/source/printerfont.cpp
 	src/Altirra/source/pokeytrace.cpp
+	src/Altirra/source/pokeysavecompat.cpp
 	src/Altirra/source/savestatetypes.cpp
 	src/Altirra/source/savestate.cpp
 	src/Altirra/source/trace.cpp
@@ -260,7 +263,13 @@ portable_test_sources=(
 	src/Altirra/source/vbxestate.cpp
 	src/ATCore/source/serialization.cpp
 	src/ATCore/source/savestate.cpp
+	src/ATCore/source/scheduler.cpp
+	src/ATCore/source/sioutils.cpp
 	src/ATCore/source/snapshotimpl.cpp
+	src/ATAudio/source/pokey.cpp
+	src/ATAudio/source/pokeyrenderer.cpp
+	src/ATAudio/source/pokeysavestate.cpp
+	src/ATAudio/source/pokeytables.cpp
 	src/ATIO/source/audioreaderflac_arm64.cpp
 	src/ATIO/source/cartridgeimage.cpp
 	src/ATIO/source/cartridgeimage_arm64.cpp

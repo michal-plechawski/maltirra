@@ -104,7 +104,7 @@
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\palettegenerator.h" />
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\palettesolver.h" />
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\pbidisk.h" />
-    <ClInclude Include="..\platform\Windows_x64\Altirra\h\pokeysavecompat.h" />
+    <ClInclude Include="h\pokeysavecompat.h" />
     <ClInclude Include="h\pokeytrace.h" />
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\portmanager.h" />
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\printer.h" />
@@ -332,7 +332,9 @@
     <ClCompile Include="..\platform\Windows_x64\Altirra\source\pia.cpp" />
     <ClCompile Include="..\platform\Windows_x64\Altirra\source\pipeserial_win32.cpp" />
     <ClCompile Include="..\platform\Windows_x64\Altirra\source\pocketmodem.cpp" />
-    <ClCompile Include="..\platform\Windows_x64\Altirra\source\pokeysavecompat.cpp" />
+    <ClCompile Include="source\pokeysavecompat.cpp">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+    </ClCompile>
     <ClCompile Include="source\pokeytrace.cpp">
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
     </ClCompile>

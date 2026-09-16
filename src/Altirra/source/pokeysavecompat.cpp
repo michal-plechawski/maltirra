@@ -14,7 +14,7 @@
 //	You should have received a copy of the GNU General Public License along
 //	with this program. If not, see <http://www.gnu.org/licenses/>.
 
-#include "stdafx.h"
+#include <algorithm>
 #include <vd2/system/binary.h>
 #include <at/ataudio/pokey.h>
 #include <at/ataudio/pokeysavestate.h>
