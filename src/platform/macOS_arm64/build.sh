@@ -180,6 +180,7 @@ portable_test_sources=(
 	src/ATTest/source/TestAltirra_TraceTapePortable.cpp
 	src/ATTest/source/TestAltirra_UpdateFeedPortable.cpp
 	src/ATTest/source/TestAltirra_SimEventManagerPortable.cpp
+	src/ATTest/source/TestAltirra_TextDOMPortable.cpp
 	src/ATTest/source/TestAltirra_VideoManagerPortable.cpp
 	src/ATTest/source/TestAltirra_VBXEStatePortable.cpp
 	src/ATTest/source/TestCore_ChecksumPortable.cpp
@@ -293,6 +294,7 @@ portable_test_sources=(
 	src/Altirra/source/savestate.cpp
 	src/Altirra/source/savestateio.cpp
 	src/Altirra/source/sapconverter.cpp
+	src/Altirra/source/textdom.cpp
 	src/Altirra/source/trace.cpp
 	src/Altirra/source/tracecpu.cpp
 	src/Altirra/source/tracevideo.cpp

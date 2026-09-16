@@ -298,7 +298,7 @@
     <ClCompile Include="..\platform\Windows_x64\Altirra\source\soundboard.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\platform\Windows_x64\Altirra\source\textdom.cpp">
+    <ClCompile Include="source\textdom.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\platform\Windows_x64\Altirra\source\texteditor.cpp">
@@ -1329,7 +1329,7 @@
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\soundboard.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\platform\Windows_x64\Altirra\h\textdom.h">
+    <ClInclude Include="h\textdom.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\texteditor.h">

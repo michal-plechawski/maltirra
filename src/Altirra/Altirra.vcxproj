@@ -406,7 +406,9 @@
     <ClCompile Include="..\platform\Windows_x64\Altirra\source\soundboard.cpp" />
     <ClCompile Include="..\platform\Windows_x64\Altirra\source\startuplogger.cpp" />
     <ClCompile Include="..\platform\Windows_x64\Altirra\source\sx212.cpp" />
-    <ClCompile Include="..\platform\Windows_x64\Altirra\source\textdom.cpp" />
+    <ClCompile Include="source\textdom.cpp">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+    </ClCompile>
     <ClCompile Include="..\platform\Windows_x64\Altirra\source\texteditor.cpp" />
     <ClCompile Include="..\platform\Windows_x64\Altirra\source\thepill.cpp" />
     <ClCompile Include="source\trace.cpp">
@@ -725,7 +727,7 @@
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\siomanager.h" />
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\slightsid.h" />
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\soundboard.h" />
-    <ClInclude Include="..\platform\Windows_x64\Altirra\h\textdom.h" />
+    <ClInclude Include="h\textdom.h" />
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\texteditor.h" />
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\uicaptionupdater.h" />
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\uicommondialogs.h" />
