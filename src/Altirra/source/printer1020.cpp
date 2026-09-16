@@ -14,7 +14,12 @@
 //	You should have received a copy of the GNU General Public License along
 //	with this program. If not, see <http://www.gnu.org/licenses/>.
 
-#include <stdafx.h>
+#include <algorithm>
+#include <cstdlib>
+
+#include <vd2/system/math.h>
+#include <vd2/system/VDString.h>
+#include <vd2/system/vectors.h>
 #include <at/atcore/configvar.h>
 #include <at/atcore/propertyset.h>
 #include "printer1020.h"
