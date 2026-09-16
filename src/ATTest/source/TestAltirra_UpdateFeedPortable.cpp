@@ -8,22 +8,24 @@
 #include <at/attest/portabletest.h>
 #include <updatefeed.h>
 
-namespace {
-	bool gAcceptTestSignature = false;
-	bool gSawValidTestSignature = false;
-}
+#if !defined(_WIN32)
+	namespace {
+		bool gAcceptTestSignature = false;
+		bool gSawValidTestSignature = false;
+	}
 
-// The production verifier is platform-specific. This test double lets the
-// common feed parser be exercised through its signed-document entry point.
-bool ATUpdateVerifyFeedSignature(const void *signature, const void *data, size_t len) {
-	const auto *signatureBytes = static_cast<const uint8 *>(signature);
-	gSawValidTestSignature = len >= 5 && !memcmp(data, "<?xml", 5);
+	// The production verifier is platform-specific. This test double lets the
+	// common feed parser be exercised through its signed-document entry point.
+	bool ATUpdateVerifyFeedSignature(const void *signature, const void *data, size_t len) {
+		const auto *signatureBytes = static_cast<const uint8 *>(signature);
+		gSawValidTestSignature = len >= 5 && !memcmp(data, "<?xml", 5);
 
-	for(size_t i = 0; i < 256; ++i)
-		gSawValidTestSignature &= signatureBytes[i] == 0;
+		for(size_t i = 0; i < 256; ++i)
+			gSawValidTestSignature &= signatureBytes[i] == 0;
 
-	return gAcceptTestSignature && gSawValidTestSignature;
-}
+		return gAcceptTestSignature && gSawValidTestSignature;
+	}
+#endif
 
 namespace {
 	bool TextEquals(const ATUpdateFeedDoc& doc, ATUpdateFeedNodeRef node, std::string_view expected) {
@@ -91,6 +93,7 @@ bool ATTestAltirraUpdateFeed(ATPortableTestContext& context) {
 	static constexpr char kBadAttribute[] = "<feed version=unquoted/>";
 	AT_PORTABLE_TEST_ASSERT(context, !ATParseUpdateFeedXML(kBadAttribute, sizeof kBadAttribute - 1, doc));
 
+#if !defined(_WIN32)
 	std::string signedFeed = "<?xml version=\"1.0\" encoding=\"utf-8\"?><!-- sig:";
 	signedFeed.append(342, 'A');
 	signedFeed += "== -->"
@@ -117,6 +120,7 @@ bool ATTestAltirraUpdateFeed(ATPortableTestContext& context) {
 	const auto paragraphName = feedInfo.mLatestReleaseItem.mDoc.GetNameToken(ATXMLSubsetHashedStr("p"));
 	AT_PORTABLE_TEST_ASSERT(context, feedInfo.mLatestReleaseItem.mDoc.GetRoot().IsElement(paragraphName));
 	AT_PORTABLE_TEST_ASSERT(context, TextEquals(feedInfo.mLatestReleaseItem.mDoc, *feedInfo.mLatestReleaseItem.mDoc.GetRoot(), "Portable release"));
+#endif
 
 	return true;
 }
