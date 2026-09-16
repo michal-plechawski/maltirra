@@ -18,9 +18,7 @@
 #ifndef f_AT_FIRMWAREDETECT_H
 #define f_AT_FIRMWAREDETECT_H
 
-class VDStringW;
-struct ATFirmwareInfo;
-enum ATSpecificFirmwareType : uint32;
+#include "firmwaremanager.h"
 
 bool ATFirmwareAutodetectCheckSize(uint64 fileSize);
 

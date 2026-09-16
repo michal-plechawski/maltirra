@@ -18,6 +18,7 @@ bool ATTestAltirraDiskVirtImage(ATPortableTestContext& context);
 bool ATTestAltirraDiskVirtImageSDFS(ATPortableTestContext& context);
 bool ATTestAltirraDirectoryWatcher(ATPortableTestContext& context);
 bool ATTestAltirraErrorDecode(ATPortableTestContext& context);
+bool ATTestAltirraFirmwareDetect(ATPortableTestContext& context);
 bool ATTestAltirraInputDefs(ATPortableTestContext& context);
 bool ATTestAltirraInputMap(ATPortableTestContext& context);
 bool ATTestAltirraHLEUtils(ATPortableTestContext& context);
@@ -115,6 +116,7 @@ const ATPortableTestCase *ATGetPortableTests(size_t& count) {
 		{ "Altirra_DiskVirtImageSDFS", ATTestAltirraDiskVirtImageSDFS },
 		{ "Altirra_DirectoryWatcher", ATTestAltirraDirectoryWatcher },
 		{ "Altirra_ErrorDecode", ATTestAltirraErrorDecode },
+		{ "Altirra_FirmwareDetect", ATTestAltirraFirmwareDetect },
 		{ "Altirra_InputDefs", ATTestAltirraInputDefs },
 		{ "Altirra_InputMap", ATTestAltirraInputMap },
 		{ "Altirra_HLEUtils", ATTestAltirraHLEUtils },

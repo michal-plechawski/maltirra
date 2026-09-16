@@ -150,6 +150,7 @@ portable_test_sources=(
 	src/ATTest/source/TestAltirra_DiskVirtImageSDFSPortable.cpp
 	src/ATTest/source/TestAltirra_DirectoryWatcherPortable.cpp
 	src/ATTest/source/TestAltirra_ErrorDecodePortable.cpp
+	src/ATTest/source/TestAltirra_FirmwareDetectPortable.cpp
 	src/ATTest/source/TestAltirra_InputDefsPortable.cpp
 	src/ATTest/source/TestAltirra_InputMapPortable.cpp
 	src/ATTest/source/TestAltirra_HLEUtilsPortable.cpp
@@ -269,6 +270,7 @@ portable_test_sources=(
 	src/platform/macOS_arm64/Altirra/source/directorywatcher.cpp
 	src/platform/macOS_arm64/Altirra/source/updatefeed_macos.cpp
 	src/Altirra/source/errordecode.cpp
+	src/Altirra/source/firmwaredetect.cpp
 	src/Altirra/source/hleutils.cpp
 	src/Altirra/source/gtiatables.cpp
 	src/Altirra/source/inputdefs.cpp

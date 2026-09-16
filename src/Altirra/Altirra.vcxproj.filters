@@ -157,7 +157,7 @@
     <ClCompile Include="source\encode_png.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\platform\Windows_x64\Altirra\source\firmwaredetect.cpp">
+    <ClCompile Include="source\firmwaredetect.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\platform\Windows_x64\Altirra\source\firmwaremanager.cpp">
@@ -1197,10 +1197,10 @@
     <ClInclude Include="h\encode_png.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\platform\Windows_x64\Altirra\h\firmwaredetect.h">
+    <ClInclude Include="h\firmwaredetect.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\platform\Windows_x64\Altirra\h\firmwaremanager.h">
+    <ClInclude Include="h\firmwaremanager.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\gtia.h">

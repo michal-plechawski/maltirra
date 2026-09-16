@@ -18,6 +18,7 @@
 #ifndef f_AT_FIRMWAREMANAGER_H
 #define f_AT_FIRMWAREMANAGER_H
 
+#include <vd2/system/function.h>
 #include <vd2/system/VDString.h>
 #include <vd2/system/vdstl.h>
 
