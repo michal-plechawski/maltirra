@@ -16,7 +16,9 @@
 //	along with this program; if not, write to the Free Software
 //	Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
-#include <stdafx.h>
+#include <bit>
+#include <vd2/system/vdtypes.h>
+#include "artifacting_neon.h"
 
 #if defined(VD_CPU_ARM64)
 #include <arm_neon.h>
@@ -40,7 +42,7 @@ void ATArtifactNTSCAccum_NEON(void *rout, const void *table, const void *src, ui
 	do {
 		cur0123 = *(const uint32 *)src8;
 
-		if (_rotl(cur0123, 8) == cur0123)
+		if (std::rotl(cur0123, 8) == cur0123)
 			goto fast_path;
 
 slow_path:
@@ -86,7 +88,7 @@ xit:
 
 fast_path_reload:
 	cur0123 = next0123;
-	if (cur0123 != _rotl(cur0123, 8))
+	if (cur0123 != std::rotl(cur0123, 8))
 		goto slow_path;
 
 fast_path:

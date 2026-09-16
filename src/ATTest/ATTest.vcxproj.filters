@@ -10,6 +10,9 @@
 	<ClCompile Include="source\TestAltirra_ArtifactingNEONPortable.cpp">
 	  <Filter>Source Files</Filter>
 	</ClCompile>
+	<ClCompile Include="source\TestAltirra_ArtifactingNTSCNEONPortable.cpp">
+	  <Filter>Source Files</Filter>
+	</ClCompile>
 	<ClCompile Include="source\TestAltirra_ArtifactingPALPortable.cpp">
 	  <Filter>Source Files</Filter>
 	</ClCompile>

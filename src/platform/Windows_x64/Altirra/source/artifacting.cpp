@@ -117,10 +117,6 @@
 #endif
 
 #ifdef VD_CPU_ARM64
-	void ATArtifactNTSCAccum_NEON(void *rout, const void *table, const void *src, uint32 count);
-	void ATArtifactNTSCAccumTwin_NEON(void *rout, const void *table, const void *src, uint32 count);
-	void ATArtifactNTSCFinal_NEON(void *dst0, const void *srcr0, const void *srcg0, const void *srcb0, uint32 count);
-
 	void ATArtifactPALLuma_NEON(uint32 *dst, const uint8 *src, uint32 n, const uint32 *kernels);
 	void ATArtifactPALLumaTwin_NEON(uint32 *dst, const uint8 *src, uint32 n, const uint32 *kernels);
 	void ATArtifactPALChroma_NEON(uint32 *dst, const uint8 *src, uint32 n, const uint32 *kernels);

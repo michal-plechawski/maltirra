@@ -134,6 +134,7 @@ portable_test_sources=(
 	src/ATTest/source/portabletests.cpp
 	src/ATTest/source/TestAltirra_ArtifactingFiltersPortable.cpp
 	src/ATTest/source/TestAltirra_ArtifactingNEONPortable.cpp
+	src/ATTest/source/TestAltirra_ArtifactingNTSCNEONPortable.cpp
 	src/ATTest/source/TestAltirra_ArtifactingPALPortable.cpp
 	src/ATTest/source/TestAltirra_AudioRawSourcePortable.cpp
 	src/ATTest/source/TestAltirra_BlockDevDiskAdapterPortable.cpp
@@ -234,6 +235,7 @@ portable_test_sources=(
 	src/Altirra/source/artifacting_filters.cpp
 	src/Altirra/source/audiorawsource.cpp
 	src/Altirra/source/artifacting_neon.cpp
+	src/Altirra/source/artifacting_ntsc_neon.cpp
 	src/Altirra/source/blockdevdiskadapter.cpp
 	src/Altirra/source/common_png.cpp
 	src/Altirra/source/artifacting_pal_scalar.cpp

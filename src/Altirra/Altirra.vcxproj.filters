@@ -733,7 +733,7 @@
     <ClCompile Include="..\platform\Windows_x64\Altirra\source\diskdrivefullbase.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\platform\Windows_x64\Altirra\source\artifacting_ntsc_neon.cpp">
+    <ClCompile Include="source\artifacting_ntsc_neon.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="source\artifacting_neon.cpp">

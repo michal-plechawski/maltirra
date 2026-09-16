@@ -14,6 +14,9 @@ void ATArtifactBlendCopyMonoPersistence_NEON(uint32 *dst, uint32 *blendDst, cons
 void ATArtifactBlendMonoPersistence_NEON(uint32 *dst, const uint32 *src, const uint32 *palette, float factor, float factor2, float limit, uint32 n);
 void ATArtifactBlendExchangeMonoPersistence_NEON(uint32 *dst, uint32 *blendDst, const uint32 *palette, float factor, float factor2, float limit, uint32 n);
 void ATArtifactBlendScanlines_NEON(uint32 *dst, const uint32 *src1, const uint32 *src2, uint32 n, float intensity);
+void ATArtifactNTSCAccum_NEON(void *dst, const void *table, const void *src, uint32 count);
+void ATArtifactNTSCAccumTwin_NEON(void *dst, const void *table, const void *src, uint32 count);
+void ATArtifactNTSCFinal_NEON(void *dst, const void *srcR, const void *srcG, const void *srcB, uint32 count);
 #endif
 
 #endif
