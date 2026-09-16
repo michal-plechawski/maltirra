@@ -76,6 +76,9 @@
 	<ClCompile Include="source\TestAltirra_TraceCPUPortable.cpp">
 	  <Filter>Source Files</Filter>
 	</ClCompile>
+	<ClCompile Include="source\TestAltirra_TraceVideoPortable.cpp">
+	  <Filter>Source Files</Filter>
+	</ClCompile>
 	<ClCompile Include="source\TestAltirra_Printer1020FontPortable.cpp">
 	  <Filter>Source Files</Filter>
 	</ClCompile>

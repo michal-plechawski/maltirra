@@ -15,12 +15,17 @@
 //	along with this program; if not, write to the Free Software
 //	Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
-#include <stdafx.h>
+#include <algorithm>
+#include <cmath>
+#include <cstring>
+#include <iterator>
+#include <utility>
+#include <vd2/system/vdtypes.h>
+#include <vd2/system/vdalloc.h>
 #include <vd2/Kasumi/pixmap.h>
 #include <vd2/Kasumi/pixmapops.h>
 #include <vd2/Kasumi/pixmaputils.h>
 #include <vd2/Kasumi/resample.h>
-#include "gtia.h"
 #include "trace.h"
 #include "tracevideo.h"
 

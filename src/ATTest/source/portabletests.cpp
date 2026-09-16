@@ -29,6 +29,7 @@ bool ATTestAltirraPokeyTrace(ATPortableTestContext& context);
 bool ATTestAltirraPokeySaveCompat(ATPortableTestContext& context);
 bool ATTestAltirraTrace(ATPortableTestContext& context);
 bool ATTestAltirraTraceCPU(ATPortableTestContext& context);
+bool ATTestAltirraTraceVideo(ATPortableTestContext& context);
 bool ATTestAltirraTraceFileEncoding(ATPortableTestContext& context);
 bool ATTestAltirraTraceFileFormat(ATPortableTestContext& context);
 bool ATTestAltirraTraceTape(ATPortableTestContext& context);
@@ -116,6 +117,7 @@ const ATPortableTestCase *ATGetPortableTests(size_t& count) {
 		{ "Altirra_PokeySaveCompat", ATTestAltirraPokeySaveCompat },
 		{ "Altirra_Trace", ATTestAltirraTrace },
 		{ "Altirra_TraceCPU", ATTestAltirraTraceCPU },
+		{ "Altirra_TraceVideo", ATTestAltirraTraceVideo },
 		{ "Altirra_TraceFileEncoding", ATTestAltirraTraceFileEncoding },
 		{ "Altirra_TraceFileFormat", ATTestAltirraTraceFileFormat },
 		{ "Altirra_TraceTape", ATTestAltirraTraceTape },

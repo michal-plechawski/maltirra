@@ -403,7 +403,9 @@
     <ClCompile Include="source\tracetape.cpp">
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="..\platform\Windows_x64\Altirra\source\tracevideo.cpp" />
+    <ClCompile Include="source\tracevideo.cpp">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+    </ClCompile>
     <ClCompile Include="..\platform\Windows_x64\Altirra\source\ui.cpp" />
     <ClCompile Include="..\platform\Windows_x64\Altirra\source\uiabout.cpp" />
     <ClCompile Include="..\platform\Windows_x64\Altirra\source\uiaccessors.cpp" />
@@ -637,7 +639,8 @@
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\traceio.h" />
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\tracenative.h" />
     <ClInclude Include="h\tracetape.h" />
-    <ClInclude Include="..\platform\Windows_x64\Altirra\h\tracevideo.h" />
+    <ClInclude Include="h\tracevideo.h" />
+    <ClInclude Include="h\videotap.h" />
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\uiaccessors.h" />
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\uicalibrationscreen.h" />
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\uiclipboard.h" />

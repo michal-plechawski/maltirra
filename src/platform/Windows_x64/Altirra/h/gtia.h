@@ -26,6 +26,7 @@
 #include <vd2/Kasumi/pixmap.h>
 #include <at/atcore/enumparse.h>
 #include <at/atcore/notifylist.h>
+#include "videotap.h"
 
 class IVDVideoDisplay;
 class VDVideoDisplayFrame;
@@ -43,11 +44,6 @@ public:
 	virtual void GTIASelectController(uint8 index, bool potsEnabled) = 0;
 	virtual void GTIARequestAnticSync(int offset) = 0;
 	virtual uint32 GTIAGetLineEdgeTimingId(uint32 offset) const = 0;
-};
-
-class IATGTIAVideoTap {
-public:
-	virtual void WriteFrame(const VDPixmap& px, uint64 timestampStart, uint64 timestampEnd, float par) = 0;
 };
 
 using ATGTIARawFrameFn = vdfunction<void(const VDPixmap& px)>;

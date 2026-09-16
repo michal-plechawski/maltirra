@@ -20,10 +20,11 @@
 #define f_AT_TRACEVIDEO_H
 
 #include <vd2/system/refcount.h>
+#include <vd2/system/vectors.h>
+#include "videotap.h"
 
 struct VDPixmap;
 class IATTraceChannel;
-class IATGTIAVideoTap;
 class ATTraceMemoryTracker;
 
 class IATTraceChannelVideo : public IVDRefUnknown {

@@ -159,6 +159,7 @@ portable_test_sources=(
 	src/ATTest/source/TestAltirra_PokeySaveCompatPortable.cpp
 	src/ATTest/source/TestAltirra_TracePortable.cpp
 	src/ATTest/source/TestAltirra_TraceCPUPortable.cpp
+	src/ATTest/source/TestAltirra_TraceVideoPortable.cpp
 	src/ATTest/source/TestAltirra_TraceFileEncodingPortable.cpp
 	src/ATTest/source/TestAltirra_TraceFileFormatPortable.cpp
 	src/ATTest/source/TestAltirra_TraceTapePortable.cpp
@@ -264,6 +265,7 @@ portable_test_sources=(
 	src/Altirra/source/savestateio.cpp
 	src/Altirra/source/trace.cpp
 	src/Altirra/source/tracecpu.cpp
+	src/Altirra/source/tracevideo.cpp
 	src/Altirra/source/tracefileencoding.cpp
 	src/Altirra/source/tracefileformat.cpp
 	src/Altirra/source/tracetape.cpp
@@ -304,6 +306,7 @@ portable_test_sources=(
 	src/Kasumi/source/pixmaputils.cpp
 	src/Kasumi/source/region.cpp
 	src/Kasumi/source/region_neon.cpp
+	src/Kasumi/source/resample.cpp
 	src/Kasumi/source/resample_kernels.cpp
 	src/Kasumi/source/resample_stages.cpp
 	src/Kasumi/source/resample_stages_arm64.cpp
