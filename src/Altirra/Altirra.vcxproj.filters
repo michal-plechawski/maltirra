@@ -88,7 +88,7 @@
     <ClCompile Include="..\platform\Windows_x64\Altirra\source\cassette.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\platform\Windows_x64\Altirra\source\cheatengine.cpp">
+    <ClCompile Include="source\cheatengine.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="source\common_png.cpp">
@@ -1137,7 +1137,7 @@
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\cassette.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\platform\Windows_x64\Altirra\h\cheatengine.h">
+    <ClInclude Include="h\cheatengine.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="h\common_png.h">

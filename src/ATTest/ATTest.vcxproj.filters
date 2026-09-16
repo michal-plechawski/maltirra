@@ -28,6 +28,9 @@
 	<ClCompile Include="source\TestAltirra_CartridgePortPortable.cpp">
 	  <Filter>Source Files</Filter>
 	</ClCompile>
+	<ClCompile Include="source\TestAltirra_CheatEnginePortable.cpp">
+	  <Filter>Source Files</Filter>
+	</ClCompile>
 	<ClCompile Include="source\TestAltirra_ConstantsPortable.cpp">
 	  <Filter>Source Files</Filter>
 	</ClCompile>

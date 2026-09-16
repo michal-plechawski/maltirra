@@ -18,6 +18,7 @@
 #ifndef f_AT_CHEATENGINE_H
 #define f_AT_CHEATENGINE_H
 
+#include <vd2/system/vdtypes.h>
 #include <vd2/system/vdstl.h>
 
 enum ATCheatSnapshotMode {

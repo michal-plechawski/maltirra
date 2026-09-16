@@ -197,7 +197,9 @@
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="..\platform\Windows_x64\Altirra\source\cassette.cpp" />
-    <ClCompile Include="..\platform\Windows_x64\Altirra\source\cheatengine.cpp" />
+    <ClCompile Include="source\cheatengine.cpp">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+    </ClCompile>
     <ClCompile Include="..\platform\Windows_x64\Altirra\source\cmdaudio.cpp" />
     <ClCompile Include="..\platform\Windows_x64\Altirra\source\cmdcart.cpp" />
     <ClCompile Include="..\platform\Windows_x64\Altirra\source\cmdcassette.cpp" />
@@ -596,7 +598,7 @@
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\callback.h" />
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\cartridge.h" />
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\cassette.h" />
-    <ClInclude Include="..\platform\Windows_x64\Altirra\h\cheatengine.h" />
+    <ClInclude Include="h\cheatengine.h" />
     <ClInclude Include="h\common_png.h" />
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\console.h" />
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\covox.h" />

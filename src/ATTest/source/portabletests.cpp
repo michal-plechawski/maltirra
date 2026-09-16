@@ -10,6 +10,7 @@ bool ATTestAltirraArtifactingPALScalar(ATPortableTestContext& context);
 bool ATTestAltirraAudioRawSource(ATPortableTestContext& context);
 bool ATTestAltirraBlockDevDiskAdapter(ATPortableTestContext& context);
 bool ATTestAltirraCartridgePort(ATPortableTestContext& context);
+bool ATTestAltirraCheatEngine(ATPortableTestContext& context);
 bool ATTestAltirraConstants(ATPortableTestContext& context);
 bool ATTestAltirraCompatDB(ATPortableTestContext& context);
 bool ATTestAltirraCPUMemory(ATPortableTestContext& context);
@@ -110,6 +111,7 @@ const ATPortableTestCase *ATGetPortableTests(size_t& count) {
 		{ "Altirra_AudioRawSource", ATTestAltirraAudioRawSource },
 		{ "Altirra_BlockDevDiskAdapter", ATTestAltirraBlockDevDiskAdapter },
 		{ "Altirra_CartridgePort", ATTestAltirraCartridgePort },
+		{ "Altirra_CheatEngine", ATTestAltirraCheatEngine },
 		{ "Altirra_Constants", ATTestAltirraConstants },
 		{ "Altirra_CompatDB", ATTestAltirraCompatDB },
 		{ "Altirra_CPUMemory", ATTestAltirraCPUMemory },

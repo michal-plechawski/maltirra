@@ -15,7 +15,9 @@
 //	along with this program; if not, write to the Free Software
 //	Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
-#include <stdafx.h>
+#include <algorithm>
+#include <cstdio>
+#include <cstring>
 #include <vd2/system/binary.h>
 #include <vd2/system/error.h>
 #include <vd2/system/file.h>
@@ -195,13 +197,10 @@ void ATCheatEngine::Save(const wchar_t *filename) {
 
 void ATCheatEngine::Snapshot(ATCheatSnapshotMode mode, uint32 value, bool bit16) {
 	const uint32 n8 = mMemorySize;
-	const uint32 n16 = mMemorySize - 1;
+	const uint32 n16 = mMemorySize ? mMemorySize - 1 : 0;
 
 	VDASSERT(mMemorySize == mLastData.size());
 	VDASSERT(mMemorySize == mValidFlags.size());
-
-	if (bit16)
-		mValidFlags[n16] = 0;
 
 	uint8 *prev = mLastData.data();
 	uint8 *cur = mpMemory;
@@ -336,7 +335,11 @@ void ATCheatEngine::Snapshot(ATCheatSnapshotMode mode, uint32 value, bool bit16)
 			break;
 	}
 
-	memcpy(mLastData.data(), mpMemory, mMemorySize);
+	if (bit16 && mMemorySize)
+		mValidFlags[n16] = 0;
+
+	if (mMemorySize)
+		memcpy(mLastData.data(), mpMemory, mMemorySize);
 }
 
 uint32 ATCheatEngine::GetValidOffsets(uint32 *dst, uint32 maxResults) const {
@@ -361,7 +364,7 @@ uint32 ATCheatEngine::GetValidOffsets(uint32 *dst, uint32 maxResults) const {
 
 uint32 ATCheatEngine::GetOffsetCurrentValue(uint32 offset, bool bit16) const {
 	if (bit16) {
-		return offset < mMemorySize - 1 ? mpMemory[offset] + ((uint32)mpMemory[offset + 1] << 8) : 0;
+		return mMemorySize > 1 && offset < mMemorySize - 1 ? mpMemory[offset] + ((uint32)mpMemory[offset + 1] << 8) : 0;
 	} else {
 		return offset < mMemorySize ? mpMemory[offset] : 0;
 	}
@@ -377,7 +380,7 @@ const ATCheatEngine::Cheat& ATCheatEngine::GetCheatByIndex(uint32 index) const {
 
 void ATCheatEngine::AddCheat(uint32 offset, bool bit16) {
 	if (bit16) {
-		if (offset >= mMemorySize - 1)
+		if (mMemorySize < 2 || offset >= mMemorySize - 1)
 			return;
 	} else {
 		if (offset >= mMemorySize)
