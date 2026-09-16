@@ -16,7 +16,8 @@
 //	along with this program; if not, write to the Free Software
 //	Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
-#include <stdafx.h>
+#include <vd2/system/vdtypes.h>
+#include "artifacting_pal.h"
 
 void ATArtifactPALLuma(uint32 *dst, const uint8 *src, uint32 n, const uint32 *kernels) {
 	uint32 x0 = 0x40004000;

@@ -71,15 +71,10 @@
 #include <at/atcore/consoleoutput.h>
 #include "artifacting.h"
 #include "artifacting_filters.h"
+#include "artifacting_pal.h"
 #include "gtia.h"
 #include "gtiatables.h"
 #include "palettegenerator.h"
-
-void ATArtifactPALLuma(uint32 *dst, const uint8 *src, uint32 n, const uint32 *kernels);
-void ATArtifactPALChroma(uint32 *dst, const uint8 *src, uint32 n, const uint32 *kernels);
-void ATArtifactPALFinal(uint32 *dst, const uint32 *ybuf, const uint32 *ubuf, const uint32 *vbuf, uint32 *ulbuf, uint32 *vlbuf, uint32 n);
-void ATArtifactPALFinalMono(uint32 *dst, const uint32 *ybuf, uint32 n, const uint32 *monoTable);
-void ATArtifactPAL32(void *dst, void *delayLine, uint32 n, bool useSignedPalette);
 
 #if VD_CPU_X86 || VD_CPU_X64
 	void ATArtifactBlend_SSE2(uint32 *dst, const uint32 *src, uint32 n);

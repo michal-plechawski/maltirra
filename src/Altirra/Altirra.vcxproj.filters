@@ -52,7 +52,7 @@
     <ClCompile Include="..\platform\Windows_x64\Altirra\source\artifacting_ntsc_sse2.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\platform\Windows_x64\Altirra\source\artifacting_pal_scalar.cpp">
+    <ClCompile Include="source\artifacting_pal_scalar.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\platform\Windows_x64\Altirra\source\artifacting_pal_sse2.cpp">
@@ -1108,6 +1108,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="h\artifacting_filters.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="h\artifacting_pal.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\audiomonitor.h">

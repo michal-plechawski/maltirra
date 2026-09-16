@@ -133,6 +133,7 @@ portable_test_sources=(
 	src/platform/macOS_arm64/ATTest/source/main.cpp
 	src/ATTest/source/portabletests.cpp
 	src/ATTest/source/TestAltirra_ArtifactingFiltersPortable.cpp
+	src/ATTest/source/TestAltirra_ArtifactingPALPortable.cpp
 	src/ATTest/source/TestAltirra_AudioRawSourcePortable.cpp
 	src/ATTest/source/TestAltirra_BlockDevDiskAdapterPortable.cpp
 	src/ATTest/source/TestAltirra_ConstantsPortable.cpp
@@ -233,6 +234,7 @@ portable_test_sources=(
 	src/Altirra/source/audiorawsource.cpp
 	src/Altirra/source/blockdevdiskadapter.cpp
 	src/Altirra/source/common_png.cpp
+	src/Altirra/source/artifacting_pal_scalar.cpp
 	src/Altirra/source/encode_png.cpp
 	src/Altirra/source/constants.cpp
 	src/Altirra/source/diskvirtimagebase.cpp
