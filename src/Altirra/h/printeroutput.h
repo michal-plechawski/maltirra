@@ -20,7 +20,9 @@
 #include <vd2/system/atomic.h>
 #include <vd2/system/function.h>
 #include <vd2/system/VDString.h>
+#include <vd2/system/vdstl.h>
 #include <vd2/system/vectors.h>
+#include <utility>
 #include <at/atcore/deviceprinter.h>
 #include <at/atcore/notifylist.h>
 

@@ -169,6 +169,7 @@ portable_test_sources=(
 	src/ATTest/source/TestAltirra_Printer1020FontPortable.cpp
 	src/ATTest/source/TestAltirra_PrinterBasePortable.cpp
 	src/ATTest/source/TestAltirra_PrinterFontsPortable.cpp
+	src/ATTest/source/TestAltirra_PrinterOutputPortable.cpp
 	src/ATTest/source/TestAltirra_PrinterTTFEncoderPortable.cpp
 	src/ATTest/source/TestAltirra_PokeyTracePortable.cpp
 	src/ATTest/source/TestAltirra_SAPConverterPortable.cpp
@@ -289,6 +290,7 @@ portable_test_sources=(
 	src/Altirra/source/printer1020font.cpp
 	src/Altirra/source/printerbase.cpp
 	src/Altirra/source/printerfont.cpp
+	src/Altirra/source/printeroutput.cpp
 	src/Altirra/source/printerttfencoder.cpp
 	src/Altirra/source/pokeytrace.cpp
 	src/Altirra/source/pokeysavecompat.cpp

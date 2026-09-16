@@ -1027,7 +1027,7 @@
     <ClCompile Include="source\savestatetypes.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\platform\Windows_x64\Altirra\source\printeroutput.cpp">
+    <ClCompile Include="source\printeroutput.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="source\printerttfencoder.cpp">
@@ -1767,7 +1767,7 @@
     <ClInclude Include="h\savestatetypes.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\platform\Windows_x64\Altirra\h\printeroutput.h">
+    <ClInclude Include="h\printeroutput.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\printertypes.h">

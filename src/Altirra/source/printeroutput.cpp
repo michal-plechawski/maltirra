@@ -14,7 +14,9 @@
 //	You should have received a copy of the GNU General Public License along
 //	with this program. If not, see <http://www.gnu.org/licenses/>.
 
-#include <stdafx.h>
+#include <algorithm>
+#include <cmath>
+#include <utility>
 #include <vd2/system/bitmath.h>
 #include <vd2/system/color.h>
 #include <vd2/system/Error.h>
@@ -185,18 +187,6 @@ void ATPrinterGraphicalOutput::VectorQueryRect::Translate(float dx, float dy) {
 }
 
 bool ATPrinterGraphicalOutput::VectorQueryRect::Intersects(const Vector& v) const {
-#if defined(VD_CPU_X86) || defined(VD_CPU_X64)
-	__m128 vxy1 = _mm_castpd_ps(_mm_load_sd((const double *)&v.mX1));
-	__m128 vxy2 = _mm_castpd_ps(_mm_load_sd((const double *)&v.mX2));
-	__m128 qxc = _mm_castpd_ps(_mm_load_sd((const double *)&mXC));
-	__m128 qxd = _mm_castpd_ps(_mm_load_sd((const double *)&mXD));
-	__m128 absMask = _mm_castsi128_ps(_mm_set1_epi32(0x7FFFFFFF));
-
-	__m128 xydiff = _mm_and_ps(_mm_sub_ps(_mm_add_ps(vxy1, vxy2), qxc), absMask);
-	__m128 xyrange = _mm_add_ps(_mm_and_ps(_mm_sub_ps(vxy1, vxy2), absMask), qxd);
-
-	return (_mm_movemask_ps(_mm_cmpge_ps(xydiff, xyrange)) & 3) == 0;
-#else
 	// AABB-AABB intersection test. For now we skip the complexity of a
 	// more accurate AABB-OBB test. Note that the two points are the endpoints
 	// of a line segment and not corners of a rectangle, so we cannot rely on
@@ -210,7 +200,6 @@ bool ATPrinterGraphicalOutput::VectorQueryRect::Intersects(const Vector& v) cons
 		return false;
 
 	return true;
-#endif
 }
 
 bool ATPrinterGraphicalOutput::VectorQueryRect::IntersectsPrecise(const Vector& v) const {
@@ -679,28 +668,21 @@ std::pair<size_t, bool> ATPrinterGraphicalOutput::FindVectorTile(sint32 tileX, s
 	if (mVectorTileHashTable.empty())
 		return { 0, false };
 	size_t idx = HashVectorTile(tileX, tileY);
-	size_t n1 = std::min<size_t>(mVectorSlotLoadLimit, mVectorSlotHashSize - idx);
-	size_t n2 = mVectorSlotHashSize - n1;
 
-	const VectorTileSlot *slot = &mVectorTileHashTable[idx];
-	for(size_t i = 0; i < n1; ++i, ++slot) {
-		if (!slot->mFirstTile)
-			return { idx + i, false };
+	for(size_t i = 0; i < mVectorSlotHashSize; ++i) {
+		const VectorTileSlot& slot = mVectorTileHashTable[idx];
+		if (!slot.mFirstTile)
+			return { idx, false };
 
-		if (slot->mTileX == tileX && slot->mTileY == tileY)
-			return { idx + i, true };
+		if (slot.mTileX == tileX && slot.mTileY == tileY)
+			return { idx, true };
+
+		if (++idx >= mVectorSlotHashSize)
+			idx = 0;
 	}
 
-	slot = mVectorTileHashTable.data();
-	for(size_t i = 0; i < n1; ++i, ++slot) {
-		if (!slot->mFirstTile)
-			return { idx + i, false };
-
-		if (slot->mTileX == tileX && slot->mTileY == tileY)
-			return { idx + i, true };
-	}
-
-	return { n2, false };
+	VDFAIL("Printer vector tile hash table is full");
+	return { 0, false };
 }
 
 void ATPrinterGraphicalOutput::AddVectorToTile(sint32 tileX, sint32 tileY, uint32 vectorId) {

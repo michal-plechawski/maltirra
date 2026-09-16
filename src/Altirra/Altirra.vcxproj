@@ -112,7 +112,7 @@
     <ClInclude Include="h\printer1020font.h" />
     <ClInclude Include="h\printerbase.h" />
     <ClInclude Include="h\printerfont.h" />
-    <ClInclude Include="..\platform\Windows_x64\Altirra\h\printeroutput.h" />
+    <ClInclude Include="h\printeroutput.h" />
     <ClInclude Include="h\printerttfencoder.h" />
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\printertypes.h" />
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\profilerui.h" />
@@ -370,7 +370,9 @@
     <ClCompile Include="source\printerfont.cpp">
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="..\platform\Windows_x64\Altirra\source\printeroutput.cpp" />
+    <ClCompile Include="source\printeroutput.cpp">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+    </ClCompile>
     <ClCompile Include="source\printerttfencoder.cpp">
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
     </ClCompile>
