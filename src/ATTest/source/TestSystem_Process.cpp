@@ -58,7 +58,17 @@ bool ATTestSystemProcess(ATPortableTestContext& context) {
 	while(!VDDoesPathExist(marker.mPath.c_str()) && VDGetCurrentTick64() < deadline)
 		VDThreadSleep(10);
 	AT_PORTABLE_TEST_ASSERT(context, VDDoesPathExist(marker.mPath.c_str()));
-	AT_PORTABLE_TEST_ASSERT(context, VDRemoveFile(marker.mPath.c_str()));
+
+	// On Windows, the output file can become visible just before cmd.exe
+	// releases the redirection handle. Allow that short interval to close.
+	const uint64 removalDeadline = VDGetCurrentTick64() + 5000;
+	bool removed = false;
+	do {
+		removed = VDRemoveFile(marker.mPath.c_str());
+		if (!removed)
+			VDThreadSleep(10);
+	} while(!removed && VDGetCurrentTick64() < removalDeadline);
+	AT_PORTABLE_TEST_ASSERT(context, removed);
 
 	VDStringW missingPath(marker.mPath);
 	missingPath += L".missing";
