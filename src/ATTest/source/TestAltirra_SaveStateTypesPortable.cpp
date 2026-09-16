@@ -34,9 +34,9 @@ namespace {
 			if (mKey != "thumbnail")
 				return;
 
-			const auto *image = dynamic_cast<ATSaveStateMemoryBuffer *>(object);
-			if (!image)
+			if (!object || strcmp(object->GetSerializationType().mpName, "ATSaveStateMemoryBuffer"))
 				return;
+			const auto *image = static_cast<ATSaveStateMemoryBuffer *>(object);
 
 			mHasThumbnail = true;
 			mThumbnailName = image->mpDirectName;
