@@ -964,7 +964,7 @@
     <ClCompile Include="..\platform\Windows_x64\Altirra\source\uidbghelp.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\platform\Windows_x64\Altirra\source\tracefileformat.cpp">
+    <ClCompile Include="source\tracefileformat.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\platform\Windows_x64\Altirra\source\traceio.cpp">
@@ -1710,7 +1710,7 @@
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\devxcmdcopypaste.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\platform\Windows_x64\Altirra\h\tracefileformat.h">
+    <ClInclude Include="h\tracefileformat.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\traceio.h">

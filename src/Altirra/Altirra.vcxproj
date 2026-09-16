@@ -388,7 +388,9 @@
     </ClCompile>
     <ClCompile Include="..\platform\Windows_x64\Altirra\source\tracecpu.cpp" />
     <ClCompile Include="..\platform\Windows_x64\Altirra\source\tracefileencoding.cpp" />
-    <ClCompile Include="..\platform\Windows_x64\Altirra\source\tracefileformat.cpp" />
+    <ClCompile Include="source\tracefileformat.cpp">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+    </ClCompile>
     <ClCompile Include="..\platform\Windows_x64\Altirra\source\traceimporta800.cpp" />
     <ClCompile Include="..\platform\Windows_x64\Altirra\source\traceio.cpp" />
     <ClCompile Include="..\platform\Windows_x64\Altirra\source\tracenative.cpp" />
@@ -625,7 +627,7 @@
     <ClInclude Include="h\trace.h" />
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\tracecpu.h" />
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\tracefileencoding.h" />
-    <ClInclude Include="..\platform\Windows_x64\Altirra\h\tracefileformat.h" />
+    <ClInclude Include="h\tracefileformat.h" />
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\traceio.h" />
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\tracenative.h" />
     <ClInclude Include="h\tracetape.h" />

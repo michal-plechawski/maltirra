@@ -157,6 +157,7 @@ portable_test_sources=(
 	src/ATTest/source/TestAltirra_PokeyTracePortable.cpp
 	src/ATTest/source/TestAltirra_PokeySaveCompatPortable.cpp
 	src/ATTest/source/TestAltirra_TracePortable.cpp
+	src/ATTest/source/TestAltirra_TraceFileFormatPortable.cpp
 	src/ATTest/source/TestAltirra_TraceTapePortable.cpp
 	src/ATTest/source/TestAltirra_SimEventManagerPortable.cpp
 	src/ATTest/source/TestAltirra_VideoManagerPortable.cpp
@@ -257,6 +258,7 @@ portable_test_sources=(
 	src/Altirra/source/savestatetypes.cpp
 	src/Altirra/source/savestate.cpp
 	src/Altirra/source/trace.cpp
+	src/Altirra/source/tracefileformat.cpp
 	src/Altirra/source/tracetape.cpp
 	src/Altirra/source/simeventmanager.cpp
 	src/Altirra/source/videomanager.cpp
