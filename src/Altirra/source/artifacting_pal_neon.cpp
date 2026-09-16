@@ -14,10 +14,11 @@
 //	You should have received a copy of the GNU General Public License along
 //	with this program. If not, see <http://www.gnu.org/licenses/>.
 
-#include <stdafx.h>
+#include <vd2/system/vdtypes.h>
+#include "artifacting_neon.h"
 
 #if defined(VD_CPU_ARM64)
-#include <intrin.h>
+#include <arm_neon.h>
 
 void ATArtifactPALLuma_NEON(uint32 *dst0, const uint8 *src, uint32 n, const uint32 *kernels0) {
 	n >>= 3;
@@ -51,7 +52,7 @@ void ATArtifactPALLuma_NEON(uint32 *dst0, const uint8 *src, uint32 n, const uint
 		x0 = vaddq_s16(x0, vreinterpretq_s16_u32(vld1q_u32(&f3[24])));
 		x1 = vaddq_s16(x1, vreinterpretq_s16_u32(vld1q_u32(&f3[28])));
 
-		vst1q_u32(dst, vreinterpret_u32_s16(x0));
+		vst1q_u32(dst, vreinterpretq_u32_s16(x0));
 		dst += 4;
 
 		const uint8 p4 = *src++;
@@ -80,7 +81,7 @@ void ATArtifactPALLuma_NEON(uint32 *dst0, const uint8 *src, uint32 n, const uint
 		dst += 4;
 	} while(--n);
 
-	vst1q_u32(dst, vreinterpret_u32_s16(x1));
+	vst1q_u32(dst, vreinterpretq_u32_s16(x1));
 }
 
 void ATArtifactPALLumaTwin_NEON(uint32 *dst0, const uint8 *src, uint32 n, const uint32 *kernels0) {

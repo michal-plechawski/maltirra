@@ -116,16 +116,6 @@
 	void ATArtifactPALFinal_SSE2(uint32 *dst, const uint32 *ybuf, const uint32 *ubuf, const uint32 *vbuf, uint32 *ulbuf, uint32 *vlbuf, uint32 n);
 #endif
 
-#ifdef VD_CPU_ARM64
-	void ATArtifactPALLuma_NEON(uint32 *dst, const uint8 *src, uint32 n, const uint32 *kernels);
-	void ATArtifactPALLumaTwin_NEON(uint32 *dst, const uint8 *src, uint32 n, const uint32 *kernels);
-	void ATArtifactPALChroma_NEON(uint32 *dst, const uint8 *src, uint32 n, const uint32 *kernels);
-	void ATArtifactPALChromaTwin_NEON(uint32 *dst, const uint8 *src, uint32 n, const uint32 *kernels);
-	void ATArtifactPALFinalMono_NEON(uint32 *dst, const uint32 *ybuf, uint32 n, const uint32 palette[256]);
-	void ATArtifactPALFinal_NEON(uint32 *dst, const uint32 *ybuf, const uint32 *ubuf, const uint32 *vbuf, uint32 *ulbuf, uint32 *vlbuf, uint32 n);
-	void ATArtifactPAL32_NEON(void *dst, void *delayLine, uint32 n, bool useSignedPalette);
-#endif
-
 namespace {
 	constexpr float kSaturation = 75.0f / 255.0f;
 

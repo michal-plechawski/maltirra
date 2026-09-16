@@ -156,7 +156,9 @@
     <ClCompile Include="..\platform\Windows_x64\Altirra\source\artifacting_ntsc_sse2_intrin.cpp">
       <ExcludedFromBuild Condition="'$(Platform)'=='ARM64'">true</ExcludedFromBuild>
     </ClCompile>
-    <ClCompile Include="..\platform\Windows_x64\Altirra\source\artifacting_pal_neon.cpp" />
+    <ClCompile Include="source\artifacting_pal_neon.cpp">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+    </ClCompile>
     <ClCompile Include="source\artifacting_pal_scalar.cpp">
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
     </ClCompile>

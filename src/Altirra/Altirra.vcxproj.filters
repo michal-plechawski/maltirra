@@ -1084,7 +1084,7 @@
     <ClCompile Include="..\platform\Windows_x64\Altirra\source\uiconfdev1020.cpp">
       <Filter>Source Files - Device Configuration UI</Filter>
     </ClCompile>
-    <ClCompile Include="..\platform\Windows_x64\Altirra\source\artifacting_pal_neon.cpp">
+    <ClCompile Include="source\artifacting_pal_neon.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\platform\Windows_x64\Altirra\source\multiplexer.cpp">
