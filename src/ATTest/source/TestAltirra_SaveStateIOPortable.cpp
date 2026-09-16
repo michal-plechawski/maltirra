@@ -16,7 +16,7 @@
 
 #include <savestateio.h>
 
-namespace {
+namespace ATTestSaveStateIO {
 	struct PortableSaveStateChild final : public ATSnapExchangeObject<PortableSaveStateChild, "PortableSaveStateChild"> {
 		template<ATExchanger T>
 		void Exchange(T& ex) {
@@ -220,7 +220,7 @@ namespace {
 }
 
 bool ATTestAltirraSaveStateIO(ATPortableTestContext& context) {
-	return TestJSONUnicodeInput(context)
-		&& TestJSONRoundTrip(context)
-		&& TestZIPRoundTrip(context);
+	return ATTestSaveStateIO::TestJSONUnicodeInput(context)
+		&& ATTestSaveStateIO::TestJSONRoundTrip(context)
+		&& ATTestSaveStateIO::TestZIPRoundTrip(context);
 }
