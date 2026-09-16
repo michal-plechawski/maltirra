@@ -386,7 +386,9 @@
     <ClCompile Include="source\trace.cpp">
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="..\platform\Windows_x64\Altirra\source\tracecpu.cpp" />
+    <ClCompile Include="source\tracecpu.cpp">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+    </ClCompile>
     <ClCompile Include="source\tracefileencoding.cpp">
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
     </ClCompile>
@@ -627,7 +629,7 @@
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\startuplogger.h" />
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\thepill.h" />
     <ClInclude Include="h\trace.h" />
-    <ClInclude Include="..\platform\Windows_x64\Altirra\h\tracecpu.h" />
+    <ClInclude Include="h\tracecpu.h" />
     <ClInclude Include="h\tracefileencoding.h" />
     <ClInclude Include="h\tracefileformat.h" />
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\traceio.h" />

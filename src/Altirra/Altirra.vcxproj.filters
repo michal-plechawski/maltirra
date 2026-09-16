@@ -691,7 +691,7 @@
     <ClCompile Include="..\platform\Windows_x64\Altirra\source\decode_png.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\platform\Windows_x64\Altirra\source\tracecpu.cpp">
+    <ClCompile Include="source\tracecpu.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\platform\Windows_x64\Altirra\source\uihistoryview.cpp">
@@ -1515,7 +1515,7 @@
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\decode_png.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\platform\Windows_x64\Altirra\h\tracecpu.h">
+    <ClInclude Include="h\tracecpu.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\uihistoryview.h">
