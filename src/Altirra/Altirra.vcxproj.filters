@@ -844,7 +844,7 @@
     <ClCompile Include="..\platform\Windows_x64\Altirra\source\uiaccessors.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\platform\Windows_x64\Altirra\source\updatefeed.cpp">
+    <ClCompile Include="source\updatefeed.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\platform\Windows_x64\Altirra\source\updatefeed_win32.cpp">
@@ -1629,7 +1629,7 @@
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\updatecheck.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\platform\Windows_x64\Altirra\h\updatefeed.h">
+    <ClInclude Include="h\updatefeed.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="h\pokeytrace.h">

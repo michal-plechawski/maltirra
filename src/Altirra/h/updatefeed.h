@@ -17,8 +17,14 @@
 #ifndef f_AT_UPDATEFEED_H
 #define f_AT_UPDATEFEED_H
 
+#include <cstddef>
+#include <cstdint>
+#include <cstring>
+
 #include <vd2/system/vdstl.h>
 #include <vd2/system/VDString.h>
+
+bool ATDecodeBase64(uint8 *dst, size_t dstLen, const char *src, size_t srcLen);
 
 struct ATXMLSubsetHashedStr {
 	uint32 mHash;
@@ -171,6 +177,10 @@ struct ATUpdateFeedDoc {
 	vdfastvector<ATUpdateFeedDocNode> mNodes;
 	vdblock<char> mTextBuffer;
 };
+
+// Parses the restricted XML subset used by update feed descriptions. This
+// entry point does not accept or verify the signed feed header.
+bool ATParseUpdateFeedXML(const void *data, size_t len, ATUpdateFeedDoc& doc);
 
 struct ATUpdateFeedItem {
 	VDStringW mTitle;

@@ -52,6 +52,8 @@ compile_one() {
 		-Isrc/"$component"/h \
 		-Isrc/"$component"/source \
 		-Isrc/"$component"/autogen \
+		-Isrc/Altirra/autobuild \
+		-Isrc/Altirra/autobuild_default \
 		-Isrc/platform/macOS_arm64/Altirra/h \
 		-Isrc/Altirra/h \
 		-Isrc/ATIO/h \
@@ -171,6 +173,7 @@ portable_test_sources=(
 	src/ATTest/source/TestAltirra_TraceFileEncodingPortable.cpp
 	src/ATTest/source/TestAltirra_TraceFileFormatPortable.cpp
 	src/ATTest/source/TestAltirra_TraceTapePortable.cpp
+	src/ATTest/source/TestAltirra_UpdateFeedPortable.cpp
 	src/ATTest/source/TestAltirra_SimEventManagerPortable.cpp
 	src/ATTest/source/TestAltirra_VideoManagerPortable.cpp
 	src/ATTest/source/TestAltirra_VBXEStatePortable.cpp
@@ -285,6 +288,7 @@ portable_test_sources=(
 	src/Altirra/source/tracefileencoding.cpp
 	src/Altirra/source/tracefileformat.cpp
 	src/Altirra/source/tracetape.cpp
+	src/Altirra/source/updatefeed.cpp
 	src/Altirra/source/simeventmanager.cpp
 	src/Altirra/source/videomanager.cpp
 	src/Altirra/source/vbxestate.cpp

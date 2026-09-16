@@ -14,7 +14,9 @@
 //	You should have received a copy of the GNU General Public License along
 //	with this program. If not, see <http://www.gnu.org/licenses/>.
 
-#include "stdafx.h"
+#include <cstring>
+#include <cwchar>
+
 #include "updatefeed.h"
 #include "version.h"
 
@@ -64,7 +66,7 @@ bool ATDecodeBase64(uint8 *dst, size_t dstLen, const char *src, size_t srcLen) {
 		uint8 v3 = kATBase64DecodingTable.mLookup[(unsigned char)src[3]];
 		uint8 chk = v0 | v1 | v2 | v3;
 
-		if (chk & 0x80)
+		if (chk & 0xC0)
 			return false;
 
 		uint32 v
@@ -87,20 +89,20 @@ bool ATDecodeBase64(uint8 *dst, size_t dstLen, const char *src, size_t srcLen) {
 		uint8 v1 = kATBase64DecodingTable.mLookup[(unsigned char)src[1]];
 		uint8 v2 = kATBase64DecodingTable.mLookup[(unsigned char)src[2]];
 		uint8 v3 = kATBase64DecodingTable.mLookup[(unsigned char)src[3]];
-		uint8 chk = v0 | v1 | v2 | v3;
-
-		if (chk & 0x80)
-			return false;
-
-		if (v3 < 0x40)
+		if (v0 >= 64 || v1 >= 64)
 			return false;
 
 		dst[0] = (v0 << 2) + (v1 >> 4);
 
-		if (dstRem >= 2)
+		if (dstRem >= 2) {
+			if (v2 >= 64 || v3 != 64 || (v2 & 3))
+				return false;
+
 			dst[1] = (v1 << 4) + (v2 >> 2);
-		else if (v2 < 0x40)
-			return false;
+		} else {
+			if (v2 != 64 || v3 != 64 || (v1 & 15))
+				return false;
+		}
 	}
 
 	return true;
@@ -169,6 +171,8 @@ private:
 
 bool ATUpdateFeedParser::Parse(const void *p, size_t n, bool useHeader, ATUpdateFeedDoc& doc) {
 	mpDoc = &doc;
+	doc.mNameTable.clear();
+	doc.mNodes.clear();
 	doc.mTextBuffer.resize(n);
 	if (n)
 		memcpy(doc.mTextBuffer.data(), p, n);
@@ -328,7 +332,7 @@ bool ATUpdateFeedParser::Parse(const void *p, size_t n, bool useHeader, ATUpdate
 		}
 	}
 
-	return true;
+	return elementStack.size() == 1;
 }
 
 ATUpdateFeedDocNode ATUpdateFeedParser::ParseCDATA(char term) {
@@ -437,6 +441,13 @@ bool ATUpdateFeedParser::VerifySignature(const char *sigStart, size_t sigLen, co
 		return false;
 
 	return ATUpdateVerifyFeedSignature(signature, hashStart, hashLen);
+}
+
+////////////////////////////////////////////////////////////////////////////////
+
+bool ATParseUpdateFeedXML(const void *data, size_t len, ATUpdateFeedDoc& doc) {
+	ATUpdateFeedParser parser;
+	return parser.Parse(data, len, false, doc);
 }
 
 ////////////////////////////////////////////////////////////////////////////////

@@ -41,6 +41,7 @@ bool ATTestAltirraTraceVideo(ATPortableTestContext& context);
 bool ATTestAltirraTraceFileEncoding(ATPortableTestContext& context);
 bool ATTestAltirraTraceFileFormat(ATPortableTestContext& context);
 bool ATTestAltirraTraceTape(ATPortableTestContext& context);
+bool ATTestAltirraUpdateFeed(ATPortableTestContext& context);
 bool ATTestAltirraSimEventManager(ATPortableTestContext& context);
 bool ATTestAltirraVideoManager(ATPortableTestContext& context);
 bool ATTestAltirraVBXEState(ATPortableTestContext& context);
@@ -137,6 +138,7 @@ const ATPortableTestCase *ATGetPortableTests(size_t& count) {
 		{ "Altirra_TraceFileEncoding", ATTestAltirraTraceFileEncoding },
 		{ "Altirra_TraceFileFormat", ATTestAltirraTraceFileFormat },
 		{ "Altirra_TraceTape", ATTestAltirraTraceTape },
+		{ "Altirra_UpdateFeed", ATTestAltirraUpdateFeed },
 		{ "Altirra_SimEventManager", ATTestAltirraSimEventManager },
 		{ "Altirra_VideoManager", ATTestAltirraVideoManager },
 		{ "Altirra_VBXEState", ATTestAltirraVBXEState },
