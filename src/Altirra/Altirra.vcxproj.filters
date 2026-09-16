@@ -736,7 +736,7 @@
     <ClCompile Include="..\platform\Windows_x64\Altirra\source\artifacting_ntsc_neon.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\platform\Windows_x64\Altirra\source\artifacting_neon.cpp">
+    <ClCompile Include="source\artifacting_neon.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\platform\Windows_x64\Altirra\source\debuggerautotest.cpp">
@@ -1108,6 +1108,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="h\artifacting_filters.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="h\artifacting_neon.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="h\artifacting_pal.h">

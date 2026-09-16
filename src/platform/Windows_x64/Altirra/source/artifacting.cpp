@@ -71,6 +71,7 @@
 #include <at/atcore/consoleoutput.h>
 #include "artifacting.h"
 #include "artifacting_filters.h"
+#include "artifacting_neon.h"
 #include "artifacting_pal.h"
 #include "gtia.h"
 #include "gtiatables.h"
@@ -116,15 +117,6 @@
 #endif
 
 #ifdef VD_CPU_ARM64
-	void ATArtifactBlend_NEON(uint32 *dst, const uint32 *src, uint32 n);
-	void ATArtifactBlendExchange_NEON(uint32 *dst, uint32 *blendDst, uint32 n);
-	void ATArtifactBlendLinear_NEON(uint32 *dst, const uint32 *src, uint32 n, bool extendedRange);
-	void ATArtifactBlendExchangeLinear_NEON(uint32 *dst, uint32 *blendDst, uint32 n, bool extendedRange);
-	void ATArtifactBlendCopyMonoPersistence_NEON(uint32 *dst, uint32 *blendDst, const uint32 *palette, float factor, float factor2, float limit, uint32 n);
-	void ATArtifactBlendMonoPersistence_NEON(uint32 *dst, const uint32 *src, const uint32 *palette, float factor, float factor2, float limit, uint32 n);
-	void ATArtifactBlendExchangeMonoPersistence_NEON(uint32 *dst, uint32 *blendDst, const uint32 *palette, float factor, float factor2, float limit, uint32 n);
-	void ATArtifactBlendScanlines_NEON(uint32 *dst0, const uint32 *src10, const uint32 *src20, uint32 n, float intensity);
-
 	void ATArtifactNTSCAccum_NEON(void *rout, const void *table, const void *src, uint32 count);
 	void ATArtifactNTSCAccumTwin_NEON(void *rout, const void *table, const void *src, uint32 count);
 	void ATArtifactNTSCFinal_NEON(void *dst0, const void *srcr0, const void *srcg0, const void *srcb0, uint32 count);

@@ -140,7 +140,8 @@
     <ClCompile Include="source\artifacting_filters.cpp">
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="..\platform\Windows_x64\Altirra\source\artifacting_neon.cpp">
+    <ClCompile Include="source\artifacting_neon.cpp">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <ExcludedFromBuild Condition="'$(Platform)'=='Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Platform)'=='x64'">true</ExcludedFromBuild>
     </ClCompile>
@@ -565,6 +566,7 @@
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\antic.h" />
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\artifacting.h" />
     <ClInclude Include="h\artifacting_filters.h" />
+    <ClInclude Include="h\artifacting_neon.h" />
     <ClInclude Include="h\artifacting_pal.h" />
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\audiomonitor.h" />
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\audiosampleplayer.h" />

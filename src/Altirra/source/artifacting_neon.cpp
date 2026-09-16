@@ -16,7 +16,11 @@
 //	along with this program; if not, write to the Free Software
 //	Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
-#include <stdafx.h>
+#include <type_traits>
+#include <vd2/system/vdtypes.h>
+#include "artifacting_neon.h"
+
+#if defined(VD_CPU_ARM64)
 #include <arm_neon.h>
 
 template<typename T>
@@ -212,3 +216,5 @@ void ATArtifactBlendScanlines_NEON(uint32 *dst0, const uint32 *src10, const uint
 		*dst++ = vcombine_u8(rlo, rhi);
 	}
 }
+
+#endif
