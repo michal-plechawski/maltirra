@@ -27,6 +27,7 @@ bool ATTestAltirraPrinterFonts(ATPortableTestContext& context);
 bool ATTestAltirraPokeyTrace(ATPortableTestContext& context);
 bool ATTestAltirraPokeySaveCompat(ATPortableTestContext& context);
 bool ATTestAltirraTrace(ATPortableTestContext& context);
+bool ATTestAltirraTraceFileEncoding(ATPortableTestContext& context);
 bool ATTestAltirraTraceFileFormat(ATPortableTestContext& context);
 bool ATTestAltirraTraceTape(ATPortableTestContext& context);
 bool ATTestAltirraSimEventManager(ATPortableTestContext& context);
@@ -111,6 +112,7 @@ const ATPortableTestCase *ATGetPortableTests(size_t& count) {
 		{ "Altirra_PokeyTrace", ATTestAltirraPokeyTrace },
 		{ "Altirra_PokeySaveCompat", ATTestAltirraPokeySaveCompat },
 		{ "Altirra_Trace", ATTestAltirraTrace },
+		{ "Altirra_TraceFileEncoding", ATTestAltirraTraceFileEncoding },
 		{ "Altirra_TraceFileFormat", ATTestAltirraTraceFileFormat },
 		{ "Altirra_TraceTape", ATTestAltirraTraceTape },
 		{ "Altirra_SimEventManager", ATTestAltirraSimEventManager },

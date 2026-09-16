@@ -970,7 +970,7 @@
     <ClCompile Include="..\platform\Windows_x64\Altirra\source\traceio.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\platform\Windows_x64\Altirra\source\tracefileencoding.cpp">
+    <ClCompile Include="source\tracefileencoding.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\platform\Windows_x64\Altirra\source\uidisplayaccessibility_win32.cpp">
@@ -1716,7 +1716,7 @@
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\traceio.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\platform\Windows_x64\Altirra\h\tracefileencoding.h">
+    <ClInclude Include="h\tracefileencoding.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\uidisplayaccessibility_win32.h">

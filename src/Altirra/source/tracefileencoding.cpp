@@ -14,8 +14,10 @@
 //	You should have received a copy of the GNU General Public License along
 //	with this program. If not, see <http://www.gnu.org/licenses/>.
 
-#include <stdafx.h>
+#include <algorithm>
 #include <bit>
+#include <cstring>
+#include <type_traits>
 #include <vd2/system/bitmath.h>
 #include <vd2/system/cpuaccel.h>
 #include <at/atcore/savestate.h>
@@ -87,12 +89,12 @@ ATSavedTraceCodecSparse::ATSavedTraceCodecSparse() {
 }
 
 void ATSavedTraceCodecSparse::Validate(uint32 rowSize) const {
-	if (rowSize > 32)
+	if (!rowSize || rowSize > 32)
 		throw ATInvalidSaveStateException();
 }
 
 void ATSavedTraceCodecSparse::Encode(ATSaveStateMemoryBuffer& dst, const uint8 *src, uint32 rowSize, size_t rowCount) const {
-	if (rowSize > 32)
+	if (!rowSize || rowSize > 32)
 		throw MyError("Cannot encode trace stripe: unsupported row geometry.");
 
 	VDDEBUG2("Encoding %u rows\n", rowCount);
@@ -259,6 +261,8 @@ post_encode:
 }
 
 void ATSavedTraceCodecSparse::Decode(const ATSaveStateMemoryBuffer& buf, uint8 *dst, uint32 rowSize, size_t rowCount) const {
+	Validate(rowSize);
+
 #if defined(VD_CPU_X86) || defined(VD_CPU_X64)
 	if (rowSize == 24 && VDCheckAllExtensionsEnabled(CPUF_SUPPORTS_SSE41 | VDCPUF_SUPPORTS_POPCNT))
 		return Decode_SSE41_POPCNT_24(buf, dst, rowCount);
@@ -488,7 +492,7 @@ void ATTraceFmtAccessMask::Merge(const ATTraceFmtAccessMask& other) {
 }
 
 void ATTraceFmtAccessMask::Validate(uint32 first, uint32 n) {
-	if (first >= mRowSize && mRowSize - first < n)
+	if (first >= mRowSize || mRowSize - first < n)
 		throw ATInvalidSaveStateException();
 }
 
@@ -501,6 +505,9 @@ ATSavedTracePredictorXOR::ATSavedTracePredictorXOR(uint32 offset, uint32 size)
 }
 
 void ATSavedTracePredictorXOR::Validate(ATTraceFmtAccessMask& accessMask) const {
+	if (!mXorSize || mXorSize > sizeof mPredBuf)
+		throw ATInvalidSaveStateException();
+
 	accessMask.MarkReadWrite(mXorOffset, mXorSize);
 }
 
@@ -1124,6 +1131,9 @@ ATSavedTracePredictorVertDelta8::ATSavedTracePredictorVertDelta8(uint32 offset, 
 }
 
 void ATSavedTracePredictorVertDelta8::Validate(ATTraceFmtAccessMask& accessMask) const {
+	if (!mCount || mCount > sizeof mPredBuf)
+		throw ATInvalidSaveStateException();
+
 	accessMask.MarkReadWrite(mOffset, mCount);
 }
 
@@ -1630,7 +1640,29 @@ void ATSavedTracePredictorSignMag32::Decode(uint8 *dst, uint32 rowSize, size_t r
 ////////////////////////////////////////////////////////////////////////////////
 
 void ATSavedTraceCPUHistoryDecoder::Init(const ATSavedTraceCPUChannelDetail& info) {
+	if (!info.mRowSize)
+		throw ATInvalidSaveStateException();
+
+	if (info.mRowSize > 4096)
+		throw ATUnsupportedSaveStateException();
+
+	if (info.mRowCount && !info.mRowGroupSize)
+		throw ATInvalidSaveStateException();
+
 	const uint32 blockCount = info.mRowCount ? (info.mRowCount - 1) / info.mRowGroupSize + 1 : 0;
+
+	mCopyPairs.clear();
+	mIrqOffset = 0;
+	mNmiOffset = 0;
+	mIrqMask = 0;
+	mNmiMask = 0;
+	mCycleStep = 0;
+	mUnhaltedCycleStep = 0;
+	mLastCycle = 0;
+	mLastUnhaltedCycle = 0;
+	mBaseCycle = 0;
+	mBaseUnhaltedCycle = 0;
+	mFastCopyMaps.clear();
 
 	// width=0 and width>4096 are already checked during serialization
 
@@ -1652,6 +1684,9 @@ void ATSavedTraceCPUHistoryDecoder::Init(const ATSavedTraceCPUChannelDetail& inf
 		const uint32 byteOffset = col.mBitOffset >> 3;
 
 		switch(col.mType) {
+			case ATSavedTraceCPUColumnType::None:
+				break;
+
 			case ATSavedTraceCPUColumnType::A:
 				mCopyPairs.emplace_back(offsetof(ATCPUHistoryEntry, mA), byteOffset);
 				break;
@@ -1763,9 +1798,6 @@ void ATSavedTraceCPUHistoryDecoder::Init(const ATSavedTraceCPUChannelDetail& inf
 	}
 
 	const uint32 rowSize = info.mRowSize;
-
-	if (rowSize > 4096)
-		throw ATUnsupportedSaveStateException();
 
 	mRowSize = rowSize;
 
