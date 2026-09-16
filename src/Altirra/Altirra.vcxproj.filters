@@ -169,7 +169,7 @@
     <ClCompile Include="..\platform\Windows_x64\Altirra\source\gtiarenderer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\platform\Windows_x64\Altirra\source\gtiatables.cpp">
+    <ClCompile Include="source\gtiatables.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\platform\Windows_x64\Altirra\source\hlebasicloader.cpp">
@@ -1209,7 +1209,7 @@
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\gtiarenderer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\platform\Windows_x64\Altirra\h\gtiatables.h">
+    <ClInclude Include="h\gtiatables.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\hlebasicloader.h">

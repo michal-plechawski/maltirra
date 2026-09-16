@@ -287,7 +287,9 @@
     <ClCompile Include="..\platform\Windows_x64\Altirra\source\firmwaremanager.cpp" />
     <ClCompile Include="..\platform\Windows_x64\Altirra\source\gtia.cpp" />
     <ClCompile Include="..\platform\Windows_x64\Altirra\source\gtiarenderer.cpp" />
-    <ClCompile Include="..\platform\Windows_x64\Altirra\source\gtiatables.cpp" />
+    <ClCompile Include="source\gtiatables.cpp">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+    </ClCompile>
     <ClCompile Include="..\platform\Windows_x64\Altirra\source\hlebasicloader.cpp" />
     <ClCompile Include="..\platform\Windows_x64\Altirra\source\hleciohook.cpp" />
     <ClCompile Include="..\platform\Windows_x64\Altirra\source\hlefastboothook.cpp" />
@@ -611,7 +613,7 @@
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\firmwaremanager.h" />
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\gtia.h" />
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\gtiarenderer.h" />
-    <ClInclude Include="..\platform\Windows_x64\Altirra\h\gtiatables.h" />
+    <ClInclude Include="h\gtiatables.h" />
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\hlebasicloader.h" />
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\hleciohook.h" />
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\hlefastboothook.h" />

@@ -18,6 +18,52 @@
 #ifndef f_AT_GTIATABLES_H
 #define f_AT_GTIATABLES_H
 
+#include <vd2/system/vdtypes.h>
+#include <at/atcore/enumparse.h>
+
+namespace ATGTIA {
+	const uint8 PF0  = 0x01;
+	const uint8 PF1  = 0x02;
+	const uint8 PF01 = 0x03;
+	const uint8 PF2  = 0x04;
+	const uint8 PF3  = 0x08;
+	const uint8 PF23 = 0x0c;
+	const uint8 PF   = 0x0f;
+	const uint8 P0   = 0x10;
+	const uint8 P1   = 0x20;
+	const uint8 P01  = 0x30;
+	const uint8 P2   = 0x40;
+	const uint8 P3   = 0x80;
+	const uint8 P23  = 0xc0;
+
+	enum {
+		kColorP0,
+		kColorP1,
+		kColorP2,
+		kColorP3,
+		kColorPF0,
+		kColorPF1,
+		kColorPF2,
+		kColorPF3,
+		kColorBAK,
+		kColorBlack,
+		kColorP0P1,
+		kColorP2P3,
+		kColorPF0P0,
+		kColorPF0P1,
+		kColorPF0P0P1,
+		kColorPF1P0,
+		kColorPF1P1,
+		kColorPF1P0P1,
+		kColorPF2P2,
+		kColorPF2P3,
+		kColorPF2P2P3,
+		kColorPF3P2,
+		kColorPF3P3,
+		kColorPF3P2P3
+	};
+}
+
 extern const VDALIGN(16) uint8 kATAnalysisColorTable[24];
 struct ATPALPhaseInfo {
 	float mEvenPhase;		// delays relative to even line colorburst
@@ -30,7 +76,13 @@ extern const ATPALPhaseInfo kATPALPhaseLookup[15];
 
 void ATInitGTIAPriorityTables(uint8 priorityTables[32][256]);
 
-enum ATLumaRampMode : uint8;
+enum ATLumaRampMode : uint8 {
+	kATLumaRampMode_Linear,
+	kATLumaRampMode_XL,
+	kATLumaRampModeCount
+};
+
+AT_DECLARE_ENUM_TABLE(ATLumaRampMode);
 
 void ATComputeLumaRamp(ATLumaRampMode mode, float lumaRamp[16]);
 

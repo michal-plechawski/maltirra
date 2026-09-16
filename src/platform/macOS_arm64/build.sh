@@ -151,6 +151,7 @@ portable_test_sources=(
 	src/ATTest/source/TestAltirra_InputDefsPortable.cpp
 	src/ATTest/source/TestAltirra_InputMapPortable.cpp
 	src/ATTest/source/TestAltirra_HLEUtilsPortable.cpp
+	src/ATTest/source/TestAltirra_GTIATablesPortable.cpp
 	src/ATTest/source/TestAltirra_HostDeviceUtilsPortable.cpp
 	src/ATTest/source/TestAltirra_IDERawImagePortable.cpp
 	src/ATTest/source/TestAltirra_KernelDBPortable.cpp
@@ -265,6 +266,7 @@ portable_test_sources=(
 	src/platform/macOS_arm64/Altirra/source/directorywatcher.cpp
 	src/Altirra/source/errordecode.cpp
 	src/Altirra/source/hleutils.cpp
+	src/Altirra/source/gtiatables.cpp
 	src/Altirra/source/inputdefs.cpp
 	src/Altirra/source/inputmap.cpp
 	src/Altirra/source/iderawimage.cpp

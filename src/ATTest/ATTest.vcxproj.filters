@@ -61,6 +61,9 @@
 	<ClCompile Include="source\TestAltirra_HLEUtilsPortable.cpp">
 	  <Filter>Source Files</Filter>
 	</ClCompile>
+	<ClCompile Include="source\TestAltirra_GTIATablesPortable.cpp">
+	  <Filter>Source Files</Filter>
+	</ClCompile>
 	<ClCompile Include="source\TestAltirra_HostDeviceUtilsPortable.cpp">
 	  <Filter>Source Files</Filter>
 	</ClCompile>

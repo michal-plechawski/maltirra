@@ -26,6 +26,7 @@
 #include <vd2/Kasumi/pixmap.h>
 #include <at/atcore/enumparse.h>
 #include <at/atcore/notifylist.h>
+#include "gtiatables.h"
 #include "videotap.h"
 
 class IVDVideoDisplay;
@@ -55,14 +56,6 @@ class ATSaveStateReader;
 class IATObjectState;
 class ATGTIARenderer;
 class ATVBXEEmulator;
-
-enum ATLumaRampMode : uint8 {
-	kATLumaRampMode_Linear,
-	kATLumaRampMode_XL,
-	kATLumaRampModeCount
-};
-
-AT_DECLARE_ENUM_TABLE(ATLumaRampMode);
 
 enum class ATColorMatchingMode : uint8 {
 	None,
