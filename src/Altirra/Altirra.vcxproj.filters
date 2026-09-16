@@ -1009,7 +1009,7 @@
     <ClCompile Include="..\platform\Windows_x64\Altirra\source\1029full.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\platform\Windows_x64\Altirra\source\printerbase.cpp">
+    <ClCompile Include="source\printerbase.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="source\printerfont.cpp">
@@ -1749,7 +1749,7 @@
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\1029full.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\platform\Windows_x64\Altirra\h\printerbase.h">
+    <ClInclude Include="h\printerbase.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="h\printerfont.h">

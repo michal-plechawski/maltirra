@@ -21,6 +21,7 @@
 #include <at/atcore/audiomixer.h>
 
 class ATSyncAudioEdgeBuffer;
+class ATScheduler;
 
 class ATPrinterSoundSource final : public IATSyncAudioSource {
 	ATPrinterSoundSource(const ATPrinterSoundSource&) = delete;

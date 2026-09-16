@@ -14,7 +14,8 @@
 //	You should have received a copy of the GNU General Public License along
 //	with this program. If not, see <http://www.gnu.org/licenses/>.
 
-#include <stdafx.h>
+#include <algorithm>
+#include <vd2/system/math.h>
 #include <at/atcore/audiomixer.h>
 #include <at/atcore/scheduler.h>
 #include "printerbase.h"
@@ -76,7 +77,7 @@ void ATPrinterSoundSource::AddPinSound(uint32 t, int numPins) {
 		}
 	} else {
 		if (mPinTimes.empty() || mPinTimes.back().mTime != playTime)
-			mPinTimes.emplace_back(playTime, 1);
+			mPinTimes.emplace_back(playTime, numPins);
 	}
 }
 
@@ -118,7 +119,7 @@ void ATPrinterSoundSource::EnableRetractSound(bool enable) {
 			mRetractSoundId = mpAudioMixer->GetSamplePlayer().AddSound(*mpSoundGroup, 0, kATAudioSampleId_Printer1029Retract, 1.0f);
 	} else {
 		if (mRetractSoundId != ATSoundId{}) {
-			mpAudioMixer->GetSamplePlayer().StopSound(mPlatenSoundId);
+			mpAudioMixer->GetSamplePlayer().StopSound(mRetractSoundId);
 			mRetractSoundId = ATSoundId{};
 		}
 	}
