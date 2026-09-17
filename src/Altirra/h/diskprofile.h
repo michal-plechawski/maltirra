@@ -17,9 +17,25 @@
 #ifndef f_AT_DISKPROFILE_H
 #define f_AT_DISKPROFILE_H
 
-#include <vd2/system/vdtypes.h>
+#include <at/atcore/enumparse.h>
 
-enum ATDiskEmulationMode : uint8;
+enum ATDiskEmulationMode : uint8 {
+	kATDiskEmulationMode_Generic,
+	kATDiskEmulationMode_FastestPossible,
+	kATDiskEmulationMode_810,
+	kATDiskEmulationMode_1050,
+	kATDiskEmulationMode_XF551,
+	kATDiskEmulationMode_USDoubler,
+	kATDiskEmulationMode_Speedy1050,
+	kATDiskEmulationMode_IndusGT,
+	kATDiskEmulationMode_Happy1050,
+	kATDiskEmulationMode_1050Turbo,
+	kATDiskEmulationMode_Generic57600,
+	kATDiskEmulationMode_Happy810,
+	kATDiskEmulationModeCount
+};
+
+AT_DECLARE_ENUM_TABLE(ATDiskEmulationMode);
 
 // Emulation behavior and timing for each profile supported by the standard disk emulator. This
 // is not used by the full drive emulator.

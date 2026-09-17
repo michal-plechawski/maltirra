@@ -16,6 +16,7 @@ bool ATTestAltirraCompatDB(ATPortableTestContext& context);
 bool ATTestAltirraCPUMemory(ATPortableTestContext& context);
 bool ATTestAltirraDebuggerSettings(ATPortableTestContext& context);
 bool ATTestAltirraDiskTrace(ATPortableTestContext& context);
+bool ATTestAltirraDiskProfile(ATPortableTestContext& context);
 bool ATTestAltirraDiskVirtImageBase(ATPortableTestContext& context);
 bool ATTestAltirraDiskVirtImage(ATPortableTestContext& context);
 bool ATTestAltirraDiskVirtImageSDFS(ATPortableTestContext& context);
@@ -123,6 +124,7 @@ const ATPortableTestCase *ATGetPortableTests(size_t& count) {
 		{ "Altirra_CPUMemory", ATTestAltirraCPUMemory },
 		{ "Altirra_DebuggerSettings", ATTestAltirraDebuggerSettings },
 		{ "Altirra_DiskTrace", ATTestAltirraDiskTrace },
+		{ "Altirra_DiskProfile", ATTestAltirraDiskProfile },
 		{ "Altirra_DiskVirtImageBase", ATTestAltirraDiskVirtImageBase },
 		{ "Altirra_DiskVirtImage", ATTestAltirraDiskVirtImage },
 		{ "Altirra_DiskVirtImageSDFS", ATTestAltirraDiskVirtImageSDFS },

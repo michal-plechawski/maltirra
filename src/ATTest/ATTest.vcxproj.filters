@@ -46,6 +46,9 @@
 	<ClCompile Include="source\TestAltirra_DiskTracePortable.cpp">
 	  <Filter>Source Files</Filter>
 	</ClCompile>
+	<ClCompile Include="source\TestAltirra_DiskProfilePortable.cpp">
+	  <Filter>Source Files</Filter>
+	</ClCompile>
 	<ClCompile Include="source\TestAltirra_DiskVirtImageBasePortable.cpp">
 	  <Filter>Source Files</Filter>
 	</ClCompile>

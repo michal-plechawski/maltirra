@@ -148,6 +148,7 @@ portable_test_sources=(
 	src/ATTest/source/TestAltirra_CPUMemoryPortable.cpp
 	src/ATTest/source/TestAltirra_DebuggerSettingsPortable.cpp
 	src/ATTest/source/TestAltirra_DiskTracePortable.cpp
+	src/ATTest/source/TestAltirra_DiskProfilePortable.cpp
 	src/ATTest/source/TestAltirra_DiskVirtImageBasePortable.cpp
 	src/ATTest/source/TestAltirra_DiskVirtImagePortable.cpp
 	src/ATTest/source/TestAltirra_DiskVirtImageSDFSPortable.cpp
@@ -284,6 +285,7 @@ portable_test_sources=(
 	src/Altirra/source/errordecode.cpp
 	src/Altirra/source/debuggersettings.cpp
 	src/Altirra/source/disktrace.cpp
+	src/Altirra/source/diskprofile.cpp
 	src/Altirra/source/firmwaredetect.cpp
 	src/Altirra/source/hleutils.cpp
 	src/Altirra/source/gtiatables.cpp

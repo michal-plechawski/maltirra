@@ -814,7 +814,7 @@
     <ClCompile Include="..\platform\Windows_x64\Altirra\source\uiconfdevside3.cpp">
       <Filter>Source Files - Device Configuration UI</Filter>
     </ClCompile>
-    <ClCompile Include="..\platform\Windows_x64\Altirra\source\diskprofile.cpp">
+    <ClCompile Include="source\diskprofile.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="source\blockdevdiskadapter.cpp">
@@ -1608,7 +1608,7 @@
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\blockdevvirtfat32.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\platform\Windows_x64\Altirra\h\diskprofile.h">
+    <ClInclude Include="h\diskprofile.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="h\blockdevdiskadapter.h">

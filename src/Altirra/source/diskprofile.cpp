@@ -14,10 +14,13 @@
 //	You should have received a copy of the GNU General Public License along
 //	with this program. If not, see <http://www.gnu.org/licenses/>.
 
-#include <stdafx.h>
-#include <ratio>
 #include <chrono>
-#include "disk.h"
+#include <ratio>
+#include <type_traits>
+#include <utility>
+
+#include <vd2/system/math.h>
+#include <vd2/system/vdstl.h>
 #include "diskprofile.h"
 
 namespace {

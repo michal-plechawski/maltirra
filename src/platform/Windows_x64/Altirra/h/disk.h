@@ -30,6 +30,7 @@
 #include <at/atcore/scheduler.h>
 #include <at/atio/diskimage.h>
 #include "diskinterface.h"
+#include "diskprofile.h"
 
 class IATSyncAudioSamplePlayer;
 class ATDiskRotationTracer;
@@ -46,26 +47,6 @@ class ATTraceChannelFormatted;
 
 enum ATMediaWriteMode : uint8;
 enum class ATSoundId : uint32;
-
-struct ATDiskProfile;
-
-enum ATDiskEmulationMode : uint8 {
-	kATDiskEmulationMode_Generic,
-	kATDiskEmulationMode_FastestPossible,
-	kATDiskEmulationMode_810,
-	kATDiskEmulationMode_1050,
-	kATDiskEmulationMode_XF551,
-	kATDiskEmulationMode_USDoubler,
-	kATDiskEmulationMode_Speedy1050,
-	kATDiskEmulationMode_IndusGT,
-	kATDiskEmulationMode_Happy1050,
-	kATDiskEmulationMode_1050Turbo,
-	kATDiskEmulationMode_Generic57600,
-	kATDiskEmulationMode_Happy810,
-	kATDiskEmulationModeCount
-};
-
-AT_DECLARE_ENUM_TABLE(ATDiskEmulationMode);
 
 class ATDiskEmulator final
 	: public IATDeviceSIO
