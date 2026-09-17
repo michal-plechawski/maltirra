@@ -207,26 +207,6 @@ bool ATLoadImageResource(uint32 id, VDPixmapBuffer& buf) {
 	return true;
 }
 
-void ATFileSetReadOnlyAttribute(const wchar_t *path, bool readOnly) {
-	VDStringA s;
-	DWORD attrs;
-
-	attrs = GetFileAttributesW(path);
-
-	if (attrs == INVALID_FILE_ATTRIBUTES)
-		throw MyWin32Error("Unable to change read-only flag on file: %s", GetLastError());
-
-	if (readOnly)
-		attrs |= FILE_ATTRIBUTE_READONLY;
-	else
-		attrs &= ~FILE_ATTRIBUTE_READONLY;
-
-	BOOL success = SetFileAttributesW(path, attrs);
-
-	if (!success)
-		throw MyWin32Error("Unable to change read-only flag on file: %s", GetLastError());
-}
-
 void ATCopyFrameToClipboard(const VDPixmap& px) {
 	if (::OpenClipboard(nullptr)) {
 		if (::EmptyClipboard()) {

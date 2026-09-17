@@ -8,6 +8,7 @@
 
 #include "oshelper.h"
 
+#include <vd2/system/filesys.h>
 #include <vd2/system/vdstring.h>
 #include <at/atcore/enumparseimpl.h>
 
@@ -16,6 +17,13 @@ AT_DEFINE_ENUM_TABLE_BEGIN(ATProcessEfficiencyMode)
 	{ ATProcessEfficiencyMode::Performance, "performance" },
 	{ ATProcessEfficiencyMode::Efficiency, "efficiency" },
 AT_DEFINE_ENUM_TABLE_END(ATProcessEfficiencyMode, ATProcessEfficiencyMode::Default)
+
+void ATFileSetReadOnlyAttribute(const wchar_t *path, bool readOnly) {
+	VDFileSetAttributes(
+		path,
+		kVDFileAttr_ReadOnly,
+		readOnly ? kVDFileAttr_ReadOnly : 0);
+}
 
 VDStringW ATBuildEscapedCommandLine(vdspan<const wchar_t *> args) {
 	VDStringW commandLine;

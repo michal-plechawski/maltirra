@@ -301,6 +301,7 @@ portable_test_sources=(
 	src/ATIO/source/savestate.cpp
 	src/platform/macOS_arm64/Altirra/source/directorywatcher.cpp
 	src/platform/macOS_arm64/Altirra/source/ostracing.cpp
+	src/platform/macOS_arm64/Altirra/source/oshelper.cpp
 	src/platform/macOS_arm64/Altirra/source/startuplogger.cpp
 	src/platform/macOS_arm64/Altirra/source/updatefeed_macos.cpp
 	src/Altirra/source/errordecode.cpp
