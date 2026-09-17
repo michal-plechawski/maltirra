@@ -1,6 +1,7 @@
 // Adapter for running the shared portable tests in the Windows test harness.
 
 #include <stdafx.h>
+#include <windows.h>
 #include <at/attest/portabletest.h>
 #include <test.h>
 
