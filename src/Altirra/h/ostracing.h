@@ -17,14 +17,12 @@
 #ifndef f_AT_OSTRACING_H
 #define f_AT_OSTRACING_H
 
-#ifdef ATNRELEASE
 // Initialize OS-level tracing. This emits events into the system via
-// Event Tracing for Windows (ETW) for correlation with other events in an
-// ETW-based tool like GPUView or Intel GPA. It is only active if /etw
-// is passed on the command line in a non-Release build.
+// the native platform tracing facility. Backends may keep the calls as no-ops
+// when tracing support is unavailable.
 void ATInitOSTracing();
 void ATShutdownOSTracing();
-#endif
+bool ATIsOSTracingEnabled();
 
 void ATOSTraceSimulateBegin();
 void ATOSTraceSimulateEnd();

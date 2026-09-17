@@ -15,12 +15,12 @@
 //	with this program. If not, see <http://www.gnu.org/licenses/>.
 
 #include <stdafx.h>
+#include "ostracing.h"
 
 #ifdef ATNRELEASE
 #include <windows.h>
 #include <TraceLoggingActivity.h>
 #include <TraceLoggingProvider.h>
-#include "ostracing.h"
 
 TRACELOGGING_DEFINE_PROVIDER(
 	g_hATWinTraceLoggingProvider,
@@ -48,6 +48,10 @@ void ATShutdownOSTracing() {
 	}
 }
 
+bool ATIsOSTracingEnabled() {
+	return g_ATOSTracingEnabled;
+}
+
 void ATOSTraceSimulateBegin() {
 	if (g_ATOSTracingEnabled) {
 		TraceLoggingWriteStart(g_ATOSTracingActivitySimulate, "Simulate");
@@ -60,6 +64,20 @@ void ATOSTraceSimulateEnd() {
 	}
 }
 #else
+bool g_ATOSTracingEnabled;
+
+void ATInitOSTracing() {
+	g_ATOSTracingEnabled = true;
+}
+
+void ATShutdownOSTracing() {
+	g_ATOSTracingEnabled = false;
+}
+
+bool ATIsOSTracingEnabled() {
+	return g_ATOSTracingEnabled;
+}
+
 void ATOSTraceSimulateBegin() {}
 void ATOSTraceSimulateEnd() {}
 #endif

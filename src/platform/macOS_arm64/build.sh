@@ -171,6 +171,7 @@ portable_test_sources=(
 	src/ATTest/source/TestAltirra_HostDeviceUtilsPortable.cpp
 	src/ATTest/source/TestAltirra_IDERawImagePortable.cpp
 	src/ATTest/source/TestAltirra_KernelDBPortable.cpp
+	src/ATTest/source/TestAltirra_OSTracingPortable.cpp
 	src/ATTest/source/TestAltirra_PNGPortable.cpp
 	src/ATTest/source/TestAltirra_PNGEncoderPortable.cpp
 	src/ATTest/source/TestAltirra_PBIPortable.cpp
@@ -297,6 +298,7 @@ portable_test_sources=(
 	src/ATIO/source/diskfssdx2util.cpp
 	src/ATIO/source/savestate.cpp
 	src/platform/macOS_arm64/Altirra/source/directorywatcher.cpp
+	src/platform/macOS_arm64/Altirra/source/ostracing.cpp
 	src/platform/macOS_arm64/Altirra/source/updatefeed_macos.cpp
 	src/Altirra/source/errordecode.cpp
 	src/Altirra/source/debuggersettings.cpp

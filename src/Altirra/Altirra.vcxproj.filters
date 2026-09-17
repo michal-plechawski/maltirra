@@ -1794,7 +1794,7 @@
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\850full.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\platform\Windows_x64\Altirra\h\ostracing.h">
+    <ClInclude Include="h\ostracing.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\tracenative.h">

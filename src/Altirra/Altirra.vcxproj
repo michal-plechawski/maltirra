@@ -100,7 +100,7 @@
     <ClInclude Include="h\inputmap.h" />
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\mediamanager.h" />
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\multiplexer.h" />
-    <ClInclude Include="..\platform\Windows_x64\Altirra\h\ostracing.h" />
+    <ClInclude Include="h\ostracing.h" />
     <ClInclude Include="h\palettegenerator.h" />
     <ClInclude Include="h\palettesolver.h" />
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\pbidisk.h" />
