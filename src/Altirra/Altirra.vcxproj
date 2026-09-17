@@ -60,6 +60,7 @@
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\820full.h" />
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\850full.h" />
     <ClInclude Include="h\audiorawsource.h" />
+    <ClInclude Include="h\audiostocksamples.h" />
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\asyncdownloader.h" />
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\autosavemanager.h" />
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\bit3.h" />
@@ -177,7 +178,9 @@
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="..\platform\Windows_x64\Altirra\source\audiosampleplayer.cpp" />
-    <ClCompile Include="..\platform\Windows_x64\Altirra\source\audiostocksamples.cpp" />
+    <ClCompile Include="source\audiostocksamples.cpp">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+    </ClCompile>
     <ClCompile Include="..\platform\Windows_x64\Altirra\source\audiowriter.cpp" />
     <ClCompile Include="..\platform\Windows_x64\Altirra\source\autosavemanager.cpp" />
     <ClCompile Include="..\platform\Windows_x64\Altirra\source\aviwriter.cpp" />

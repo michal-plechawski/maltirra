@@ -8,6 +8,7 @@ bool ATTestAltirraArtifactingNTSCNEON(ATPortableTestContext& context);
 bool ATTestAltirraArtifactingPALNEON(ATPortableTestContext& context);
 bool ATTestAltirraArtifactingPALScalar(ATPortableTestContext& context);
 bool ATTestAltirraAudioRawSource(ATPortableTestContext& context);
+bool ATTestAltirraAudioStockSamples(ATPortableTestContext& context);
 bool ATTestAltirraBlockDevDiskAdapter(ATPortableTestContext& context);
 bool ATTestAltirraCallback(ATPortableTestContext& context);
 bool ATTestAltirraCartridgePort(ATPortableTestContext& context);
@@ -146,6 +147,7 @@ const ATPortableTestCase *ATGetPortableTests(size_t& count) {
 		{ "Altirra_ArtifactingPALNEON", ATTestAltirraArtifactingPALNEON },
 		{ "Altirra_ArtifactingPALScalar", ATTestAltirraArtifactingPALScalar },
 		{ "Altirra_AudioRawSource", ATTestAltirraAudioRawSource },
+		{ "Altirra_AudioStockSamples", ATTestAltirraAudioStockSamples },
 		{ "Altirra_BlockDevDiskAdapter", ATTestAltirraBlockDevDiskAdapter },
 		{ "Altirra_Callback", ATTestAltirraCallback },
 		{ "Altirra_CartridgePort", ATTestAltirraCartridgePort },

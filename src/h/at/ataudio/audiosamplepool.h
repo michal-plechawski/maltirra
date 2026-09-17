@@ -23,6 +23,7 @@
 
 #include <vd2/system/vdtypes.h>
 #include <vd2/system/linearalloc.h>
+#include <vd2/system/vdstl.h>
 
 class ATAudioSampleBuffer;
 enum ATAudioSampleId : uint32;

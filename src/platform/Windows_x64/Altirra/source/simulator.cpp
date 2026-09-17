@@ -81,6 +81,7 @@
 #include "uirender.h"
 #include "audiomonitor.h"
 #include "audiosampleplayer.h"
+#include "audiostocksamples.h"
 #include "cheatengine.h"
 #include "mmu.h"
 #include "pbi.h"
@@ -130,8 +131,6 @@ ATConfigVarInt32 g_ATCVSimScanlinesPerAdvance(
 );
 
 vdrefptr<IATPrinterOutputManager> ATCreatePrinterOutputManager();
-void ATAudioRegisterStockSamples(ATAudioSamplePool& pool);
-
 namespace {
 	const char kSaveStateVersion[] = "Altirra save state V1";
 

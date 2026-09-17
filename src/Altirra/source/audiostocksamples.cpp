@@ -14,12 +14,13 @@
 //	You should have received a copy of the GNU General Public License along
 //	with this program. If not, see <http://www.gnu.org/licenses/>.
 
-#include <stdafx.h>
-#include <vd2/system/vdstl_algorithm.h>
+#include <cstring>
+#include <iterator>
 #include <at/ataudio/audiosamplepool.h>
 #include <at/atcore/audiomixer.h>
+#include "audiostocksamples.h"
 #include "oshelper.h"
-#include "resource.h"
+#include "../res/resource.h"
 
 ///////////////////////////////////////////////////////////////////////////
 
@@ -45,7 +46,7 @@ void ATAudioRegisterStockSamples(ATAudioSamplePool& pool) {
 	};
 
 	vdfastvector<uint8> data;
-	for(size_t i=0; i<vdcountof(kSampleSources); ++i) {
+	for(size_t i=0; i<std::size(kSampleSources); ++i) {
 		ATLoadMiscResource(kSampleSources[i].mResId, data);
 
 		size_t n = data.size() / sizeof(sint16);
@@ -56,7 +57,7 @@ void ATAudioRegisterStockSamples(ATAudioSamplePool& pool) {
 
 		vdfastvector<sint16> data16(n);
 
-		memcpy(data16.data(), data.data(), n*sizeof(sint16));
+		std::memcpy(data16.data(), data.data(), n*sizeof(sint16));
 
 		pool.RegisterStockSample((ATAudioSampleId)(i + 1), data16, 63920.8f, kSampleSources[i].mBaseVolume);
 	}

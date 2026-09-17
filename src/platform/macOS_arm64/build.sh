@@ -143,6 +143,7 @@ portable_test_sources=(
 	src/ATTest/source/TestAltirra_ArtifactingPALNEONPortable.cpp
 	src/ATTest/source/TestAltirra_ArtifactingPALPortable.cpp
 	src/ATTest/source/TestAltirra_AudioRawSourcePortable.cpp
+	src/ATTest/source/TestAltirra_AudioStockSamplesPortable.cpp
 	src/ATTest/source/TestAltirra_BlockDevDiskAdapterPortable.cpp
 	src/ATTest/source/TestAltirra_CallbackPortable.cpp
 	src/ATTest/source/TestAltirra_CartridgePortPortable.cpp
@@ -289,6 +290,7 @@ portable_test_sources=(
 	src/ATCore/source/propertyset.cpp
 	src/Altirra/source/artifacting_filters.cpp
 	src/Altirra/source/audiorawsource.cpp
+	src/Altirra/source/audiostocksamples.cpp
 	src/Altirra/source/artifacting_neon.cpp
 	src/Altirra/source/artifacting_ntsc_neon.cpp
 	src/Altirra/source/artifacting_pal_neon.cpp
