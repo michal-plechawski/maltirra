@@ -17,6 +17,9 @@
     <ClCompile Include="source\audioedgeplayer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="source\audioringbuffer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
     <ClCompile Include="source\stdafx.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -62,6 +65,9 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\h\at\ataudio\internal\audioedgeplayer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\h\at\ataudio\internal\audioringbuffer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="h\stdafx.h">

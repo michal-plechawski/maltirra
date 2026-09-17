@@ -76,6 +76,7 @@ bool ATTestAltirraVBXEState(ATPortableTestContext& context);
 bool ATTestAudioFilters(ATPortableTestContext& context);
 bool ATTestAudioEdgePlayer(ATPortableTestContext& context);
 bool ATTestAudioNativeOutput(ATPortableTestContext& context);
+bool ATTestAudioRingBuffer(ATPortableTestContext& context);
 bool ATTestCoreChecksum(ATPortableTestContext& context);
 bool ATTestCoreFFT(ATPortableTestContext& context);
 bool ATTestCoreTimerService(ATPortableTestContext& context);
@@ -210,6 +211,7 @@ const ATPortableTestCase *ATGetPortableTests(size_t& count) {
 		{ "Audio_Filters", ATTestAudioFilters },
 		{ "Audio_EdgePlayer", ATTestAudioEdgePlayer },
 		{ "Audio_NativeOutput", ATTestAudioNativeOutput },
+		{ "Audio_RingBuffer", ATTestAudioRingBuffer },
 		{ "Core_Checksum", ATTestCoreChecksum },
 		{ "Core_FFT", ATTestCoreFFT },
 		{ "Core_TimerService", ATTestCoreTimerService },
