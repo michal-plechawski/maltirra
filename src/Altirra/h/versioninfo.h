@@ -64,7 +64,7 @@
 
 #if defined(AT_VERSION_DEV) && (defined(_DEBUG) || defined(ATNRELEASE))
 	#define AT_UPDATE_USE_TEST_CHANNEL true
-#elif defined(AT_VERSION_PRERELEASE)
+#elif AT_VERSION_PRERELEASE
 	#define AT_UPDATE_USE_TEST_CHANNEL true
 #else
 	#define AT_UPDATE_USE_TEST_CHANNEL false

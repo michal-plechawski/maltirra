@@ -67,6 +67,7 @@ bool ATTestAltirraUpdateFeed(ATPortableTestContext& context);
 bool ATTestAltirraSimEventManager(ATPortableTestContext& context);
 bool ATTestAltirraTextDOM(ATPortableTestContext& context);
 bool ATTestAltirraVideoManager(ATPortableTestContext& context);
+bool ATTestAltirraVersionInfo(ATPortableTestContext& context);
 bool ATTestAltirraVBXEState(ATPortableTestContext& context);
 bool ATTestCoreChecksum(ATPortableTestContext& context);
 bool ATTestCoreFFT(ATPortableTestContext& context);
@@ -187,6 +188,7 @@ const ATPortableTestCase *ATGetPortableTests(size_t& count) {
 		{ "Altirra_SimEventManager", ATTestAltirraSimEventManager },
 		{ "Altirra_TextDOM", ATTestAltirraTextDOM },
 		{ "Altirra_VideoManager", ATTestAltirraVideoManager },
+		{ "Altirra_VersionInfo", ATTestAltirraVersionInfo },
 		{ "Altirra_VBXEState", ATTestAltirraVBXEState },
 		{ "Core_Checksum", ATTestCoreChecksum },
 		{ "Core_FFT", ATTestCoreFFT },

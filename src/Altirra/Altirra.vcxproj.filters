@@ -1398,7 +1398,7 @@
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\verifier.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\platform\Windows_x64\Altirra\h\versioninfo.h">
+    <ClInclude Include="h\versioninfo.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\videowriter.h">

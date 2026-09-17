@@ -199,6 +199,7 @@ portable_test_sources=(
 	src/ATTest/source/TestAltirra_SimEventManagerPortable.cpp
 	src/ATTest/source/TestAltirra_TextDOMPortable.cpp
 	src/ATTest/source/TestAltirra_VideoManagerPortable.cpp
+	src/ATTest/source/TestAltirra_VersionInfoPortable.cpp
 	src/ATTest/source/TestAltirra_VBXEStatePortable.cpp
 	src/ATTest/source/TestCore_ChecksumPortable.cpp
 	src/ATTest/source/TestCore_FFTPortable.cpp

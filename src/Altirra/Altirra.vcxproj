@@ -781,7 +781,7 @@
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\ultimate1mb.h" />
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\vbxe.h" />
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\verifier.h" />
-    <ClInclude Include="..\platform\Windows_x64\Altirra\h\versioninfo.h" />
+    <ClInclude Include="h\versioninfo.h" />
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\videowriter.h" />
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\virtualscreen.h" />
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\xep80.h" />
