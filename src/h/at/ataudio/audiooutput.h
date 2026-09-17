@@ -25,6 +25,7 @@
 #pragma once
 #endif
 
+#include <vd2/system/vdtypes.h>
 #include <at/atcore/audiosource.h>
 #include <at/atcore/audiomixer.h>
 

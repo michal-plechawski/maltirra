@@ -211,6 +211,8 @@ portable_test_sources=(
 	src/ATTest/source/TestAudio_FiltersPortable.cpp
 	src/ATTest/source/TestAudio_EdgePlayerPortable.cpp
 	src/ATTest/source/TestAudio_NativeOutputPortable.cpp
+	src/ATTest/source/TestAudio_NativeBackendPortable.cpp
+	src/ATTest/source/TestAudio_OutputPortable.cpp
 	src/ATTest/source/TestAudio_RingBufferPortable.cpp
 	src/ATTest/source/TestCore_ChecksumPortable.cpp
 	src/ATTest/source/TestCore_FFTPortable.cpp
@@ -372,10 +374,16 @@ portable_test_sources=(
 	src/ATAudio/source/pokey.cpp
 	src/ATAudio/source/audioedgeplayer.cpp
 	src/ATAudio/source/audioringbuffer.cpp
+	src/ATAudio/source/audiooutput.cpp
+	src/ATAudio/source/audioconvolutionplayer.cpp
+	src/ATAudio/source/audiosamplebuffer.cpp
+	src/ATAudio/source/audiosampleplayer.cpp
+	src/ATAudio/source/audiosamplepool.cpp
 	src/ATAudio/source/pokeyrenderer.cpp
 	src/ATAudio/source/pokeysavestate.cpp
 	src/ATAudio/source/pokeytables.cpp
 	src/platform/macOS_arm64/ATAudio/source/audiofilters.cpp
+	src/platform/macOS_arm64/ATAudio/source/audiooutputcoreaudio.cpp
 	src/ATIO/source/audioreaderflac_arm64.cpp
 	src/ATIO/source/audioreadervorbis.cpp
 	src/ATIO/source/cartridgeimage.cpp
@@ -478,7 +486,10 @@ done
 
 "$compiler" -arch arm64 "${portable_test_objects[@]}" \
 	-framework AppKit \
+	-framework AudioToolbox \
+	-framework AudioUnit \
 	-framework CoreFoundation \
+	-framework CoreAudio \
 	-framework CoreServices \
 	-framework ImageIO \
 	-framework Security \

@@ -226,6 +226,12 @@
 	<ClCompile Include="source\TestAudio_NativeOutputPortable.cpp">
 	  <Filter>Source Files</Filter>
 	</ClCompile>
+	<ClCompile Include="source\TestAudio_NativeBackendPortable.cpp">
+	  <Filter>Source Files</Filter>
+	</ClCompile>
+	<ClCompile Include="source\TestAudio_OutputPortable.cpp">
+	  <Filter>Source Files</Filter>
+	</ClCompile>
 	<ClCompile Include="source\TestAudio_RingBufferPortable.cpp">
 	  <Filter>Source Files</Filter>
 	</ClCompile>

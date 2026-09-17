@@ -26,7 +26,8 @@
     <ClCompile Include="source\audioringbuffer.cpp" />
     <ClCompile Include="source\audioconvolutionplayer.cpp" />
     <ClCompile Include="..\platform\Windows_x64\ATAudio\source\audiofilters.cpp" />
-    <ClCompile Include="..\platform\Windows_x64\ATAudio\source\audiooutput.cpp" />
+    <ClCompile Include="source\audiooutput.cpp" />
+    <ClCompile Include="..\platform\Windows_x64\ATAudio\source\audiooutputbackend.cpp" />
     <ClCompile Include="..\platform\Windows_x64\ATAudio\source\audiooutwasapi.cpp" />
     <ClCompile Include="..\platform\Windows_x64\ATAudio\source\audiooutwaveout.cpp" />
     <ClCompile Include="..\platform\Windows_x64\ATAudio\source\audiooutxa2.cpp" />
@@ -43,6 +44,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\h\at\ataudio\internal\audioedgeplayer.h" />
+    <ClInclude Include="..\h\at\ataudio\internal\audiooutputbackend.h" />
     <ClInclude Include="..\h\at\ataudio\internal\audioringbuffer.h" />
     <ClInclude Include="..\h\at\ataudio\audioconvolutionplayer.h" />
     <ClInclude Include="..\h\at\ataudio\audiofilters.h" />

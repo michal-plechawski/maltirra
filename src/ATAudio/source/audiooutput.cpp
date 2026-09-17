@@ -26,6 +26,7 @@
 #include <at/atcore/configvar.h>
 #include <at/ataudio/audiofilters.h>
 #include <at/ataudio/internal/audioedgeplayer.h>
+#include <at/ataudio/internal/audiooutputbackend.h>
 #include <at/ataudio/audiosampleplayer.h>
 #include <at/ataudio/audioout.h>
 #include <at/ataudio/audiooutput.h>
@@ -509,7 +510,7 @@ void ATAudioOutput::InternalWriteAudio(
 			memset(dstLeft + kPreFilterOffset, 0, sizeof(float) * count);
 
 			if (mbFilterStereo)
-				memcpy(dstRight + kPreFilterOffset, 0, sizeof(float) * count);
+				memset(dstRight + kPreFilterOffset, 0, sizeof(float) * count);
 		} else if (mbFilterStereo && pushStereoAsMono && right) {
 			float *VDRESTRICT mixDstLeft = dstLeft + kPreFilterOffset;
 			float *VDRESTRICT mixDstRight = dstRight + kPreFilterOffset;
@@ -875,11 +876,13 @@ void ATAudioOutput::RecomputeResamplingRate() {
 }
 
 void ATAudioOutput::ReinitAudio() {
-	if (mSelectedApi == kATAudioApi_Auto) {
-		if (!ReinitAudio(kATAudioApi_WASAPI))
-			ReinitAudio(kATAudioApi_WaveOut);
-	} else {
-		ReinitAudio(mSelectedApi);
+	ATAudioApi candidates[kATAudioApiCount] {};
+	const uint32 count = ATGetNativeAudioApiCandidates(
+		mSelectedApi, candidates, kATAudioApiCount);
+
+	for(uint32 i = 0; i < count; ++i) {
+		if (ReinitAudio(candidates[i]))
+			return;
 	}
 }
 
@@ -887,14 +890,9 @@ bool ATAudioOutput::ReinitAudio(ATAudioApi api) {
 	if (!mbNativeAudioEnabled)
 		return true;
 
-	if (api == kATAudioApi_WASAPI)
-		mpAudioOut = VDCreateAudioOutputWASAPIW32();
-	else if (api == kATAudioApi_XAudio2)
-		mpAudioOut = VDCreateAudioOutputXAudio2W32();
-	else if (api == kATAudioApi_DirectSound)
-		mpAudioOut = VDCreateAudioOutputDirectSoundW32();
-	else
-		mpAudioOut = VDCreateAudioOutputWaveOutW32();
+	mpAudioOut = ATCreateNativeAudioOutput(api);
+	if (!mpAudioOut)
+		return false;
 
 	mActiveApi = api;
 
