@@ -4,12 +4,6 @@
 #include <cstring>
 #include <vector>
 
-#ifdef _WIN32
-#define WIN32_LEAN_AND_MEAN
-#define NOMINMAX
-#include <windows.h>
-#endif
-
 #include <vd2/system/VDString.h>
 #include <vd2/system/binary.h>
 #include <vd2/system/thread.h>
@@ -37,13 +31,7 @@ namespace {
 		TPredicate&& predicate, uint32 timeoutMs = 3000) {
 		const uint32 deadline = VDGetCurrentTick() + timeoutMs;
 		for (;;) {
-#ifdef _WIN32
-			MSG msg;
-			while (PeekMessage(&msg, nullptr, 0, 0, PM_REMOVE)) {
-				TranslateMessage(&msg);
-				DispatchMessage(&msg);
-			}
-#endif
+			ATPortableTestPumpMessages();
 			dispatcher.RunCallbacks();
 			if (predicate())
 				return true;

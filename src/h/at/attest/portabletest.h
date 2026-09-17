@@ -19,6 +19,7 @@ struct ATPortableTestCase {
 };
 
 const ATPortableTestCase *ATGetPortableTests(size_t& count);
+void ATPortableTestPumpMessages();
 
 #define AT_PORTABLE_TEST_ASSERT(context, expression) \
 	do { \

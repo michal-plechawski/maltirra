@@ -4,6 +4,9 @@
 #include <at/attest/portabletest.h>
 #include <vd2/system/cpuaccel.h>
 
+void ATPortableTestPumpMessages() {
+}
+
 int main() {
 	CPUEnableExtensions(CPUCheckForExtensions());
 

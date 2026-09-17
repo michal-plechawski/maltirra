@@ -4,6 +4,14 @@
 #include <at/attest/portabletest.h>
 #include <test.h>
 
+void ATPortableTestPumpMessages() {
+	MSG msg;
+	while (PeekMessage(&msg, nullptr, 0, 0, PM_REMOVE)) {
+		TranslateMessage(&msg);
+		DispatchMessage(&msg);
+	}
+}
+
 DEFINE_TEST(System_Portable) {
 	size_t testCount = 0;
 	const ATPortableTestCase *tests = ATGetPortableTests(testCount);
