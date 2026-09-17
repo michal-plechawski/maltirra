@@ -123,10 +123,10 @@
     <ClCompile Include="source\vorbisbitreader.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\platform\Windows_x64\ATIO\source\vorbisdecoder.cpp">
+    <ClCompile Include="source\vorbisdecoder.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\platform\Windows_x64\ATIO\source\vorbismisc.cpp">
+    <ClCompile Include="source\vorbismisc.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="source\audioreadervorbis.cpp">

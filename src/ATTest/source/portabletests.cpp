@@ -81,6 +81,7 @@ bool ATTestIOCartridgeImage(ATPortableTestContext& context);
 bool ATTestIOCassetteAudioFilters(ATPortableTestContext& context);
 bool ATTestIOCassetteDecoder(ATPortableTestContext& context);
 bool ATTestIOFLACAccel(ATPortableTestContext& context);
+bool ATTestIOVorbis(ATPortableTestContext& context);
 bool ATTestKasumiResolve4x(ATPortableTestContext& context);
 bool ATTestKasumiResampleStages(ATPortableTestContext& context);
 bool ATTestKasumiYCbCr709(ATPortableTestContext& context);
@@ -212,6 +213,7 @@ const ATPortableTestCase *ATGetPortableTests(size_t& count) {
 		{ "IO_CassetteAudioFilters", ATTestIOCassetteAudioFilters },
 		{ "IO_CassetteDecoder", ATTestIOCassetteDecoder },
 		{ "IO_FLACAccel", ATTestIOFLACAccel },
+		{ "IO_Vorbis", ATTestIOVorbis },
 		{ "Kasumi_Resolve4x", ATTestKasumiResolve4x },
 		{ "Kasumi_ResampleStages", ATTestKasumiResampleStages },
 		{ "Kasumi_YCbCr709", ATTestKasumiYCbCr709 },

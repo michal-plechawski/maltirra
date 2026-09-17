@@ -216,6 +216,7 @@ portable_test_sources=(
 	src/ATTest/source/TestIO_CassetteAudioFiltersPortable.cpp
 	src/ATTest/source/TestIO_CassetteDecoderPortable.cpp
 	src/ATTest/source/TestIO_FLACAccelPortable.cpp
+	src/ATTest/source/TestIO_VorbisPortable.cpp
 	src/ATTest/source/TestKasumi_Resolve4xPortable.cpp
 	src/ATTest/source/TestKasumi_ResampleStagesPortable.cpp
 	src/ATTest/source/TestKasumi_YCbCr709Portable.cpp
@@ -371,11 +372,15 @@ portable_test_sources=(
 	src/ATAudio/source/pokeytables.cpp
 	src/platform/macOS_arm64/ATAudio/source/audiofilters.cpp
 	src/ATIO/source/audioreaderflac_arm64.cpp
+	src/ATIO/source/audioreadervorbis.cpp
 	src/ATIO/source/cartridgeimage.cpp
 	src/ATIO/source/cartridgeimage_arm64.cpp
 	src/ATIO/source/cartridgetypes.cpp
 	src/ATIO/source/cassetteaudiofilters.cpp
 	src/ATIO/source/cassettedecoder.cpp
+	src/ATIO/source/vorbisbitreader.cpp
+	src/ATIO/source/vorbisdecoder.cpp
+	src/ATIO/source/vorbismisc.cpp
 	src/vdjson/source/jsonnametable.cpp
 	src/vdjson/source/jsonoutput.cpp
 	src/vdjson/source/jsonreader.cpp

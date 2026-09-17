@@ -1,3 +1,4 @@
+// Portable Vorbis decoder implementation
 //	Altirra - Atari 800/800XL/5200 emulator
 //	Copyright (C) 2023 Avery Lee
 //
@@ -1893,7 +1894,7 @@ inline void ATVorbisDecoder::DecodeResidue1Dim(ATVorbisBitReader& reader0, const
 			break;
 
 		if constexpr (T_Dim == 2) {
-#if defined(VD_CPU_x86) || defined(VD_CPU_X64)
+#if defined(VD_CPU_X86) || defined(VD_CPU_X64)
 			__m128 vec = _mm_castpd_ps(_mm_load_sd((const double *)v));
 			__m128 dvec = _mm_add_ps(_mm_castpd_ps(_mm_load_sd((double *)dst)), vec);
 			_mm_store_sd((double *)dst, _mm_castps_pd(dvec));

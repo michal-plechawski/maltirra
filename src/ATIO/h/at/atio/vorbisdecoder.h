@@ -18,6 +18,7 @@
 #define f_AT_ATIO_VORBISDECODER_H
 
 #include <vd2/system/binary.h>
+#include <vd2/system/function.h>
 #include <vd2/system/vdstl.h>
 #include <at/atcore/fft.h>
 #include <at/atio/vorbisbitreader.h>

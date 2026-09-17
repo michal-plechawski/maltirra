@@ -39,8 +39,8 @@
       <PrecompiledHeader>Create</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="source\vorbisbitreader.cpp" />
-    <ClCompile Include="..\platform\Windows_x64\ATIO\source\vorbisdecoder.cpp" />
-    <ClCompile Include="..\platform\Windows_x64\ATIO\source\vorbismisc.cpp" />
+    <ClCompile Include="source\vorbisdecoder.cpp" />
+    <ClCompile Include="source\vorbismisc.cpp" />
     <ClCompile Include="source\wav.cpp" />
     <ClCompile Include="source\audioreaderwav.cpp" />
   </ItemGroup>
