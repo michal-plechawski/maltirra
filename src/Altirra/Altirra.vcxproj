@@ -101,7 +101,7 @@
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\mediamanager.h" />
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\multiplexer.h" />
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\ostracing.h" />
-    <ClInclude Include="..\platform\Windows_x64\Altirra\h\palettegenerator.h" />
+    <ClInclude Include="h\palettegenerator.h" />
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\palettesolver.h" />
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\pbidisk.h" />
     <ClInclude Include="h\pokeysavecompat.h" />
@@ -351,7 +351,9 @@
     <ClCompile Include="..\platform\Windows_x64\Altirra\source\options.cpp" />
     <ClCompile Include="..\platform\Windows_x64\Altirra\source\oshelper.cpp" />
     <ClCompile Include="..\platform\Windows_x64\Altirra\source\ostracing.cpp" />
-    <ClCompile Include="..\platform\Windows_x64\Altirra\source\palettegenerator.cpp" />
+    <ClCompile Include="source\palettegenerator.cpp">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+    </ClCompile>
     <ClCompile Include="..\platform\Windows_x64\Altirra\source\palettesolver.cpp" />
     <ClCompile Include="source\pbi.cpp">
       <PrecompiledHeader>NotUsing</PrecompiledHeader>

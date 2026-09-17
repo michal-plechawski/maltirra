@@ -40,6 +40,7 @@ bool ATTestAltirraKernelDB(ATPortableTestContext& context);
 bool ATTestAltirraPNG(ATPortableTestContext& context);
 bool ATTestAltirraPNGEncoder(ATPortableTestContext& context);
 bool ATTestAltirraPBI(ATPortableTestContext& context);
+bool ATTestAltirraPaletteGenerator(ATPortableTestContext& context);
 bool ATTestAltirraSaveStateTypes(ATPortableTestContext& context);
 bool ATTestAltirraSaveStateReader(ATPortableTestContext& context);
 bool ATTestAltirraSaveStateIO(ATPortableTestContext& context);
@@ -156,6 +157,7 @@ const ATPortableTestCase *ATGetPortableTests(size_t& count) {
 		{ "Altirra_PNG", ATTestAltirraPNG },
 		{ "Altirra_PNGEncoder", ATTestAltirraPNGEncoder },
 		{ "Altirra_PBI", ATTestAltirraPBI },
+		{ "Altirra_PaletteGenerator", ATTestAltirraPaletteGenerator },
 		{ "Altirra_SaveStateTypes", ATTestAltirraSaveStateTypes },
 		{ "Altirra_SaveStateReader", ATTestAltirraSaveStateReader },
 		{ "Altirra_SaveStateIO", ATTestAltirraSaveStateIO },

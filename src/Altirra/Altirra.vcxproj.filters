@@ -784,7 +784,7 @@
     <ClCompile Include="..\platform\Windows_x64\Altirra\source\cmdoptions.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\platform\Windows_x64\Altirra\source\palettegenerator.cpp">
+    <ClCompile Include="source\palettegenerator.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\platform\Windows_x64\Altirra\source\palettesolver.cpp">
@@ -1596,7 +1596,7 @@
     <ClInclude Include="h\videomanager.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\platform\Windows_x64\Altirra\h\palettegenerator.h">
+    <ClInclude Include="h\palettegenerator.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\palettesolver.h">

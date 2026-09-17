@@ -14,11 +14,12 @@
 //	You should have received a copy of the GNU General Public License along
 //	with this program. If not, see <http://www.gnu.org/licenses/>.
 
-#include <stdafx.h>
+#include <algorithm>
+#include <cmath>
+#include <cstring>
 #include <vd2/system/color.h>
 #include <at/atcore/configvar.h>
 #include "palettegenerator.h"
-#include "gtia.h"
 #include "gtiatables.h"
 
 extern ATConfigVarRGBColor g_ATCVDisplayMonoColorWhite;
@@ -100,7 +101,7 @@ void ATColorPaletteGenerator::Generate(const ATColorParams& params, ATMonitorMod
 		{  0.0134474f, -0.1183897f,  1.0154096f },
 	}.transpose();
 
-	vdfloat3x3 mx;
+	vdfloat3x3 mx {};
 	bool useMatrix = false;
 	const vdfloat3x3 *toMat = nullptr;
 
@@ -141,13 +142,11 @@ void ATColorPaletteGenerator::Generate(const ATColorParams& params, ATMonitorMod
 	uint32 *dst = mPalette;
 	uint32 *dsts = mSignedPalette;
 
-	const bool useColorTint = monitorMode != ATMonitorMode::Color;
 	vdfloat32x3 tintColor = vdfloat32x3::zero();
+	const bool useColorTint = GetMonoColor(monitorMode, tintColor);
 
-	if (useColorTint)
+	if (useColorTint || monitorMode == ATMonitorMode::Peritel)
 		useMatrix = false;
-
-	GetMonoColor(monitorMode, tintColor);
 
 	if (monitorMode == ATMonitorMode::Peritel) {
 		// The CA061034 PERITEL adapter is a simple translation from GTIA luma lines to RGB output. The

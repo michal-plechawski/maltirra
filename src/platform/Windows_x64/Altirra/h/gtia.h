@@ -27,6 +27,7 @@
 #include <at/atcore/enumparse.h>
 #include <at/atcore/notifylist.h>
 #include "gtiatables.h"
+#include "palettegenerator.h"
 #include "videotap.h"
 
 class IVDVideoDisplay;
@@ -56,40 +57,6 @@ class ATSaveStateReader;
 class IATObjectState;
 class ATGTIARenderer;
 class ATVBXEEmulator;
-
-enum class ATColorMatchingMode : uint8 {
-	None,
-	SRGB,
-	AdobeRGB,
-	Gamma22,
-	Gamma24,
-};
-
-AT_DECLARE_ENUM_TABLE(ATColorMatchingMode);
-
-struct ATColorParams {
-	float mHueStart;			// I-Q plane angle of hue 1
-	float mHueRange;			// I-Q plane cumulative angle for 15 hue steps (disregarding PAL uneven steps)
-	float mBrightness;			// Luma 0 output level
-	float mContrast;			// Luma 0->15 output range
-	float mSaturation;
-	float mGammaCorrect;
-	float mIntensityScale;
-	float mArtifactHue;	
-	float mArtifactSat;
-	float mArtifactSharpness;
-	float mRedShift;
-	float mRedScale;
-	float mGrnShift;
-	float mGrnScale;
-	float mBluShift;
-	float mBluScale;
-	bool mbUsePALQuirks;
-	ATLumaRampMode mLumaRampMode;
-	ATColorMatchingMode mColorMatchingMode;
-
-	bool IsSimilar(const ATColorParams& params) const;
-};
 
 struct ATNamedColorParams : public ATColorParams {
 	VDStringA mPresetTag;
@@ -137,18 +104,6 @@ enum class ATArtifactMode : uint8 {
 	AutoHi,
 	Count
 };
-
-enum class ATMonitorMode : uint8 {
-	Color,
-	Peritel,
-	MonoGreen,
-	MonoAmber,
-	MonoBluishWhite,
-	MonoWhite,
-	Count
-};
-
-AT_DECLARE_ENUM_TABLE(ATMonitorMode);
 
 enum class ATVideoFieldPolarity : uint8 {
 	Unknown,

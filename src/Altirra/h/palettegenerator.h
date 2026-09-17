@@ -19,9 +19,54 @@
 
 #include <optional>
 #include <vd2/system/vecmath.h>
+#include <at/atcore/enumparse.h>
+#include "gtiatables.h"
 
-struct ATColorParams;
-enum class ATMonitorMode : uint8;
+enum class ATColorMatchingMode : uint8 {
+	None,
+	SRGB,
+	AdobeRGB,
+	Gamma22,
+	Gamma24,
+};
+
+AT_DECLARE_ENUM_TABLE(ATColorMatchingMode);
+
+struct ATColorParams {
+	float mHueStart;			// I-Q plane angle of hue 1
+	float mHueRange;			// I-Q plane cumulative angle for 15 hue steps (disregarding PAL uneven steps)
+	float mBrightness;			// Luma 0 output level
+	float mContrast;			// Luma 0->15 output range
+	float mSaturation;
+	float mGammaCorrect;
+	float mIntensityScale;
+	float mArtifactHue;
+	float mArtifactSat;
+	float mArtifactSharpness;
+	float mRedShift;
+	float mRedScale;
+	float mGrnShift;
+	float mGrnScale;
+	float mBluShift;
+	float mBluScale;
+	bool mbUsePALQuirks;
+	ATLumaRampMode mLumaRampMode;
+	ATColorMatchingMode mColorMatchingMode;
+
+	bool IsSimilar(const ATColorParams& params) const;
+};
+
+enum class ATMonitorMode : uint8 {
+	Color,
+	Peritel,
+	MonoGreen,
+	MonoAmber,
+	MonoBluishWhite,
+	MonoWhite,
+	Count
+};
+
+AT_DECLARE_ENUM_TABLE(ATMonitorMode);
 
 // ATColorPaletteGenerator
 //
