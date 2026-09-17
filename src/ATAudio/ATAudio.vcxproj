@@ -22,6 +22,7 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <ItemGroup>
+    <ClCompile Include="source\audioedgeplayer.cpp" />
     <ClCompile Include="source\audioconvolutionplayer.cpp" />
     <ClCompile Include="..\platform\Windows_x64\ATAudio\source\audiofilters.cpp" />
     <ClCompile Include="..\platform\Windows_x64\ATAudio\source\audiooutput.cpp" />
@@ -40,6 +41,7 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\h\at\ataudio\internal\audioedgeplayer.h" />
     <ClInclude Include="..\h\at\ataudio\audioconvolutionplayer.h" />
     <ClInclude Include="..\h\at\ataudio\audiofilters.h" />
     <ClInclude Include="..\platform\Windows_x64\h\at\ataudio\audioout.h" />

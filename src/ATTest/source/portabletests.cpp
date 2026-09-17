@@ -74,6 +74,7 @@ bool ATTestAltirraVideoManager(ATPortableTestContext& context);
 bool ATTestAltirraVersionInfo(ATPortableTestContext& context);
 bool ATTestAltirraVBXEState(ATPortableTestContext& context);
 bool ATTestAudioFilters(ATPortableTestContext& context);
+bool ATTestAudioEdgePlayer(ATPortableTestContext& context);
 bool ATTestCoreChecksum(ATPortableTestContext& context);
 bool ATTestCoreFFT(ATPortableTestContext& context);
 bool ATTestCoreTimerService(ATPortableTestContext& context);
@@ -206,6 +207,7 @@ const ATPortableTestCase *ATGetPortableTests(size_t& count) {
 		{ "Altirra_VersionInfo", ATTestAltirraVersionInfo },
 		{ "Altirra_VBXEState", ATTestAltirraVBXEState },
 		{ "Audio_Filters", ATTestAudioFilters },
+		{ "Audio_EdgePlayer", ATTestAudioEdgePlayer },
 		{ "Core_Checksum", ATTestCoreChecksum },
 		{ "Core_FFT", ATTestCoreFFT },
 		{ "Core_TimerService", ATTestCoreTimerService },

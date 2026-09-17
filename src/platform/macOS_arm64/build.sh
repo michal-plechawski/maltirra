@@ -209,6 +209,7 @@ portable_test_sources=(
 	src/ATTest/source/TestAltirra_VersionInfoPortable.cpp
 	src/ATTest/source/TestAltirra_VBXEStatePortable.cpp
 	src/ATTest/source/TestAudio_FiltersPortable.cpp
+	src/ATTest/source/TestAudio_EdgePlayerPortable.cpp
 	src/ATTest/source/TestCore_ChecksumPortable.cpp
 	src/ATTest/source/TestCore_FFTPortable.cpp
 	src/ATTest/source/TestCore_TimerServicePortable.cpp
@@ -367,6 +368,7 @@ portable_test_sources=(
 	src/ATCore/source/sioutils.cpp
 	src/ATCore/source/snapshotimpl.cpp
 	src/ATAudio/source/pokey.cpp
+	src/ATAudio/source/audioedgeplayer.cpp
 	src/ATAudio/source/pokeyrenderer.cpp
 	src/ATAudio/source/pokeysavestate.cpp
 	src/ATAudio/source/pokeytables.cpp
