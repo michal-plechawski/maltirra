@@ -1,25 +1,20 @@
 // Altirra portable asynchronous network lookup worker tests
 
-#ifdef _WIN32
-#include <WinSock2.h>
-#endif
-
 #include <at/attest/portabletest.h>
 #include <at/atnetworksockets/internal/lookupworker.h>
 #include <vd2/system/thread.h>
 
 namespace {
 #ifdef _WIN32
-	class ATWinsockTestScope {
+	class ATNativeSocketSystemScope {
 	public:
-		ATWinsockTestScope() {
-			WSADATA data {};
-			mbInitialized = !WSAStartup(MAKEWORD(2, 0), &data);
+		ATNativeSocketSystemScope() {
+			mbInitialized = ATSocketInit();
 		}
 
-		~ATWinsockTestScope() {
+		~ATNativeSocketSystemScope() {
 			if (mbInitialized)
-				WSACleanup();
+				ATSocketShutdown();
 		}
 
 		bool mbInitialized = false;
@@ -29,8 +24,8 @@ namespace {
 
 bool ATTestNetLookupWorker(ATPortableTestContext& context) {
 #ifdef _WIN32
-	ATWinsockTestScope winsock;
-	AT_PORTABLE_TEST_ASSERT(context, winsock.mbInitialized);
+	ATNativeSocketSystemScope socketSystem;
+	AT_PORTABLE_TEST_ASSERT(context, socketSystem.mbInitialized);
 #endif
 
 	ATNetLookupWorker worker;
