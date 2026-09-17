@@ -31,8 +31,9 @@
 // storage; the alarm and timer do not count, and all control bits are
 // ignored.
 
-#include <stdafx.h>
-#include <time.h>
+#include <ctime>
+#include <cstring>
+
 #include <at/atcore/snapshotimpl.h>
 #include "rtime8.h"
 #include "memorymanager.h"
@@ -47,12 +48,12 @@ ATRTime8Emulator::ATRTime8Emulator()
 	: mAddress(0)
 	, mPhase(0)
 {
-	time_t t;
+	std::time_t t;
 
-	time(&t);
-	const tm *p = localtime(&t);
+	std::time(&t);
+	const std::tm *p = std::localtime(&t);
 
-	memset(mRAM, 0, sizeof mRAM);
+	std::memset(mRAM, 0, sizeof mRAM);
 	mRAM[7] = ToBCD((p->tm_yday / 7) + 1);
 	mRAM[15] = 0x01;
 }
@@ -73,12 +74,12 @@ uint8 ATRTime8Emulator::DebugReadControl(uint8 addr) const {
 	if (mPhase == 0)
 		return 0x00;		// 0000 = idle, 1111 = update pending
 
-	const tm *p = NULL;
+	const std::tm *p = nullptr;
 	if (mAddress < 8) {
-		time_t t;
+		std::time_t t;
 
-		time(&t);
-		p = localtime(&t);
+		std::time(&t);
+		p = std::localtime(&t);
 	}
 
 	uint8 v = 0;

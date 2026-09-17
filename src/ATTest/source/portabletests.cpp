@@ -15,6 +15,7 @@ bool ATTestAltirraConstants(ATPortableTestContext& context);
 bool ATTestAltirraCompatDB(ATPortableTestContext& context);
 bool ATTestAltirraCPUMemory(ATPortableTestContext& context);
 bool ATTestAltirraMemoryManager(ATPortableTestContext& context);
+bool ATTestAltirraRTime8(ATPortableTestContext& context);
 bool ATTestAltirraDebuggerSettings(ATPortableTestContext& context);
 bool ATTestAltirraDiskTrace(ATPortableTestContext& context);
 bool ATTestAltirraDiskProfile(ATPortableTestContext& context);
@@ -124,6 +125,7 @@ const ATPortableTestCase *ATGetPortableTests(size_t& count) {
 		{ "Altirra_CompatDB", ATTestAltirraCompatDB },
 		{ "Altirra_CPUMemory", ATTestAltirraCPUMemory },
 		{ "Altirra_MemoryManager", ATTestAltirraMemoryManager },
+		{ "Altirra_RTime8", ATTestAltirraRTime8 },
 		{ "Altirra_DebuggerSettings", ATTestAltirraDebuggerSettings },
 		{ "Altirra_DiskTrace", ATTestAltirraDiskTrace },
 		{ "Altirra_DiskProfile", ATTestAltirraDiskProfile },

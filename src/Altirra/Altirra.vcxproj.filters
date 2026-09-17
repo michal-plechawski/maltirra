@@ -274,7 +274,7 @@
     <ClCompile Include="..\platform\Windows_x64\Altirra\source\rs232.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\platform\Windows_x64\Altirra\source\rtime8.cpp">
+    <ClCompile Include="source\rtime8.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="source\savestate.cpp">
@@ -1305,7 +1305,7 @@
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\rs232.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\platform\Windows_x64\Altirra\h\rtime8.h">
+    <ClInclude Include="h\rtime8.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="h\savestate.h">
