@@ -21,6 +21,7 @@ bool ATLoadImageResource(uint32 id, VDPixmapBuffer& buf);
 void ATFileSetReadOnlyAttribute(const wchar_t *path, bool readOnly);
 
 void ATCopyFrameToClipboard(const VDPixmap& px);
+void ATEncodeFrameAsPNG(const VDPixmap& px, vdfastvector<uint8>& data);
 void ATLoadFrame(VDPixmapBuffer& px, const wchar_t *filename);
 void ATLoadFrameFromMemory(VDPixmapBuffer& px, const void *mem, size_t len);
 void ATSaveFrame(const VDPixmap& px, const wchar_t *filename);

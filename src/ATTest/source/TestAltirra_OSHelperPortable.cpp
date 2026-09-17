@@ -1,7 +1,6 @@
 // Altirra portable OS helper tests
 
 #include <cstring>
-#include <memory>
 #include <at/attest/portabletest.h>
 #include <vd2/Kasumi/pixmap.h>
 #include <vd2/Kasumi/pixmaputils.h>
@@ -12,7 +11,6 @@
 #include <vd2/system/time.h>
 #include <vd2/system/vdstring.h>
 #include <oshelper.h>
-#include <encode_png.h>
 #include "../../Altirra/res/resource.h"
 
 namespace {
@@ -182,10 +180,11 @@ bool ATTestAltirraOSHelper(ATPortableTestContext& context) {
 		source.pitch = 2 * sizeof(uint32);
 		source.format = nsVDPixmap::kPixFormat_XRGB8888;
 
-		std::unique_ptr<IVDImageEncoderPNG> encoder(VDCreateImageEncoderPNG());
-		const void *encodedData = nullptr;
-		uint32 encodedSize = 0;
-		encoder->Encode(source, encodedData, encodedSize, false);
+		vdfastvector<uint8> encodedData;
+		ATEncodeFrameAsPNG(source, encodedData);
+		static constexpr uint8 kPNGSignature[] { 137, 80, 78, 71, 13, 10, 26, 10 };
+		AT_PORTABLE_TEST_ASSERT(context, encodedData.size() > sizeof kPNGSignature);
+		AT_PORTABLE_TEST_ASSERT(context, !memcmp(encodedData.data(), kPNGSignature, sizeof kPNGSignature));
 
 		auto validatePixels = [&](const VDPixmap& decoded) {
 			if (decoded.w != 2 || decoded.h != 2 || decoded.format != nsVDPixmap::kPixFormat_XRGB8888)
@@ -203,7 +202,7 @@ bool ATTestAltirraOSHelper(ATPortableTestContext& context) {
 		};
 
 		VDPixmapBuffer memoryDecoded;
-		ATLoadFrameFromMemory(memoryDecoded, encodedData, encodedSize);
+		ATLoadFrameFromMemory(memoryDecoded, encodedData.data(), encodedData.size());
 		AT_PORTABLE_TEST_ASSERT(context, validatePixels(memoryDecoded));
 
 		ATOSHelperTestFile file;

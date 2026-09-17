@@ -6,7 +6,7 @@
 #include <mutex>
 #include <vector>
 
-#import <Foundation/Foundation.h>
+#import <AppKit/AppKit.h>
 #import <ImageIO/ImageIO.h>
 
 #include <grp.h>
@@ -15,6 +15,8 @@
 
 #include "oshelper.h"
 #include <vd2/system/error.h>
+#include <vd2/system/text.h>
+#include <vd2/system/vdstring.h>
 #include <vd2/Kasumi/pixmap.h>
 #include <vd2/Kasumi/pixmaputils.h>
 #include "../../../../Altirra/res/resource.h"
@@ -291,6 +293,47 @@ void ATLoadFrameFromMemory(VDPixmapBuffer& px, const void *mem, size_t len) {
 		CGContextRelease(context);
 		CGImageRelease(image);
 	}
+}
+
+void ATCopyFrameToClipboard(const VDPixmap& px) {
+	vdfastvector<uint8> pngData;
+	ATEncodeFrameAsPNG(px, pngData);
+
+	@autoreleasepool {
+		NSData *const data = [NSData dataWithBytes:pngData.data() length:pngData.size()];
+		NSPasteboard *const pasteboard = [NSPasteboard generalPasteboard];
+		[pasteboard clearContents];
+		[pasteboard setData:data forType:NSPasteboardTypePNG];
+	}
+}
+
+void ATCopyTextToClipboard(void *hwnd, const char *s) {
+	(void)hwnd;
+	if (!s)
+		return;
+
+	@autoreleasepool {
+		NSString *text = [[[NSString alloc]
+			initWithBytes:s
+			length:strlen(s)
+			encoding:NSUTF8StringEncoding] autorelease];
+		if (!text)
+			text = [NSString stringWithCString:s encoding:NSISOLatin1StringEncoding];
+
+		if (text) {
+			NSPasteboard *const pasteboard = [NSPasteboard generalPasteboard];
+			[pasteboard clearContents];
+			[pasteboard setString:text forType:NSPasteboardTypeString];
+		}
+	}
+}
+
+void ATCopyTextToClipboard(void *hwnd, const wchar_t *s) {
+	if (!s)
+		return;
+
+	const VDStringA text = VDTextWToU8(s, -1);
+	ATCopyTextToClipboard(hwnd, text.c_str());
 }
 
 bool ATIsUserAdministrator() {

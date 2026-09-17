@@ -48,17 +48,25 @@ void ATLoadFrame(VDPixmapBuffer& px, const wchar_t *filename) {
 	ATLoadFrameFromMemory(px, data.data(), static_cast<size_t>(size));
 }
 
-void ATSaveFrame(const VDPixmap& px, const wchar_t *filename) {
+void ATEncodeFrameAsPNG(const VDPixmap& px, vdfastvector<uint8>& data) {
 	VDPixmapBuffer pxbuf(px.w, px.h, nsVDPixmap::kPixFormat_RGB888);
 	VDPixmapBlt(pxbuf, px);
 
 	vdautoptr<IVDImageEncoderPNG> encoder(VDCreateImageEncoderPNG());
-	const void *data;
+	const void *encodedData;
 	uint32 size;
-	encoder->Encode(pxbuf, data, size, false);
+	encoder->Encode(pxbuf, encodedData, size, false);
+
+	const uint8 *const encodedBytes = static_cast<const uint8 *>(encodedData);
+	data.assign(encodedBytes, encodedBytes + size);
+}
+
+void ATSaveFrame(const VDPixmap& px, const wchar_t *filename) {
+	vdfastvector<uint8> data;
+	ATEncodeFrameAsPNG(px, data);
 
 	VDFile file(filename, nsVDFile::kWrite | nsVDFile::kDenyRead | nsVDFile::kCreateAlways);
-	file.write(data, size);
+	file.write(data.data(), static_cast<long>(data.size()));
 }
 
 bool ATDecodeLZPackedResource(const void *srcData, size_t srcSize, vdfastvector<uint8>& data) {
