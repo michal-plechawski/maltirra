@@ -162,6 +162,7 @@ portable_test_sources=(
 	src/ATTest/source/TestAltirra_FirmwareDetectPortable.cpp
 	src/ATTest/source/TestAltirra_InputDefsPortable.cpp
 	src/ATTest/source/TestAltirra_InputMapPortable.cpp
+	src/ATTest/source/TestAltirra_CPUHookManagerPortable.cpp
 	src/ATTest/source/TestAltirra_IRQControllerPortable.cpp
 	src/ATTest/source/TestAltirra_HLEUtilsPortable.cpp
 	src/ATTest/source/TestAltirra_GTIATablesPortable.cpp
@@ -269,6 +270,7 @@ portable_test_sources=(
 	src/Altirra/source/blockdevdiskadapter.cpp
 	src/Altirra/source/cartridgeport.cpp
 	src/Altirra/source/cheatengine.cpp
+	src/Altirra/source/cpuhookmanager.cpp
 	src/Altirra/source/common_png.cpp
 	src/Altirra/source/artifacting_pal_scalar.cpp
 	src/Altirra/source/encode_png.cpp

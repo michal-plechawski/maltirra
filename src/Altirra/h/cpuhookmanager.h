@@ -55,10 +55,6 @@ typedef vdfunction<uint8(uint16 pc)> ATCPUHookFn;
 typedef vdfunction<void()> ATCPUHookResetFn;
 typedef vdfunction<void(const uint8 *lowerKernelROM, const uint8 *upperKernelROM)> ATCPUHookInitFn;
 
-class ATCPUEmulator;
-class ATMMUEmulator;
-class ATPBIManager;
-
 enum ATCPUHookMode {
 	kATCPUHookMode_Always,
 	kATCPUHookMode_KernelROMOnly,
@@ -92,7 +88,23 @@ public:
 	ATCPUHookManager();
 	~ATCPUHookManager();
 
-	void Init(ATCPUEmulator *cpu, ATMMUEmulator *mmu, ATPBIManager *pbi);
+	template<typename TCPU, typename TMMU, typename TPBI>
+	void Init(TCPU *cpu, TMMU *mmu, TPBI *pbi) {
+		mpCPU = cpu;
+		mpSetCPUHook = [](void *p, uint16 pc, bool enable) {
+			static_cast<TCPU *>(p)->SetHook(pc, enable);
+		};
+
+		mpMMU = mmu;
+		mpIsKernelROMEnabled = [](const void *p) {
+			return static_cast<const TMMU *>(p)->IsKernelROMEnabled();
+		};
+
+		mpPBI = pbi;
+		mpIsPBIROMOverlayActive = [](const void *p) {
+			return static_cast<const TPBI *>(p)->IsROMOverlayActive();
+		};
+	}
 	void Shutdown();
 
 	void EnableOSHooks(bool enabled) { mbOSHooksEnabled = enabled; }
@@ -130,14 +142,17 @@ public:
 	void UnsetHook(ATCPUHookNode *& hook) {
 		if (hook) {
 			RemoveHook(hook);
-			hook = NULL;
+			hook = nullptr;
 		}
 	}
 
 private:
-	ATCPUEmulator *mpCPU = nullptr;
-	ATMMUEmulator *mpMMU = nullptr;
-	ATPBIManager *mpPBI = nullptr;
+	void *mpCPU = nullptr;
+	void (*mpSetCPUHook)(void *, uint16, bool) = nullptr;
+	const void *mpMMU = nullptr;
+	bool (*mpIsKernelROMEnabled)(const void *) = nullptr;
+	const void *mpPBI = nullptr;
+	bool (*mpIsPBIROMOverlayActive)(const void *) = nullptr;
 	bool mbOSHooksEnabled = false;
 
 	HashNode *mpFreeList = nullptr;

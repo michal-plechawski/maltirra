@@ -88,6 +88,9 @@
 	<ClCompile Include="source\TestAltirra_InputMapPortable.cpp">
 	  <Filter>Source Files</Filter>
 	</ClCompile>
+	<ClCompile Include="source\TestAltirra_CPUHookManagerPortable.cpp">
+	  <Filter>Source Files</Filter>
+	</ClCompile>
 	<ClCompile Include="source\TestAltirra_IRQControllerPortable.cpp">
 	  <Filter>Source Files</Filter>
 	</ClCompile>

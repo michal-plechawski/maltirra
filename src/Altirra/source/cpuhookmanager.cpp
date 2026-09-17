@@ -15,22 +15,14 @@
 //	along with this program; if not, write to the Free Software
 //	Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
-#include <stdafx.h>
+#include <algorithm>
+#include <utility>
 #include "cpuhookmanager.h"
-#include "cpu.h"
-#include "mmu.h"
-#include "pbi.h"
 
 ATCPUHookManager::ATCPUHookManager() {
 }
 
 ATCPUHookManager::~ATCPUHookManager() {
-}
-
-void ATCPUHookManager::Init(ATCPUEmulator *cpu, ATMMUEmulator *mmu, ATPBIManager *pbi) {
-	mpCPU = cpu;
-	mpMMU = mmu;
-	mpPBI = pbi;
 }
 
 void ATCPUHookManager::Shutdown() {
@@ -45,20 +37,31 @@ void ATCPUHookManager::Shutdown() {
 				node = node->mpNext;
 			} while(node && node->mPC == pc);
 
-			mpCPU->SetHook(pc, false);
+			mpSetCPUHook(mpCPU, pc, false);
 		}
 	}
 
-	std::fill(mpHashTable, mpHashTable + 256, (HashNode *)NULL);
+	for(InitNode *node = mpInitChain; node; node = node->mpNext)
+		node->mpHookFn = nullptr;
+
+	for(ResetNode *node = mpResetChain; node; node = node->mpNext)
+		node->mpHookFn = nullptr;
+
+	std::fill(mpHashTable, mpHashTable + 256, nullptr);
 	mAllocator.Clear();
 
 	mpInitChain = nullptr;
 	mpInitFreeList = nullptr;
+	mpResetChain = nullptr;
+	mpResetFreeList = nullptr;
 	mpFreeList = nullptr;
 
-	mpPBI = NULL;
-	mpMMU = NULL;
-	mpCPU = NULL;
+	mpIsPBIROMOverlayActive = nullptr;
+	mpPBI = nullptr;
+	mpIsKernelROMEnabled = nullptr;
+	mpMMU = nullptr;
+	mpSetCPUHook = nullptr;
+	mpCPU = nullptr;
 }
 
 uint8 ATCPUHookManager::OnHookHit(uint16 pc) const {
@@ -75,15 +78,15 @@ uint8 ATCPUHookManager::OnHookHit(uint16 pc) const {
 					break;
 
 				case kATCPUHookMode_KernelROMOnly:
-					if (!mbOSHooksEnabled || !mpMMU->IsKernelROMEnabled())
+					if (!mbOSHooksEnabled || !mpIsKernelROMEnabled(mpMMU))
 						continue;
 					break;
 
 				case kATCPUHookMode_MathPackROMOnly:
-					if (!mbOSHooksEnabled || !mpMMU->IsKernelROMEnabled())
+					if (!mbOSHooksEnabled || !mpIsKernelROMEnabled(mpMMU))
 						continue;
 
-					if (mpPBI->IsROMOverlayActive())
+					if (mpIsPBIROMOverlayActive(mpPBI))
 						continue;
 					break;
 			}
@@ -109,10 +112,10 @@ void ATCPUHookManager::CallResetHooks() {
 }
 
 ATCPUHookResetNode *ATCPUHookManager::AddResetHook(ATCPUHookResetFn fn) {
-	if (!mpInitFreeList) {
+	if (!mpResetFreeList) {
 		ResetNode *node = mAllocator.Allocate<ResetNode>();
 
-		node->mpNext = NULL;
+		node->mpNext = nullptr;
 		node->mpHookFn = nullptr;
 		mpResetFreeList = node;
 	}
@@ -170,7 +173,7 @@ ATCPUHookInitNode *ATCPUHookManager::AddInitHook(const ATCPUHookInitFn& fn) {
 	if (!mpInitFreeList) {
 		InitNode *node = mAllocator.Allocate<InitNode>();
 
-		node->mpNext = NULL;
+		node->mpNext = nullptr;
 		node->mpHookFn = nullptr;
 		mpInitFreeList = node;
 	}
@@ -216,7 +219,7 @@ ATCPUHookNode *ATCPUHookManager::AddHook(ATCPUHookMode mode, uint16 pc, sint8 pr
 	if (!mpFreeList) {
 		HashNode *node = mAllocator.Allocate<HashNode>();
 
-		node->mpNext = NULL;
+		node->mpNext = nullptr;
 		node->mpHookFn = nullptr;
 		mpFreeList = node;
 	}
@@ -247,7 +250,7 @@ ATCPUHookNode *ATCPUHookManager::AddHook(ATCPUHookMode mode, uint16 pc, sint8 pr
 	*insertPrev = node;
 	node->mpNext = insertNext;
 
-	mpCPU->SetHook(pc, true);
+	mpSetCPUHook(mpCPU, pc, true);
 	return node;
 }
 
@@ -265,7 +268,7 @@ void ATCPUHookManager::RemoveHook(ATCPUHookNode *hook) {
 			*prev = node->mpNext;
 
 			if (prevpc != pc && (!node->mpNext || node->mpNext->mPC != pc))
-				mpCPU->SetHook(pc, false);
+				mpSetCPUHook(mpCPU, pc, false);
 
 			node->mpNext = mpFreeList;
 			mpFreeList = node;

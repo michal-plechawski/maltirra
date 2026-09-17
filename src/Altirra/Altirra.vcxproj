@@ -231,7 +231,9 @@
     <ClCompile Include="..\platform\Windows_x64\Altirra\source\cpu65c02.cpp" />
     <ClCompile Include="..\platform\Windows_x64\Altirra\source\cpu65c816.cpp" />
     <ClCompile Include="..\platform\Windows_x64\Altirra\source\cpuheatmap.cpp" />
-    <ClCompile Include="..\platform\Windows_x64\Altirra\source\cpuhookmanager.cpp" />
+    <ClCompile Include="source\cpuhookmanager.cpp">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+    </ClCompile>
     <ClCompile Include="..\platform\Windows_x64\Altirra\source\cputracer.cpp" />
     <ClCompile Include="..\platform\Windows_x64\Altirra\source\cs8900a.cpp" />
     <ClCompile Include="..\platform\Windows_x64\Altirra\source\customdevice.cpp" />
@@ -632,7 +634,7 @@
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\covox.h" />
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\cpu.h" />
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\cpuheatmap.h" />
-    <ClInclude Include="..\platform\Windows_x64\Altirra\h\cpuhookmanager.h" />
+    <ClInclude Include="h\cpuhookmanager.h" />
     <ClInclude Include="h\cpumemory.h" />
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\cpustates.h" />
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\cs8900a.h" />
