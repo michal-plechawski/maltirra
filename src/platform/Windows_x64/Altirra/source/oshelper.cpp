@@ -196,6 +196,18 @@ void ATLoadFrameFromMemory(VDPixmapBuffer& px, const void *mem, size_t len) {
 	if (!mem || len < 4)
 		throw MyError("Unsupported image format.");
 
+	struct COMInitialization {
+		HRESULT mResult = CoInitializeEx(nullptr, COINIT_MULTITHREADED);
+
+		~COMInitialization() {
+			if (SUCCEEDED(mResult))
+				CoUninitialize();
+		}
+	} comInitialization;
+
+	if (FAILED(comInitialization.mResult) && comInitialization.mResult != RPC_E_CHANGED_MODE)
+		throw MyError("Unable to initialize COM for Windows Imaging.");
+
 	uint8 buf8[4];
 	memcpy(buf8, mem, 4);
 
