@@ -250,7 +250,7 @@
     <ClCompile Include="..\platform\Windows_x64\Altirra\source\oshelper.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\platform\Windows_x64\Altirra\source\pbi.cpp">
+    <ClCompile Include="source\pbi.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\platform\Windows_x64\Altirra\source\pclink.cpp">
@@ -1287,7 +1287,7 @@
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\oshelper.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\platform\Windows_x64\Altirra\h\pbi.h">
+    <ClInclude Include="h\pbi.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\pclink.h">

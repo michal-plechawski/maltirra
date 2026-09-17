@@ -170,6 +170,7 @@ portable_test_sources=(
 	src/ATTest/source/TestAltirra_KernelDBPortable.cpp
 	src/ATTest/source/TestAltirra_PNGPortable.cpp
 	src/ATTest/source/TestAltirra_PNGEncoderPortable.cpp
+	src/ATTest/source/TestAltirra_PBIPortable.cpp
 	src/ATTest/source/TestAltirra_SaveStateTypesPortable.cpp
 	src/ATTest/source/TestAltirra_SaveStateReaderPortable.cpp
 	src/ATTest/source/TestAltirra_SaveStateIOPortable.cpp
@@ -315,6 +316,7 @@ portable_test_sources=(
 	src/Altirra/source/printerttfencoder.cpp
 	src/Altirra/source/pokeytrace.cpp
 	src/Altirra/source/pokeysavecompat.cpp
+	src/Altirra/source/pbi.cpp
 	src/Altirra/source/savestatetypes.cpp
 	src/Altirra/source/savestate.cpp
 	src/Altirra/source/savestateio.cpp

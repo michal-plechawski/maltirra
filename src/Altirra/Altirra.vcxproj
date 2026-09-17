@@ -351,7 +351,9 @@
     <ClCompile Include="..\platform\Windows_x64\Altirra\source\ostracing.cpp" />
     <ClCompile Include="..\platform\Windows_x64\Altirra\source\palettegenerator.cpp" />
     <ClCompile Include="..\platform\Windows_x64\Altirra\source\palettesolver.cpp" />
-    <ClCompile Include="..\platform\Windows_x64\Altirra\source\pbi.cpp" />
+    <ClCompile Include="source\pbi.cpp">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+    </ClCompile>
     <ClCompile Include="..\platform\Windows_x64\Altirra\source\pbidisk.cpp" />
     <ClCompile Include="..\platform\Windows_x64\Altirra\source\pclink.cpp" />
     <ClCompile Include="..\platform\Windows_x64\Altirra\source\pclink_win32.cpp" />
@@ -676,7 +678,7 @@
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\myide.h" />
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\options.h" />
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\oshelper.h" />
-    <ClInclude Include="..\platform\Windows_x64\Altirra\h\pbi.h" />
+    <ClInclude Include="h\pbi.h" />
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\pclink.h" />
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\pia.h" />
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\profiler.h" />

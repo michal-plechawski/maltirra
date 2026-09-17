@@ -24,6 +24,7 @@
 
 class ATMemoryManager;
 class ATMemoryLayer;
+class ATIRQController;
 struct ATPBIDeviceInfo;
 
 class ATPBIManager final : public IATDevicePBIManager {

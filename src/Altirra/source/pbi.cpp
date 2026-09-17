@@ -16,9 +16,10 @@
 //	along with this program; if not, write to the Free Software
 //	Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
-#include <stdafx.h>
-#include <at/atcore/devicepbi.h>
+#include <algorithm>
+#include <iterator>
 #include <vd2/system/bitmath.h>
+#include <at/atcore/devicepbi.h>
 #include "irqcontroller.h"
 #include "memorymanager.h"
 #include "pbi.h"
@@ -41,7 +42,7 @@ void ATPBIManager::Init(ATMemoryManager *memman, ATIRQController *irqc) {
 	handlers.mpWriteHandler = OnControlWrite;
 	mpMemLayerPBISel = mpMemMan->CreateLayer(kATMemoryPri_PBISelect, handlers, 0xD1, 0x01);
 	mpMemMan->SetLayerName(mpMemLayerPBISel, "PBI shared select register");
-	mpMemMan->EnableLayer(mpMemLayerPBISel, kATMemoryAccessMode_CPUWrite, true);
+	mpMemMan->SetLayerModes(mpMemLayerPBISel, kATMemoryAccessMode_0);
 
 	ATMemoryHandlerTable handlers2 = {};
 	handlers2.mbPassAnticReads = true;
@@ -97,7 +98,7 @@ void ATPBIManager::AddDevice(IATPBIDevice *dev) {
 void ATPBIManager::RemoveDevice(IATPBIDevice *dev) {
 	if (mpSelDevice == dev) {
 		mpSelDevice->SelectPBIDevice(false);
-		mpSelDevice = NULL;
+		mpSelDevice = nullptr;
 	}
 
 	Devices::iterator it(std::find(mDevices.begin(), mDevices.end(), dev));

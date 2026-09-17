@@ -112,6 +112,9 @@
 	<ClCompile Include="source\TestAltirra_PNGEncoderPortable.cpp">
 	  <Filter>Source Files</Filter>
 	</ClCompile>
+	<ClCompile Include="source\TestAltirra_PBIPortable.cpp">
+	  <Filter>Source Files</Filter>
+	</ClCompile>
 	<ClCompile Include="source\TestAltirra_SaveStateTypesPortable.cpp">
 	  <Filter>Source Files</Filter>
 	</ClCompile>
