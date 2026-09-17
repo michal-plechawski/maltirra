@@ -350,6 +350,9 @@
     <ClCompile Include="..\platform\Windows_x64\Altirra\source\myide.cpp" />
     <ClCompile Include="..\platform\Windows_x64\Altirra\source\options.cpp" />
     <ClCompile Include="..\platform\Windows_x64\Altirra\source\oshelper.cpp" />
+    <ClCompile Include="source\oshelpercommon.cpp">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+    </ClCompile>
     <ClCompile Include="..\platform\Windows_x64\Altirra\source\ostracing.cpp" />
     <ClCompile Include="source\palettegenerator.cpp">
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
@@ -685,7 +688,7 @@
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\modemtcp.h" />
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\myide.h" />
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\options.h" />
-    <ClInclude Include="..\platform\Windows_x64\Altirra\h\oshelper.h" />
+    <ClInclude Include="h\oshelper.h" />
     <ClInclude Include="h\pbi.h" />
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\pclink.h" />
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\pia.h" />

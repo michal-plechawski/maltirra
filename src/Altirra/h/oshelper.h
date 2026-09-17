@@ -45,6 +45,7 @@ void ATGenerateGuid(uint8 guid[16]);
 
 void ATShowFileInSystemExplorer(const wchar_t *filename);
 
+VDStringW ATBuildEscapedCommandLine(vdspan<const wchar_t *> args);
 void ATRelaunchElevated(VDGUIHandle parent, const wchar_t *params);
 void ATRelaunchElevatedWithEscapedArgs(VDGUIHandle parent, vdspan<const wchar_t *> args);
 

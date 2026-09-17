@@ -172,6 +172,7 @@ portable_test_sources=(
 	src/ATTest/source/TestAltirra_IDERawImagePortable.cpp
 	src/ATTest/source/TestAltirra_KernelDBPortable.cpp
 	src/ATTest/source/TestAltirra_OSTracingPortable.cpp
+	src/ATTest/source/TestAltirra_OSHelperPortable.cpp
 	src/ATTest/source/TestAltirra_PNGPortable.cpp
 	src/ATTest/source/TestAltirra_PNGEncoderPortable.cpp
 	src/ATTest/source/TestAltirra_PBIPortable.cpp
@@ -313,6 +314,7 @@ portable_test_sources=(
 	src/Altirra/source/inputmap.cpp
 	src/Altirra/source/irqcontroller.cpp
 	src/Altirra/source/memorymanager.cpp
+	src/Altirra/source/oshelpercommon.cpp
 	src/Altirra/source/palettegenerator.cpp
 	src/Altirra/source/palettesolver.cpp
 	src/Altirra/source/rtime8.cpp

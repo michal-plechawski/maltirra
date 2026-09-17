@@ -121,6 +121,9 @@
 	<ClCompile Include="source\TestAltirra_OSTracingPortable.cpp">
 	  <Filter>Source Files</Filter>
 	</ClCompile>
+	<ClCompile Include="source\TestAltirra_OSHelperPortable.cpp">
+	  <Filter>Source Files</Filter>
+	</ClCompile>
 	<ClCompile Include="source\TestAltirra_PNGEncoderPortable.cpp">
 	  <Filter>Source Files</Filter>
 	</ClCompile>

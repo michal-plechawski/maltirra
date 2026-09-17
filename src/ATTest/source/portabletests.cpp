@@ -40,6 +40,7 @@ bool ATTestAltirraHostDeviceUtils(ATPortableTestContext& context);
 bool ATTestAltirraIDERawImage(ATPortableTestContext& context);
 bool ATTestAltirraKernelDB(ATPortableTestContext& context);
 bool ATTestAltirraOSTracing(ATPortableTestContext& context);
+bool ATTestAltirraOSHelper(ATPortableTestContext& context);
 bool ATTestAltirraPNG(ATPortableTestContext& context);
 bool ATTestAltirraPNGEncoder(ATPortableTestContext& context);
 bool ATTestAltirraPBI(ATPortableTestContext& context);
@@ -164,6 +165,7 @@ const ATPortableTestCase *ATGetPortableTests(size_t& count) {
 		{ "Altirra_IDERawImage", ATTestAltirraIDERawImage },
 		{ "Altirra_KernelDB", ATTestAltirraKernelDB },
 		{ "Altirra_OSTracing", ATTestAltirraOSTracing },
+		{ "Altirra_OSHelper", ATTestAltirraOSHelper },
 		{ "Altirra_PNG", ATTestAltirraPNG },
 		{ "Altirra_PNGEncoder", ATTestAltirraPNGEncoder },
 		{ "Altirra_PBI", ATTestAltirraPBI },

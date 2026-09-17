@@ -31,19 +31,12 @@
 #include <vd2/Kasumi/pixmapops.h>
 #include <vd2/Kasumi/pixmaputils.h>
 #include <vd2/Riza/bitmap.h>
-#include <at/atcore/enumparseimpl.h>
 #include <at/atnativeui/uiframe.h>
 #include <at/atnativeui/theme.h>
 #include "decode_png.h"
 #include "encode_png.h"
 #include "common_png.h"
 #include "uiaccessors.h"
-
-AT_DEFINE_ENUM_TABLE_BEGIN(ATProcessEfficiencyMode)
-	{ ATProcessEfficiencyMode::Default, "default" },
-	{ ATProcessEfficiencyMode::Performance, "performance" },
-	{ ATProcessEfficiencyMode::Efficiency, "efficiency" },
-AT_DEFINE_ENUM_TABLE_END(ATProcessEfficiencyMode, ATProcessEfficiencyMode::Default)
 
 DWORD_PTR g_ATOriginalProcessAffinityMask;
 bool g_ATOriginalProcessAffinityMaskAdjusted;
@@ -664,38 +657,7 @@ void ATRelaunchElevated(VDGUIHandle parent, const wchar_t *params) {
 }
 
 void ATRelaunchElevatedWithEscapedArgs(VDGUIHandle parent, vdspan<const wchar_t *> args) {
-	VDStringW argStr;
-
-	for(const wchar_t *s : args) {
-		if (!argStr.empty())
-			argStr += L' ';
-
-		bool needsEscaping = false;
-		if (*s != '/') {
-			for(const wchar_t *t = s; *t; ++t) {
-				if (*t == '\\' || *t == '/' || *t == '"') {
-					needsEscaping = true;
-					break;
-				}
-			}
-		}
-
-		if (needsEscaping) {
-			argStr += L'"';
-
-			for(const wchar_t *t = s; *t; ++t) {
-				if (*t == '\\' || *t == '"')
-					argStr += L'\\';
-
-				argStr += *t;
-			}
-
-			argStr += L'"';
-		} else {
-			argStr += s;
-		}
-	}
-
+	const VDStringW argStr = ATBuildEscapedCommandLine(args);
 	ATRelaunchElevated(parent, argStr.c_str());
 }
 
