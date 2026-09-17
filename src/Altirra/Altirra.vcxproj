@@ -391,7 +391,9 @@
     <ClCompile Include="source\rtime8.cpp">
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="..\platform\Windows_x64\Altirra\source\rverter.cpp" />
+    <ClCompile Include="source\rverter.cpp">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+    </ClCompile>
     <ClCompile Include="source\sapconverter.cpp">
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
     </ClCompile>
@@ -677,6 +679,7 @@
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\pia.h" />
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\profiler.h" />
     <ClInclude Include="h\scsidisk.h" />
+	<ClInclude Include="h\rverter.h" />
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\sdrive.h" />
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\startuplogger.h" />
     <ClInclude Include="h\thepill.h" />

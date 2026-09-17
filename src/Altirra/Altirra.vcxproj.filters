@@ -496,7 +496,7 @@
     <ClCompile Include="..\platform\Windows_x64\Altirra\source\debugtarget.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\platform\Windows_x64\Altirra\source\rverter.cpp">
+    <ClCompile Include="source\rverter.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\platform\Windows_x64\Altirra\source\sio2sd.cpp">
@@ -1419,6 +1419,9 @@
     <ClInclude Include="h\scsidisk.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+	<ClInclude Include="h\rverter.h">
+	  <Filter>Header Files</Filter>
+	</ClInclude>
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\mio.h">
       <Filter>Header Files</Filter>
     </ClInclude>

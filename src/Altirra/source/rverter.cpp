@@ -15,21 +15,17 @@
 //	along with this program; if not, write to the Free Software
 //	Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
-#include <stdafx.h>
-#include <vd2/system/binary.h>
-#include <vd2/system/strutil.h>
-#include <at/atcore/cio.h>
 #include <at/atcore/deviceimpl.h>
-#include <at/atcore/devicecio.h>
 #include <at/atcore/deviceparentimpl.h>
 #include <at/atcore/deviceserial.h>
+#include <at/atcore/devicesio.h>
 #include <at/atcore/devicesioimpl.h>
+#include <at/atcore/logging.h>
 #include <at/atcore/propertyset.h>
 #include <at/atcore/scheduler.h>
-#include "rs232.h"
-#include "debuggerlog.h"
+#include "rverter.h"
 
-extern ATDebuggerLogChannel g_ATLCModemData;
+static ATLogChannel g_ATLCRVerterData(false, false, "RVERTER", "R-Verter serial data");
 
 //////////////////////////////////////////////////////////////////////////
 
@@ -208,7 +204,7 @@ void ATDeviceRVerter::OnReceiveByte(uint8 c, bool command, uint32 cyclesPerBit) 
 	if (!cyclesPerBit)
 		return;
 
-	g_ATLCModemData("Sending byte to modem: $%02X\n", c);
+	g_ATLCRVerterData("Sending byte to modem: $%02X\n", c);
 
 	if (mpDeviceSerial)
 		mpDeviceSerial->Write(mMachineRate / cyclesPerBit, c);
@@ -266,7 +262,7 @@ void ATDeviceRVerter::PollDevice() {
 	const uint32 cyclesPerBit = mCyclesPerByteDevice / 10;
 
 	if (mbActive) {
-		g_ATLCModemData("Receiving byte from modem: $%02X\n", c);
+		g_ATLCRVerterData("Receiving byte from modem: $%02X\n", c);
 		// baud rate = bits per second
 		// cycles per bit = cycles per second / bits per second
 
