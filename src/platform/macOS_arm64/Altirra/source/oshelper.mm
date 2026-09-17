@@ -8,6 +8,7 @@
 
 #import <AppKit/AppKit.h>
 #import <ImageIO/ImageIO.h>
+#import <objc/runtime.h>
 
 #include <grp.h>
 #include <unistd.h>
@@ -22,7 +23,98 @@
 #include <vd2/Kasumi/pixmaputils.h>
 #include "../../../../Altirra/res/resource.h"
 
+@interface ATPathCompletionDelegate : NSObject <NSTextFieldDelegate> {
+	id<NSTextFieldDelegate> _forwardDelegate;
+}
+
+- (instancetype)initWithForwardDelegate:(id<NSTextFieldDelegate>)delegate;
+
+@end
+
+@implementation ATPathCompletionDelegate
+
+- (instancetype)initWithForwardDelegate:(id<NSTextFieldDelegate>)delegate {
+	self = [super init];
+	if (self)
+		_forwardDelegate = delegate;
+	return self;
+}
+
+- (NSArray<NSString *> *)control:(NSControl *)control
+	textView:(NSTextView *)textView
+	completions:(NSArray<NSString *> *)words
+	forPartialWordRange:(NSRange)charRange
+	indexOfSelectedItem:(NSInteger *)index {
+	(void)control;
+	(void)words;
+
+	NSString *const text = textView.string ?: @"";
+	if (NSMaxRange(charRange) > text.length)
+		return @[];
+
+	NSString *const typedPath = [text substringWithRange:charRange];
+	NSString *const expandedPath = typedPath.stringByExpandingTildeInPath;
+	NSString *directory = expandedPath.stringByDeletingLastPathComponent;
+	if (!directory.length)
+		directory = NSFileManager.defaultManager.currentDirectoryPath;
+
+	NSString *const fragment = expandedPath.lastPathComponent;
+	NSArray<NSString *> *const names = [NSFileManager.defaultManager
+		contentsOfDirectoryAtPath:directory
+		error:nil];
+	if (!names)
+		return @[];
+
+	NSMutableArray<NSString *> *const matches = [NSMutableArray array];
+	for(NSString *name in names) {
+		if (![name hasPrefix:fragment])
+			continue;
+
+		NSString *candidate;
+		if (typedPath.isAbsolutePath || [typedPath hasPrefix:@"~"]) {
+			candidate = [directory stringByAppendingPathComponent:name];
+			if ([typedPath hasPrefix:@"~"])
+				candidate = candidate.stringByAbbreviatingWithTildeInPath;
+		} else {
+			NSString *const typedDirectory = typedPath.stringByDeletingLastPathComponent;
+			candidate = typedDirectory.length
+				? [typedDirectory stringByAppendingPathComponent:name]
+				: name;
+		}
+
+		BOOL isDirectory = NO;
+		[NSFileManager.defaultManager
+			fileExistsAtPath:[directory stringByAppendingPathComponent:name]
+			isDirectory:&isDirectory];
+		if (isDirectory)
+			candidate = [candidate stringByAppendingString:@"/"];
+
+		[matches addObject:candidate];
+	}
+
+	[matches sortUsingSelector:@selector(localizedStandardCompare:)];
+	if (index && matches.count)
+		*index = 0;
+	return matches;
+}
+
+- (BOOL)respondsToSelector:(SEL)selector {
+	return [super respondsToSelector:selector]
+		|| [_forwardDelegate respondsToSelector:selector];
+}
+
+- (id)forwardingTargetForSelector:(SEL)selector {
+	if ([_forwardDelegate respondsToSelector:selector])
+		return _forwardDelegate;
+	return [super forwardingTargetForSelector:selector];
+}
+
+@end
+
 namespace {
+	char g_ATPathCompletionDelegateKey;
+	id g_ATProcessActivityToken;
+
 	struct ATResourceLocation {
 		const char *mpBundleDirectory;
 		const char *mpFilename;
@@ -390,6 +482,79 @@ void ATUIRestoreWindowPlacement(void *hwnd, const char *name, int nCmdShow, bool
 		[window zoom:nil];
 }
 
+void ATUIEnableEditControlAutoComplete(void *hwnd) {
+	if (!hwnd)
+		return;
+
+	NSTextField *const field = static_cast<NSTextField *>(hwnd);
+	if (![field isKindOfClass:[NSTextField class]])
+		return;
+
+	if (objc_getAssociatedObject(field, &g_ATPathCompletionDelegateKey))
+		return;
+
+	ATPathCompletionDelegate *const delegate = [[ATPathCompletionDelegate alloc]
+		initWithForwardDelegate:field.delegate];
+	objc_setAssociatedObject(
+		field,
+		&g_ATPathCompletionDelegateKey,
+		delegate,
+		OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+	field.delegate = delegate;
+	[delegate release];
+}
+
+VDStringW ATGetHelpPath() {
+	@autoreleasepool {
+		NSURL *const bundleURL = [[NSBundle mainBundle]
+			URLForResource:@"contents"
+			withExtension:@"html"
+			subdirectory:@"Help"];
+		if (bundleURL) {
+			const char *const path = bundleURL.path.fileSystemRepresentation;
+			if (path)
+				return VDTextU8ToW(path, -1);
+		}
+	}
+
+	return VDMakePath(VDGetProgramPath().c_str(), L"Help/contents.html");
+}
+
+void ATShowHelp(void *hwnd, const wchar_t *filename) {
+	try {
+		const VDStringW target = ATResolveWebHelpPath(ATGetHelpPath().c_str(), filename);
+		const wchar_t *const anchor = wcschr(target.c_str(), L'#');
+		VDStringW filePath;
+		if (anchor)
+			filePath.assign(target.c_str(), anchor);
+		else
+			filePath = target;
+
+		if (!VDDoesPathExist(filePath.c_str()))
+			throw VDException(L"Cannot find help topic: %ls", filePath.c_str());
+
+		@autoreleasepool {
+			const VDStringA pathUTF8 = VDTextWToU8(filePath.c_str(), -1);
+			NSString *const path = [NSString stringWithUTF8String:pathUTF8.c_str()];
+			NSURL *targetURL = path ? [NSURL fileURLWithPath:path] : nil;
+
+			if (targetURL && anchor && anchor[1]) {
+				const VDStringA fragmentUTF8 = VDTextWToU8(anchor + 1, -1);
+				NSURLComponents *const components = [NSURLComponents
+					componentsWithURL:targetURL
+					resolvingAgainstBaseURL:NO];
+				components.fragment = [NSString stringWithUTF8String:fragmentUTF8.c_str()];
+				targetURL = components.URL;
+			}
+
+			if (!targetURL || ![[NSWorkspace sharedWorkspace] openURL:targetURL])
+				throw MyError("Unable to open Altirra help.");
+		}
+	} catch(const MyError& error) {
+		error.post(reinterpret_cast<VDExceptionPostContext>(hwnd), "Altirra Error");
+	}
+}
+
 void ATLaunchURL(const wchar_t *url) {
 	if (!url)
 		return;
@@ -453,4 +618,39 @@ bool ATIsUserAdministrator() {
 
 void ATGenerateGuid(uint8 guid[16]) {
 	uuid_generate_random(guid);
+}
+
+void ATSetProcessEfficiencyMode(ATProcessEfficiencyMode mode) {
+	@autoreleasepool {
+		NSProcessInfo *const processInfo = NSProcessInfo.processInfo;
+		@synchronized(processInfo) {
+			if (g_ATProcessActivityToken) {
+				[processInfo endActivity:g_ATProcessActivityToken];
+				[g_ATProcessActivityToken release];
+				g_ATProcessActivityToken = nil;
+			}
+
+			NSActivityOptions options = 0;
+			NSString *reason = nil;
+			switch(mode) {
+				case ATProcessEfficiencyMode::Default:
+					break;
+
+				case ATProcessEfficiencyMode::Performance:
+					options = NSActivityUserInitiated | NSActivityLatencyCritical;
+					reason = @"Altirra performance mode";
+					break;
+
+				case ATProcessEfficiencyMode::Efficiency:
+					options = NSActivityBackground;
+					reason = @"Altirra efficiency mode";
+					break;
+			}
+
+			if (options)
+				g_ATProcessActivityToken = [[processInfo
+					beginActivityWithOptions:options
+					reason:reason] retain];
+		}
+	}
 }

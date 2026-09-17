@@ -131,6 +131,8 @@ tr '\n' '\0' < "$source_list" |
 
 mkdir -p "$output_root"
 portable_test_executable="$output_root/AltirraPortableTests"
+help_output="$output_root/Help"
+bash src/platform/macOS_arm64/build-help.sh "$help_output"
 portable_test_sources=(
 	src/platform/macOS_arm64/ATTest/source/main.cpp
 	src/ATTest/source/portabletests.cpp
@@ -464,6 +466,7 @@ manifest="$build_root/build-manifest.txt"
 	printf 'translation_units=%s\n' "$source_count"
 	printf 'build_signature=%s\n' "$MACOS_ARM64_BUILD_SIGNATURE"
 	printf 'portable_test_executable=%s\n' "${portable_test_executable#$repository_root/}"
+	printf 'help_index=%s\n' "${help_output#$repository_root/}/contents.html"
 	printf '\nobjects:\n'
 	while IFS= read -r source_file; do
 		object_file="$build_root/$source_file.o"

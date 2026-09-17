@@ -74,5 +74,6 @@ jobs:
           path: |
             obj/macOS_arm64/build-manifest.txt
             out/macOS_arm64/AltirraPortableTests
+            out/macOS_arm64/Help/
           if-no-files-found: error
           retention-days: 14

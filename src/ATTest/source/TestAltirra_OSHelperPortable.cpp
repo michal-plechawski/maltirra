@@ -73,6 +73,8 @@ bool ATTestAltirraOSHelper(ATPortableTestContext& context) {
 	const auto invalid = ATParseEnum<ATProcessEfficiencyMode>(VDStringSpanA("invalid"));
 	AT_PORTABLE_TEST_ASSERT(context, !invalid.mValid);
 	AT_PORTABLE_TEST_ASSERT(context, invalid.mValue == ATProcessEfficiencyMode::Default);
+	ATSetProcessEfficiencyMode(ATProcessEfficiencyMode::Default);
+	ATUIEnableEditControlAutoComplete(nullptr);
 
 	{
 		const wchar_t *args[] { L"/portable", L"plain", L"path/to/file" };
@@ -94,6 +96,21 @@ bool ATTestAltirraOSHelper(ATPortableTestContext& context) {
 	{
 		const wchar_t *args[] { nullptr };
 		AT_PORTABLE_TEST_ASSERT(context, ATBuildEscapedCommandLine(args) == L"\"\"");
+	}
+
+	{
+		AT_PORTABLE_TEST_ASSERT(context, !ATGetHelpPath().empty());
+
+		const VDStringW helpIndex = VDMakePath(VDGetProgramPath().c_str(), L"Help/contents.html");
+		AT_PORTABLE_TEST_ASSERT(context,
+			ATResolveWebHelpPath(helpIndex.c_str(), nullptr) == helpIndex);
+		AT_PORTABLE_TEST_ASSERT(context,
+			ATResolveWebHelpPath(helpIndex.c_str(), L"") == helpIndex);
+
+		VDStringW expected = VDMakePath(VDFileSplitPathLeft(helpIndex).c_str(), L"colors.html");
+		expected += L"#contexthelp-gamma-ramp";
+		AT_PORTABLE_TEST_ASSERT(context,
+			ATResolveWebHelpPath(helpIndex.c_str(), L"colors.html#contexthelp-gamma-ramp") == expected);
 	}
 
 	{

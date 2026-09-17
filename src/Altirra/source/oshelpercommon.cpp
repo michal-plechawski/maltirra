@@ -8,6 +8,8 @@
 
 #include "oshelper.h"
 
+#include <cstddef>
+#include <cwchar>
 #include <vd2/system/binary.h>
 #include <vd2/system/error.h>
 #include <vd2/system/file.h>
@@ -80,6 +82,27 @@ bool ATUILoadWindowPlacement(const char *name, vdrect32& r, bool& isMaximized, u
 	isMaximized = placement.mbMaximized != 0;
 	dpi = placement.mDpi;
 	return true;
+}
+
+VDStringW ATResolveWebHelpPath(const wchar_t *helpIndexPath, const wchar_t *filename) {
+	if (!helpIndexPath)
+		return {};
+
+	if (!filename || !*filename)
+		return VDStringW(helpIndexPath);
+
+	const wchar_t *const anchor = wcschr(filename, L'#');
+	VDStringW topic;
+	if (anchor)
+		topic.assign(filename, anchor);
+	else
+		topic = filename;
+
+	VDStringW path = VDMakePath(VDFileSplitPathLeft(VDStringW(helpIndexPath)).c_str(), topic.c_str());
+	if (anchor)
+		path.append(anchor);
+
+	return path;
 }
 
 void ATLoadFrame(VDPixmapBuffer& px, const wchar_t *filename) {

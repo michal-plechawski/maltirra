@@ -37,6 +37,7 @@ void ATUIRestoreWindowPlacement(void *hwnd, const char *name, int nCmdShow = -1,
 void ATUIEnableEditControlAutoComplete(void *hwnd);
 
 VDStringW ATGetHelpPath();
+VDStringW ATResolveWebHelpPath(const wchar_t *helpIndexPath, const wchar_t *filename);
 void ATShowHelp(void *hwnd, const wchar_t *filename);
 
 void ATLaunchURL(const wchar_t *url);
