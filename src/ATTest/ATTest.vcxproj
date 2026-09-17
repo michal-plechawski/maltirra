@@ -376,6 +376,10 @@
 	  <AdditionalIncludeDirectories>$(ProjectDir)..\platform\Windows_x64\ATNetworkSockets\h;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
 	  <PrecompiledHeader>NotUsing</PrecompiledHeader>
 	</ClCompile>
+	<ClCompile Include="source\TestNet_LookupWorkerPortable.cpp">
+	  <AdditionalIncludeDirectories>$(ProjectDir)..\platform\Windows_x64\ATNetworkSockets\h;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+	  <PrecompiledHeader>NotUsing</PrecompiledHeader>
+	</ClCompile>
 	<ClCompile Include="..\platform\Windows_x64\ATTest\source\blob.cpp" />
     <ClCompile Include="..\platform\Windows_x64\ATTest\source\main.cpp" />
     <ClCompile Include="..\platform\Windows_x64\ATTest\source\stdafx.cpp">
