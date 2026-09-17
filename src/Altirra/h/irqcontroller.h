@@ -20,8 +20,6 @@
 
 #include <vd2/system/unknown.h>
 
-class ATCPUEmulator;
-
 enum ATIRQSource {
 	kATIRQSource_POKEY = 0x01,
 	kATIRQSource_VBXE = 0x02,
@@ -39,7 +37,16 @@ public:
 	ATIRQController();
 	~ATIRQController();
 
-	void Init(ATCPUEmulator *cpu);
+	template<typename T>
+	void Init(T *target) {
+		mpTarget = target;
+		mpAssertIRQ = [](void *p, bool cpuBased) {
+			static_cast<T *>(p)->AssertIRQ(cpuBased ? 0 : -1);
+		};
+		mpNegateIRQ = [](void *p) {
+			static_cast<T *>(p)->NegateIRQ();
+		};
+	}
 
 	void ColdReset();
 
@@ -53,7 +60,9 @@ protected:
 	uint32 mActiveIRQs;
 	uint32 mFreeCustomIRQs;
 
-	ATCPUEmulator *mpCPU;
+	void *mpTarget;
+	void (*mpAssertIRQ)(void *, bool);
+	void (*mpNegateIRQ)(void *);
 };
 
 #endif

@@ -15,23 +15,19 @@
 //	along with this program; if not, write to the Free Software
 //	Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
-#include <stdafx.h>
 #include "irqcontroller.h"
-#include "cpu.h"
 
 ATIRQController::ATIRQController()
 	: mActiveIRQs(0)
 	, mFreeCustomIRQs(0xFFFF0000)
-	, mpCPU(NULL)
+	, mpTarget(nullptr)
+	, mpAssertIRQ(nullptr)
+	, mpNegateIRQ(nullptr)
 {
 }
 
 ATIRQController::~ATIRQController() {
 	VDASSERT(mFreeCustomIRQs == 0xFFFF0000);
-}
-
-void ATIRQController::Init(ATCPUEmulator *cpu) {
-	mpCPU = cpu;
 }
 
 void ATIRQController::ColdReset() {
@@ -67,7 +63,7 @@ void ATIRQController::Assert(uint32 sources, bool cpuBased)
 	mActiveIRQs |= sources;
 
 	if (!oldFlags)
-		mpCPU->AssertIRQ(cpuBased ? 0 : -1);
+		mpAssertIRQ(mpTarget, cpuBased);
 }
 
 void ATIRQController::Negate(uint32 sources, bool cpuBased)
@@ -77,5 +73,5 @@ void ATIRQController::Negate(uint32 sources, bool cpuBased)
 	mActiveIRQs &= ~sources;
 
 	if (oldFlags && !mActiveIRQs)
-		mpCPU->NegateIRQ();
+		mpNegateIRQ(mpTarget);
 }

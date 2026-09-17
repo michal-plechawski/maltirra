@@ -214,7 +214,7 @@
     <ClCompile Include="..\platform\Windows_x64\Altirra\source\inputmanager.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\platform\Windows_x64\Altirra\source\irqcontroller.cpp">
+    <ClCompile Include="source\irqcontroller.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\platform\Windows_x64\Altirra\source\joystick.cpp">
@@ -1254,7 +1254,7 @@
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\inputmanager.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\platform\Windows_x64\Altirra\h\irqcontroller.h">
+    <ClInclude Include="h\irqcontroller.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\joystick.h">

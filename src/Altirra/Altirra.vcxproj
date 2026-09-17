@@ -327,7 +327,9 @@
     <ClCompile Include="source\inputmap.cpp">
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="..\platform\Windows_x64\Altirra\source\irqcontroller.cpp" />
+    <ClCompile Include="source\irqcontroller.cpp">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+    </ClCompile>
     <ClCompile Include="..\platform\Windows_x64\Altirra\source\joystick.cpp" />
     <ClCompile Include="..\platform\Windows_x64\Altirra\source\kmkjzide.cpp" />
     <ClCompile Include="..\platform\Windows_x64\Altirra\source\leakdetector.cpp" />
@@ -662,7 +664,7 @@
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\idevhdimage.h" />
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\inputcontroller.h" />
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\inputmanager.h" />
-    <ClInclude Include="..\platform\Windows_x64\Altirra\h\irqcontroller.h" />
+    <ClInclude Include="h\irqcontroller.h" />
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\joystick.h" />
     <ClInclude Include="h\kerneldb.h" />
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\kmkjzide.h" />

@@ -30,6 +30,7 @@ bool ATTestAltirraErrorDecode(ATPortableTestContext& context);
 bool ATTestAltirraFirmwareDetect(ATPortableTestContext& context);
 bool ATTestAltirraInputDefs(ATPortableTestContext& context);
 bool ATTestAltirraInputMap(ATPortableTestContext& context);
+bool ATTestAltirraIRQController(ATPortableTestContext& context);
 bool ATTestAltirraHLEUtils(ATPortableTestContext& context);
 bool ATTestAltirraGTIATables(ATPortableTestContext& context);
 bool ATTestAltirraHostDeviceUtils(ATPortableTestContext& context);
@@ -143,6 +144,7 @@ const ATPortableTestCase *ATGetPortableTests(size_t& count) {
 		{ "Altirra_FirmwareDetect", ATTestAltirraFirmwareDetect },
 		{ "Altirra_InputDefs", ATTestAltirraInputDefs },
 		{ "Altirra_InputMap", ATTestAltirraInputMap },
+		{ "Altirra_IRQController", ATTestAltirraIRQController },
 		{ "Altirra_HLEUtils", ATTestAltirraHLEUtils },
 		{ "Altirra_GTIATables", ATTestAltirraGTIATables },
 		{ "Altirra_HostDeviceUtils", ATTestAltirraHostDeviceUtils },

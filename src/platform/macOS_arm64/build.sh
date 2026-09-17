@@ -162,6 +162,7 @@ portable_test_sources=(
 	src/ATTest/source/TestAltirra_FirmwareDetectPortable.cpp
 	src/ATTest/source/TestAltirra_InputDefsPortable.cpp
 	src/ATTest/source/TestAltirra_InputMapPortable.cpp
+	src/ATTest/source/TestAltirra_IRQControllerPortable.cpp
 	src/ATTest/source/TestAltirra_HLEUtilsPortable.cpp
 	src/ATTest/source/TestAltirra_GTIATablesPortable.cpp
 	src/ATTest/source/TestAltirra_HostDeviceUtilsPortable.cpp
@@ -297,6 +298,7 @@ portable_test_sources=(
 	src/Altirra/source/gtiatables.cpp
 	src/Altirra/source/inputdefs.cpp
 	src/Altirra/source/inputmap.cpp
+	src/Altirra/source/irqcontroller.cpp
 	src/Altirra/source/memorymanager.cpp
 	src/Altirra/source/rtime8.cpp
 	src/Altirra/source/rverter.cpp
