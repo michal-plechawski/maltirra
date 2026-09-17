@@ -15,6 +15,7 @@
 
 #include "oshelper.h"
 #include <vd2/system/error.h>
+#include <vd2/system/filesys.h>
 #include <vd2/system/text.h>
 #include <vd2/system/vdstring.h>
 #include <vd2/Kasumi/pixmap.h>
@@ -387,6 +388,46 @@ void ATUIRestoreWindowPlacement(void *hwnd, const char *name, int nCmdShow, bool
 
 	if (wasMaximized && !window.zoomed)
 		[window zoom:nil];
+}
+
+void ATLaunchURL(const wchar_t *url) {
+	if (!url)
+		return;
+
+	@autoreleasepool {
+		const VDStringA urlUTF8 = VDTextWToU8(url, -1);
+		NSString *const urlString = [NSString stringWithUTF8String:urlUTF8.c_str()];
+		NSURL *const targetURL = urlString ? [NSURL URLWithString:urlString] : nil;
+		if (targetURL)
+			[[NSWorkspace sharedWorkspace] openURL:targetURL];
+	}
+}
+
+void ATLaunchFileForEdit(const wchar_t *file) {
+	if (!file)
+		return;
+
+	@autoreleasepool {
+		const VDStringA pathUTF8 = VDTextWToU8(file, -1);
+		NSString *const path = [NSString stringWithUTF8String:pathUTF8.c_str()];
+		if (path)
+			[[NSWorkspace sharedWorkspace] openURL:[NSURL fileURLWithPath:path]];
+	}
+}
+
+void ATShowFileInSystemExplorer(const wchar_t *filename) {
+	if (!filename)
+		return;
+
+	@autoreleasepool {
+		const VDStringW fullPath = VDGetFullPath(filename);
+		const VDStringA pathUTF8 = VDTextWToU8(fullPath.c_str(), -1);
+		NSString *const path = [NSString stringWithUTF8String:pathUTF8.c_str()];
+		if (path) {
+			NSURL *const fileURL = [NSURL fileURLWithPath:path];
+			[[NSWorkspace sharedWorkspace] activateFileViewerSelectingURLs:@[fileURL]];
+		}
+	}
 }
 
 bool ATIsUserAdministrator() {
