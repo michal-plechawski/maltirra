@@ -405,7 +405,9 @@
     <ClCompile Include="source\savestatetypes.cpp">
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="..\platform\Windows_x64\Altirra\source\scsidisk.cpp" />
+    <ClCompile Include="source\scsidisk.cpp">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+    </ClCompile>
     <ClCompile Include="..\platform\Windows_x64\Altirra\source\sdrive.cpp" />
     <ClCompile Include="..\platform\Windows_x64\Altirra\source\settings.cpp" />
     <ClCompile Include="..\platform\Windows_x64\Altirra\source\side.cpp" />
@@ -674,7 +676,7 @@
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\pclink.h" />
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\pia.h" />
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\profiler.h" />
-    <ClInclude Include="..\platform\Windows_x64\Altirra\h\scsidisk.h" />
+    <ClInclude Include="h\scsidisk.h" />
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\sdrive.h" />
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\startuplogger.h" />
     <ClInclude Include="h\thepill.h" />

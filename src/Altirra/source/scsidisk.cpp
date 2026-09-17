@@ -15,13 +15,16 @@
 //	along with this program; if not, write to the Free Software
 //	Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
-#include <stdafx.h>
+#include <algorithm>
+#include <cstring>
 #include <vd2/system/binary.h>
 #include <vd2/system/error.h>
+#include <vd2/system/refcount.h>
+#include <vd2/system/vdstring.h>
 #include <at/atcore/blockdevice.h>
+#include <at/atcore/deviceindicators.h>
 #include <at/atemulation/scsi.h>
 #include "scsidisk.h"
-#include "uirender.h"
 
 class ATSCSIDiskDevice : public vdrefcounted<IATSCSIDiskDevice> {
 public:
@@ -133,6 +136,7 @@ void ATSCSIDiskDevice::BeginCommand(const uint8 *command, uint32 length) {
 		mbClearErrorNextCommand = false;
 
 		mError = 0;
+		mErrorLBA = 0;
 	}
 
 	memcpy(mCommandBuffer, command, std::min<uint32>(length, sizeof mCommandBuffer));
@@ -205,12 +209,14 @@ void ATSCSIDiskDevice::AdvanceCommand() {
 
 		case kState_TestUnitReady_0:
 			mError = 0;
+			mErrorLBA = 0;
 			mState = kState_Status;
 			break;
 
 		case kState_Read_0:
 			if (mLBA >= (mpDisk->GetSectorCount() * (mbBlockSize256 ? 2 : 1))) {
 				mError = 0x21;		// Class 2 Illegal block address
+				mErrorLBA = mLBA;
 				mState = kState_Status;
 			} else {
 				if (!mDiskGeometry.mbSolidState)
@@ -244,6 +250,7 @@ void ATSCSIDiskDevice::AdvanceCommand() {
 				}
 			} catch(const MyError&) {
 				mError = 0x21;		// Class 2 Illegal block address
+				mErrorLBA = mLBA;
 				mState = kState_Status;
 			}
 			break;
@@ -251,9 +258,11 @@ void ATSCSIDiskDevice::AdvanceCommand() {
 		case kState_Write_0:
 			if (mpDisk->IsReadOnly()) {
 				mError = 0x17;		// Class 1 Write Protected
+				mErrorLBA = mLBA;
 				mState = kState_Status;
-			} else if (mLBA >= mpDisk->GetSectorCount()) {
+			} else if (mLBA >= (mpDisk->GetSectorCount() * (mbBlockSize256 ? 2 : 1))) {
 				mError = 0x21;		// Class 2 Illegal block address
+				mErrorLBA = mLBA;
 				mState = kState_Status;
 			} else {
 				mpBus->CommandReceiveData(ATSCSIBusEmulator::kReceiveMode_DataOut, mTransferBuffer, mbBlockSize256 ? 256 : 512);
@@ -293,6 +302,7 @@ void ATSCSIDiskDevice::AdvanceCommand() {
 				}
 			} catch(const MyError&) {
 				mError = 0x11;		// Class 1 Uncorrectable data error
+				mErrorLBA = mLBA;
 				mState = kState_Status;
 			}
 			break;
@@ -301,6 +311,7 @@ void ATSCSIDiskDevice::AdvanceCommand() {
 			// check if enable vital product data (EVPD) was set, and raise ILLEGAL REQUEST if so
 			if (mCommandBuffer[1] & 0x01) {
 				mError = 0x70;	// TODO: Implement extended sense data
+				mErrorLBA = 0;
 				mState = kState_Status;
 				break;
 			}
@@ -336,6 +347,7 @@ void ATSCSIDiskDevice::AdvanceCommand() {
 
 		case kState_UnknownCommand:
 			mError = 0x20;		// Class 2 Invalid Command
+			mErrorLBA = 0;
 			mState = kState_Status;
 			break;
 

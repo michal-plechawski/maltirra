@@ -148,6 +148,7 @@ portable_test_sources=(
 	src/ATTest/source/TestAltirra_CPUMemoryPortable.cpp
 	src/ATTest/source/TestAltirra_MemoryManagerPortable.cpp
 	src/ATTest/source/TestAltirra_RTime8Portable.cpp
+	src/ATTest/source/TestAltirra_SCSIDiskPortable.cpp
 	src/ATTest/source/TestAltirra_ThePillPortable.cpp
 	src/ATTest/source/TestAltirra_DebuggerSettingsPortable.cpp
 	src/ATTest/source/TestAltirra_DiskTracePortable.cpp
@@ -296,6 +297,7 @@ portable_test_sources=(
 	src/Altirra/source/inputmap.cpp
 	src/Altirra/source/memorymanager.cpp
 	src/Altirra/source/rtime8.cpp
+	src/Altirra/source/scsidisk.cpp
 	src/Altirra/source/thepill.cpp
 	src/Altirra/source/iderawimage.cpp
 	src/Altirra/source/hostdeviceutils.cpp
@@ -326,6 +328,7 @@ portable_test_sources=(
 	src/ATCore/source/serialization.cpp
 	src/ATCore/source/savestate.cpp
 	src/ATCore/source/scheduler.cpp
+	src/ATEmulation/source/scsi.cpp
 	src/ATCore/source/sioutils.cpp
 	src/ATCore/source/snapshotimpl.cpp
 	src/ATAudio/source/pokey.cpp

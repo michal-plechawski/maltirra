@@ -47,6 +47,9 @@
 	<ClCompile Include="source\TestAltirra_RTime8Portable.cpp">
 	  <PrecompiledHeader>NotUsing</PrecompiledHeader>
 	</ClCompile>
+	<ClCompile Include="source\TestAltirra_SCSIDiskPortable.cpp">
+	  <PrecompiledHeader>NotUsing</PrecompiledHeader>
+	</ClCompile>
 	<ClCompile Include="source\TestAltirra_ThePillPortable.cpp">
 	  <PrecompiledHeader>NotUsing</PrecompiledHeader>
 	</ClCompile>

@@ -460,7 +460,7 @@
     <ClCompile Include="..\platform\Windows_x64\Altirra\source\uidevices.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\platform\Windows_x64\Altirra\source\scsidisk.cpp">
+    <ClCompile Include="source\scsidisk.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\platform\Windows_x64\Altirra\source\idediskdevices.cpp">
@@ -1416,7 +1416,7 @@
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\blackbox.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\platform\Windows_x64\Altirra\h\scsidisk.h">
+    <ClInclude Include="h\scsidisk.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\mio.h">
