@@ -1659,7 +1659,7 @@
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\uicalibrationscreen.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\platform\Windows_x64\Altirra\h\startuplogger.h">
+    <ClInclude Include="h\startuplogger.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="h\errordecode.h">

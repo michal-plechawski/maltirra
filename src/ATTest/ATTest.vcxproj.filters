@@ -199,6 +199,9 @@
 	<ClCompile Include="source\TestAltirra_SimEventManagerPortable.cpp">
 	  <Filter>Source Files</Filter>
 	</ClCompile>
+	<ClCompile Include="source\TestAltirra_StartupLoggerPortable.cpp">
+	  <Filter>Source Files</Filter>
+	</ClCompile>
 	<ClCompile Include="source\TestAltirra_TextDOMPortable.cpp">
 	  <Filter>Source Files</Filter>
 	</ClCompile>

@@ -199,6 +199,7 @@ portable_test_sources=(
 	src/ATTest/source/TestAltirra_UpdateFeedPortable.cpp
 	src/ATTest/source/TestAltirra_UIFileFiltersPortable.cpp
 	src/ATTest/source/TestAltirra_SimEventManagerPortable.cpp
+	src/ATTest/source/TestAltirra_StartupLoggerPortable.cpp
 	src/ATTest/source/TestAltirra_TextDOMPortable.cpp
 	src/ATTest/source/TestAltirra_VideoManagerPortable.cpp
 	src/ATTest/source/TestAltirra_VersionInfoPortable.cpp
@@ -299,6 +300,7 @@ portable_test_sources=(
 	src/ATIO/source/savestate.cpp
 	src/platform/macOS_arm64/Altirra/source/directorywatcher.cpp
 	src/platform/macOS_arm64/Altirra/source/ostracing.cpp
+	src/platform/macOS_arm64/Altirra/source/startuplogger.cpp
 	src/platform/macOS_arm64/Altirra/source/updatefeed_macos.cpp
 	src/Altirra/source/errordecode.cpp
 	src/Altirra/source/debuggersettings.cpp

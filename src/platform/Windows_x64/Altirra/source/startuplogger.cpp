@@ -55,8 +55,26 @@ HHOOK ATStartupLogger::sMsgHook;
 HHOOK ATStartupLogger::sMsgHookRet;
 
 ATStartupLogger::~ATStartupLogger() {
-	sCrashLogger = nullptr;
-	sHookLogger = nullptr;
+	if (sCrashLogger == this) {
+		ATSetExceptionPreFilter(nullptr);
+		sCrashLogger = nullptr;
+	}
+
+	if (sHookLogger == this) {
+		sHookLogger = nullptr;
+
+		if (sMsgHook) {
+			UnhookWindowsHookEx(sMsgHook);
+			sMsgHook = nullptr;
+		}
+
+		if (sMsgHookRet) {
+			UnhookWindowsHookEx(sMsgHookRet);
+			sMsgHookRet = nullptr;
+		}
+	}
+
+	SetConsoleCtrlHandler(CtrlHandler, FALSE);
 }
 
 void ATStartupLogger::Init(const wchar_t *channels) {

@@ -693,7 +693,7 @@
     <ClInclude Include="h\scsidisk.h" />
 	<ClInclude Include="h\rverter.h" />
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\sdrive.h" />
-    <ClInclude Include="..\platform\Windows_x64\Altirra\h\startuplogger.h" />
+    <ClInclude Include="h\startuplogger.h" />
     <ClInclude Include="h\thepill.h" />
     <ClInclude Include="h\trace.h" />
     <ClInclude Include="h\tracecpu.h" />

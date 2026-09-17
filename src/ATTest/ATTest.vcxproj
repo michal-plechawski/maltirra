@@ -200,6 +200,9 @@
 	<ClCompile Include="source\TestAltirra_SimEventManagerPortable.cpp">
 	  <PrecompiledHeader>NotUsing</PrecompiledHeader>
 	</ClCompile>
+	<ClCompile Include="source\TestAltirra_StartupLoggerPortable.cpp">
+	  <PrecompiledHeader>NotUsing</PrecompiledHeader>
+	</ClCompile>
 	<ClCompile Include="source\TestAltirra_TextDOMPortable.cpp">
 	  <PrecompiledHeader>NotUsing</PrecompiledHeader>
 	</ClCompile>

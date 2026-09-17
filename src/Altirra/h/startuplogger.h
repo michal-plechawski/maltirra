@@ -17,6 +17,8 @@
 #ifndef f_STARTUP_LOGGER_H
 #define f_STARTUP_LOGGER_H
 
+#include <vd2/system/VDString.h>
+
 void ATStartupLogInit(const wchar_t *args);
 void ATStartupLogShutdown();
 bool ATStartupLogIsInited();
