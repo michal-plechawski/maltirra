@@ -45,12 +45,11 @@ namespace {
 }
 
 bool ATTestNetNativeSockets(ATPortableTestContext& context) {
-	ATSocketSystemScope socketSystem;
-	AT_PORTABLE_TEST_ASSERT(context, socketSystem.mbInitialized);
-
 	VDSignal dispatchSignal;
 	ATAsyncDispatcher dispatcher;
 	dispatcher.SetWakeCallback([&] { dispatchSignal.signal(); });
+	ATSocketSystemScope socketSystem;
+	AT_PORTABLE_TEST_ASSERT(context, socketSystem.mbInitialized);
 
 	vdrefptr<IATListenSocket> listener;
 	vdrefptr<IATStreamSocket> client;

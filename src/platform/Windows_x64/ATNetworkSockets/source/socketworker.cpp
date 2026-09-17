@@ -1039,7 +1039,7 @@ bool ATNetDatagramSocket::SendTo(const ATSocketAddress& address, const void *dat
 	ATSocketAddress address2(address);
 
 	if (mBindAddress.mType == ATSocketAddressType::IPv6 && address2.mType == ATSocketAddressType::IPv4)
-		address2 = ATSocketAddress::CreateIPv4InIPv6(mBindAddress);
+		address2 = ATSocketAddress::CreateIPv4InIPv6(address2);
 
 	const uint32 neededLen = sizeof(uint16) + sizeof(ATSocketAddress) + len;
 
@@ -1106,7 +1106,7 @@ void ATNetDatagramSocket::Update() {
 				QueueError_Locked(ATSocketError::Unknown);
 
 			if (mSocketHandle != INVALID_SOCKET) {
-				if (mbDualStack) {
+				if (mbDualStack && mBindAddress.mType == ATSocketAddressType::IPv6) {
 					DWORD v6only = 0;
 					if (0 != setsockopt(mSocketHandle, IPPROTO_IPV6, IPV6_V6ONLY, (const char *)&v6only, sizeof v6only))
 						QueueWinsockError_Locked();

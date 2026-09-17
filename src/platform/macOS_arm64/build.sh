@@ -223,6 +223,7 @@ portable_test_sources=(
 	src/ATTest/source/TestNet_NativeAddressPortable.cpp
 	src/ATTest/source/TestNet_LookupWorkerPortable.cpp
 	src/ATTest/source/TestNet_NativeSocketsPortable.cpp
+	src/ATTest/source/TestNet_VxlanTunnelPortable.cpp
 	src/ATTest/source/TestSystem_Binary.cpp
 	src/ATTest/source/TestSystem_BitMath.cpp
 	src/ATTest/source/TestSystem_Cache.cpp
@@ -408,6 +409,7 @@ portable_test_sources=(
 	src/Kasumi/source/uberblit_swizzle.cpp
 	src/Kasumi/source/uberblit_ycbcr_generic.cpp
 	src/ATNetwork/source/socket.cpp
+	src/ATNetworkSockets/source/vxlantunnel.cpp
 	src/platform/macOS_arm64/ATNetworkSockets/source/socketutils_posix.cpp
 	src/platform/macOS_arm64/ATNetworkSockets/source/lookupworker.cpp
 	src/platform/macOS_arm64/ATNetworkSockets/source/socketworker.cpp

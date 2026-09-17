@@ -1,11 +1,10 @@
-#include <stdafx.h>
-#include <tchar.h>
+// Altirra native socket VXLAN tunnel implementation
+
+#include <cstring>
+
 #include <vd2/system/binary.h>
 #include <vd2/system/error.h>
-#include <vd2/system/refcount.h>
-#include <vd2/system/vdstl.h>
 #include <at/atnetwork/ethernetframe.h>
-#include <at/atnetwork/socket.h>
 #include <at/atnetworksockets/internal/vxlantunnel.h>
 #include <at/atnetworksockets/nativesockets.h>
 
@@ -19,6 +18,7 @@ ATNetSockVxlanTunnel::~ATNetSockVxlanTunnel() {
 bool ATNetSockVxlanTunnel::Init(uint32 tunnelAddr, uint16 tunnelSrcPort, uint16 tunnelTgtPort, IATEthernetSegment *ethSeg, uint32 ethClockIndex, IATAsyncDispatcher *dispatcher) {
 	mTunnelSrcPort = tunnelSrcPort;
 	mTunnelAddress = ATSocketAddress::CreateIPv4(VDFromBE32(tunnelAddr), tunnelTgtPort);
+	mEthClockIndex = ethClockIndex;
 
 	mpEthSegment = ethSeg;
 	mEthSource = mpEthSegment->AddEndpoint(this);
@@ -26,14 +26,15 @@ bool ATNetSockVxlanTunnel::Init(uint32 tunnelAddr, uint16 tunnelSrcPort, uint16 
 	mPacketBuffer.resize(4096);
 
 	mpTunnelSocket = ATNetBind(ATSocketAddress::CreateIPv4(mTunnelSrcPort), true);
+	if (!mpTunnelSocket)
+		return false;
+
 	mpTunnelSocket->SetOnEvent(dispatcher,
 		[this](const ATSocketStatus& status) {
-			if (status.mbCanRead) {
+			if (status.mbCanRead)
 				OnReadPacket();
-			}
 		},
-		true
-	);
+		true);
 
 	return true;
 }
@@ -45,59 +46,50 @@ void ATNetSockVxlanTunnel::Shutdown() {
 	}
 
 	if (mpTunnelSocket) {
+		mpTunnelSocket->SetOnEvent(nullptr, nullptr, false);
 		mpTunnelSocket->CloseSocket(true);
 		mpTunnelSocket = nullptr;
 	}
 }
 
 void ATNetSockVxlanTunnel::ReceiveFrame(const ATEthernetPacket& packet, ATEthernetFrameDecodedType decType, const void *decInfo) {
-	uint32 len = 20 + packet.mLength;
+	const uint32 len = 20 + packet.mLength;
 
 	if (mPacketBuffer.size() < len)
 		mPacketBuffer.resize(len);
 
-	// set VXLAN header to VLAN absent
+	// Set VXLAN header with VNI absent.
 	memset(mPacketBuffer.data(), 0, 8);
 	mPacketBuffer[0] = 0x08;
 
-	// init Ethernet header
+	// Add the Ethernet header around the payload used by the emulated segment.
 	memcpy(&mPacketBuffer[8], &packet.mDstAddr, 6);
 	memcpy(&mPacketBuffer[14], &packet.mSrcAddr, 6);
 	memcpy(&mPacketBuffer[20], packet.mpData, packet.mLength);
 
-	// send VXLAN packet
 	mpTunnelSocket->SendTo(mTunnelAddress, mPacketBuffer.data(), len);
 }
 
 void ATNetSockVxlanTunnel::OnReadPacket() {
 	for(;;) {
 		ATSocketAddress addr;
-		sint32 len = mpTunnelSocket->RecvFrom(addr, mPacketBuffer.data(), mPacketBuffer.size());
-
+		const sint32 len = mpTunnelSocket->RecvFrom(addr, mPacketBuffer.data(), mPacketBuffer.size());
 		if (len < 0)
 			break;
 
-		// Okay, next check that we have a valid VXLAN header and ethernet packet after it.
 		if (len < 8 + 12 + 2)
 			continue;
 
-		const uint8 *vxlanhdr = mPacketBuffer.data();
-
-		// must be VLAN 0
-		if ((vxlanhdr[0] & 0x08) && (VDReadUnalignedBEU32(&vxlanhdr[4]) & 0xFFFFFF00))
+		const uint8 *vxlanHeader = mPacketBuffer.data();
+		if (!(vxlanHeader[0] & 0x08) || (VDReadUnalignedBEU32(&vxlanHeader[4]) & 0xFFFFFF00))
 			continue;
 
-		const uint8 *payload = vxlanhdr + 8;
+		const uint8 *payload = vxlanHeader + 8;
 		const uint32 payloadLen = len - 8;
-
-		if (payloadLen < 14)
+		if (payloadLen < 14 || payloadLen > 1502)
 			continue;
 
-		if (payloadLen > 1502)
-			continue;
-
-		// forward packet to ethernet segment
-		ATEthernetPacket packet = {};
+		ATEthernetPacket packet {};
 		packet.mClockIndex = mEthClockIndex;
 		packet.mTimestamp = 100;
 		memcpy(&packet.mSrcAddr, payload + 6, 6);
@@ -108,16 +100,14 @@ void ATNetSockVxlanTunnel::OnReadPacket() {
 	}
 }
 
-///////////////////////////////////////////////////////////////////////////
-
 void ATCreateNetSockVxlanTunnel(uint32 tunnelAddr, uint16 tunnelSrcPort, uint16 tunnelTgtPort, IATEthernetSegment *ethSeg, uint32 ethClockIndex, IATAsyncDispatcher *dispatcher, IATNetSockVxlanTunnel **pp) {
-	ATNetSockVxlanTunnel *p = new ATNetSockVxlanTunnel;
+	ATNetSockVxlanTunnel *tunnel = new ATNetSockVxlanTunnel;
 
-	if (!p->Init(tunnelAddr, tunnelSrcPort, tunnelTgtPort, ethSeg, ethClockIndex, dispatcher)) {
-		delete p;
+	if (!tunnel->Init(tunnelAddr, tunnelSrcPort, tunnelTgtPort, ethSeg, ethClockIndex, dispatcher)) {
+		delete tunnel;
 		throw MyMemoryError();
 	}
 
-	p->AddRef();
-	*pp = p;
+	tunnel->AddRef();
+	*pp = tunnel;
 }

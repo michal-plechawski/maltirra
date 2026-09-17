@@ -24,7 +24,7 @@
     <ClCompile Include="source\worker.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="source\vxlantunnel.cpp">
+    <ClCompile Include="..\..\..\ATNetworkSockets\source\vxlantunnel.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="source\nativesockets.cpp">
@@ -53,7 +53,7 @@
     <ClInclude Include="..\..\..\h\at\atnetworksockets\vxlantunnel.h">
       <Filter>Interface Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="h\at\atnetworksockets\internal\vxlantunnel.h">
+    <ClInclude Include="..\..\..\h\at\atnetworksockets\internal\vxlantunnel.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\h\at\atnetworksockets\nativesockets.h">
