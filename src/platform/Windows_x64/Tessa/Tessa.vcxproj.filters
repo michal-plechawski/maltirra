@@ -45,7 +45,7 @@
     <ClCompile Include="source\stdafx.cpp">
       <Filter>Precompiled Header Files</Filter>
     </ClCompile>
-    <ClCompile Include="source\Config.cpp">
+    <ClCompile Include="..\..\..\Tessa\source\Config.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="source\Options.cpp">

@@ -425,6 +425,12 @@
 	<ClCompile Include="source\TestNet_VxlanTunnelPortable.cpp">
 	  <PrecompiledHeader>NotUsing</PrecompiledHeader>
 	</ClCompile>
+	<ClCompile Include="source\TestTessa_ConfigPortable.cpp">
+	  <PrecompiledHeader>NotUsing</PrecompiledHeader>
+	</ClCompile>
+	<ClCompile Include="..\Tessa\source\Config.cpp">
+	  <PrecompiledHeader>NotUsing</PrecompiledHeader>
+	</ClCompile>
 	<ClCompile Include="..\platform\Windows_x64\ATTest\source\blob.cpp" />
     <ClCompile Include="..\platform\Windows_x64\ATTest\source\main.cpp" />
     <ClCompile Include="..\platform\Windows_x64\ATTest\source\stdafx.cpp">

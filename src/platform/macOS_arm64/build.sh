@@ -236,6 +236,7 @@ portable_test_sources=(
 	src/ATTest/source/TestNet_NativeSocketsPortable.cpp
 	src/ATTest/source/TestNet_SocketWorkerPortable.cpp
 	src/ATTest/source/TestNet_VxlanTunnelPortable.cpp
+	src/ATTest/source/TestTessa_ConfigPortable.cpp
 	src/ATTest/source/TestSystem_Binary.cpp
 	src/ATTest/source/TestSystem_BitMath.cpp
 	src/ATTest/source/TestSystem_Cache.cpp
@@ -292,6 +293,7 @@ portable_test_sources=(
 	src/ATCore/source/notifylist.cpp
 	src/ATCore/source/propertyset.cpp
 	src/ATCore/source/progress.cpp
+	src/Tessa/source/Config.cpp
 	src/Altirra/source/artifacting_filters.cpp
 	src/Altirra/source/audiorawsource.cpp
 	src/Altirra/source/audiostocksamples.cpp

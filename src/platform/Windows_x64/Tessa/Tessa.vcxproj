@@ -28,7 +28,10 @@
     </ClCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="source\Config.cpp" />
+    <ClCompile Include="..\..\..\Tessa\source\Config.cpp">
+      <ForcedIncludeFiles />
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+    </ClCompile>
     <ClCompile Include="source\Context.cpp" />
     <ClCompile Include="source\Format.cpp" />
     <ClCompile Include="source\Program.cpp" />
