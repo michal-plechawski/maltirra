@@ -8,6 +8,7 @@
 #include <vd2/system/time.h>
 #include <vd2/system/vdstring.h>
 #include <oshelper.h>
+#include "../../Altirra/res/resource.h"
 
 namespace {
 	class ATOSHelperTestFile {
@@ -143,6 +144,25 @@ bool ATTestAltirraOSHelper(ATPortableTestContext& context) {
 		AT_PORTABLE_TEST_ASSERT(context, !ATDecodeLZPackedResource(missingTerminator, sizeof missingTerminator, decoded));
 		AT_PORTABLE_TEST_ASSERT(context, !ATDecodeLZPackedResource(oversizedOutput, sizeof oversizedOutput, decoded));
 		AT_PORTABLE_TEST_ASSERT(context, decoded.empty());
+	}
+
+	{
+		vdfastvector<uint8> about;
+		AT_PORTABLE_TEST_ASSERT(context, ATLoadMiscResource(IDR_ABOUT, about));
+		AT_PORTABLE_TEST_ASSERT(context, !about.empty());
+
+		static constexpr uint8 marker[] {
+			0xFF, 0xFE, 'A', 0, 'l', 0, 't', 0, 'i', 0, 'r', 0, 'r', 0, 'a', 0
+		};
+		AT_PORTABLE_TEST_ASSERT(context, about.size() >= sizeof marker);
+		AT_PORTABLE_TEST_ASSERT(context, !std::memcmp(about.data(), marker, sizeof marker));
+
+		size_t compatSize = 0;
+		const void *const compatData = ATLockResource(IDR_COMPATDB, compatSize);
+		AT_PORTABLE_TEST_ASSERT(context, compatData);
+		AT_PORTABLE_TEST_ASSERT(context, compatSize > 16);
+		AT_PORTABLE_TEST_ASSERT(context, ATLockResource(999, compatSize) == nullptr);
+		AT_PORTABLE_TEST_ASSERT(context, !ATLoadMiscResource(999, about));
 	}
 
 	return true;
