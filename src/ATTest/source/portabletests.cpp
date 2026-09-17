@@ -73,6 +73,7 @@ bool ATTestAltirraUIFileFilters(ATPortableTestContext& context);
 bool ATTestAltirraSimEventManager(ATPortableTestContext& context);
 bool ATTestAltirraStartupLogger(ATPortableTestContext& context);
 bool ATTestAltirraTextDOM(ATPortableTestContext& context);
+bool ATTestAltirraVideoStillImage(ATPortableTestContext& context);
 bool ATTestAltirraVideoManager(ATPortableTestContext& context);
 bool ATTestAltirraVersionInfo(ATPortableTestContext& context);
 bool ATTestAltirraVBXEState(ATPortableTestContext& context);
@@ -213,6 +214,7 @@ const ATPortableTestCase *ATGetPortableTests(size_t& count) {
 		{ "Altirra_SimEventManager", ATTestAltirraSimEventManager },
 		{ "Altirra_StartupLogger", ATTestAltirraStartupLogger },
 		{ "Altirra_TextDOM", ATTestAltirraTextDOM },
+		{ "Altirra_VideoStillImage", ATTestAltirraVideoStillImage },
 		{ "Altirra_VideoManager", ATTestAltirraVideoManager },
 		{ "Altirra_VersionInfo", ATTestAltirraVersionInfo },
 		{ "Altirra_VBXEState", ATTestAltirraVBXEState },

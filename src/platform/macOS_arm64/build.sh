@@ -208,6 +208,7 @@ portable_test_sources=(
 	src/ATTest/source/TestAltirra_SimEventManagerPortable.cpp
 	src/ATTest/source/TestAltirra_StartupLoggerPortable.cpp
 	src/ATTest/source/TestAltirra_TextDOMPortable.cpp
+	src/ATTest/source/TestAltirra_VideoStillImagePortable.cpp
 	src/ATTest/source/TestAltirra_VideoManagerPortable.cpp
 	src/ATTest/source/TestAltirra_VersionInfoPortable.cpp
 	src/ATTest/source/TestAltirra_VBXEStatePortable.cpp
@@ -365,6 +366,7 @@ portable_test_sources=(
 	src/Altirra/source/tracefileencoding.cpp
 	src/Altirra/source/tracefileformat.cpp
 	src/Altirra/source/tracetape.cpp
+	src/Altirra/source/videostillimage.cpp
 	src/Altirra/source/updatefeed.cpp
 	src/Altirra/source/uiaccessors.cpp
 	src/Altirra/source/uifilefilters.cpp
@@ -416,6 +418,7 @@ portable_test_sources=(
 	src/Kasumi/source/blt_spanutils.cpp
 	src/Kasumi/source/blt_spanutils_arm64.cpp
 	src/Kasumi/source/blt_uberblit.cpp
+	src/Kasumi/source/pixel.cpp
 	src/Kasumi/source/pixmaputils.cpp
 	src/Kasumi/source/region.cpp
 	src/Kasumi/source/region_neon.cpp

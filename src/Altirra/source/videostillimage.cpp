@@ -14,7 +14,9 @@
 //	You should have received a copy of the GNU General Public License along
 //	with this program. If not, see <http://www.gnu.org/licenses/>.
 
-#include <stdafx.h>
+#include <algorithm>
+#include <cstring>
+#include <vd2/system/error.h>
 #include <vd2/system/math.h>
 #include <vd2/system/vectors.h>
 #include <vd2/Kasumi/pixel.h>

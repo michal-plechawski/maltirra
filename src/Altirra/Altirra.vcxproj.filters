@@ -874,7 +874,7 @@
     <ClCompile Include="..\platform\Windows_x64\Altirra\source\uiconfdevcomputereyes.cpp">
       <Filter>Source Files - Device Configuration UI</Filter>
     </ClCompile>
-    <ClCompile Include="..\platform\Windows_x64\Altirra\source\videostillimage.cpp">
+    <ClCompile Include="source\videostillimage.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\platform\Windows_x64\Altirra\source\uiconfdevvideostillimage.cpp">
@@ -1659,7 +1659,7 @@
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\uidisplaytool.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\platform\Windows_x64\Altirra\h\videostillimage.h">
+    <ClInclude Include="h\videostillimage.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\uiconfgeneric.h">

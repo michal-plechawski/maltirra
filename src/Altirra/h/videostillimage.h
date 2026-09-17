@@ -20,7 +20,8 @@
 #include <vd2/Kasumi/pixmaputils.h>
 #include <at/atcore/deviceimpl.h>
 #include <at/atcore/devicevideosource.h>
-#include <at/atcore/scheduler.h>
+
+extern const ATDeviceDefinition g_ATDeviceDefVideoStillImage;
 
 class ATDeviceVideoStillImage final : public ATDevice, public IATDeviceVideoSource {
 public:
