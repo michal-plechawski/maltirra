@@ -19,6 +19,7 @@
 
 #include <at/atcore/deviceimpl.h>
 
+class ATMemoryManager;
 class ATMemoryLayer;
 
 class ATDeviceThePill final : public ATDeviceT<IATDeviceButtons, IATDeviceCartridge> {

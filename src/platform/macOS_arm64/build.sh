@@ -148,6 +148,7 @@ portable_test_sources=(
 	src/ATTest/source/TestAltirra_CPUMemoryPortable.cpp
 	src/ATTest/source/TestAltirra_MemoryManagerPortable.cpp
 	src/ATTest/source/TestAltirra_RTime8Portable.cpp
+	src/ATTest/source/TestAltirra_ThePillPortable.cpp
 	src/ATTest/source/TestAltirra_DebuggerSettingsPortable.cpp
 	src/ATTest/source/TestAltirra_DiskTracePortable.cpp
 	src/ATTest/source/TestAltirra_DiskProfilePortable.cpp
@@ -295,6 +296,7 @@ portable_test_sources=(
 	src/Altirra/source/inputmap.cpp
 	src/Altirra/source/memorymanager.cpp
 	src/Altirra/source/rtime8.cpp
+	src/Altirra/source/thepill.cpp
 	src/Altirra/source/iderawimage.cpp
 	src/Altirra/source/hostdeviceutils.cpp
 	src/Altirra/source/printer1020font.cpp

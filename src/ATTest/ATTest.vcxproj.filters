@@ -46,6 +46,9 @@
 	<ClCompile Include="source\TestAltirra_RTime8Portable.cpp">
 	  <Filter>Source Files</Filter>
 	</ClCompile>
+	<ClCompile Include="source\TestAltirra_ThePillPortable.cpp">
+	  <Filter>Source Files</Filter>
+	</ClCompile>
 	<ClCompile Include="source\TestAltirra_DebuggerSettingsPortable.cpp">
 	  <Filter>Source Files</Filter>
 	</ClCompile>

@@ -1054,7 +1054,7 @@
     <ClCompile Include="..\platform\Windows_x64\Altirra\source\tracenative.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\platform\Windows_x64\Altirra\source\thepill.cpp">
+    <ClCompile Include="source\thepill.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\platform\Windows_x64\Altirra\source\customdevicevmtypes.cpp">
@@ -1797,7 +1797,7 @@
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\tracenative.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\platform\Windows_x64\Altirra\h\thepill.h">
+    <ClInclude Include="h\thepill.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\customdevicevmtypes.h">
