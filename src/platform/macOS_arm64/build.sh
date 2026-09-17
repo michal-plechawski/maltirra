@@ -147,6 +147,7 @@ portable_test_sources=(
 	src/ATTest/source/TestAltirra_ConstantsPortable.cpp
 	src/ATTest/source/TestAltirra_CompatDBPortable.cpp
 	src/ATTest/source/TestAltirra_CPUMemoryPortable.cpp
+	src/ATTest/source/TestAltirra_CPUStatesPortable.cpp
 	src/ATTest/source/TestAltirra_MemoryManagerPortable.cpp
 	src/ATTest/source/TestAltirra_RTime8Portable.cpp
 	src/ATTest/source/TestAltirra_RVerterPortable.cpp

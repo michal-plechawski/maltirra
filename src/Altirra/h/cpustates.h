@@ -18,6 +18,8 @@
 #ifndef f_AT_CPUSTATES_H
 #define f_AT_CPUSTATES_H
 
+#include <vd2/system/vdtypes.h>
+
 namespace AT6502States {
 	enum ATCPUState : uint8 {
 		kStateNop,

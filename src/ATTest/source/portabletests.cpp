@@ -15,6 +15,7 @@ bool ATTestAltirraCheatEngine(ATPortableTestContext& context);
 bool ATTestAltirraConstants(ATPortableTestContext& context);
 bool ATTestAltirraCompatDB(ATPortableTestContext& context);
 bool ATTestAltirraCPUMemory(ATPortableTestContext& context);
+bool ATTestAltirraCPUStates(ATPortableTestContext& context);
 bool ATTestAltirraMemoryManager(ATPortableTestContext& context);
 bool ATTestAltirraRTime8(ATPortableTestContext& context);
 bool ATTestAltirraRVerter(ATPortableTestContext& context);
@@ -134,6 +135,7 @@ const ATPortableTestCase *ATGetPortableTests(size_t& count) {
 		{ "Altirra_Constants", ATTestAltirraConstants },
 		{ "Altirra_CompatDB", ATTestAltirraCompatDB },
 		{ "Altirra_CPUMemory", ATTestAltirraCPUMemory },
+		{ "Altirra_CPUStates", ATTestAltirraCPUStates },
 		{ "Altirra_MemoryManager", ATTestAltirraMemoryManager },
 		{ "Altirra_RTime8", ATTestAltirraRTime8 },
 		{ "Altirra_RVerter", ATTestAltirraRVerter },

@@ -1161,7 +1161,7 @@
     <ClInclude Include="h\cpumemory.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\platform\Windows_x64\Altirra\h\cpustates.h">
+    <ClInclude Include="h\cpustates.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\cs8900a.h">

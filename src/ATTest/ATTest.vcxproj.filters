@@ -43,6 +43,9 @@
 	<ClCompile Include="source\TestAltirra_CPUMemoryPortable.cpp">
 	  <Filter>Source Files</Filter>
 	</ClCompile>
+	<ClCompile Include="source\TestAltirra_CPUStatesPortable.cpp">
+	  <Filter>Source Files</Filter>
+	</ClCompile>
 	<ClCompile Include="source\TestAltirra_MemoryManagerPortable.cpp">
 	  <Filter>Source Files</Filter>
 	</ClCompile>

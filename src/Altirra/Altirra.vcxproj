@@ -640,7 +640,7 @@
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\cpuheatmap.h" />
     <ClInclude Include="h\cpuhookmanager.h" />
     <ClInclude Include="h\cpumemory.h" />
-    <ClInclude Include="..\platform\Windows_x64\Altirra\h\cpustates.h" />
+    <ClInclude Include="h\cpustates.h" />
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\cs8900a.h" />
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\debugdisplay.h" />
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\debugger.h" />
