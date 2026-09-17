@@ -475,7 +475,7 @@
     <ClCompile Include="..\platform\Windows_x64\Altirra\source\uisettingsmain.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\platform\Windows_x64\Altirra\source\uifilefilters.cpp">
+    <ClCompile Include="source\uifilefilters.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\platform\Windows_x64\Altirra\source\1030.cpp">
@@ -1431,7 +1431,7 @@
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\uiaccessors.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\platform\Windows_x64\Altirra\h\uifilefilters.h">
+    <ClInclude Include="h\uifilefilters.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\sdrive.h">

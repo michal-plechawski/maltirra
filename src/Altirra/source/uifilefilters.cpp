@@ -15,8 +15,26 @@
 //	along with this program; if not, write to the Free Software
 //	Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
-#include <stdafx.h>
 #include "uifilefilters.h"
+
+bool ATUIGetNextFileFilter(const wchar_t *&cursor, ATUIFileFilterEntry& entry) {
+	entry = {};
+
+	if (!cursor || !*cursor)
+		return false;
+
+	entry.mDescription = cursor;
+	cursor += entry.mDescription.size() + 1;
+
+	if (!*cursor) {
+		entry = {};
+		return false;
+	}
+
+	entry.mPatterns = cursor;
+	cursor += entry.mPatterns.size() + 1;
+	return true;
+}
 
 extern const wchar_t g_ATUIFileFilter_Disk[] =
 			L"All supported images\0*.atr;*.xfd;*.dcm;*.pro;*.atx;*.arc\0"

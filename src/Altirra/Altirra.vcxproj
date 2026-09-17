@@ -553,7 +553,9 @@
     <ClCompile Include="..\platform\Windows_x64\Altirra\source\uiexportroms.cpp" />
     <ClCompile Include="..\platform\Windows_x64\Altirra\source\uifileassoc.cpp" />
     <ClCompile Include="..\platform\Windows_x64\Altirra\source\uifilebrowser.cpp" />
-    <ClCompile Include="..\platform\Windows_x64\Altirra\source\uifilefilters.cpp" />
+    <ClCompile Include="source\uifilefilters.cpp">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+    </ClCompile>
     <ClCompile Include="..\platform\Windows_x64\Altirra\source\uifirmware.cpp" />
     <ClCompile Include="..\platform\Windows_x64\Altirra\source\uifirmwaremenu.cpp" />
     <ClCompile Include="..\platform\Windows_x64\Altirra\source\uifirmwarescan.cpp" />
@@ -728,7 +730,7 @@
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\uidisplayaccessibility_win32.h" />
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\uidisplaytool.h" />
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\uidragdrop.h" />
-    <ClInclude Include="..\platform\Windows_x64\Altirra\h\uifilefilters.h" />
+    <ClInclude Include="h\uifilefilters.h" />
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\uifirmwaremenu.h" />
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\uifrontend.h" />
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\uifullscreenmode.h" />

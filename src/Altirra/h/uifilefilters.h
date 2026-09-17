@@ -18,6 +18,19 @@
 #ifndef f_AT_UIFILEFILTERS_H
 #define f_AT_UIFILEFILTERS_H
 
+#include <string_view>
+
+struct ATUIFileFilterEntry {
+	std::wstring_view mDescription;
+	std::wstring_view mPatterns;
+};
+
+// Advances a Windows-style, double-NUL-terminated filter list by one
+// description/pattern pair. This representation is retained for the Windows
+// dialogs, while portable front ends can use this function to translate it to
+// their native file type API.
+bool ATUIGetNextFileFilter(const wchar_t *&cursor, ATUIFileFilterEntry& entry);
+
 extern const wchar_t g_ATUIFileFilter_Disk[];
 extern const wchar_t g_ATUIFileFilter_DiskWithArchives[];
 extern const wchar_t g_ATUIFileFilter_Cheats[];

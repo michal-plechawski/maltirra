@@ -196,6 +196,7 @@ portable_test_sources=(
 	src/ATTest/source/TestAltirra_TraceFileFormatPortable.cpp
 	src/ATTest/source/TestAltirra_TraceTapePortable.cpp
 	src/ATTest/source/TestAltirra_UpdateFeedPortable.cpp
+	src/ATTest/source/TestAltirra_UIFileFiltersPortable.cpp
 	src/ATTest/source/TestAltirra_SimEventManagerPortable.cpp
 	src/ATTest/source/TestAltirra_TextDOMPortable.cpp
 	src/ATTest/source/TestAltirra_VideoManagerPortable.cpp
@@ -338,6 +339,7 @@ portable_test_sources=(
 	src/Altirra/source/tracefileformat.cpp
 	src/Altirra/source/tracetape.cpp
 	src/Altirra/source/updatefeed.cpp
+	src/Altirra/source/uifilefilters.cpp
 	src/Altirra/source/simeventmanager.cpp
 	src/Altirra/source/videomanager.cpp
 	src/Altirra/source/vbxestate.cpp
