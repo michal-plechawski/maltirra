@@ -23,7 +23,6 @@
 #include <shlobj_core.h>
 #include <vd2/system/error.h>
 #include <vd2/system/filesys.h>
-#include <vd2/system/registry.h>
 #include <vd2/system/vdalloc.h>
 #include <vd2/system/w32assist.h>
 #include <vd2/Kasumi/pixmap.h>
@@ -307,18 +306,6 @@ void ATCopyTextToClipboard(void *hwnd, const wchar_t *s) {
 	::CloseClipboard();
 }
 
-namespace {
-	struct ATUISavedWindowPlacement {
-		sint32 mLeft;
-		sint32 mTop;
-		sint32 mRight;
-		sint32 mBottom;
-		uint8 mbMaximized;
-		uint8 mPad[3];
-		uint32 mDpi;			// added - v3
-	};
-}
-
 void ATUISaveWindowPlacement(void *hwnd, const char *name) {
 	WINDOWPLACEMENT wp = {sizeof(WINDOWPLACEMENT)};
 
@@ -335,34 +322,16 @@ void ATUISaveWindowPlacement(void *hwnd, const char *name) {
 	}
 }
 
-void ATUISaveWindowPlacement(const char *name, const vdrect32& r, bool isMaximized, uint32 dpi) {
-	VDRegistryAppKey key("Window Placement");
-
-	ATUISavedWindowPlacement sp {};
-	sp.mLeft	= r.left;
-	sp.mTop		= r.top;
-	sp.mRight	= r.right;
-	sp.mBottom	= r.bottom;
-	sp.mbMaximized = isMaximized;
-	sp.mDpi		= dpi;
-	key.setBinary(name, (const char *)&sp, sizeof sp);
-}
-
 void ATUIRestoreWindowPlacement(void *hwnd, const char *name, int nCmdShow, bool sizeOnly) {
 	if (nCmdShow < 0)
 		nCmdShow = SW_SHOW;
 
 	if (!IsZoomed((HWND)hwnd) && !IsIconic((HWND)hwnd)) {
-		VDRegistryAppKey key("Window Placement");
-		ATUISavedWindowPlacement sp = {0};
+		vdrect32 savedRect {};
+		bool wasMaximized = false;
+		uint32 savedDpi = 0;
 
-		// Earlier versions only saved a RECT.
-		int len = key.getBinaryLength(name);
-
-		if (len > (int)sizeof(ATUISavedWindowPlacement))
-			len = sizeof(ATUISavedWindowPlacement);
-
-		if (len >= offsetof(ATUISavedWindowPlacement, mbMaximized) && key.getBinary(name, (char *)&sp, len)) {
+		if (ATUILoadWindowPlacement(name, savedRect, wasMaximized, savedDpi)) {
 			WINDOWPLACEMENT wp = {sizeof(WINDOWPLACEMENT)};
 
 			if (GetWindowPlacement((HWND)hwnd, &wp)) {
@@ -370,11 +339,11 @@ void ATUIRestoreWindowPlacement(void *hwnd, const char *name, int nCmdShow, bool
 				wp.flags			= 0;
 				wp.showCmd			= nCmdShow;
 
-				sint32 width = sp.mRight - sp.mLeft;
-				sint32 height = sp.mBottom - sp.mTop;
+				sint32 width = savedRect.width();
+				sint32 height = savedRect.height();
 
 				// If we have a DPI value, try to compensate for DPI differences.
-				if (sp.mDpi) {
+				if (savedDpi) {
 					// Obtain the primary work area.
 					RECT rWorkArea = {};
 					if (SystemParametersInfo(SPI_GETWORKAREA, 0, &rWorkArea, FALSE)) {
@@ -390,7 +359,7 @@ void ATUIRestoreWindowPlacement(void *hwnd, const char *name, int nCmdShow, bool
 						uint32 currentDpi = ATUIGetMonitorDpiW32(hMon);
 
 						if (currentDpi) {
-							const double dpiConversionFactor = (double)currentDpi / (double)sp.mDpi;
+							const double dpiConversionFactor = (double)currentDpi / (double)savedDpi;
 							width = VDRoundToInt32((double)width * dpiConversionFactor);
 							height = VDRoundToInt32((double)height * dpiConversionFactor);
 						}
@@ -401,13 +370,13 @@ void ATUIRestoreWindowPlacement(void *hwnd, const char *name, int nCmdShow, bool
 					wp.rcNormalPosition.right = wp.rcNormalPosition.left + width;
 					wp.rcNormalPosition.bottom = wp.rcNormalPosition.top + height;
 				} else {
-					wp.rcNormalPosition.left = sp.mLeft;
-					wp.rcNormalPosition.top = sp.mTop;
-					wp.rcNormalPosition.right = sp.mLeft + width;
-					wp.rcNormalPosition.bottom = sp.mTop + height;
+					wp.rcNormalPosition.left = savedRect.left;
+					wp.rcNormalPosition.top = savedRect.top;
+					wp.rcNormalPosition.right = savedRect.left + width;
+					wp.rcNormalPosition.bottom = savedRect.top + height;
 				}
 
-				if ((wp.showCmd == SW_SHOW || wp.showCmd == SW_SHOWNORMAL || wp.showCmd == SW_SHOWDEFAULT) && sp.mbMaximized)
+				if ((wp.showCmd == SW_SHOW || wp.showCmd == SW_SHOWNORMAL || wp.showCmd == SW_SHOWDEFAULT) && wasMaximized)
 					wp.showCmd = SW_SHOWMAXIMIZED;
 
 				SetWindowPlacement((HWND)hwnd, &wp);

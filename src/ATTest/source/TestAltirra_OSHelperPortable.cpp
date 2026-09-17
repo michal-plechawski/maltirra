@@ -8,6 +8,8 @@
 #include <vd2/system/file.h>
 #include <vd2/system/filesys.h>
 #include <vd2/system/process.h>
+#include <vd2/system/registry.h>
+#include <vd2/system/registrymemory.h>
 #include <vd2/system/time.h>
 #include <vd2/system/vdstring.h>
 #include <oshelper.h>
@@ -36,6 +38,26 @@ namespace {
 		}
 
 		VDStringW mPath;
+	};
+
+	class ATOSHelperRegistryScope {
+	public:
+		ATOSHelperRegistryScope()
+			: mpPreviousProvider(VDGetRegistryProvider())
+			, mPreviousAppKey(VDRegistryAppKey::getDefaultKey()) {
+			VDSetRegistryProvider(&mProvider);
+			VDRegistryAppKey::setDefaultKey("AltirraPortableTests/");
+		}
+
+		~ATOSHelperRegistryScope() {
+			VDRegistryAppKey::setDefaultKey(mPreviousAppKey.c_str());
+			VDSetRegistryProvider(mpPreviousProvider);
+		}
+
+	private:
+		VDRegistryProviderMemory mProvider;
+		IVDRegistryProvider *mpPreviousProvider;
+		VDStringA mPreviousAppKey;
 	};
 }
 
@@ -103,6 +125,38 @@ bool ATTestAltirraOSHelper(ATPortableTestContext& context) {
 	// This is environment-dependent, but both paths through the native
 	// implementation must be safe to query without elevated privileges.
 	(void)ATIsUserAdministrator();
+
+	{
+		ATOSHelperRegistryScope registryScope;
+		const vdrect32 expectedRect { 17, 29, 657, 509 };
+		ATUISaveWindowPlacement("RoundTrip", expectedRect, true, 192);
+
+		vdrect32 actualRect {};
+		bool maximized = false;
+		uint32 dpi = 0;
+		AT_PORTABLE_TEST_ASSERT(context,
+			ATUILoadWindowPlacement("RoundTrip", actualRect, maximized, dpi));
+		AT_PORTABLE_TEST_ASSERT(context,
+			actualRect.left == expectedRect.left && actualRect.top == expectedRect.top
+			&& actualRect.right == expectedRect.right && actualRect.bottom == expectedRect.bottom);
+		AT_PORTABLE_TEST_ASSERT(context, maximized);
+		AT_PORTABLE_TEST_ASSERT(context, dpi == 192);
+		AT_PORTABLE_TEST_ASSERT(context,
+			!ATUILoadWindowPlacement("Missing", actualRect, maximized, dpi));
+
+		const sint32 legacyRect[] { -40, 50, 600, 530 };
+		VDRegistryAppKey key("Window Placement");
+		key.setBinary("Legacy", reinterpret_cast<const char *>(legacyRect), sizeof legacyRect);
+		maximized = true;
+		dpi = 1;
+		AT_PORTABLE_TEST_ASSERT(context,
+			ATUILoadWindowPlacement("Legacy", actualRect, maximized, dpi));
+		AT_PORTABLE_TEST_ASSERT(context,
+			actualRect.left == -40 && actualRect.top == 50
+			&& actualRect.right == 600 && actualRect.bottom == 530);
+		AT_PORTABLE_TEST_ASSERT(context, !maximized);
+		AT_PORTABLE_TEST_ASSERT(context, dpi == 0);
+	}
 
 	{
 		static constexpr uint8 packed[] {

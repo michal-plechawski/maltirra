@@ -336,6 +336,59 @@ void ATCopyTextToClipboard(void *hwnd, const wchar_t *s) {
 	ATCopyTextToClipboard(hwnd, text.c_str());
 }
 
+void ATUISaveWindowPlacement(void *hwnd, const char *name) {
+	NSWindow *const window = static_cast<NSWindow *>(hwnd);
+	if (!window)
+		return;
+
+	const NSRect frame = window.frame;
+	const uint32 dpi = static_cast<uint32>(window.backingScaleFactor * 96.0 + 0.5);
+	ATUISaveWindowPlacement(
+		name,
+		vdrect32 {
+			static_cast<sint32>(frame.origin.x),
+			static_cast<sint32>(frame.origin.y),
+			static_cast<sint32>(NSMaxX(frame)),
+			static_cast<sint32>(NSMaxY(frame)),
+		},
+		window.zoomed,
+		dpi);
+}
+
+void ATUIRestoreWindowPlacement(void *hwnd, const char *name, int nCmdShow, bool sizeOnly) {
+	(void)nCmdShow;
+	NSWindow *const window = static_cast<NSWindow *>(hwnd);
+	if (!window || window.zoomed || window.miniaturized)
+		return;
+
+	vdrect32 savedRect {};
+	bool wasMaximized = false;
+	uint32 savedDpi = 0;
+	if (!ATUILoadWindowPlacement(name, savedRect, wasMaximized, savedDpi))
+		return;
+
+	NSRect frame = window.frame;
+	double width = savedRect.width();
+	double height = savedRect.height();
+	const uint32 currentDpi = static_cast<uint32>(window.backingScaleFactor * 96.0 + 0.5);
+	if (savedDpi && currentDpi) {
+		const double scale = static_cast<double>(currentDpi) / savedDpi;
+		width *= scale;
+		height *= scale;
+	}
+
+	if (!sizeOnly) {
+		frame.origin.x = savedRect.left;
+		frame.origin.y = savedRect.top;
+	}
+	frame.size.width = width;
+	frame.size.height = height;
+	[window setFrame:frame display:NO];
+
+	if (wasMaximized && !window.zoomed)
+		[window zoom:nil];
+}
+
 bool ATIsUserAdministrator() {
 	const group *adminGroup = getgrnam("admin");
 	if (!adminGroup)

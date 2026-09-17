@@ -12,6 +12,7 @@
 #include <vd2/system/error.h>
 #include <vd2/system/file.h>
 #include <vd2/system/filesys.h>
+#include <vd2/system/registry.h>
 #include <vd2/system/vdalloc.h>
 #include <vd2/system/vdstring.h>
 #include <vd2/Kasumi/pixmap.h>
@@ -26,11 +27,59 @@ AT_DEFINE_ENUM_TABLE_BEGIN(ATProcessEfficiencyMode)
 	{ ATProcessEfficiencyMode::Efficiency, "efficiency" },
 AT_DEFINE_ENUM_TABLE_END(ATProcessEfficiencyMode, ATProcessEfficiencyMode::Default)
 
+namespace {
+	struct ATUISavedWindowPlacement {
+		sint32 mLeft;
+		sint32 mTop;
+		sint32 mRight;
+		sint32 mBottom;
+		uint8 mbMaximized;
+		uint8 mPad[3];
+		uint32 mDpi;
+	};
+}
+
 void ATFileSetReadOnlyAttribute(const wchar_t *path, bool readOnly) {
 	VDFileSetAttributes(
 		path,
 		kVDFileAttr_ReadOnly,
 		readOnly ? kVDFileAttr_ReadOnly : 0);
+}
+
+void ATUISaveWindowPlacement(const char *name, const vdrect32& r, bool isMaximized, uint32 dpi) {
+	VDRegistryAppKey key("Window Placement");
+
+	ATUISavedWindowPlacement placement {};
+	placement.mLeft = r.left;
+	placement.mTop = r.top;
+	placement.mRight = r.right;
+	placement.mBottom = r.bottom;
+	placement.mbMaximized = isMaximized;
+	placement.mDpi = dpi;
+	key.setBinary(name, reinterpret_cast<const char *>(&placement), sizeof placement);
+}
+
+bool ATUILoadWindowPlacement(const char *name, vdrect32& r, bool& isMaximized, uint32& dpi) {
+	VDRegistryAppKey key("Window Placement", false);
+	ATUISavedWindowPlacement placement {};
+	int length = key.getBinaryLength(name);
+
+	if (length > static_cast<int>(sizeof placement))
+		length = sizeof placement;
+
+	if (length < static_cast<int>(offsetof(ATUISavedWindowPlacement, mbMaximized))
+		|| !key.getBinary(name, reinterpret_cast<char *>(&placement), length))
+		return false;
+
+	r = vdrect32 {
+		placement.mLeft,
+		placement.mTop,
+		placement.mRight,
+		placement.mBottom,
+	};
+	isMaximized = placement.mbMaximized != 0;
+	dpi = placement.mDpi;
+	return true;
 }
 
 void ATLoadFrame(VDPixmapBuffer& px, const wchar_t *filename) {

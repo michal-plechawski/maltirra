@@ -31,6 +31,7 @@ void ATCopyTextToClipboard(void *hwnd, const wchar_t *s);
 
 void ATUISaveWindowPlacement(void *hwnd, const char *name);
 void ATUISaveWindowPlacement(const char *name, const vdrect32& r, bool isMaximized, uint32 dpi);
+bool ATUILoadWindowPlacement(const char *name, vdrect32& r, bool& isMaximized, uint32& dpi);
 void ATUIRestoreWindowPlacement(void *hwnd, const char *name, int nCmdShow = -1, bool sizeOnly = false);
 
 void ATUIEnableEditControlAutoComplete(void *hwnd);
