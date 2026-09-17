@@ -154,4 +154,7 @@ private:
 	vdrefptr<ATIDEVHDImage> mpParentImage;
 };
 
+void ATCreateDeviceHardDiskVHDImage(const ATPropertySet& pset, IATDevice **dev);
+extern const ATDeviceDefinition g_ATDeviceDefIDEVHDImage;
+
 #endif

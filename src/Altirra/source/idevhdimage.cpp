@@ -15,7 +15,9 @@
 //	along with this program; if not, write to the Free Software
 //	Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
-#include <stdafx.h>
+#include <algorithm>
+#include <cstring>
+#include <vector>
 #include <vd2/system/binary.h>
 #include <vd2/system/bitmath.h>
 #include <vd2/system/date.h>
@@ -33,6 +35,61 @@ static_assert(sizeof(ATVHDParentLocator) == 24);
 static_assert(sizeof(ATVHDDynamicDiskHeader) == 1024);
 
 namespace {
+	std::vector<uint16> EncodeVHDPath(const wchar_t *path) {
+		std::vector<uint16> encoded;
+
+		for(const wchar_t *p = path; *p; ++p) {
+			uint32 c = static_cast<uint32>(*p);
+
+			if constexpr(sizeof(wchar_t) == 2) {
+				encoded.push_back(static_cast<uint16>(c));
+			} else if (c <= 0xFFFF) {
+				if (c >= 0xD800 && c <= 0xDFFF)
+					c = 0xFFFD;
+
+				encoded.push_back(static_cast<uint16>(c));
+			} else if (c <= 0x10FFFF) {
+				c -= 0x10000;
+				encoded.push_back(static_cast<uint16>(0xD800 + (c >> 10)));
+				encoded.push_back(static_cast<uint16>(0xDC00 + (c & 0x3FF)));
+			} else {
+				encoded.push_back(0xFFFD);
+			}
+		}
+
+		return encoded;
+	}
+
+	VDStringW DecodeVHDPath(const uint16 *encoded, size_t length) {
+		VDStringW path;
+		path.reserve(length);
+
+		for(size_t i = 0; i < length; ++i) {
+			uint32 c = encoded[i];
+
+			if constexpr(sizeof(wchar_t) == 2) {
+				path += static_cast<wchar_t>(c);
+			} else {
+				if (c >= 0xD800 && c <= 0xDBFF && i + 1 < length) {
+					const uint32 c2 = encoded[i + 1];
+
+					if (c2 >= 0xDC00 && c2 <= 0xDFFF) {
+						c = 0x10000 + ((c - 0xD800) << 10) + (c2 - 0xDC00);
+						++i;
+					} else {
+						c = 0xFFFD;
+					}
+				} else if (c >= 0xD800 && c <= 0xDFFF) {
+					c = 0xFFFD;
+				}
+
+				path += static_cast<wchar_t>(c);
+			}
+		}
+
+		return path;
+	}
+
 	uint32 sumbytes(const uint8 *src, uint32 n) {
 		uint32 sum = 0;
 		for(uint32 i=0; i<n; ++i)
@@ -58,7 +115,17 @@ namespace {
 	}
 }
 
-void ATCreateDeviceHardDiskVHDImage(const ATPropertySet& pset, IATDevice **dev);
+void ATCreateDeviceHardDiskVHDImage(const ATPropertySet& pset, IATDevice **dev) {
+	vdrefptr<ATIDEVHDImage> image(new ATIDEVHDImage);
+
+	image->Init(
+		pset.GetString("path", L""),
+		pset.GetBool("write_enabled"),
+		pset.GetBool("solid_state"));
+
+	*dev = image;
+	(*dev)->AddRef();
+}
 
 extern const ATDeviceDefinition g_ATDeviceDefIDEVHDImage = { "hdvhdimage", "harddisk", L"Hard disk image (VHD file)", ATCreateDeviceHardDiskVHDImage };
 
@@ -316,8 +383,8 @@ void ATIDEVHDImage::Init(const wchar_t *path, bool write, bool solidState) {
 		uint32 blockCount = (uint32)blockCount64;
 
 		// validate the location of the BAT
-		uint32 batSize = sizeof(uint64) * blockCount;
-		if (mDynamicHeader.mTableOffset >= size && size - mDynamicHeader.mTableOffset < batSize)
+		uint64 batSize = sizeof(uint32) * static_cast<uint64>(blockCount);
+		if (mDynamicHeader.mTableOffset > size || size - mDynamicHeader.mTableOffset < batSize)
 			throw ATInvalidVHDImageException(path);
 
 		// read in the BAT
@@ -365,11 +432,10 @@ void ATIDEVHDImage::Init(const wchar_t *path, bool write, bool solidState) {
 					continue;
 
 				// read in the data
-				parentPath.clear();
-				parentPath.resize(locator.mLength >> 1);
-
+				std::vector<uint16> encodedPath(locator.mLength >> 1);
 				mFile.seek(locator.mOffset);
-				mFile.read(&parentPath[0], locator.mLength);
+				mFile.read(encodedPath.data(), locator.mLength);
+				parentPath = DecodeVHDPath(encodedPath.data(), encodedPath.size());
 
 				if (locator.mCode == ATVHDParentLocator::kCodeWindowsRelPath) {
 					lastSeenRelPath = parentPath;
@@ -387,7 +453,7 @@ void ATIDEVHDImage::Init(const wchar_t *path, bool write, bool solidState) {
 
 				VDStringW resolvedRelPath;
 				if (!baseDir.empty())
-					resolvedRelPath = VDMakePath(baseDir, parentPath);
+					resolvedRelPath = VDMakePath(baseDir, lastSeenRelPath);
 				else
 					resolvedRelPath = lastSeenRelPath;
 
@@ -496,25 +562,29 @@ void ATIDEVHDImage::InitNew(const wchar_t *path, uint8 heads, uint8 spt, uint32 
 		mDynamicHeader.mBlockSize = mBlockSize;
 
 		// if this is a differencing disk, set the parent information
-		static_assert(sizeof(wchar_t) == 2);
 		VDStringW parentAbsPath;
 		VDStringW parentRelPath;
+		std::vector<uint16> parentAbsPathData;
+		std::vector<uint16> parentRelPathData;
 
 		if (parent) {
 			memcpy(mDynamicHeader.mParentUniqueId, parent->GetUID(), 16);
 			mDynamicHeader.mParentTimestamp = parent->GetVHDTimestamp();
 
-			vdwcslcpy((wchar_t *)mDynamicHeader.mParentUnicodeName, parent->GetAbsPath(), vdcountof(mDynamicHeader.mParentUnicodeName));
-
 			// compute absolute and relative paths
 			parentAbsPath = parent->GetAbsPath();
 			parentRelPath = VDFileGetRelativePath(VDFileSplitPathLeft(mAbsPath).c_str(), parentAbsPath.c_str(), true);
+			parentAbsPathData = EncodeVHDPath(parentAbsPath.c_str());
+			parentRelPathData = EncodeVHDPath(parentRelPath.c_str());
+
+			const size_t parentNameLength = std::min<size_t>(parentAbsPathData.size(), vdcountof(mDynamicHeader.mParentUnicodeName) - 1);
+			std::copy_n(parentAbsPathData.begin(), parentNameLength, mDynamicHeader.mParentUnicodeName);
 
 			// allocate space for the locators, rounded up to sectors
 			ATVHDParentLocator *nextLocator = mDynamicHeader.mParentLocators;
 
 			if (!parentRelPath.empty()) {
-				uint32 relLocatorSize = (uint32)parentRelPath.size() * 2;
+				uint32 relLocatorSize = static_cast<uint32>(parentRelPathData.size() * 2);
 				uint32 relLocatorCapacity = (relLocatorSize + 511) & ~511;
 
 				nextLocator->mCode = ATVHDParentLocator::kCodeWindowsRelPath;
@@ -522,13 +592,14 @@ void ATIDEVHDImage::InitNew(const wchar_t *path, uint8 heads, uint8 spt, uint32 
 				nextLocator->mSpace = relLocatorCapacity;
 				nextLocator->mOffset = headerSize;
 
-				parentRelPath.resize(relLocatorCapacity >> 1, 0);
+				parentRelPathData.resize(relLocatorCapacity >> 1, 0);
 
 				headerSize += relLocatorCapacity;
+				++nextLocator;
 			}
 
 			if (!parentAbsPath.empty()) {
-				uint32 absLocatorSize = parentAbsPath.size() * 2;
+				uint32 absLocatorSize = static_cast<uint32>(parentAbsPathData.size() * 2);
 				uint32 absLocatorCapacity = (absLocatorSize + 511) & ~511;
 
 				nextLocator->mCode = ATVHDParentLocator::kCodeWindowsAbsPath;
@@ -536,7 +607,7 @@ void ATIDEVHDImage::InitNew(const wchar_t *path, uint8 heads, uint8 spt, uint32 
 				nextLocator->mSpace = absLocatorCapacity;
 				nextLocator->mOffset = headerSize;
 
-				parentAbsPath.resize(absLocatorCapacity >> 1, 0);
+				parentAbsPathData.resize(absLocatorCapacity >> 1, 0);
 
 				headerSize += absLocatorCapacity;
 			} else {
@@ -557,10 +628,10 @@ void ATIDEVHDImage::InitNew(const wchar_t *path, uint8 heads, uint8 spt, uint32 
 
 		// write out locators (without null terminators, but with capacity padding)
 		if (!parentRelPath.empty())
-			mFile.write(parentRelPath.data(), parentRelPath.size() * 2);
+			mFile.write(parentRelPathData.data(), parentRelPathData.size() * 2);
 
 		if (!parentAbsPath.empty())
-			mFile.write(parentAbsPath.data(), parentAbsPath.size() * 2);
+			mFile.write(parentAbsPathData.data(), parentAbsPathData.size() * 2);
 
 		// write out the BAT
 		vdblock<uint32> batBuf(16384);
@@ -605,7 +676,7 @@ void ATIDEVHDImage::InitNew(const wchar_t *path, uint8 heads, uint8 spt, uint32 
 
 	// write out the footer
 	mFile.write(&rawFooter, sizeof rawFooter);
-	mFooterLocation = mFile.tell();
+	mFooterLocation = mFile.tell() - sizeof(rawFooter);
 
 	InitCommon();
 }
@@ -644,7 +715,7 @@ void ATIDEVHDImage::ReadSectors(void *data, uint32 lba, uint32 n) {
 		uint32 requested = n << 9;
 		uint32 actual = mFile.readData(data, requested);
 
-		if (requested < actual)
+		if (actual < requested)
 			memset((char *)data + actual, 0, requested - actual);
 	}
 }
@@ -676,7 +747,8 @@ void ATIDEVHDImage::ReadDynamicDiskSectors(void *data, uint32 lba, uint32 n) {
 		uint32 blockSectorOffset = lba & mBlockLBAMask;
 
 		for(uint32 i=0; i<blockCount; ++i) {
-			if (mCurrentBlockBitmap[blockSectorOffset >> 3] & (0x80 >> (blockSectorOffset & 7))) {
+			const uint32 sectorOffset = blockSectorOffset + i;
+			if (mCurrentBlockBitmap[sectorOffset >> 3] & (0x80 >> (sectorOffset & 7))) {
 				mFile.seek(mCurrentBlockDataOffset + ((sint64)(blockSectorOffset + i) << 9));
 				mFile.read((char *)data + i*512, 512);
 			} else {

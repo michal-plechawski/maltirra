@@ -31,15 +31,6 @@ void ATCreateDeviceHardDiskPhysical(const ATPropertySet& pset, IATDevice **dev) 
 	(*dev)->AddRef();
 }
 
-void ATCreateDeviceHardDiskVHDImage(const ATPropertySet& pset, IATDevice **dev) {
-	vdrefptr<ATIDEVHDImage> p(new ATIDEVHDImage);
-
-	p->Init(pset.GetString("path", L""), pset.GetBool("write_enabled"), pset.GetBool("solid_state"));
-
-	*dev = p;
-	(*dev)->AddRef();
-}
-
 void ATCreateDeviceHardDisk(const ATPropertySet& pset, IATDevice **dev) {
 	const wchar_t *path = pset.GetString("path", L"");
 

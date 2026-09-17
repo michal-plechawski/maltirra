@@ -323,7 +323,9 @@
     <ClCompile Include="source\iderawimage.cpp">
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="..\platform\Windows_x64\Altirra\source\idevhdimage.cpp" />
+    <ClCompile Include="source\idevhdimage.cpp">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+    </ClCompile>
     <ClCompile Include="..\platform\Windows_x64\Altirra\source\inputcontroller.cpp" />
     <ClCompile Include="source\inputdefs.cpp">
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
@@ -681,7 +683,7 @@
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\ide.h" />
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\idephysdisk.h" />
     <ClInclude Include="h\iderawimage.h" />
-    <ClInclude Include="..\platform\Windows_x64\Altirra\h\idevhdimage.h" />
+    <ClInclude Include="h\idevhdimage.h" />
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\inputcontroller.h" />
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\inputmanager.h" />
     <ClInclude Include="h\irqcontroller.h" />

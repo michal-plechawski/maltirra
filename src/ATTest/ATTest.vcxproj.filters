@@ -115,6 +115,9 @@
 	<ClCompile Include="source\TestAltirra_IDERawImagePortable.cpp">
 	  <Filter>Source Files</Filter>
 	</ClCompile>
+	<ClCompile Include="source\TestAltirra_IDEVHDImagePortable.cpp">
+	  <Filter>Source Files</Filter>
+	</ClCompile>
 	<ClCompile Include="source\TestAltirra_KernelDBPortable.cpp">
 	  <Filter>Source Files</Filter>
 	</ClCompile>

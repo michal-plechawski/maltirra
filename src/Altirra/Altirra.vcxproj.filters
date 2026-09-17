@@ -205,7 +205,7 @@
     <ClCompile Include="source\iderawimage.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\platform\Windows_x64\Altirra\source\idevhdimage.cpp">
+    <ClCompile Include="source\idevhdimage.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\platform\Windows_x64\Altirra\source\inputcontroller.cpp">
@@ -1248,7 +1248,7 @@
     <ClInclude Include="h\iderawimage.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\platform\Windows_x64\Altirra\h\idevhdimage.h">
+    <ClInclude Include="h\idevhdimage.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\inputcontroller.h">

@@ -174,6 +174,7 @@ portable_test_sources=(
 	src/ATTest/source/TestAltirra_GTIATablesPortable.cpp
 	src/ATTest/source/TestAltirra_HostDeviceUtilsPortable.cpp
 	src/ATTest/source/TestAltirra_IDERawImagePortable.cpp
+	src/ATTest/source/TestAltirra_IDEVHDImagePortable.cpp
 	src/ATTest/source/TestAltirra_KernelDBPortable.cpp
 	src/ATTest/source/TestAltirra_OSTracingPortable.cpp
 	src/ATTest/source/TestAltirra_OSHelperPortable.cpp
@@ -290,6 +291,7 @@ portable_test_sources=(
 	src/ATCore/source/fft_scalar.cpp
 	src/ATCore/source/notifylist.cpp
 	src/ATCore/source/propertyset.cpp
+	src/ATCore/source/progress.cpp
 	src/Altirra/source/artifacting_filters.cpp
 	src/Altirra/source/audiorawsource.cpp
 	src/Altirra/source/audiostocksamples.cpp
@@ -344,6 +346,7 @@ portable_test_sources=(
 	src/Altirra/source/scsidisk.cpp
 	src/Altirra/source/thepill.cpp
 	src/Altirra/source/iderawimage.cpp
+	src/Altirra/source/idevhdimage.cpp
 	src/Altirra/source/hostdeviceutils.cpp
 	src/Altirra/source/printer1020font.cpp
 	src/Altirra/source/printer1020.cpp
