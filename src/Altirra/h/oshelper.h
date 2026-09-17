@@ -13,6 +13,7 @@ class VDStringW;
 const void *ATLockResource(uint32 id, size_t& size);
 bool ATLoadKernelResource(int id, void *dst, uint32 offset, uint32 size, bool allowPartial);
 bool ATLoadKernelResource(int id, vdfastvector<uint8>& data);
+bool ATDecodeLZPackedResource(const void *src, size_t srcSize, vdfastvector<uint8>& data);
 bool ATLoadKernelResourceLZPacked(int id, vdfastvector<uint8>& data);
 bool ATLoadMiscResource(int id, vdfastvector<uint8>& data);
 bool ATLoadImageResource(uint32 id, VDPixmapBuffer& buf);

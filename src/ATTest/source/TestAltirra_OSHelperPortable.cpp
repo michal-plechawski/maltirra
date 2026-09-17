@@ -100,5 +100,50 @@ bool ATTestAltirraOSHelper(ATPortableTestContext& context) {
 	// implementation must be safe to query without elevated privileges.
 	(void)ATIsUserAdministrator();
 
+	{
+		static constexpr uint8 packed[] {
+			5, 0, 0, 0,
+			10, 'h', 'e', 'l', 'l', 'o',
+			0
+		};
+		vdfastvector<uint8> decoded;
+		AT_PORTABLE_TEST_ASSERT(context, ATDecodeLZPackedResource(packed, sizeof packed, decoded));
+		AT_PORTABLE_TEST_ASSERT(context, decoded.size() == 5);
+		AT_PORTABLE_TEST_ASSERT(context, !std::memcmp(decoded.data(), "hello", 5));
+	}
+
+	{
+		static constexpr uint8 packed[] {
+			9, 0, 0, 0,
+			6, 'a', 'b', 'c',
+			0x61, 2,
+			0
+		};
+		vdfastvector<uint8> decoded;
+		AT_PORTABLE_TEST_ASSERT(context, ATDecodeLZPackedResource(packed, sizeof packed, decoded));
+		AT_PORTABLE_TEST_ASSERT(context, decoded.size() == 9);
+		AT_PORTABLE_TEST_ASSERT(context, !std::memcmp(decoded.data(), "abcabcabc", 9));
+	}
+
+	{
+		static constexpr uint8 truncatedHeader[] { 1, 0, 0 };
+		static constexpr uint8 truncatedLiteral[] { 5, 0, 0, 0, 10, 'h', 'i' };
+		static constexpr uint8 invalidBackReference[] { 3, 0, 0, 0, 1, 0, 0 };
+		static constexpr uint8 earlyTerminator[] { 1, 0, 0, 0, 0 };
+		static constexpr uint8 missingTerminator[] { 1, 0, 0, 0, 2, 'x' };
+		static constexpr uint8 oversizedOutput[] { 0x01, 0x00, 0x00, 0x10, 0 };
+		vdfastvector<uint8> decoded { 1, 2, 3 };
+
+		AT_PORTABLE_TEST_ASSERT(context, !ATDecodeLZPackedResource(nullptr, 0, decoded));
+		AT_PORTABLE_TEST_ASSERT(context, decoded.empty());
+		AT_PORTABLE_TEST_ASSERT(context, !ATDecodeLZPackedResource(truncatedHeader, sizeof truncatedHeader, decoded));
+		AT_PORTABLE_TEST_ASSERT(context, !ATDecodeLZPackedResource(truncatedLiteral, sizeof truncatedLiteral, decoded));
+		AT_PORTABLE_TEST_ASSERT(context, !ATDecodeLZPackedResource(invalidBackReference, sizeof invalidBackReference, decoded));
+		AT_PORTABLE_TEST_ASSERT(context, !ATDecodeLZPackedResource(earlyTerminator, sizeof earlyTerminator, decoded));
+		AT_PORTABLE_TEST_ASSERT(context, !ATDecodeLZPackedResource(missingTerminator, sizeof missingTerminator, decoded));
+		AT_PORTABLE_TEST_ASSERT(context, !ATDecodeLZPackedResource(oversizedOutput, sizeof oversizedOutput, decoded));
+		AT_PORTABLE_TEST_ASSERT(context, decoded.empty());
+	}
+
 	return true;
 }

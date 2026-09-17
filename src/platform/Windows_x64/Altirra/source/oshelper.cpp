@@ -118,49 +118,7 @@ bool ATLoadKernelResourceLZPacked(int id, vdfastvector<uint8>& data) {
 	if (!p)
 		return false;
 
-	uint32 len = VDReadUnalignedLEU32(p);
-
-	data.clear();
-	data.resize(len);
-
-	uint8 *dst = data.data();
-	const uint8 *src = (const uint8 *)p + 4;
-
-	for(;;) {
-		uint8 c = *src++;
-
-		if (!c)
-			break;
-
-		if (c & 1) {
-			int distm1 = *src++;
-			int len;
-
-			if (c & 2) {
-				distm1 += (c & 0xfc) << 6;
-				len = *src++;
-			} else {
-				distm1 += ((c & 0x1c) << 6);
-				len = c >> 5;
-			}
-
-			len += 3;
-
-			const uint8 *csrc = dst - distm1 - 1;
-
-			do {
-				*dst++ = *csrc++;
-			} while(--len);
-		} else {
-			c >>= 1;
-
-			memcpy(dst, src, c);
-			src += c;
-			dst += c;
-		}
-	}
-
-	return true;
+	return ATDecodeLZPackedResource(p, SizeofResource(hmod, hrsrc), data);
 }
 
 bool ATLoadMiscResource(int id, vdfastvector<uint8>& data) {
