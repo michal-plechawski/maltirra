@@ -15,9 +15,13 @@
 //	along with this program; if not, write to the Free Software
 //	Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
-#include <stdafx.h>
+#include <algorithm>
+#include <cstdlib>
+
+#include <vd2/system/VDString.h>
+#include <at/atcore/consoleoutput.h>
+
 #include "memorymanager.h"
-#include "console.h"
 
 void ATMemoryManager::MemoryLayer::UpdateEffectiveRange() {
 	mEffectiveStart = std::max(mPageOffset, mMaskRangeStart);
@@ -123,6 +127,13 @@ void ATMemoryManager::SetWrapBankZeroEnabled(bool enabled) {
 	mbWrapBankZero = enabled;
 
 	RebuildAllNodes(0x100, 1, kATMemoryAccessMode_ARW);
+
+	// RebuildNodesSlow() can return early when bank 1 has no layers of its own,
+	// so explicitly initialize the borrowed page after enabling the mirror.
+	if (enabled && mbHighMemoryEnabled) {
+		(*mReadBankTable[1])[0] = (*mReadBankTable[0])[0];
+		(*mWriteBankTable[1])[0] = (*mWriteBankTable[0])[0];
+	}
 }
 
 void ATMemoryManager::SetFloatingIoBus(bool floating) {
@@ -155,7 +166,7 @@ void ATMemoryManager::SetFastBusEnabled(bool enabled) {
 	RebuildAllNodes(0, 256, kATMemoryAccessMode_RW);
 }
 
-void ATMemoryManager::DumpStatus() {
+void ATMemoryManager::DumpStatus(ATConsoleOutput& output) {
 	VDStringA s;
 
 	Layers resortedLayers(mLayers);
@@ -197,11 +208,11 @@ void ATMemoryManager::DumpStatus() {
 
 
 	if (mbFastBusEnabled) {
-		ATConsoleWrite("Address      Pri Bus Mode  Type            Description    \n");
-		ATConsoleWrite("----------------------------------------------------------\n");
+		output <<= "Address      Pri Bus Mode  Type            Description    ";
+		output <<= "----------------------------------------------------------";
 	} else {
-		ATConsoleWrite("Address      Pri Mode Type                 Description\n");
-		ATConsoleWrite("----------------------------------------------------------\n");
+		output <<= "Address      Pri Mode Type                 Description";
+		output <<= "----------------------------------------------------------";
 	}
 
 	for(const MemoryLayer *p : resortedLayers) {
@@ -242,8 +253,7 @@ void ATMemoryManager::DumpStatus() {
 			s.append_sprintf(" [%s]", layer.mpName);
 		}
 
-		s += '\n';
-		ATConsoleWrite(s.c_str());
+		output <<= s.c_str();
 	}
 }
 

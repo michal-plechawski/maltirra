@@ -146,6 +146,7 @@ portable_test_sources=(
 	src/ATTest/source/TestAltirra_ConstantsPortable.cpp
 	src/ATTest/source/TestAltirra_CompatDBPortable.cpp
 	src/ATTest/source/TestAltirra_CPUMemoryPortable.cpp
+	src/ATTest/source/TestAltirra_MemoryManagerPortable.cpp
 	src/ATTest/source/TestAltirra_DebuggerSettingsPortable.cpp
 	src/ATTest/source/TestAltirra_DiskTracePortable.cpp
 	src/ATTest/source/TestAltirra_DiskProfilePortable.cpp
@@ -291,6 +292,7 @@ portable_test_sources=(
 	src/Altirra/source/gtiatables.cpp
 	src/Altirra/source/inputdefs.cpp
 	src/Altirra/source/inputmap.cpp
+	src/Altirra/source/memorymanager.cpp
 	src/Altirra/source/iderawimage.cpp
 	src/Altirra/source/hostdeviceutils.cpp
 	src/Altirra/source/printer1020font.cpp

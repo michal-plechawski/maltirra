@@ -229,7 +229,7 @@
     <ClCompile Include="..\platform\Windows_x64\Altirra\source\main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\platform\Windows_x64\Altirra\source\memorymanager.cpp">
+    <ClCompile Include="source\memorymanager.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\platform\Windows_x64\Altirra\source\mmu.cpp">
@@ -1266,7 +1266,7 @@
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\kmkjzide.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\platform\Windows_x64\Altirra\h\memorymanager.h">
+    <ClInclude Include="h\memorymanager.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\mmu.h">

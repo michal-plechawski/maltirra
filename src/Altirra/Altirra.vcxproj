@@ -332,7 +332,9 @@
     <ClCompile Include="..\platform\Windows_x64\Altirra\source\kmkjzide.cpp" />
     <ClCompile Include="..\platform\Windows_x64\Altirra\source\leakdetector.cpp" />
     <ClCompile Include="..\platform\Windows_x64\Altirra\source\main.cpp" />
-    <ClCompile Include="..\platform\Windows_x64\Altirra\source\memorymanager.cpp" />
+    <ClCompile Include="source\memorymanager.cpp">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+    </ClCompile>
     <ClCompile Include="..\platform\Windows_x64\Altirra\source\midimate.cpp" />
     <ClCompile Include="..\platform\Windows_x64\Altirra\source\mio.cpp" />
     <ClCompile Include="..\platform\Windows_x64\Altirra\source\misccvars.cpp" />
@@ -656,7 +658,7 @@
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\joystick.h" />
     <ClInclude Include="h\kerneldb.h" />
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\kmkjzide.h" />
-    <ClInclude Include="..\platform\Windows_x64\Altirra\h\memorymanager.h" />
+    <ClInclude Include="h\memorymanager.h" />
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\mio.h" />
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\mmu.h" />
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\modem.h" />

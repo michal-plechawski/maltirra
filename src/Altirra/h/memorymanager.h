@@ -18,11 +18,15 @@
 #ifndef f_AT_MEMORYMANAGER_H
 #define f_AT_MEMORYMANAGER_H
 
+#include <type_traits>
+
 #include <vd2/system/linearalloc.h>
 #include <vd2/system/memory.h>
 #include <vd2/system/unknown.h>
 #include <vd2/system/vdstl.h>
 #include "cpumemory.h"
+
+class ATConsoleOutput;
 
 // Read/write handlers. The address is the 16-bit or 24-bit global address
 // of the access. Read routines return 0-255 if handled or -1 if not handled;
@@ -155,7 +159,7 @@ public:
 
 	void SetFastBusEnabled(bool enabled);
 
-	void DumpStatus();
+	void DumpStatus(ATConsoleOutput& output);
 
 	ATMemoryLayer *CreateLayer(int priority, const uint8 *base, uint32 pageAddr, uint32 pages, bool readOnly);
 	ATMemoryLayer *CreateLayer(int priority, const ATMemoryHandlerTable& handlers, uint32 pageOffset, uint32 pages);

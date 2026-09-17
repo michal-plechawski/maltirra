@@ -11332,7 +11332,8 @@ void ATConsoleCmdMap(ATDebuggerCmdParser& parser) {
 
 	ATMemoryManager& memman = *g_sim.GetMemoryManager();
 
-	memman.DumpStatus();
+	ATDebuggerConsoleOutput output;
+	memman.DumpStatus(output);
 }
 
 void ATConsoleCmdEcho(ATDebuggerCmdParser& parser) {
