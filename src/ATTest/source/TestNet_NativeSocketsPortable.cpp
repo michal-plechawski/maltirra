@@ -162,6 +162,10 @@ bool ATTestNetNativeSockets(ATPortableTestContext& context) {
 	uint8 udpBuffer[16] {};
 	AT_PORTABLE_TEST_ASSERT(context, receiver->RecvFrom(sourceAddress, udpBuffer, sizeof udpBuffer) == 4);
 	AT_PORTABLE_TEST_ASSERT(context, sourceAddress.mType == ATSocketAddressType::IPv4);
+	const ATSocketAddress senderAddress = sender->GetLocalAddress();
+	AT_PORTABLE_TEST_ASSERT(context, senderAddress.mType == ATSocketAddressType::IPv4);
+	AT_PORTABLE_TEST_ASSERT(context, senderAddress.mPort != 0);
+	AT_PORTABLE_TEST_ASSERT(context, sourceAddress.mPort == senderAddress.mPort);
 	AT_PORTABLE_TEST_ASSERT(context, udpBuffer[0] == 0x41 && udpBuffer[1] == 0x54 && udpBuffer[2] == 0x52 && udpBuffer[3] == 0x41);
 
 	receiver->SetOnEvent(nullptr, nullptr, false);

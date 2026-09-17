@@ -207,6 +207,7 @@ public:
 	ATNetDatagramSocket(ATNetSocketSyncContext& syncContext, const ATSocketAddress& bindAddress, bool dualStack);
 	~ATNetDatagramSocket();
 
+	ATSocketAddress GetLocalAddress() const override;
 	sint32 RecvFrom(ATSocketAddress& address, void *data, uint32 maxlen) override;
 	bool SendTo(const ATSocketAddress& address, const void *data, uint32 len) override;
 

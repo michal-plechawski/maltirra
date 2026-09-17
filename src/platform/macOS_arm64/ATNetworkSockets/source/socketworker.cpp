@@ -711,6 +711,20 @@ ATNetDatagramSocket::ATNetDatagramSocket(ATNetSocketSyncContext& syncContext, co
 ATNetDatagramSocket::~ATNetDatagramSocket() {
 }
 
+ATSocketAddress ATNetDatagramSocket::GetLocalAddress() const {
+	vdsynchronized(mpSyncContext->mMutex) {
+		if (mSocketHandle == kATInvalidSocket)
+			return {};
+
+		sockaddr_storage address {};
+		socklen_t addressLen = sizeof address;
+		if (getsockname(mSocketHandle, reinterpret_cast<sockaddr *>(&address), &addressLen))
+			return {};
+
+		return ATSocketFromNativeAddress(reinterpret_cast<const sockaddr *>(&address));
+	}
+}
+
 sint32 ATNetDatagramSocket::RecvFrom(ATSocketAddress& address, void *data, uint32 maxlen) {
 	vdsynchronized(mpSyncContext->mMutex) {
 		if (mState != State::Connect && mState != State::Connected)

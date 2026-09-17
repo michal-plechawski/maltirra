@@ -968,6 +968,23 @@ ATNetDatagramSocket::ATNetDatagramSocket(ATNetSocketSyncContext& syncContext, co
 ATNetDatagramSocket::~ATNetDatagramSocket() {
 }
 
+ATSocketAddress ATNetDatagramSocket::GetLocalAddress() const {
+	vdsynchronized(mpSyncContext->mMutex) {
+		if (mSocketHandle == INVALID_SOCKET)
+			return {};
+
+		union {
+			char buf[256] {};
+			sockaddr sa;
+		} address {};
+		int addressLen = sizeof address;
+		if (getsockname(mSocketHandle, &address.sa, &addressLen))
+			return {};
+
+		return ATSocketFromNativeAddress(&address.sa);
+	}
+}
+
 sint32 ATNetDatagramSocket::RecvFrom(ATSocketAddress& address, void *data, uint32 maxlen) {
 	uint32 bufSize = mReadBuffer.size();
 	sint32 readLen = -1;

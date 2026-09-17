@@ -203,6 +203,8 @@ public:
 // Interface for datagram (UDP) sockets.
 class IATDatagramSocket : public IATSocket {
 public:
+	virtual ATSocketAddress GetLocalAddress() const = 0;
+
 	// Attempt to read a datagram. Returns the remote address and length of the datagram if
 	// successful, or -1 if no datagram is available. Any datagrams larger than the provided
 	// maxlen are silently discarded.
