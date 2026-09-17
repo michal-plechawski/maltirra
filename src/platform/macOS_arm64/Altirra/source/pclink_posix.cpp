@@ -1,5 +1,5 @@
 //	Altirra - Atari 800/800XL/5200 emulator
-//	Copyright (C) 2009-2011 Avery Lee
+//	Copyright (C) 2009-2026 Avery Lee
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -15,33 +15,37 @@
 //	along with this program; if not, write to the Free Software
 //	Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
-#include <stdafx.h>
-#include <windows.h>
+#include <cerrno>
+
 #include <at/atcore/cio.h>
 #include "pclinkerror.h"
 
-uint8 ATTranslateHostErrorToSIOError(uint32 err) {
-	switch(err) {
-		case ERROR_FILE_NOT_FOUND:
+uint8 ATTranslateHostErrorToSIOError(uint32 errorCode) {
+	switch(static_cast<int>(errorCode)) {
+		case ENOENT:
 			return kATCIOStat_FileNotFound;
 
-		case ERROR_PATH_NOT_FOUND:
+		case ENOTDIR:
 			return kATCIOStat_PathNotFound;
 
-		case ERROR_FILE_EXISTS:
-		case ERROR_ALREADY_EXISTS:
+		case EEXIST:
 			return kATCIOStat_FileExists;
 
-		case ERROR_DISK_FULL:
+		case ENOSPC:
+		case EDQUOT:
 			return kATCIOStat_DiskFull;
 
-		case ERROR_DIR_NOT_EMPTY:
+		case ENOTEMPTY:
 			return kATCIOStat_DirNotEmpty;
 
-		case ERROR_ACCESS_DENIED:
+		case EACCES:
+		case EPERM:
+		case EROFS:
 			return kATCIOStat_AccessDenied;
 
-		case ERROR_SHARING_VIOLATION:
+		case EAGAIN:
+		case EBUSY:
+		case ETXTBSY:
 			return kATCIOStat_FileLocked;
 
 		default:

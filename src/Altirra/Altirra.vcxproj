@@ -695,6 +695,7 @@
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\options.h" />
     <ClInclude Include="h\oshelper.h" />
     <ClInclude Include="h\pbi.h" />
+    <ClInclude Include="h\pclinkerror.h" />
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\pclink.h" />
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\pia.h" />
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\profiler.h" />

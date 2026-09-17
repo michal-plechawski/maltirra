@@ -45,6 +45,7 @@ bool ATTestAltirraOSHelper(ATPortableTestContext& context);
 bool ATTestAltirraPNG(ATPortableTestContext& context);
 bool ATTestAltirraPNGEncoder(ATPortableTestContext& context);
 bool ATTestAltirraPBI(ATPortableTestContext& context);
+bool ATTestAltirraPCLinkError(ATPortableTestContext& context);
 bool ATTestAltirraPaletteGenerator(ATPortableTestContext& context);
 bool ATTestAltirraPaletteSolver(ATPortableTestContext& context);
 bool ATTestAltirraSaveStateTypes(ATPortableTestContext& context);
@@ -184,6 +185,7 @@ const ATPortableTestCase *ATGetPortableTests(size_t& count) {
 		{ "Altirra_PNG", ATTestAltirraPNG },
 		{ "Altirra_PNGEncoder", ATTestAltirraPNGEncoder },
 		{ "Altirra_PBI", ATTestAltirraPBI },
+		{ "Altirra_PCLinkError", ATTestAltirraPCLinkError },
 		{ "Altirra_PaletteGenerator", ATTestAltirraPaletteGenerator },
 		{ "Altirra_PaletteSolver", ATTestAltirraPaletteSolver },
 		{ "Altirra_SaveStateTypes", ATTestAltirraSaveStateTypes },

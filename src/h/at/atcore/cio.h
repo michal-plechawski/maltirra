@@ -21,6 +21,8 @@
 #ifndef AT_ATCORE_CIO_H
 #define AT_ATCORE_CIO_H
 
+#include <vd2/system/vdtypes.h>
+
 enum : uint8 {
 	kATCIOStat_Success		= 0x01,
 	kATCIOStat_SuccessEOF	= 0x03,	// succeeded, but at end of file (undocumented)

@@ -1293,6 +1293,9 @@
     <ClInclude Include="h\pbi.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="h\pclinkerror.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\pclink.h">
       <Filter>Header Files</Filter>
     </ClInclude>

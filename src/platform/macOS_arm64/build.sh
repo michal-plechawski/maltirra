@@ -180,6 +180,7 @@ portable_test_sources=(
 	src/ATTest/source/TestAltirra_PNGPortable.cpp
 	src/ATTest/source/TestAltirra_PNGEncoderPortable.cpp
 	src/ATTest/source/TestAltirra_PBIPortable.cpp
+	src/ATTest/source/TestAltirra_PCLinkErrorPortable.cpp
 	src/ATTest/source/TestAltirra_PaletteGeneratorPortable.cpp
 	src/ATTest/source/TestAltirra_PaletteSolverPortable.cpp
 	src/ATTest/source/TestAltirra_SaveStateTypesPortable.cpp
@@ -320,6 +321,7 @@ portable_test_sources=(
 	src/platform/macOS_arm64/Altirra/source/directorywatcher.cpp
 	src/platform/macOS_arm64/Altirra/source/ostracing.cpp
 	src/platform/macOS_arm64/Altirra/source/oshelper.mm
+	src/platform/macOS_arm64/Altirra/source/pclink_posix.cpp
 	src/platform/macOS_arm64/Altirra/source/startuplogger.cpp
 	src/platform/macOS_arm64/Altirra/source/updatefeed_macos.cpp
 	src/Altirra/source/errordecode.cpp

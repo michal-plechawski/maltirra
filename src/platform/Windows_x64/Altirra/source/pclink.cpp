@@ -27,6 +27,7 @@
 #include <at/atcore/propertyset.h>
 #include <at/atcore/scheduler.h>
 #include "pclink.h"
+#include "pclinkerror.h"
 #include "console.h"
 #include "cpu.h"
 #include "kerneldb.h"
@@ -34,8 +35,6 @@
 #include "debuggerlog.h"
 
 ATDebuggerLogChannel g_ATLCPCLink(false, false, "PCLINK", "PCLink activity");
-
-uint8 ATTranslateWin32ErrorToSIOError(uint32 err);
 
 namespace {
 	// 2011 and we still have to put up with this crap
@@ -442,7 +441,7 @@ uint8 ATPCLinkFileHandle::OpenFile(const wchar_t *nativePath, uint32 openFlags, 
 			mFile.open(nativePath, openFlags);
 		}
 	} catch(const MyWin32Error& e) {
-		return ATTranslateWin32ErrorToSIOError(e.GetWin32Error());
+		return ATTranslateHostErrorToSIOError(e.GetWin32Error());
 	} catch(const MyError&) {
 		return kATCIOStat_SystemError;
 	}
@@ -517,7 +516,7 @@ uint8 ATPCLinkFileHandle::Seek(uint32 pos) {
 			mFile.seek(pos);
 		} catch(const MyWin32Error& e) {
 			mFile.seekNT(mPos);
-			return ATTranslateWin32ErrorToSIOError(e.GetWin32Error());
+			return ATTranslateHostErrorToSIOError(e.GetWin32Error());
 		} catch(const MyError&) {
 			mFile.seekNT(mPos);
 			return kATCIOStat_SystemError;
@@ -1328,7 +1327,7 @@ bool ATPCLinkDevice::OnPut() {
 					else
 						mStatusError = kATCIOStat_FileNotFound;
 				} catch(const MyWin32Error& e) {
-					mStatusError = ATTranslateWin32ErrorToSIOError(e.GetWin32Error());
+					mStatusError = ATTranslateHostErrorToSIOError(e.GetWin32Error());
 				} catch(const MyError&) {
 					mStatusError = kATCIOStat_SystemError;
 				}
@@ -1381,7 +1380,7 @@ bool ATPCLinkDevice::OnPut() {
 							VDRemoveFile(it.GetFullPath().c_str());
 							matched = true;
 						} catch(const MyWin32Error& e) {
-							mStatusError = ATTranslateWin32ErrorToSIOError(e.GetWin32Error());
+							mStatusError = ATTranslateHostErrorToSIOError(e.GetWin32Error());
 							return true;
 						} catch(const MyError&) {
 							mStatusError = kATCIOStat_SystemError;
@@ -1414,7 +1413,7 @@ bool ATPCLinkDevice::OnPut() {
 							return true;
 						}
 					} catch(const MyWin32Error& e) {
-						mStatusError = ATTranslateWin32ErrorToSIOError(e.GetWin32Error());
+						mStatusError = ATTranslateHostErrorToSIOError(e.GetWin32Error());
 						return true;
 					} catch(const MyError&) {
 						mStatusError = kATCIOStat_SystemError;
@@ -1502,7 +1501,7 @@ bool ATPCLinkDevice::OnPut() {
 					else
 						mStatusError = kATCIOStat_FileNotFound;
 				} catch(const MyWin32Error& e) {
-					mStatusError = ATTranslateWin32ErrorToSIOError(e.GetWin32Error());
+					mStatusError = ATTranslateHostErrorToSIOError(e.GetWin32Error());
 				} catch(const MyError&) {
 					mStatusError = kATCIOStat_SystemError;
 				}
@@ -1548,7 +1547,7 @@ bool ATPCLinkDevice::OnPut() {
 					}
 
 				} catch(const MyWin32Error& e) {
-					mStatusError = ATTranslateWin32ErrorToSIOError(e.GetWin32Error());
+					mStatusError = ATTranslateHostErrorToSIOError(e.GetWin32Error());
 					return true;
 				} catch(const MyError&) {
 					mStatusError = kATCIOStat_SystemError;
@@ -1590,7 +1589,7 @@ bool ATPCLinkDevice::OnPut() {
 				try {
 					VDRemoveDirectory(resultPath.c_str());
 				} catch(const MyWin32Error& e) {
-					mStatusError = ATTranslateWin32ErrorToSIOError(e.GetWin32Error());
+					mStatusError = ATTranslateHostErrorToSIOError(e.GetWin32Error());
 					return true;
 				} catch(const MyError&) {	
 					mStatusError = kATCIOStat_SystemError;

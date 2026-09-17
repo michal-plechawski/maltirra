@@ -27,9 +27,8 @@
 #include "hostdevice.h"
 #include "hostdeviceutils.h"
 #include "oshelper.h"
+#include "pclinkerror.h"
 #include "uirender.h"
-
-uint8 ATTranslateWin32ErrorToSIOError(uint32 err);
 
 ///////////////////////////////////////////////////////////////////////////
 
@@ -988,7 +987,7 @@ sint32 ATHostDeviceEmulator::OnCIOOpen(int channel, uint8 deviceNo, uint8 mode, 
 			}
 		} catch(const MyWin32Error& e) {
 			ch.mFile.closeNT();
-			return ATTranslateWin32ErrorToSIOError(e.GetWin32Error());
+			return ATTranslateHostErrorToSIOError(e.GetWin32Error());
 		} catch(const MyError&) {
 			ch.mFile.closeNT();
 			return kATCIOStat_FileNotFound;
@@ -1067,7 +1066,7 @@ sint32 ATHostDeviceEmulator::OnCIOSpecial(int channel, uint8 deviceNo, uint8 com
 		else if (command == 0x2C)	return HandleCmd_Chdir(bufadr);						// SDX: Set Current Directory
 		else if (command == 0x30)	return HandleCmd_SDX_Getcwd(bufadr, buflen);		// SDX: Get Current Directory
 	} catch(const MyWin32Error& e) {
-		return ATTranslateWin32ErrorToSIOError(e.GetWin32Error());
+		return ATTranslateHostErrorToSIOError(e.GetWin32Error());
 	} catch(const MyError&) {
 		return kATCIOStat_FatalDiskIO;
 	}

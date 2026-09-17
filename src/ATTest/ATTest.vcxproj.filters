@@ -133,6 +133,9 @@
 	<ClCompile Include="source\TestAltirra_PBIPortable.cpp">
 	  <Filter>Source Files</Filter>
 	</ClCompile>
+	<ClCompile Include="source\TestAltirra_PCLinkErrorPortable.cpp">
+	  <Filter>Source Files</Filter>
+	</ClCompile>
 	<ClCompile Include="source\TestAltirra_PaletteGeneratorPortable.cpp">
 	  <Filter>Source Files</Filter>
 	</ClCompile>
