@@ -360,6 +360,8 @@ bool ATNetSockWorker::GetHostAddressesForLocalAddress(bool tcp, uint32 srcIpAddr
 
 		if (0 == getpeername(s, &sabuf.sa, &sa_len))
 			remoteAddr = ATSocketFromNativeAddress(&sabuf.sa);
+		else if (!tcp)
+			remoteAddr = ATSocketAddress::CreateIPv4(VDFromBE32(dstIpAddr), dstPort);
 
 		if (hostAddr.IsValid() || remoteAddr.IsValid())
 			return true;
@@ -627,7 +629,8 @@ void ATNetSockWorker::ProcessUdpDatagram(SOCKET s, uint32 srcIpAddr, uint16 srcP
 
 ///////////////////////////////////////////////////////////////////////////
 
-void ATCreateNetSockWorker(IATEmuNetUdpStack *udp, IATEmuNetTcpStack *tcp, bool externalAccess, uint32 forwardingAddr, uint16 forwardingPort, IATNetSockWorker **pp) {
+void ATCreateNetSockWorker(IATEmuNetUdpStack *udp, IATEmuNetTcpStack *tcp, bool externalAccess, uint32 forwardingAddr, uint16 forwardingPort, IATAsyncDispatcher *dispatcher, IATNetSockWorker **pp) {
+	(void)dispatcher;
 	ATNetSockWorker *p = new ATNetSockWorker;
 
 	if (!p->Init(udp, tcp, externalAccess, forwardingAddr, forwardingPort)) {

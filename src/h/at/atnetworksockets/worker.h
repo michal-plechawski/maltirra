@@ -21,6 +21,7 @@ class IATEmuNetUdpStack;
 class IATEmuNetTcpStack;
 class IATEmuNetSocketListener;
 class IATEmuNetUdpSocketListener;
+class IATAsyncDispatcher;
 
 class IATNetSockWorker : public IVDRefCount {
 public:
@@ -32,6 +33,6 @@ public:
 	virtual bool GetHostAddressesForLocalAddress(bool tcp, uint32 srcIpAddr, uint16 srcPort, uint32 dstIpAddr, uint16 dstPort, ATSocketAddress& hostAddr, ATSocketAddress& remoteAddr) const = 0;
 };
 
-void ATCreateNetSockWorker(IATEmuNetUdpStack *udp, IATEmuNetTcpStack *tcp, bool externalAccess, uint32 forwardingAddr, uint16 forwardingPort, IATNetSockWorker **pp);
+void ATCreateNetSockWorker(IATEmuNetUdpStack *udp, IATEmuNetTcpStack *tcp, bool externalAccess, uint32 forwardingAddr, uint16 forwardingPort, IATAsyncDispatcher *dispatcher, IATNetSockWorker **pp);
 
 #endif

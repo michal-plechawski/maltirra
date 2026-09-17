@@ -88,6 +88,7 @@ bool ATTestKasumiYUVReference(ATPortableTestContext& context);
 bool ATTestNetNativeAddress(ATPortableTestContext& context);
 bool ATTestNetLookupWorker(ATPortableTestContext& context);
 bool ATTestNetNativeSockets(ATPortableTestContext& context);
+bool ATTestNetSocketWorker(ATPortableTestContext& context);
 bool ATTestNetVxlanTunnel(ATPortableTestContext& context);
 bool ATTestSystemBinary(ATPortableTestContext& context);
 bool ATTestSystemBitMath(ATPortableTestContext& context);
@@ -218,6 +219,7 @@ const ATPortableTestCase *ATGetPortableTests(size_t& count) {
 		{ "Net_NativeAddress", ATTestNetNativeAddress },
 		{ "Net_LookupWorker", ATTestNetLookupWorker },
 		{ "Net_NativeSockets", ATTestNetNativeSockets },
+		{ "Net_SocketWorker", ATTestNetSocketWorker },
 		{ "Net_VxlanTunnel", ATTestNetVxlanTunnel },
 		{ "System_Binary", ATTestSystemBinary },
 		{ "System_BitMath", ATTestSystemBitMath },

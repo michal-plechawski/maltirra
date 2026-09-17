@@ -223,6 +223,7 @@ portable_test_sources=(
 	src/ATTest/source/TestNet_NativeAddressPortable.cpp
 	src/ATTest/source/TestNet_LookupWorkerPortable.cpp
 	src/ATTest/source/TestNet_NativeSocketsPortable.cpp
+	src/ATTest/source/TestNet_SocketWorkerPortable.cpp
 	src/ATTest/source/TestNet_VxlanTunnelPortable.cpp
 	src/ATTest/source/TestSystem_Binary.cpp
 	src/ATTest/source/TestSystem_BitMath.cpp
@@ -414,6 +415,7 @@ portable_test_sources=(
 	src/platform/macOS_arm64/ATNetworkSockets/source/lookupworker.cpp
 	src/platform/macOS_arm64/ATNetworkSockets/source/socketworker.cpp
 	src/platform/macOS_arm64/ATNetworkSockets/source/nativesockets.cpp
+	src/platform/macOS_arm64/ATNetworkSockets/source/worker.cpp
 	src/platform/macOS_arm64/ATCore/source/timerserviceimpl_macos.cpp
 	src/platform/macOS_arm64/system/source/binary.cpp
 	src/platform/macOS_arm64/system/source/bitmath.cpp

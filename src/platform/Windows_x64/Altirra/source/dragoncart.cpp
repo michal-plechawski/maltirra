@@ -415,6 +415,7 @@ void ATDragonCartEmulator::Init(ATMemoryManager *memmgr, ATScheduler *slowSched,
 			settings.mAccessMode == ATDragonCartSettings::kAccessMode_NAT,
 			VDToBE32(settings.mForwardingAddr),
 			settings.mForwardingPort,
+			dispatcher,
 			&mpNetSockWorker);
 		mpGateway->SetBridgeListener(mpNetSockWorker->AsSocketListener(), mpNetSockWorker->AsUdpListener());
 	}

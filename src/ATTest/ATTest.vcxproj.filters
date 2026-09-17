@@ -382,6 +382,9 @@
 	<ClCompile Include="source\TestNet_NativeSocketsPortable.cpp">
 	  <Filter>Source Files</Filter>
 	</ClCompile>
+	<ClCompile Include="source\TestNet_SocketWorkerPortable.cpp">
+	  <Filter>Source Files</Filter>
+	</ClCompile>
 	<ClCompile Include="source\TestNet_VxlanTunnelPortable.cpp">
 	  <Filter>Source Files</Filter>
 	</ClCompile>
