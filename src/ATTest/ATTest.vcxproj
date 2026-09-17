@@ -26,6 +26,9 @@
 	<ClCompile Include="source\TestAltirra_BlockDevDiskAdapterPortable.cpp">
 	  <PrecompiledHeader>NotUsing</PrecompiledHeader>
 	</ClCompile>
+	<ClCompile Include="source\TestAltirra_CallbackPortable.cpp">
+	  <PrecompiledHeader>NotUsing</PrecompiledHeader>
+	</ClCompile>
 	<ClCompile Include="source\TestAltirra_CartridgePortPortable.cpp">
 	  <PrecompiledHeader>NotUsing</PrecompiledHeader>
 	</ClCompile>

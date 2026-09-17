@@ -629,7 +629,7 @@
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\aviwriter.h" />
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\bkptmanager.h" />
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\blackbox.h" />
-    <ClInclude Include="..\platform\Windows_x64\Altirra\h\callback.h" />
+    <ClInclude Include="h\callback.h" />
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\cartridge.h" />
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\cassette.h" />
     <ClInclude Include="h\cheatengine.h" />

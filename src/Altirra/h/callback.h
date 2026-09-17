@@ -18,19 +18,19 @@
 #ifndef f_AT_CALLBACK_H
 #define f_AT_CALLBACK_H
 
-#include <vd2/system/vdstl.h>
+#include <cstddef>
 
 template<typename T_Return>
 struct ATCallbackHandler0 {
 	T_Return (*mpFn)(void *);
 	void *mpData;
 
-	void operator()() const {
-		mpFn(mpData);
+	T_Return operator()() const {
+		return mpFn(mpData);
 	}
 
 	operator bool() const {
-		return mpFn != NULL;
+		return mpFn != nullptr;
 	}
 };
 
@@ -39,12 +39,12 @@ struct ATCallbackHandler1 {
 	T_Return (*mpFn)(void *, T_Arg1 arg1);
 	void *mpData;
 
-	void operator()(T_Arg1 arg1) const {
-		mpFn(mpData, arg1);
+	T_Return operator()(T_Arg1 arg1) const {
+		return mpFn(mpData, arg1);
 	}
 
 	operator bool() const {
-		return mpFn != NULL;
+		return mpFn != nullptr;
 	}
 };
 
@@ -53,12 +53,12 @@ struct ATCallbackHandler2 {
 	T_Return (*mpFn)(void *, T_Arg1 arg1, T_Arg2 arg2);
 	void *mpData;
 
-	void operator()(T_Arg1 arg1, T_Arg2 arg2) const {
-		mpFn(mpData, arg1, arg2);
+	T_Return operator()(T_Arg1 arg1, T_Arg2 arg2) const {
+		return mpFn(mpData, arg1, arg2);
 	}
 
 	operator bool() const {
-		return mpFn != NULL;
+		return mpFn != nullptr;
 	}
 };
 
@@ -66,7 +66,7 @@ template<typename T, typename T_Return>
 struct ATCallbackBinder0 {
 	template<T_Return (T::*T_Method)()>
 	static T_Return Handler(void *data) {
-		(((T *)data)->*T_Method)();
+		return (static_cast<T *>(data)->*T_Method)();
 	}
 
 	template<T_Return (T::*T_Method)()>
@@ -81,7 +81,7 @@ template<typename T, typename T_Return, typename T_Arg1>
 struct ATCallbackBinder1 {
 	template<T_Return (T::*T_Method)(T_Arg1)>
 	static T_Return Handler(void *data, T_Arg1 arg1) {
-		(((T *)data)->*T_Method)(arg1);
+		return (static_cast<T *>(data)->*T_Method)(arg1);
 	}
 
 	template<T_Return (T::*T_Method)(T_Arg1)>
@@ -96,7 +96,7 @@ template<typename T, typename T_Return, typename T_Arg1, typename T_Arg2>
 struct ATCallbackBinder2 {
 	template<T_Return (T::*T_Method)(T_Arg1, T_Arg2)>
 	static T_Return Handler(void *data, T_Arg1 arg1, T_Arg2 arg2) {
-		(((T *)data)->*T_Method)(arg1, arg2);
+		return (static_cast<T *>(data)->*T_Method)(arg1, arg2);
 	}
 
 	template<T_Return (T::*T_Method)(T_Arg1, T_Arg2)>
@@ -125,21 +125,21 @@ ATCallbackBinder2<T, T_Return, T_Arg1, T_Arg2> ATMakeCallbackHandler(T *thisptr,
 ///////////////////////////////////////////////////////////////////////////
 
 template<typename T_Return>
-ATCallbackHandler0<T_Return> ATMakeCallbackHandlerFn(T_Return (*fn)(), void *data = 0) {
+ATCallbackHandler0<T_Return> ATMakeCallbackHandlerFn(T_Return (*fn)(void *), void *data = nullptr) {
 	ATCallbackHandler0<T_Return> h = { fn, data };
 
 	return h;
 }
 
 template<typename T_Return, typename T_Arg1>
-ATCallbackHandler1<T_Return, T_Arg1> ATMakeCallbackHandlerFn(T_Return (*fn)(T_Arg1), void *data = 0) {
+ATCallbackHandler1<T_Return, T_Arg1> ATMakeCallbackHandlerFn(T_Return (*fn)(void *, T_Arg1), void *data = nullptr) {
 	ATCallbackHandler1<T_Return, T_Arg1> h = { fn, data };
 
 	return h;
 }
 
 template<typename T_Return, typename T_Arg1, typename T_Arg2>
-ATCallbackHandler2<T_Return, T_Arg1, T_Arg2> ATMakeCallbackHandlerFn(T_Return (*fn)(T_Arg1, T_Arg2), void *data = 0) {
+ATCallbackHandler2<T_Return, T_Arg1, T_Arg2> ATMakeCallbackHandlerFn(T_Return (*fn)(void *, T_Arg1, T_Arg2), void *data = nullptr) {
 	ATCallbackHandler2<T_Return, T_Arg1, T_Arg2> h = { fn, data };
 
 	return h;

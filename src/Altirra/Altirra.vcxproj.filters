@@ -1128,7 +1128,7 @@
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\bkptmanager.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\platform\Windows_x64\Altirra\h\callback.h">
+    <ClInclude Include="h\callback.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\cartridge.h">

@@ -141,6 +141,7 @@ portable_test_sources=(
 	src/ATTest/source/TestAltirra_ArtifactingPALPortable.cpp
 	src/ATTest/source/TestAltirra_AudioRawSourcePortable.cpp
 	src/ATTest/source/TestAltirra_BlockDevDiskAdapterPortable.cpp
+	src/ATTest/source/TestAltirra_CallbackPortable.cpp
 	src/ATTest/source/TestAltirra_CartridgePortPortable.cpp
 	src/ATTest/source/TestAltirra_CheatEnginePortable.cpp
 	src/ATTest/source/TestAltirra_ConstantsPortable.cpp
