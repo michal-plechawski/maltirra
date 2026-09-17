@@ -32,6 +32,20 @@
 #include <vd2/system/w32assist.h>
 #include <at/ataudio/audioout.h>
 
+namespace {
+	WAVEFORMATEX ATCreateWaveFormat(const ATAudioNativeFormat& format) {
+		WAVEFORMATEX waveFormat {};
+		waveFormat.wFormatTag = WAVE_FORMAT_PCM;
+		waveFormat.nChannels = static_cast<WORD>(format.mChannels);
+		waveFormat.nSamplesPerSec = format.mSamplingRate;
+		waveFormat.wBitsPerSample =
+			static_cast<WORD>(format.mBitsPerSample);
+		waveFormat.nBlockAlign = static_cast<WORD>(format.GetBlockAlign());
+		waveFormat.nAvgBytesPerSec = format.GetBytesPerSecond();
+		return waveFormat;
+	}
+}
+
 class VDAudioOutputWASAPIW32 final : public IVDAudioOutput {
 public:
 	VDAudioOutputWASAPIW32();
@@ -39,7 +53,10 @@ public:
 
 	uint32	GetPreferredSamplingRate(const wchar_t *preferredDevice) const override;
 
-	bool	Init(uint32 bufsize, uint32 bufcount, const WAVEFORMATEX *wf, const wchar_t *preferredDevice) override;
+	bool	Init(
+		uint32 bufsize, uint32 bufcount,
+		const ATAudioNativeFormat& format,
+		const wchar_t *preferredDevice) override;
 	void	Shutdown() override;
 	void	GoSilent() override;
 
@@ -119,17 +136,22 @@ uint32 VDAudioOutputWASAPIW32::GetPreferredSamplingRate(const wchar_t *preferred
 	return p->GetPreferredSamplingRate(preferredDevice);
 }
 
-bool VDAudioOutputWASAPIW32::Init(uint32 bufsize, uint32 bufcount, const WAVEFORMATEX *wf, const wchar_t *preferredDevice) {
+bool VDAudioOutputWASAPIW32::Init(
+	uint32 bufsize, uint32 bufcount,
+	const ATAudioNativeFormat& format,
+	const wchar_t *preferredDevice) {
+	const WAVEFORMATEX waveFormat = ATCreateWaveFormat(format);
 	// alignment is screwy on WAVEFORMATEX, make sure we only copy what's valid
 	static_assert(sizeof(WAVEFORMATEX) == 18);
-	mAudioFormat.assign(wf, sizeof(WAVEFORMATEX) + wf->cbSize);
+	mAudioFormat.assign(&waveFormat, sizeof waveFormat);
 
-	mSampleSize = wf->nBlockAlign;
-	mBufferDuration = (bufsize * bufcount * 10000000ull) / wf->nAvgBytesPerSec;
+	mSampleSize = format.GetBlockAlign();
+	mBufferDuration =
+		(bufsize * bufcount * 10000000ull) / format.GetBytesPerSecond();
 
 	// This will get quickly overwritten by the mixing rate, but put something reasonable here
 	// in case we fail to init.
-	mMixingRate = wf->nSamplesPerSec;
+	mMixingRate = format.mSamplingRate;
 
 	HRESULT hr = CoCreateInstance(__uuidof(MMDeviceEnumerator), NULL, CLSCTX_ALL, __uuidof(IMMDeviceEnumerator), (void **)~mpDeviceEnum);
 	if (FAILED(hr))

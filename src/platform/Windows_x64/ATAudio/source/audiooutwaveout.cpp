@@ -40,6 +40,20 @@
 #include <vd2/system/w32assist.h>
 #include <at/ataudio/audioout.h>
 
+namespace {
+	WAVEFORMATEX ATCreateWaveFormat(const ATAudioNativeFormat& format) {
+		WAVEFORMATEX waveFormat {};
+		waveFormat.wFormatTag = WAVE_FORMAT_PCM;
+		waveFormat.nChannels = static_cast<WORD>(format.mChannels);
+		waveFormat.nSamplesPerSec = format.mSamplingRate;
+		waveFormat.wBitsPerSample =
+			static_cast<WORD>(format.mBitsPerSample);
+		waveFormat.nBlockAlign = static_cast<WORD>(format.GetBlockAlign());
+		waveFormat.nAvgBytesPerSec = format.GetBytesPerSecond();
+		return waveFormat;
+	}
+}
+
 // Declare these here since we don't want to require mmddk.h.
 #ifndef DRVM_MAPPER_PREFERRED_GET
 #define DRVM_MAPPER_PREFERRED_GET 0x2015
@@ -57,7 +71,10 @@ public:
 
 	uint32	GetPreferredSamplingRate(const wchar_t *preferredDevice) const override;
 
-	bool	Init(uint32 bufsize, uint32 bufcount, const tWAVEFORMATEX *wf, const wchar_t *preferredDevice) override;
+	bool	Init(
+		uint32 bufsize, uint32 bufcount,
+		const ATAudioNativeFormat& format,
+		const wchar_t *preferredDevice) override;
 	void	Shutdown() override;
 	void	GoSilent() override;
 
@@ -192,7 +209,11 @@ uint32 VDAudioOutputWaveOutW32::GetPreferredSamplingRate(const wchar_t *preferre
 	return samplingRate;
 }
 
-bool VDAudioOutputWaveOutW32::Init(uint32 bufsize, uint32 bufcount, const WAVEFORMATEX *wf, const wchar_t *preferredDevice) {
+bool VDAudioOutputWaveOutW32::Init(
+	uint32 bufsize, uint32 bufcount,
+	const ATAudioNativeFormat& format,
+	const wchar_t *preferredDevice) {
+	const WAVEFORMATEX waveFormat = ATCreateWaveFormat(format);
 	const UINT deviceID = FindDevice(preferredDevice);
 
 	mBuffer.resize(bufsize * bufcount);
@@ -204,8 +225,8 @@ bool VDAudioOutputWaveOutW32::Init(uint32 bufsize, uint32 bufcount, const WAVEFO
 	mBlockCount = bufcount;
 	mBytesQueued = 0;
 
-	mSamplesPerSec = wf->nSamplesPerSec;
-	mAvgBytesPerSec = wf->nAvgBytesPerSec;
+	mSamplesPerSec = format.mSamplingRate;
+	mAvgBytesPerSec = format.GetBytesPerSecond();
 
 	if (!mhWaveEvent) {
 		mhWaveEvent = CreateEvent(NULL, FALSE, FALSE, NULL);
@@ -214,7 +235,9 @@ bool VDAudioOutputWaveOutW32::Init(uint32 bufsize, uint32 bufcount, const WAVEFO
 			return false;
 	}
 
-	MMRESULT res = waveOutOpen(&mhWaveOut, deviceID, wf, (DWORD_PTR)mhWaveEvent, 0, CALLBACK_EVENT);
+	MMRESULT res = waveOutOpen(
+		&mhWaveOut, deviceID, &waveFormat,
+		(DWORD_PTR)mhWaveEvent, 0, CALLBACK_EVENT);
 	if (MMSYSERR_NOERROR != res) {
 		Shutdown();
 		return false;
@@ -599,7 +622,10 @@ public:
 
 	uint32	GetPreferredSamplingRate(const wchar_t *preferredDevice) const override;
 
-	bool	Init(uint32 bufsize, uint32 bufcount, const tWAVEFORMATEX *wf, const wchar_t *preferredDevice) override;
+	bool	Init(
+		uint32 bufsize, uint32 bufcount,
+		const ATAudioNativeFormat& format,
+		const wchar_t *preferredDevice) override;
 	void	Shutdown() override;
 	void	GoSilent() override;
 
@@ -737,19 +763,18 @@ uint32 VDAudioOutputDirectSoundW32::GetPreferredSamplingRate(const wchar_t *pref
 	return samplingRate;
 }
 
-bool VDAudioOutputDirectSoundW32::Init(uint32 bufsize, uint32 bufcount, const tWAVEFORMATEX *wf, const wchar_t *preferredDevice) {
+bool VDAudioOutputDirectSoundW32::Init(
+	uint32 bufsize, uint32 bufcount,
+	const ATAudioNativeFormat& format,
+	const wchar_t *preferredDevice) {
+	const WAVEFORMATEX waveFormat = ATCreateWaveFormat(format);
 	mBufferSize = bufsize * bufcount;
 	mBuffer.resize(mBufferSize);
 	mBufferReadOffset = 0;
 	mBufferWriteOffset = 0;
 	mBufferLevel = 0;
 
-	if (wf->wFormatTag == WAVE_FORMAT_PCM) {
-		mInitFormat.resize(sizeof(tWAVEFORMATEX));
-		memcpy(&*mInitFormat, wf, sizeof(PCMWAVEFORMAT));
-		mInitFormat->cbSize = 0;
-	} else
-		mInitFormat.assign(wf, sizeof(tWAVEFORMATEX) + wf->cbSize);
+	mInitFormat.assign(&waveFormat, sizeof waveFormat);
 
 	mMutex.Lock();
 	mbThreadInited = false;

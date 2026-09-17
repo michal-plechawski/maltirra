@@ -19,8 +19,6 @@
 //	archive for details.
 
 #include <stdafx.h>
-#include <windows.h>
-#include <mmreg.h>
 #include <vd2/system/math.h>
 #include <vd2/system/vdalloc.h>
 #include <vd2/system/time.h>
@@ -911,16 +909,13 @@ bool ATAudioOutput::ReinitAudio(ATAudioApi api) {
 	else
 		mSamplingRate = preferredSamplingRate;
 
-	WAVEFORMATEX wfex {};
-	wfex.wFormatTag			= WAVE_FORMAT_PCM;
-	wfex.nChannels			= 2;
-	wfex.nSamplesPerSec		= mSamplingRate;
-	wfex.wBitsPerSample		= 16;
-	wfex.nBlockAlign		= 4;
-	wfex.nAvgBytesPerSec	= mSamplingRate * 4;
-	wfex.cbSize				= 0;
+	const ATAudioNativeFormat format {
+		mSamplingRate,
+		2,
+		16
+	};
 
-	bool success = mpAudioOut->Init(kBufferSize * 4, 30, (const tWAVEFORMATEX *)&wfex, NULL);
+	bool success = mpAudioOut->Init(kBufferSize * 4, 30, format, nullptr);
 
 	if (!success)
 		mpAudioOut->GoSilent();

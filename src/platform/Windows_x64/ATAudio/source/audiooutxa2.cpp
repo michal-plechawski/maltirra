@@ -28,6 +28,20 @@
 #include <vd2/system/w32assist.h>
 #include <at/ataudio/audioout.h>
 
+namespace {
+	WAVEFORMATEX ATCreateWaveFormat(const ATAudioNativeFormat& format) {
+		WAVEFORMATEX waveFormat {};
+		waveFormat.wFormatTag = WAVE_FORMAT_PCM;
+		waveFormat.nChannels = static_cast<WORD>(format.mChannels);
+		waveFormat.nSamplesPerSec = format.mSamplingRate;
+		waveFormat.wBitsPerSample =
+			static_cast<WORD>(format.mBitsPerSample);
+		waveFormat.nBlockAlign = static_cast<WORD>(format.GetBlockAlign());
+		waveFormat.nAvgBytesPerSec = format.GetBytesPerSecond();
+		return waveFormat;
+	}
+}
+
 struct IXAudio28;
 struct IXAudio2XEngineCallback;
 struct IXAudio2XVoiceCallback;
@@ -194,7 +208,10 @@ public:
 
 	uint32	GetPreferredSamplingRate(const wchar_t *preferredDevice) const override;
 
-	bool	Init(uint32 bufsize, uint32 bufcount, const WAVEFORMATEX *wf, const wchar_t *preferredDevice) override;
+	bool	Init(
+		uint32 bufsize, uint32 bufcount,
+		const ATAudioNativeFormat& format,
+		const wchar_t *preferredDevice) override;
 	void	Shutdown() override;
 	void	GoSilent() override;
 
@@ -281,13 +298,17 @@ uint32 VDAudioOutputXAudio2W32::GetPreferredSamplingRate(const wchar_t *preferre
 	return p->GetPreferredSamplingRate(preferredDevice);
 }
 
-bool VDAudioOutputXAudio2W32::Init(uint32 bufsize, uint32 bufcount, const WAVEFORMATEX *wf, const wchar_t *preferredDevice) {
-	mFormat.assign(wf, sizeof(WAVEFORMATEX) + wf->cbSize);
+bool VDAudioOutputXAudio2W32::Init(
+	uint32 bufsize, uint32 bufcount,
+	const ATAudioNativeFormat& format,
+	const wchar_t *preferredDevice) {
+	const WAVEFORMATEX waveFormat = ATCreateWaveFormat(format);
+	mFormat.assign(&waveFormat, sizeof waveFormat);
 
 	mBufferSize = bufsize * bufcount;
 	mBuffer.resize(mBufferSize);
-	mSampleSize = wf->nBlockAlign;
-	mSamplingRate = wf->nSamplesPerSec;
+	mSampleSize = format.GetBlockAlign();
+	mSamplingRate = format.mSamplingRate;
 
 	if (!mhmodXAudioDLL27 && !mhmodXAudioDLL28) {
 		// try to load XAudio 2.8 if we are on Windows 8 or later

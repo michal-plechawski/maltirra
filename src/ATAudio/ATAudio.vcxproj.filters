@@ -85,7 +85,7 @@
     <ClInclude Include="..\h\at\ataudio\pokeysavestate.h">
       <Filter>Interface Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\platform\Windows_x64\h\at\ataudio\audioout.h">
+    <ClInclude Include="..\h\at\ataudio\audioout.h">
       <Filter>Interface Files</Filter>
     </ClInclude>
     <ClInclude Include="..\h\at\ataudio\audioconvolutionplayer.h">

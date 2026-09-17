@@ -223,6 +223,9 @@
 	<ClCompile Include="source\TestAudio_EdgePlayerPortable.cpp">
 	  <Filter>Source Files</Filter>
 	</ClCompile>
+	<ClCompile Include="source\TestAudio_NativeOutputPortable.cpp">
+	  <Filter>Source Files</Filter>
+	</ClCompile>
 	<ClCompile Include="source\TestSystem_Binary.cpp">
 	  <Filter>Source Files</Filter>
 	</ClCompile>

@@ -16,7 +16,6 @@
 
 #include <stdafx.h>
 #include <windows.h>
-#include <mmsystem.h>
 #include <combaseapi.h>
 #include <vd2/system/Error.h>
 #include <vd2/system/file.h>
@@ -59,16 +58,13 @@ AT_DEFINE_TEST_NONAUTO(IO_VorbisPlayback) {
 
 	vdautoptr<IVDAudioOutput> output { VDCreateAudioOutputWaveOutW32() };
 
-	WAVEFORMATEX wfex;
-	wfex.wFormatTag = WAVE_FORMAT_PCM;
-	wfex.nSamplesPerSec = dec->GetSampleRate();
-	wfex.nChannels = dec->GetChannelCount();
-	wfex.nBlockAlign = 2 * wfex.nChannels;
-	wfex.nAvgBytesPerSec = wfex.nBlockAlign * wfex.nSamplesPerSec;
-	wfex.wBitsPerSample = 16;
-	wfex.cbSize = 0;
+	const ATAudioNativeFormat format {
+		dec->GetSampleRate(),
+		dec->GetChannelCount(),
+		16
+	};
 
-	if (!output->Init(16384, 4, &wfex, nullptr))
+	if (!output->Init(16384, 4, format, nullptr))
 		throw MyError("Unable to init sound device");
 
 	output->Start();
@@ -76,14 +72,14 @@ AT_DEFINE_TEST_NONAUTO(IO_VorbisPlayback) {
 	vdblock<sint16> readbuf(4096);
 
 	while(dec->ReadAudioPacket()) {
-		uint32 maxRead = 4096 / wfex.nChannels;
+		uint32 maxRead = 4096 / format.mChannels;
 
 		for(;;) {
 			uint32 actual = dec->ReadInterleavedSamplesS16(readbuf.data(), maxRead);
 			if (!actual)
 				break;
 
-			output->Write(readbuf.data(), actual * wfex.nBlockAlign);
+			output->Write(readbuf.data(), actual * format.GetBlockAlign());
 		}
 	}
 

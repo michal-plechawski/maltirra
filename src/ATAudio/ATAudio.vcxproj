@@ -44,7 +44,7 @@
     <ClInclude Include="..\h\at\ataudio\internal\audioedgeplayer.h" />
     <ClInclude Include="..\h\at\ataudio\audioconvolutionplayer.h" />
     <ClInclude Include="..\h\at\ataudio\audiofilters.h" />
-    <ClInclude Include="..\platform\Windows_x64\h\at\ataudio\audioout.h" />
+    <ClInclude Include="..\h\at\ataudio\audioout.h" />
     <ClInclude Include="..\h\at\ataudio\audiooutput.h" />
     <ClInclude Include="..\h\at\ataudio\audiosampleplayer.h" />
     <ClInclude Include="..\h\at\ataudio\audiosamplepool.h" />

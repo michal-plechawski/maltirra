@@ -210,6 +210,7 @@ portable_test_sources=(
 	src/ATTest/source/TestAltirra_VBXEStatePortable.cpp
 	src/ATTest/source/TestAudio_FiltersPortable.cpp
 	src/ATTest/source/TestAudio_EdgePlayerPortable.cpp
+	src/ATTest/source/TestAudio_NativeOutputPortable.cpp
 	src/ATTest/source/TestCore_ChecksumPortable.cpp
 	src/ATTest/source/TestCore_FFTPortable.cpp
 	src/ATTest/source/TestCore_TimerServicePortable.cpp
