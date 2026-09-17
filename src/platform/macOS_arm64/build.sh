@@ -173,6 +173,7 @@ portable_test_sources=(
 	src/ATTest/source/TestAltirra_PNGEncoderPortable.cpp
 	src/ATTest/source/TestAltirra_PBIPortable.cpp
 	src/ATTest/source/TestAltirra_PaletteGeneratorPortable.cpp
+	src/ATTest/source/TestAltirra_PaletteSolverPortable.cpp
 	src/ATTest/source/TestAltirra_SaveStateTypesPortable.cpp
 	src/ATTest/source/TestAltirra_SaveStateReaderPortable.cpp
 	src/ATTest/source/TestAltirra_SaveStateIOPortable.cpp
@@ -305,6 +306,7 @@ portable_test_sources=(
 	src/Altirra/source/irqcontroller.cpp
 	src/Altirra/source/memorymanager.cpp
 	src/Altirra/source/palettegenerator.cpp
+	src/Altirra/source/palettesolver.cpp
 	src/Altirra/source/rtime8.cpp
 	src/Altirra/source/rverter.cpp
 	src/Altirra/source/scsidisk.cpp

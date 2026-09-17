@@ -14,11 +14,13 @@
 //	You should have received a copy of the GNU General Public License along
 //	with this program. If not, see <http://www.gnu.org/licenses/>.
 
-#include <stdafx.h>
-#include <vd2/system/color.h>
+#include <algorithm>
+#include <cmath>
+#include <iterator>
+#include <vd2/system/memory.h>
+#include <vd2/system/time.h>
 #include "palettesolver.h"
 #include "palettegenerator.h"
-#include "gtia.h"
 
 class ATColorPaletteSolver final : public VDAlignedObject<16>, public IATColorPaletteSolver {
 public:
@@ -68,17 +70,17 @@ void ATColorPaletteSolver::Init(const ATColorParams& initialState, const uint32 
 		mTargetPalette[i] = palette[i];
 
 	Reinit(initialState);
-
-	mBestError = ComputeScore(initialState);
 }
 
 void ATColorPaletteSolver::Reinit(const ATColorParams& initialState) {
 	mBestParams = initialState;
 	mDeltaScale = 1.0f;
 	mPatienceCounter = 0;
-	mXorShift32State = (uint32)((VDGetPreciseTick() * UINT64_C(0x100000001)) >> 32);
+	mXorShift32State = (uint32)((VDGetPreciseTick() * UINT64_C(0x100000001)) >> 32) | 1;
+	mBestError = ComputeScore(initialState);
 
 	std::fill(std::begin(mParamHeap), std::end(mParamHeap), initialState);
+	std::fill(std::begin(mErrorHeap), std::end(mErrorHeap), mBestError);
 	for(int i=0; i<32; ++i)
 		mHeapIndices[i] = i;
 }
@@ -103,7 +105,8 @@ ATColorPaletteSolver::Status ATColorPaletteSolver::Iterate() {
 
 #if 1
 		uint8 mask = FastRand();
-		dstParams.mHueStart = (mask & 0x01 ? srcParams1 : srcParams2).mHueStart;
+		if (!mbLockHueStart)
+			dstParams.mHueStart = (mask & 0x01 ? srcParams1 : srcParams2).mHueStart;
 		dstParams.mHueRange = (mask & 0x02 ? srcParams1 : srcParams2).mHueRange;
 		dstParams.mBrightness = (mask & 0x04 ? srcParams1 : srcParams2).mBrightness;
 		dstParams.mContrast = (mask & 0x08 ? srcParams1 : srcParams2).mContrast;
@@ -128,12 +131,14 @@ ATColorPaletteSolver::Status ATColorPaletteSolver::Iterate() {
 		if (FastRand() & 1) {
 			float delta = mDeltaScale * ((sint8)FastRand() / 128.0f);
 
-			switch((FastRand() * 6) >> 8) {
+			switch((FastRand() * 7) >> 8) {
 				case 0:
-					dstParams.mHueStart	+= delta * 10.0f;
+					if (!mbLockHueStart)
+						dstParams.mHueStart += delta * 10.0f;
 					break;
 				case 1:
-					dstParams.mHueStart	-= delta * 5.0f;
+					if (!mbLockHueStart)
+						dstParams.mHueStart -= delta * 5.0f;
 					dstParams.mHueRange	+= delta * 10.0f;
 					break;
 				case 2:
@@ -154,10 +159,12 @@ ATColorPaletteSolver::Status ATColorPaletteSolver::Iterate() {
 					break;
 			}
 		} else {
-			dstParams.mHueStart		+= mDeltaScale * ((sint8)FastRand() / 128.0f) * 10.0f;
+			if (!mbLockHueStart)
+				dstParams.mHueStart += mDeltaScale * ((sint8)FastRand() / 128.0f) * 10.0f;
 
 			float hueRangeDelta = mDeltaScale * ((sint8)FastRand() / 128.0f) * 10.0f;
-			dstParams.mHueStart		-= hueRangeDelta * 0.5f;
+			if (!mbLockHueStart)
+				dstParams.mHueStart -= hueRangeDelta * 0.5f;
 			dstParams.mHueRange		+= hueRangeDelta;
 
 			dstParams.mBrightness	+= mDeltaScale * ((sint8)FastRand() / 128.0f) * 1.0f;
@@ -172,7 +179,8 @@ ATColorPaletteSolver::Status ATColorPaletteSolver::Iterate() {
 		}
 	}
 
-	dstParams.mHueStart		= dstParams.mHueStart + 360.0f * truncf((dstParams.mHueStart - 60.0f) / 360.0f);
+	if (!mbLockHueStart)
+		dstParams.mHueStart = dstParams.mHueStart + 360.0f * truncf((dstParams.mHueStart - 60.0f) / 360.0f);
 	dstParams.mHueRange		= std::clamp(dstParams.mHueRange,		0.0f, 540.0f);
 	dstParams.mBrightness	= std::clamp(dstParams.mBrightness,		-0.20f, 0.20f);
 	dstParams.mContrast		= std::clamp(dstParams.mContrast,		0.01f, 1.5f);

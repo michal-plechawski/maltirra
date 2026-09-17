@@ -787,7 +787,7 @@
     <ClCompile Include="source\palettegenerator.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\platform\Windows_x64\Altirra\source\palettesolver.cpp">
+    <ClCompile Include="source\palettesolver.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\platform\Windows_x64\Altirra\source\uiadvancedconfiguration.cpp">
@@ -1599,7 +1599,7 @@
     <ClInclude Include="h\palettegenerator.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\platform\Windows_x64\Altirra\h\palettesolver.h">
+    <ClInclude Include="h\palettesolver.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\diskdrive815.h">
