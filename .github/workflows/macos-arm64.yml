@@ -65,7 +65,21 @@ jobs:
           fi
 
       - name: Run portable tests
-        run: out/macOS_arm64/AltirraPortableTests
+        run: |
+          test_log="$RUNNER_TEMP/macos-arm64-tests.log"
+          set +e
+          out/macOS_arm64/AltirraPortableTests 2>&1 | tee "$test_log"
+          test_exit=${PIPESTATUS[0]}
+          set -e
+
+          if (( test_exit != 0 )); then
+            details=$(tail -50 "$test_log")
+            details=${details//'%'/'%25'}
+            details=${details//$'\r'/'%0D'}
+            details=${details//$'\n'/'%0A'}
+            echo "::error title=macOS portable tests failed::$details"
+            exit "$test_exit"
+          fi
 
       - name: Upload macOS ARM64 build artifacts
         uses: actions/upload-artifact@v7
