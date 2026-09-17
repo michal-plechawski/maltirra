@@ -13,6 +13,7 @@ common_flags=(
 	-arch arm64
 	-O2
 	-DNDEBUG
+	-Isrc/platform/macOS_arm64/ATNetworkSockets/h
 	-Wno-nonportable-include-path
 	-Wno-unknown-pragmas
 )
@@ -218,6 +219,7 @@ portable_test_sources=(
 	src/ATTest/source/TestKasumi_ResampleStagesPortable.cpp
 	src/ATTest/source/TestKasumi_YCbCr709Portable.cpp
 	src/ATTest/source/TestKasumi_YUVReferencePortable.cpp
+	src/ATTest/source/TestNet_NativeAddressPortable.cpp
 	src/ATTest/source/TestSystem_Binary.cpp
 	src/ATTest/source/TestSystem_BitMath.cpp
 	src/ATTest/source/TestSystem_Cache.cpp
@@ -401,6 +403,7 @@ portable_test_sources=(
 	src/Kasumi/source/uberblit_resample_special.cpp
 	src/Kasumi/source/uberblit_swizzle.cpp
 	src/Kasumi/source/uberblit_ycbcr_generic.cpp
+	src/platform/macOS_arm64/ATNetworkSockets/source/socketutils_posix.cpp
 	src/platform/macOS_arm64/ATCore/source/timerserviceimpl_macos.cpp
 	src/platform/macOS_arm64/system/source/binary.cpp
 	src/platform/macOS_arm64/system/source/bitmath.cpp

@@ -84,6 +84,7 @@ bool ATTestKasumiResolve4x(ATPortableTestContext& context);
 bool ATTestKasumiResampleStages(ATPortableTestContext& context);
 bool ATTestKasumiYCbCr709(ATPortableTestContext& context);
 bool ATTestKasumiYUVReference(ATPortableTestContext& context);
+bool ATTestNetNativeAddress(ATPortableTestContext& context);
 bool ATTestSystemBinary(ATPortableTestContext& context);
 bool ATTestSystemBitMath(ATPortableTestContext& context);
 bool ATTestSystemCache(ATPortableTestContext& context);
@@ -209,6 +210,7 @@ const ATPortableTestCase *ATGetPortableTests(size_t& count) {
 		{ "Kasumi_ResampleStages", ATTestKasumiResampleStages },
 		{ "Kasumi_YCbCr709", ATTestKasumiYCbCr709 },
 		{ "Kasumi_YUVReference", ATTestKasumiYUVReference },
+		{ "Net_NativeAddress", ATTestNetNativeAddress },
 		{ "System_Binary", ATTestSystemBinary },
 		{ "System_BitMath", ATTestSystemBitMath },
 		{ "System_Cache", ATTestSystemCache },
