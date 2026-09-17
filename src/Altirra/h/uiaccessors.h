@@ -33,6 +33,7 @@ class ATUICommandManager;
 struct ATUICommandOptions;
 class ATUIManager;
 class IATAsyncDispatcher;
+class vdfloat2;
 
 const char *ATUIGetCurrentAltOutputName();
 void ATUISetCurrentAltOutputName(const char *name);
@@ -82,8 +83,6 @@ void ATUIToggleHoldKeys();
 uint32 ATUIGetBootUnloadStorageMask();
 void ATUISetBootUnloadStorageMask(uint32 mask);
 
-int ATUIGetViewFilterSharpness();
-void ATUISetViewFilterSharpness(int sharpness);
 int ATUIGetViewFilterSharpness();
 void ATUISetViewFilterSharpness(int sharpness);
 ATDisplayFilterMode ATUIGetDisplayFilterMode();

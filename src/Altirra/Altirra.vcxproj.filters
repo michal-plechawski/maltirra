@@ -844,7 +844,7 @@
     <ClCompile Include="..\platform\Windows_x64\Altirra\source\uiupdatecheck.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\platform\Windows_x64\Altirra\source\uiaccessors.cpp">
+    <ClCompile Include="source\uiaccessors.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="source\updatefeed.cpp">
@@ -1431,7 +1431,7 @@
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\uisettingswindow.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\platform\Windows_x64\Altirra\h\uiaccessors.h">
+    <ClInclude Include="h\uiaccessors.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="h\uifilefilters.h">

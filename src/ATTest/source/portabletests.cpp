@@ -66,6 +66,7 @@ bool ATTestAltirraTraceFileEncoding(ATPortableTestContext& context);
 bool ATTestAltirraTraceFileFormat(ATPortableTestContext& context);
 bool ATTestAltirraTraceTape(ATPortableTestContext& context);
 bool ATTestAltirraUpdateFeed(ATPortableTestContext& context);
+bool ATTestAltirraUIAccessors(ATPortableTestContext& context);
 bool ATTestAltirraUIFileFilters(ATPortableTestContext& context);
 bool ATTestAltirraSimEventManager(ATPortableTestContext& context);
 bool ATTestAltirraStartupLogger(ATPortableTestContext& context);
@@ -203,6 +204,7 @@ const ATPortableTestCase *ATGetPortableTests(size_t& count) {
 		{ "Altirra_TraceFileFormat", ATTestAltirraTraceFileFormat },
 		{ "Altirra_TraceTape", ATTestAltirraTraceTape },
 		{ "Altirra_UpdateFeed", ATTestAltirraUpdateFeed },
+		{ "Altirra_UIAccessors", ATTestAltirraUIAccessors },
 		{ "Altirra_UIFileFilters", ATTestAltirraUIFileFilters },
 		{ "Altirra_SimEventManager", ATTestAltirraSimEventManager },
 		{ "Altirra_StartupLogger", ATTestAltirraStartupLogger },

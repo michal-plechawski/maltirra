@@ -196,6 +196,9 @@
 	<ClCompile Include="source\TestAltirra_UpdateFeedPortable.cpp">
 	  <Filter>Source Files</Filter>
 	</ClCompile>
+	<ClCompile Include="source\TestAltirra_UIAccessorsPortable.cpp">
+	  <Filter>Source Files</Filter>
+	</ClCompile>
 	<ClCompile Include="source\TestAltirra_UIFileFiltersPortable.cpp">
 	  <Filter>Source Files</Filter>
 	</ClCompile>

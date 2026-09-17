@@ -467,7 +467,9 @@
     </ClCompile>
     <ClCompile Include="..\platform\Windows_x64\Altirra\source\ui.cpp" />
     <ClCompile Include="..\platform\Windows_x64\Altirra\source\uiabout.cpp" />
-    <ClCompile Include="..\platform\Windows_x64\Altirra\source\uiaccessors.cpp" />
+    <ClCompile Include="source\uiaccessors.cpp">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+    </ClCompile>
     <ClCompile Include="..\platform\Windows_x64\Altirra\source\uiadvancedconfiguration.cpp" />
     <ClCompile Include="..\platform\Windows_x64\Altirra\source\uiaudiooptions.cpp" />
     <ClCompile Include="..\platform\Windows_x64\Altirra\source\uicalibrationscreen.cpp" />
@@ -707,7 +709,7 @@
     <ClInclude Include="h\tracetape.h" />
     <ClInclude Include="h\tracevideo.h" />
     <ClInclude Include="h\videotap.h" />
-    <ClInclude Include="..\platform\Windows_x64\Altirra\h\uiaccessors.h" />
+    <ClInclude Include="h\uiaccessors.h" />
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\uicalibrationscreen.h" />
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\uiclipboard.h" />
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\uicompat.h" />
