@@ -22,7 +22,6 @@
 #include <shlwapi.h>
 #include <shlobj_core.h>
 #include <vd2/system/error.h>
-#include <vd2/system/file.h>
 #include <vd2/system/filesys.h>
 #include <vd2/system/registry.h>
 #include <vd2/system/vdalloc.h>
@@ -34,7 +33,6 @@
 #include <at/atnativeui/uiframe.h>
 #include <at/atnativeui/theme.h>
 #include "decode_png.h"
-#include "encode_png.h"
 #include "common_png.h"
 #include "uiaccessors.h"
 
@@ -194,21 +192,10 @@ void ATCopyFrameToClipboard(const VDPixmap& px) {
 	}
 }
 
-void ATLoadFrame(VDPixmapBuffer& px, const wchar_t *filename) {
-	VDFile f(filename);
-
-	sint64 size = f.size();
-	if (size > 256*1024*1024)
-		throw MyError("File is too large to load.");
-
-	vdblock<unsigned char> buf((uint32)size);
-	f.read(buf.data(), (long)size);
-	f.close();
-
-	ATLoadFrameFromMemory(px, buf.data(), size);
-}
-
 void ATLoadFrameFromMemory(VDPixmapBuffer& px, const void *mem, size_t len) {
+	if (!mem || len < 4)
+		throw MyError("Unsupported image format.");
+
 	uint8 buf8[4];
 	memcpy(buf8, mem, 4);
 
@@ -263,21 +250,6 @@ void ATLoadFrameFromMemory(VDPixmapBuffer& px, const void *mem, size_t len) {
 	}
 
 	throw MyError("Unable to decode image.");
-}
-
-void ATSaveFrame(const VDPixmap& px, const wchar_t *filename) {
-	VDPixmapBuffer pxbuf(px.w, px.h, nsVDPixmap::kPixFormat_RGB888);
-
-	VDPixmapBlt(pxbuf, px);
-
-	vdautoptr<IVDImageEncoderPNG> encoder(VDCreateImageEncoderPNG());
-	const void *mem;
-	uint32 len;
-	encoder->Encode(pxbuf, mem, len, false);
-
-	VDFile f(filename, nsVDFile::kWrite | nsVDFile::kDenyRead | nsVDFile::kCreateAlways);
-
-	f.write(mem, len);
 }
 
 void ATCopyTextToClipboard(void *hwnd, const char *s) {

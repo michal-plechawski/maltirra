@@ -7,12 +7,16 @@
 #include <vector>
 
 #import <Foundation/Foundation.h>
+#import <ImageIO/ImageIO.h>
 
 #include <grp.h>
 #include <unistd.h>
 #include <uuid/uuid.h>
 
 #include "oshelper.h"
+#include <vd2/system/error.h>
+#include <vd2/Kasumi/pixmap.h>
+#include <vd2/Kasumi/pixmaputils.h>
 #include "../../../../Altirra/res/resource.h"
 
 namespace {
@@ -110,6 +114,21 @@ namespace {
 		}
 	}
 
+	const ATResourceLocation *ATGetImageResourceLocation(int id) {
+		static constexpr ATResourceLocation kTraceViewerToolbar { "PNG", "traceViewerToolbar.png", "src/Altirra/res/traceViewerToolbar.png" };
+		static constexpr ATResourceLocation kProfilerToolbar { "PNG", "profilerToolbar.png", "src/Altirra/res/profilerToolbar.png" };
+		static constexpr ATResourceLocation kWarning { "PNG", "warning.png", "src/Altirra/res/warning.png" };
+		static constexpr ATResourceLocation kFirmwareIcons { "PNG", "firmware.png", "src/Altirra/res/firmware.png" };
+
+		switch(id) {
+			case IDB_TOOLBAR_TRACEVIEWER: return &kTraceViewerToolbar;
+			case IDB_TOOLBAR_PROFILER2: return &kProfilerToolbar;
+			case IDB_WARNING: return &kWarning;
+			case IDB_FIRMWARE_ICONS: return &kFirmwareIcons;
+			default: return nullptr;
+		}
+	}
+
 	bool ATLoadResource(const ATResourceLocation *location, vdfastvector<uint8>& data) {
 		if (!location)
 			return false;
@@ -199,6 +218,79 @@ bool ATLoadKernelResourceLZPacked(int id, vdfastvector<uint8>& data) {
 
 bool ATLoadMiscResource(int id, vdfastvector<uint8>& data) {
 	return ATLoadResource(ATGetMiscResourceLocation(id), data);
+}
+
+bool ATLoadImageResource(uint32 id, VDPixmapBuffer& image) {
+	vdfastvector<uint8> data;
+	if (!ATLoadResource(ATGetImageResourceLocation(id), data))
+		return false;
+
+	try {
+		ATLoadFrameFromMemory(image, data.data(), data.size());
+		return true;
+	} catch(const MyError&) {
+		return false;
+	}
+}
+
+void ATLoadFrameFromMemory(VDPixmapBuffer& px, const void *mem, size_t len) {
+	if (!mem || !len)
+		throw MyError("Unable to decode image.");
+
+	@autoreleasepool {
+		NSData *const data = [NSData dataWithBytesNoCopy:const_cast<void *>(mem)
+			length:len
+			freeWhenDone:NO];
+		CGImageSourceRef source = CGImageSourceCreateWithData((__bridge CFDataRef)data, nullptr);
+		if (!source)
+			throw MyError("Unable to decode image.");
+
+		CGImageRef image = CGImageSourceCreateImageAtIndex(source, 0, nullptr);
+		CFRelease(source);
+		if (!image)
+			throw MyError("Unable to decode image.");
+
+		const size_t width = CGImageGetWidth(image);
+		const size_t height = CGImageGetHeight(image);
+		if (!width || !height || width > INT32_MAX || height > INT32_MAX) {
+			CGImageRelease(image);
+			throw MyError("Invalid image dimensions.");
+		}
+
+		try {
+			px.init(static_cast<sint32>(width), static_cast<sint32>(height), nsVDPixmap::kPixFormat_XRGB8888);
+		} catch(...) {
+			CGImageRelease(image);
+			throw;
+		}
+
+		CGColorSpaceRef colorSpace = CGColorSpaceCreateDeviceRGB();
+		if (!colorSpace) {
+			CGImageRelease(image);
+			throw MyError("Unable to create image color space.");
+		}
+
+		CGContextRef context = CGBitmapContextCreate(
+			px.data,
+			width,
+			height,
+			8,
+			static_cast<size_t>(px.pitch),
+			colorSpace,
+			static_cast<CGBitmapInfo>(
+				static_cast<uint32>(kCGBitmapByteOrder32Little)
+				| static_cast<uint32>(kCGImageAlphaNoneSkipFirst)));
+		CGColorSpaceRelease(colorSpace);
+
+		if (!context) {
+			CGImageRelease(image);
+			throw MyError("Unable to create image buffer.");
+		}
+
+		CGContextDrawImage(context, CGRectMake(0, 0, width, height), image);
+		CGContextRelease(context);
+		CGImageRelease(image);
+	}
 }
 
 bool ATIsUserAdministrator() {

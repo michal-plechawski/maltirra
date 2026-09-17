@@ -453,6 +453,7 @@ done
 	-framework AppKit \
 	-framework CoreFoundation \
 	-framework CoreServices \
+	-framework ImageIO \
 	-framework Security \
 	-o "$portable_test_executable"
 

@@ -9,9 +9,16 @@
 #include "oshelper.h"
 
 #include <vd2/system/binary.h>
+#include <vd2/system/error.h>
+#include <vd2/system/file.h>
 #include <vd2/system/filesys.h>
+#include <vd2/system/vdalloc.h>
 #include <vd2/system/vdstring.h>
+#include <vd2/Kasumi/pixmap.h>
+#include <vd2/Kasumi/pixmapops.h>
+#include <vd2/Kasumi/pixmaputils.h>
 #include <at/atcore/enumparseimpl.h>
+#include "encode_png.h"
 
 AT_DEFINE_ENUM_TABLE_BEGIN(ATProcessEfficiencyMode)
 	{ ATProcessEfficiencyMode::Default, "default" },
@@ -24,6 +31,34 @@ void ATFileSetReadOnlyAttribute(const wchar_t *path, bool readOnly) {
 		path,
 		kVDFileAttr_ReadOnly,
 		readOnly ? kVDFileAttr_ReadOnly : 0);
+}
+
+void ATLoadFrame(VDPixmapBuffer& px, const wchar_t *filename) {
+	VDFile file(filename);
+
+	const sint64 size = file.size();
+	if (size < 0 || size > 256 * 1024 * 1024)
+		throw MyError("File is too large to load.");
+
+	vdblock<uint8> data(static_cast<size_t>(size));
+	if (size)
+		file.read(data.data(), static_cast<long>(size));
+	file.close();
+
+	ATLoadFrameFromMemory(px, data.data(), static_cast<size_t>(size));
+}
+
+void ATSaveFrame(const VDPixmap& px, const wchar_t *filename) {
+	VDPixmapBuffer pxbuf(px.w, px.h, nsVDPixmap::kPixFormat_RGB888);
+	VDPixmapBlt(pxbuf, px);
+
+	vdautoptr<IVDImageEncoderPNG> encoder(VDCreateImageEncoderPNG());
+	const void *data;
+	uint32 size;
+	encoder->Encode(pxbuf, data, size, false);
+
+	VDFile file(filename, nsVDFile::kWrite | nsVDFile::kDenyRead | nsVDFile::kCreateAlways);
+	file.write(data, size);
 }
 
 bool ATDecodeLZPackedResource(const void *srcData, size_t srcSize, vdfastvector<uint8>& data) {

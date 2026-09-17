@@ -1,13 +1,18 @@
 // Altirra portable OS helper tests
 
 #include <cstring>
+#include <memory>
 #include <at/attest/portabletest.h>
+#include <vd2/Kasumi/pixmap.h>
+#include <vd2/Kasumi/pixmaputils.h>
+#include <vd2/system/error.h>
 #include <vd2/system/file.h>
 #include <vd2/system/filesys.h>
 #include <vd2/system/process.h>
 #include <vd2/system/time.h>
 #include <vd2/system/vdstring.h>
 #include <oshelper.h>
+#include <encode_png.h>
 #include "../../Altirra/res/resource.h"
 
 namespace {
@@ -163,6 +168,62 @@ bool ATTestAltirraOSHelper(ATPortableTestContext& context) {
 		AT_PORTABLE_TEST_ASSERT(context, compatSize > 16);
 		AT_PORTABLE_TEST_ASSERT(context, ATLockResource(999, compatSize) == nullptr);
 		AT_PORTABLE_TEST_ASSERT(context, !ATLoadMiscResource(999, about));
+	}
+
+	{
+		const uint32 pixels[] {
+			0x00112233, 0x00445566,
+			0x00778899, 0x00AABBCC
+		};
+		VDPixmap source {};
+		source.data = const_cast<uint32 *>(pixels);
+		source.w = 2;
+		source.h = 2;
+		source.pitch = 2 * sizeof(uint32);
+		source.format = nsVDPixmap::kPixFormat_XRGB8888;
+
+		std::unique_ptr<IVDImageEncoderPNG> encoder(VDCreateImageEncoderPNG());
+		const void *encodedData = nullptr;
+		uint32 encodedSize = 0;
+		encoder->Encode(source, encodedData, encodedSize, false);
+
+		auto validatePixels = [&](const VDPixmap& decoded) {
+			if (decoded.w != 2 || decoded.h != 2 || decoded.format != nsVDPixmap::kPixFormat_XRGB8888)
+				return false;
+
+			for(sint32 y = 0; y < 2; ++y) {
+				const uint32 *const row = decoded.GetPixelRow<uint32>(y);
+				for(sint32 x = 0; x < 2; ++x) {
+					if ((row[x] & UINT32_C(0x00FFFFFF)) != pixels[y * 2 + x])
+						return false;
+				}
+			}
+
+			return true;
+		};
+
+		VDPixmapBuffer memoryDecoded;
+		ATLoadFrameFromMemory(memoryDecoded, encodedData, encodedSize);
+		AT_PORTABLE_TEST_ASSERT(context, validatePixels(memoryDecoded));
+
+		ATOSHelperTestFile file;
+		ATSaveFrame(source, file.mPath.c_str());
+		VDPixmapBuffer fileDecoded;
+		ATLoadFrame(fileDecoded, file.mPath.c_str());
+		AT_PORTABLE_TEST_ASSERT(context, validatePixels(fileDecoded));
+
+		VDPixmapBuffer resourceImage;
+		AT_PORTABLE_TEST_ASSERT(context, ATLoadImageResource(IDB_WARNING, resourceImage));
+		AT_PORTABLE_TEST_ASSERT(context, resourceImage.w > 0 && resourceImage.h > 0);
+
+		bool invalidImageRejected = false;
+		try {
+			const uint8 invalidImage[] { 0 };
+			ATLoadFrameFromMemory(memoryDecoded, invalidImage, sizeof invalidImage);
+		} catch(const MyError&) {
+			invalidImageRejected = true;
+		}
+		AT_PORTABLE_TEST_ASSERT(context, invalidImageRejected);
 	}
 
 	return true;
