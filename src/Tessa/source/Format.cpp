@@ -1,4 +1,3 @@
-#include <stdafx.h>
 #include <vd2/Tessa/Format.h>
 
 uint32 VDTGetBytesPerBlockRow(VDTFormat format, uint32 w) {
@@ -7,9 +6,14 @@ uint32 VDTGetBytesPerBlockRow(VDTFormat format, uint32 w) {
 			return 0;
 
 		case kVDTF_R16G16B16A16F:
+			return w << 3;
+
+		case kVDTF_R32G32B32A32F:
 			return w << 4;
 
 		case kVDTF_R8G8B8A8:
+		case kVDTF_R8G8B8A8_sRGB:
+		case kVDTF_R8G8B8A8_GammaToSRGB:
 		case kVDTF_B8G8R8A8:
 		case kVDTF_B8G8R8A8_sRGB:
 			return w << 2;
@@ -33,6 +37,8 @@ uint32 VDTGetNumBlockRows(VDTFormat format, uint32 h) {
 			return 0;
 
 		case kVDTF_R8G8B8A8:
+		case kVDTF_R8G8B8A8_sRGB:
+		case kVDTF_R8G8B8A8_GammaToSRGB:
 		case kVDTF_B8G8R8A8:
 		case kVDTF_B8G8R8A8_sRGB:
 		case kVDTF_U8V8:
@@ -43,6 +49,7 @@ uint32 VDTGetNumBlockRows(VDTFormat format, uint32 h) {
 		case kVDTF_R8:
 		case kVDTF_L8:
 		case kVDTF_R16G16B16A16F:
+		case kVDTF_R32G32B32A32F:
 			return h;
 	}
 }

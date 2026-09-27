@@ -424,7 +424,13 @@
 	<ClCompile Include="source\TestTessa_ConfigPortable.cpp">
 	  <Filter>Source Files</Filter>
 	</ClCompile>
+	<ClCompile Include="source\TestTessa_FormatPortable.cpp">
+	  <Filter>Source Files</Filter>
+	</ClCompile>
 	<ClCompile Include="..\Tessa\source\Config.cpp">
+	  <Filter>Source Files</Filter>
+	</ClCompile>
+	<ClCompile Include="..\Tessa\source\Format.cpp">
 	  <Filter>Source Files</Filter>
 	</ClCompile>
     <Filter Include="Source Files">

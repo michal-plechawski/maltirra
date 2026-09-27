@@ -30,7 +30,7 @@
     <ClCompile Include="source\Context.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="source\Format.cpp">
+    <ClCompile Include="..\..\..\Tessa\source\Format.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="source\Program.cpp">

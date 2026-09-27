@@ -33,7 +33,10 @@
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="source\Context.cpp" />
-    <ClCompile Include="source\Format.cpp" />
+    <ClCompile Include="..\..\..\Tessa\source\Format.cpp">
+      <ForcedIncludeFiles />
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+    </ClCompile>
     <ClCompile Include="source\Program.cpp" />
     <ClCompile Include="source\D3D11\Context_D3D11.cpp" />
     <ClCompile Include="source\D3D11\FenceManager_D3D11.cpp" />

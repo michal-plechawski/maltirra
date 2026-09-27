@@ -102,6 +102,7 @@ bool ATTestNetNativeSockets(ATPortableTestContext& context);
 bool ATTestNetSocketWorker(ATPortableTestContext& context);
 bool ATTestNetVxlanTunnel(ATPortableTestContext& context);
 bool ATTestTessaConfig(ATPortableTestContext& context);
+bool ATTestTessaFormat(ATPortableTestContext& context);
 bool ATTestSystemBinary(ATPortableTestContext& context);
 bool ATTestSystemBitMath(ATPortableTestContext& context);
 bool ATTestSystemCache(ATPortableTestContext& context);
@@ -245,6 +246,7 @@ const ATPortableTestCase *ATGetPortableTests(size_t& count) {
 		{ "Net_SocketWorker", ATTestNetSocketWorker },
 		{ "Net_VxlanTunnel", ATTestNetVxlanTunnel },
 		{ "Tessa_Config", ATTestTessaConfig },
+		{ "Tessa_Format", ATTestTessaFormat },
 		{ "System_Binary", ATTestSystemBinary },
 		{ "System_BitMath", ATTestSystemBitMath },
 		{ "System_Cache", ATTestSystemCache },
