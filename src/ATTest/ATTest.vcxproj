@@ -431,10 +431,16 @@
 	<ClCompile Include="source\TestTessa_FormatPortable.cpp">
 	  <PrecompiledHeader>NotUsing</PrecompiledHeader>
 	</ClCompile>
+	<ClCompile Include="source\TestTessa_ProgramPortable.cpp">
+	  <PrecompiledHeader>NotUsing</PrecompiledHeader>
+	</ClCompile>
 	<ClCompile Include="..\Tessa\source\Config.cpp">
 	  <PrecompiledHeader>NotUsing</PrecompiledHeader>
 	</ClCompile>
 	<ClCompile Include="..\Tessa\source\Format.cpp">
+	  <PrecompiledHeader>NotUsing</PrecompiledHeader>
+	</ClCompile>
+	<ClCompile Include="..\Tessa\source\Program.cpp">
 	  <PrecompiledHeader>NotUsing</PrecompiledHeader>
 	</ClCompile>
 	<ClCompile Include="..\platform\Windows_x64\ATTest\source\blob.cpp" />

@@ -33,7 +33,7 @@
     <ClCompile Include="..\..\..\Tessa\source\Format.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="source\Program.cpp">
+    <ClCompile Include="..\..\..\Tessa\source\Program.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="source\D3D11\Context_D3D11.cpp">
@@ -65,7 +65,7 @@
     <ClInclude Include="..\..\..\h\vd2\Tessa\Types.h">
       <Filter>Interface Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="h\Program.h">
+    <ClInclude Include="..\..\..\h\vd2\Tessa\Program.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="h\D3D11\Context_D3D11.h">

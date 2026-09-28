@@ -39,7 +39,7 @@
 #include <vd2/Tessa/Options.h>
 #include "D3D11/Context_D3D11.h"
 #include "D3D11/FenceManager_D3D11.h"
-#include "Program.h"
+#include <vd2/Tessa/Program.h>
 
 namespace {
 	DXGI_FORMAT GetSurfaceFormatD3D11(VDTFormat format) {
