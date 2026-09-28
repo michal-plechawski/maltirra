@@ -1,6 +1,7 @@
 // Adapter for running the shared portable tests in the Windows test harness.
 
 #include <stdafx.h>
+#include <stdio.h>
 #include <windows.h>
 #include <at/attest/portabletest.h>
 #include <test.h>
@@ -19,6 +20,8 @@ DEFINE_TEST(System_Portable) {
 
 	for(size_t i = 0; i < testCount; ++i) {
 		ATPortableTestContext context;
+		printf("Running portable test: %s\n", tests[i].mpName);
+		fflush(stdout);
 		const bool succeeded = tests[i].mpTestFn(context);
 
 		TEST_ASSERTF(succeeded,
