@@ -102,7 +102,7 @@
     <ClCompile Include="..\platform\Windows_x64\VDDisplay\source\bloom.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\platform\Windows_x64\VDDisplay\source\displaytypes.cpp">
+    <ClCompile Include="source\displaytypes.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\platform\Windows_x64\VDDisplay\source\customeffectutils.cpp">

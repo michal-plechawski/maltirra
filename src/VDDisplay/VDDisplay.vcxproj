@@ -44,7 +44,10 @@
     <ClCompile Include="..\platform\Windows_x64\VDDisplay\source\displaygdi.cpp" />
     <ClCompile Include="..\platform\Windows_x64\VDDisplay\source\displaymgr.cpp" />
     <ClCompile Include="..\platform\Windows_x64\VDDisplay\source\displaynode3d.cpp" />
-    <ClCompile Include="..\platform\Windows_x64\VDDisplay\source\displaytypes.cpp" />
+    <ClCompile Include="source\displaytypes.cpp">
+      <ForcedIncludeFiles />
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+    </ClCompile>
     <ClCompile Include="..\platform\Windows_x64\VDDisplay\source\fontbitmap.cpp" />
     <ClCompile Include="..\platform\Windows_x64\VDDisplay\source\fontgdi.cpp" />
     <ClCompile Include="..\platform\Windows_x64\VDDisplay\source\logging.cpp" />

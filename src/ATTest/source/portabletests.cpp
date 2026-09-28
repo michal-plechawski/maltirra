@@ -105,6 +105,7 @@ bool ATTestTessaConfig(ATPortableTestContext& context);
 bool ATTestTessaContext(ATPortableTestContext& context);
 bool ATTestTessaFormat(ATPortableTestContext& context);
 bool ATTestTessaProgram(ATPortableTestContext& context);
+bool ATTestVDDisplayDisplayTypes(ATPortableTestContext& context);
 bool ATTestSystemBinary(ATPortableTestContext& context);
 bool ATTestSystemBitMath(ATPortableTestContext& context);
 bool ATTestSystemCache(ATPortableTestContext& context);
@@ -251,6 +252,7 @@ const ATPortableTestCase *ATGetPortableTests(size_t& count) {
 		{ "Tessa_Context", ATTestTessaContext },
 		{ "Tessa_Format", ATTestTessaFormat },
 		{ "Tessa_Program", ATTestTessaProgram },
+		{ "VDDisplay_DisplayTypes", ATTestVDDisplayDisplayTypes },
 		{ "System_Binary", ATTestSystemBinary },
 		{ "System_BitMath", ATTestSystemBitMath },
 		{ "System_Cache", ATTestSystemCache },
