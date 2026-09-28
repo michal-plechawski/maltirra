@@ -1,4 +1,3 @@
-#include <stdafx.h>
 #include <vd2/VDDisplay/rendercache.h>
 
 VDDisplayRenderCacheGeneric::VDDisplayRenderCacheGeneric()
@@ -13,7 +12,7 @@ void *VDDisplayRenderCacheGeneric::AsInterface(uint32 iid) {
 	if (iid == kTypeID)
 		return this;
 
-	return NULL;
+	return nullptr;
 }
 
 bool VDDisplayRenderCacheGeneric::Init(const VDDisplaySubRenderCache& subRenderCache, uint32 w, uint32 h, int format) {
