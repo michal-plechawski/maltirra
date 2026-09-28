@@ -84,9 +84,6 @@
     <ClCompile Include="..\platform\Windows_x64\VDDisplay\source\fontbitmap.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\platform\Windows_x64\VDDisplay\source\logging.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="..\platform\Windows_x64\VDDisplay\source\screenfx.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -97,6 +94,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="source\displaytypes.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="source\logging.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="source\rendercache.cpp">

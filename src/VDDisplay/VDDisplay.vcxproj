@@ -50,7 +50,10 @@
     </ClCompile>
     <ClCompile Include="..\platform\Windows_x64\VDDisplay\source\fontbitmap.cpp" />
     <ClCompile Include="..\platform\Windows_x64\VDDisplay\source\fontgdi.cpp" />
-    <ClCompile Include="..\platform\Windows_x64\VDDisplay\source\logging.cpp" />
+    <ClCompile Include="source\logging.cpp">
+      <ForcedIncludeFiles />
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+    </ClCompile>
     <ClCompile Include="..\platform\Windows_x64\VDDisplay\source\minid3dx.cpp" />
     <ClCompile Include="..\platform\Windows_x64\VDDisplay\source\options.cpp" />
     <ClCompile Include="source\rendercache.cpp">

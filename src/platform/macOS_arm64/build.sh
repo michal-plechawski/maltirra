@@ -241,6 +241,7 @@ portable_test_sources=(
 	src/ATTest/source/TestTessa_FormatPortable.cpp
 	src/ATTest/source/TestTessa_ProgramPortable.cpp
 	src/ATTest/source/TestVDDisplay_DisplayTypesPortable.cpp
+	src/ATTest/source/TestVDDisplay_LoggingPortable.cpp
 	src/ATTest/source/TestVDDisplay_RenderCachePortable.cpp
 	src/ATTest/source/TestVDDisplay_RendererPortable.cpp
 	src/ATTest/source/TestSystem_Binary.cpp
@@ -304,6 +305,7 @@ portable_test_sources=(
 	src/Tessa/source/Format.cpp
 	src/Tessa/source/Program.cpp
 	src/VDDisplay/source/displaytypes.cpp
+	src/VDDisplay/source/logging.cpp
 	src/VDDisplay/source/rendercache.cpp
 	src/VDDisplay/source/renderer.cpp
 	src/Altirra/source/artifacting_filters.cpp

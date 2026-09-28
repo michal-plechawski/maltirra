@@ -436,6 +436,9 @@
 	<ClCompile Include="source\TestVDDisplay_DisplayTypesPortable.cpp">
 	  <Filter>Source Files</Filter>
 	</ClCompile>
+	<ClCompile Include="source\TestVDDisplay_LoggingPortable.cpp">
+	  <Filter>Source Files</Filter>
+	</ClCompile>
 	<ClCompile Include="source\TestVDDisplay_RenderCachePortable.cpp">
 	  <Filter>Source Files</Filter>
 	</ClCompile>
@@ -455,6 +458,9 @@
 	  <Filter>Source Files</Filter>
 	</ClCompile>
 	<ClCompile Include="..\VDDisplay\source\displaytypes.cpp">
+	  <Filter>Source Files</Filter>
+	</ClCompile>
+	<ClCompile Include="..\VDDisplay\source\logging.cpp">
 	  <Filter>Source Files</Filter>
 	</ClCompile>
 	<ClCompile Include="..\VDDisplay\source\rendercache.cpp">

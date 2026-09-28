@@ -17,7 +17,10 @@
 //	Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 //
 
-#include <stdafx.h>
+#include <cstdarg>
+#include <cstdio>
+#include <utility>
+
 #include <vd2/system/vdstl.h>
 #include <vd2/VDDisplay/logging.h>
 
@@ -42,8 +45,11 @@ void VDDispLogF(const char *format, ...) {
 
 void VDDispLogV(const char *format, va_list args) {
 	char buf[32];
+	va_list argsCopy;
 
-	int n = vsnprintf(buf, vdcountof(buf), format, args);
+	va_copy(argsCopy, args);
+	int n = vsnprintf(buf, vdcountof(buf), format, argsCopy);
+	va_end(argsCopy);
 
 	if (n <= 0)
 		return;
@@ -55,7 +61,9 @@ void VDDispLogV(const char *format, va_list args) {
 		int limit = n > 32768 ? 32768 : n;
 		vdblock<char> buf2(limit + 1);
 
-		int n2 = vsnprintf(buf2.data(), limit + 1, format, args);
+		va_copy(argsCopy, args);
+		int n2 = vsnprintf(buf2.data(), limit + 1, format, argsCopy);
+		va_end(argsCopy);
 
 		if (n2 > 0) {
 			buf2[limit] = 0;
@@ -63,4 +71,3 @@ void VDDispLogV(const char *format, va_list args) {
 		}
 	}
 }
-
