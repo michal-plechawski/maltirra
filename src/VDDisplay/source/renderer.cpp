@@ -1,4 +1,6 @@
-#include <stdafx.h>
+#include <cstring>
+#include <utility>
+
 #include <vd2/VDDisplay/renderer.h>
 
 VDDisplaySubRenderCache::VDDisplaySubRenderCache()
@@ -49,7 +51,9 @@ void VDDisplayImageView::SetVirtualImage(int w, int h) {
 }
 
 void VDDisplayImageView::SetCachedImage(uint32 id, IVDRefUnknown *p) {
-	mCaches[0].mpCache.swap(mCaches[1].mpCache);
+	if (mCaches[1].mId != id)
+		std::swap(mCaches[0], mCaches[1]);
+
 	mCaches[1].mId = id;
 	mCaches[1].mpCache = p;
 }

@@ -54,7 +54,10 @@
     <ClCompile Include="..\platform\Windows_x64\VDDisplay\source\minid3dx.cpp" />
     <ClCompile Include="..\platform\Windows_x64\VDDisplay\source\options.cpp" />
     <ClCompile Include="..\platform\Windows_x64\VDDisplay\source\rendercache.cpp" />
-    <ClCompile Include="..\platform\Windows_x64\VDDisplay\source\renderer.cpp" />
+    <ClCompile Include="source\renderer.cpp">
+      <ForcedIncludeFiles />
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+    </ClCompile>
     <ClCompile Include="..\platform\Windows_x64\VDDisplay\source\renderer3d.cpp" />
     <ClCompile Include="..\platform\Windows_x64\VDDisplay\source\rendererd3d9.cpp" />
     <ClCompile Include="..\platform\Windows_x64\VDDisplay\source\renderergdi.cpp" />
