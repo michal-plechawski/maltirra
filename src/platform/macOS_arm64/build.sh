@@ -237,6 +237,7 @@ portable_test_sources=(
 	src/ATTest/source/TestNet_SocketWorkerPortable.cpp
 	src/ATTest/source/TestNet_VxlanTunnelPortable.cpp
 	src/ATTest/source/TestTessa_ConfigPortable.cpp
+	src/ATTest/source/TestTessa_ContextPortable.cpp
 	src/ATTest/source/TestTessa_FormatPortable.cpp
 	src/ATTest/source/TestTessa_ProgramPortable.cpp
 	src/ATTest/source/TestSystem_Binary.cpp
@@ -296,6 +297,7 @@ portable_test_sources=(
 	src/ATCore/source/propertyset.cpp
 	src/ATCore/source/progress.cpp
 	src/Tessa/source/Config.cpp
+	src/Tessa/source/Context.cpp
 	src/Tessa/source/Format.cpp
 	src/Tessa/source/Program.cpp
 	src/Altirra/source/artifacting_filters.cpp

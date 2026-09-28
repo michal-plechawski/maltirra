@@ -27,7 +27,7 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="source\Context.cpp">
+    <ClCompile Include="..\..\..\Tessa\source\Context.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\Tessa\source\Format.cpp">

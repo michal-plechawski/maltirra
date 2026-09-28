@@ -32,7 +32,10 @@
       <ForcedIncludeFiles />
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="source\Context.cpp" />
+    <ClCompile Include="..\..\..\Tessa\source\Context.cpp">
+      <ForcedIncludeFiles />
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+    </ClCompile>
     <ClCompile Include="..\..\..\Tessa\source\Format.cpp">
       <ForcedIncludeFiles />
       <PrecompiledHeader>NotUsing</PrecompiledHeader>

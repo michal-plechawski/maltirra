@@ -428,6 +428,9 @@
 	<ClCompile Include="source\TestTessa_ConfigPortable.cpp">
 	  <PrecompiledHeader>NotUsing</PrecompiledHeader>
 	</ClCompile>
+	<ClCompile Include="source\TestTessa_ContextPortable.cpp">
+	  <PrecompiledHeader>NotUsing</PrecompiledHeader>
+	</ClCompile>
 	<ClCompile Include="source\TestTessa_FormatPortable.cpp">
 	  <PrecompiledHeader>NotUsing</PrecompiledHeader>
 	</ClCompile>
@@ -435,6 +438,9 @@
 	  <PrecompiledHeader>NotUsing</PrecompiledHeader>
 	</ClCompile>
 	<ClCompile Include="..\Tessa\source\Config.cpp">
+	  <PrecompiledHeader>NotUsing</PrecompiledHeader>
+	</ClCompile>
+	<ClCompile Include="..\Tessa\source\Context.cpp">
 	  <PrecompiledHeader>NotUsing</PrecompiledHeader>
 	</ClCompile>
 	<ClCompile Include="..\Tessa\source\Format.cpp">

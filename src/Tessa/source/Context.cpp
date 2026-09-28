@@ -1,5 +1,6 @@
-#include <stdio.h>
 #include <stdarg.h>
+#include <stdio.h>
+
 #include <vd2/Tessa/Context.h>
 
 void VDTBeginScopeF(IVDTContext *profiler, uint32 color, const char *format, ...) {
@@ -7,7 +8,7 @@ void VDTBeginScopeF(IVDTContext *profiler, uint32 color, const char *format, ...
 	char buf[256];
 
 	va_start(val, format);
-	_vsnprintf(buf, sizeof buf, format, val);
+	vsnprintf(buf, sizeof buf, format, val);
 	va_end(val);
 	buf[255] = 0;
 	profiler->BeginScope(color, buf);
