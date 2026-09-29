@@ -54,7 +54,7 @@
     <ClCompile Include="..\platform\Windows_x64\VDDisplay\source\renderergdi.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\platform\Windows_x64\VDDisplay\source\renderersoft.cpp">
+    <ClCompile Include="source\renderersoft.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="source\textrenderer.cpp">

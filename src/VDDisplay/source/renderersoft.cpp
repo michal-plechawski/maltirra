@@ -1,6 +1,8 @@
+#include <algorithm>
+
 #include <vd2/system/math.h>
+#include <vd2/system/memory.h>
 #include <vd2/system/vdtypes.h>
-#include <vd2/system/w32assist.h>
 #include <vd2/Kasumi/pixmapops.h>
 #include <vd2/Kasumi/pixmaputils.h>
 #include <vd2/VDDisplay/renderer.h>
@@ -630,8 +632,8 @@ void VDDisplayRendererSoft::Blt(sint32 x, sint32 y, VDDisplayImageView& imageVie
 
 	if (x + w > mPrimary.w) { w = mPrimary.w - x; }
 	if (y + h > mPrimary.h) { h = mPrimary.h - y; }
-	if (sx + w > cachedImage->mWidth) { w = cachedImage->mWidth - x; }
-	if (sy + h > cachedImage->mHeight) { h = cachedImage->mHeight - y; }
+	if (sx + w > cachedImage->mWidth) { w = cachedImage->mWidth - sx; }
+	if (sy + h > cachedImage->mHeight) { h = cachedImage->mHeight - sy; }
 
 	if ((w|h) < 0)
 		return;
@@ -654,7 +656,7 @@ void VDDisplayRendererSoft::StretchBlt(sint32 dx, sint32 dy, sint32 dw, sint32 d
 	if (sw <= 0 || sh <= 0)
 		return;
 
-	if (sx < 0 || sx >= cachedImage->mWidth || sy < 0 || sh >= cachedImage->mHeight)
+	if (sx < 0 || sx >= cachedImage->mWidth || sy < 0 || sy >= cachedImage->mHeight)
 		return;
 
 	if (sw > cachedImage->mWidth - sx || sh > cachedImage->mHeight - sy)
@@ -692,7 +694,18 @@ void VDDisplayRendererSoft::StretchBlt(sint32 dx, sint32 dy, sint32 dw, sint32 d
 	sint32 sx2 = VDRoundToInt(fsx2);
 	sint32 sy2 = VDRoundToInt(fsy2);
 
-	VDPixmapStretchBltNearest(mPrimary, dx, dy, dx + dw, dy + dh, cachedImage->mSoftBuffer, sx1, sy1, sx2 + 1, sy2 + 1);
+	VDPixmapStretchBltNearest(
+		mPrimary,
+		dx * 0x10000,
+		dy * 0x10000,
+		(dx + dw) * 0x10000,
+		(dy + dh) * 0x10000,
+		cachedImage->mSoftBuffer,
+		sx1 * 0x10000,
+		sy1 * 0x10000,
+		(sx2 + 1) * 0x10000,
+		(sy2 + 1) * 0x10000
+	);
 }
 
 void VDDisplayRendererSoft::MultiBlt(const VDDisplayBlt *blts, uint32 n, VDDisplayImageView& imageView, BltMode bltMode) {
@@ -721,14 +734,18 @@ void VDDisplayRendererSoft::MultiBlt(const VDDisplayBlt *blts, uint32 n, VDDispl
 
 		if (x + w > mPrimary.w) { w = mPrimary.w - x; }
 		if (y + h > mPrimary.h) { h = mPrimary.h - y; }
-		if (sx + w > cachedImage->mWidth) { w = cachedImage->mWidth - x; }
-		if (sy + h > cachedImage->mHeight) { h = cachedImage->mHeight - y; }
+		if (sx + w > cachedImage->mWidth) { w = cachedImage->mWidth - sx; }
+		if (sy + h > cachedImage->mHeight) { h = cachedImage->mHeight - sy; }
 
 		if (w <= 0 || h <= 0)
 			continue;
 
 		// software blitting time
 		switch(bltMode) {
+			case kBltMode_Normal:
+			case kBltMode_Color2:
+				break;
+
 			case kBltMode_Stencil: {
 				char *row = (char *)mPrimary.data + mPrimary.pitch * y;
 

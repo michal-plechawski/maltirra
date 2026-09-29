@@ -112,6 +112,7 @@ bool ATTestVDDisplayFontBitmap(ATPortableTestContext& context);
 bool ATTestVDDisplayLogging(ATPortableTestContext& context);
 bool ATTestVDDisplayRenderCache(ATPortableTestContext& context);
 bool ATTestVDDisplayRenderer(ATPortableTestContext& context);
+bool ATTestVDDisplayRendererSoft(ATPortableTestContext& context);
 bool ATTestVDDisplayScreenFX(ATPortableTestContext& context);
 bool ATTestVDDisplayTextRenderer(ATPortableTestContext& context);
 bool ATTestSystemBinary(ATPortableTestContext& context);
@@ -267,6 +268,7 @@ const ATPortableTestCase *ATGetPortableTests(size_t& count) {
 		{ "VDDisplay_Logging", ATTestVDDisplayLogging },
 		{ "VDDisplay_RenderCache", ATTestVDDisplayRenderCache },
 		{ "VDDisplay_Renderer", ATTestVDDisplayRenderer },
+		{ "VDDisplay_RendererSoft", ATTestVDDisplayRendererSoft },
 		{ "VDDisplay_ScreenFX", ATTestVDDisplayScreenFX },
 		{ "VDDisplay_TextRenderer", ATTestVDDisplayTextRenderer },
 		{ "System_Binary", ATTestSystemBinary },

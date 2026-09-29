@@ -76,7 +76,10 @@
     <ClCompile Include="..\platform\Windows_x64\VDDisplay\source\renderer3d.cpp" />
     <ClCompile Include="..\platform\Windows_x64\VDDisplay\source\rendererd3d9.cpp" />
     <ClCompile Include="..\platform\Windows_x64\VDDisplay\source\renderergdi.cpp" />
-    <ClCompile Include="..\platform\Windows_x64\VDDisplay\source\renderersoft.cpp" />
+    <ClCompile Include="source\renderersoft.cpp">
+      <ForcedIncludeFiles />
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+    </ClCompile>
     <ClCompile Include="source\screenfx.cpp">
       <ForcedIncludeFiles />
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
