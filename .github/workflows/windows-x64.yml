@@ -40,6 +40,8 @@ jobs:
     steps:
       - name: Check out sources
         uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
 
       - name: Locate Visual Studio 2022 MSBuild
         id: toolchain
@@ -82,9 +84,14 @@ jobs:
             obj/ReleaseAMD64/
             lib/ReleaseAMD64/
             out/ReleaseAMD64/
-          key: altirra-v1-${{ runner.os }}-${{ runner.arch }}-${{ steps.toolchain.outputs.cache-key }}-release-${{ hashFiles('src/**') }}
+          key: altirra-v2-${{ runner.os }}-${{ runner.arch }}-${{ steps.toolchain.outputs.cache-key }}-release-${{ hashFiles('src/**') }}
           restore-keys: |
-            altirra-v1-${{ runner.os }}-${{ runner.arch }}-${{ steps.toolchain.outputs.cache-key }}-release-
+            altirra-v2-${{ runner.os }}-${{ runner.arch }}-${{ steps.toolchain.outputs.cache-key }}-release-
+
+      - name: Prepare incremental Release x64 cache
+        if: steps.release-cache.outputs.cache-hit != 'true'
+        shell: pwsh
+        run: scripts/prepare-msbuild-cache.ps1 -MarkerPath 'obj/ReleaseAMD64/.ci-cache-commit'
 
       - name: Install MADS 2.1.0
         if: steps.release-cache.outputs.cache-hit != 'true'
@@ -121,7 +128,7 @@ jobs:
         run: |
           & $env:MSBUILD_EXE 'src\Altirra.sln' `
             /m `
-            /t:Build `
+            /t:Altirra `
             /p:Configuration=Release `
             /p:Platform=x64 `
             /verbosity:minimal
@@ -165,6 +172,13 @@ jobs:
             Get-Item $output | Format-List FullName, Length, LastWriteTimeUtc
           }
 
+      - name: Record Release x64 cache commit
+        if: steps.release-cache.outputs.cache-hit != 'true'
+        shell: pwsh
+        run: |
+          New-Item -ItemType Directory -Path 'obj/ReleaseAMD64' -Force | Out-Null
+          Set-Content -LiteralPath 'obj/ReleaseAMD64/.ci-cache-commit' -Value $env:GITHUB_SHA -NoNewline
+
       - name: Upload Windows x64 artifact
         uses: actions/upload-artifact@v7
         with:
@@ -182,6 +196,8 @@ jobs:
     steps:
       - name: Check out sources
         uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
 
       - name: Locate Visual Studio 2022 MSBuild
         id: toolchain
@@ -227,9 +243,14 @@ jobs:
             obj/ProfileAMD64/
             lib/ProfileAMD64/
             out/ProfileAMD64/
-          key: altirra-v1-${{ runner.os }}-${{ runner.arch }}-${{ steps.toolchain.outputs.cache-key }}-profiletest-${{ hashFiles('src/**') }}
+          key: altirra-v2-${{ runner.os }}-${{ runner.arch }}-${{ steps.toolchain.outputs.cache-key }}-profiletest-${{ hashFiles('src/**') }}
           restore-keys: |
-            altirra-v1-${{ runner.os }}-${{ runner.arch }}-${{ steps.toolchain.outputs.cache-key }}-profiletest-
+            altirra-v2-${{ runner.os }}-${{ runner.arch }}-${{ steps.toolchain.outputs.cache-key }}-profiletest-
+
+      - name: Prepare incremental ProfileTest x64 cache
+        if: steps.test-cache.outputs.cache-hit != 'true'
+        shell: pwsh
+        run: scripts/prepare-msbuild-cache.ps1 -MarkerPath 'obj/ProfileAMD64/.ci-cache-commit'
 
       - name: Install MADS 2.1.0
         if: steps.test-cache.outputs.cache-hit != 'true'
@@ -294,7 +315,7 @@ jobs:
         run: |
           $buildOutput = & $env:MSBUILD_EXE 'src\Altirra.sln' `
             /m `
-            /t:Build `
+            /t:AltirraTest `
             /p:Configuration=ProfileTest `
             /p:Platform=x64 `
             /verbosity:minimal 2>&1
@@ -352,3 +373,10 @@ jobs:
             Write-Host "::error title=Altirra automatic tests failed::$details"
             exit $testExitCode
           }
+
+      - name: Record ProfileTest x64 cache commit
+        if: steps.test-cache.outputs.cache-hit != 'true'
+        shell: pwsh
+        run: |
+          New-Item -ItemType Directory -Path 'obj/ProfileAMD64' -Force | Out-Null
+          Set-Content -LiteralPath 'obj/ProfileAMD64/.ci-cache-commit' -Value $env:GITHUB_SHA -NoNewline
