@@ -14,7 +14,13 @@
 //	You should have received a copy of the GNU General Public License along
 //	with this program. If not, see <http://www.gnu.org/licenses/>.
 
-#include "stdafx.h"
+#include <algorithm>
+#include <cerrno>
+#include <climits>
+#include <cstdlib>
+#include <cstring>
+#include <utility>
+
 #include <vd2/system/binary.h>
 #include <vd2/system/file.h>
 #include <vd2/system/memory.h>
@@ -175,8 +181,9 @@ std::optional<int> VDDisplayCustomShaderProps::TryGetInt(const VDDCsPropKeyView&
 
 	errno = 0;
 
-	long v = strtol(s, nullptr, 10);
-	if (errno || v < INT_MIN || v > INT_MAX)
+	char *end = nullptr;
+	long v = strtol(s, &end, 10);
+	if (errno || end == s || *end || v < INT_MIN || v > INT_MAX)
 		throw VDException("Expected integer for '%s'", key.ToString().c_str());
 
 	return (int)v;

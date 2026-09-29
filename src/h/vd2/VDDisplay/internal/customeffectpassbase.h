@@ -17,6 +17,8 @@
 #ifndef f_VD2_VDDISPLAY_INTERNAL_CUSTOMEFFEcTPASS_H
 #define f_VD2_VDDISPLAY_INTERNAL_CUSTOMEFFEcTPASS_H
 
+#include <vd2/system/VDString.h>
+#include <vd2/system/vdstl.h>
 #include <vd2/system/vectors.h>
 
 class VDDisplayCustomShaderProps;

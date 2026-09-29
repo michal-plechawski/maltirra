@@ -18,7 +18,12 @@
 #define f_VD2_VDDISPLAY_CUSTOMPARSERUTILS_H
 
 #include <optional>
+#include <iterator>
+#include <ranges>
+#include <type_traits>
+
 #include <vd2/system/Error.h>
+#include <vd2/system/VDString.h>
 #include <vd2/system/vdstl.h>
 
 class VDPixmapBuffer;
@@ -53,7 +58,7 @@ public:
 	pointer operator->() const { return mpData; }
 
 	difference_type operator-(const VDDTexSpecViewIterator& other) const {
-		return (mpData - other.mpData) / mStride;
+		return ((const char *)mpData - (const char *)other.mpData) / mStride;
 	}
 
 	VDDTexSpecViewIterator& operator++() {
@@ -87,22 +92,25 @@ public:
 	}
 
 	bool operator<(const VDDTexSpecViewIterator& other) const {
-		return other.mpData < mpData;
+		return (const char *)mpData < (const char *)other.mpData;
 	}
 
 	bool operator<=(const VDDTexSpecViewIterator& other) const {
-		return other.mpData <= mpData;
+		return (const char *)mpData <= (const char *)other.mpData;
 	}
 
 	bool operator>(const VDDTexSpecViewIterator& other) const {
-		return other.mpData > mpData;
+		return (const char *)mpData > (const char *)other.mpData;
 	}
 
 	bool operator>=(const VDDTexSpecViewIterator& other) const {
-		return other.mpData >= mpData;
+		return (const char *)mpData >= (const char *)other.mpData;
 	}
 
 private:
+	template<typename>
+	friend class VDDTexSpecViewIterator;
+
 	pointer mpData;
 	ptrdiff_t mStride;
 };
@@ -130,7 +138,7 @@ public:
 	VDDTexSpecView(const VDDTexSpecView&) = default;
 	VDDTexSpecView(VDDTexSpecView&&) = default;
 
-	template<typename U> requires std::is_convertible_v<T(*)[], U(*)[]>
+	template<typename U> requires std::is_convertible_v<U(*)[], T(*)[]>
 	VDDTexSpecView(const VDDTexSpecView<U>& other)
 		: mpData(other.mpData), mCount(other.mCount), mStride(other.mStride)
 	{
@@ -152,8 +160,8 @@ public:
 	constexpr size_type size() const { return mCount; }
 
 	constexpr iterator begin() { return iterator(pointer(mpData), mStride); }
-	constexpr const_iterator begin() const { return iterator(const_pointer(mpData), mStride); }
-	constexpr const_iterator cbegin() const { return iterator(const_pointer(mpData), mStride); }
+	constexpr const_iterator begin() const { return const_iterator(const_pointer(mpData), mStride); }
+	constexpr const_iterator cbegin() const { return const_iterator(const_pointer(mpData), mStride); }
 
 	constexpr iterator end() { return iterator(pointer(mpData + mCount * mStride), mStride); }
 	constexpr const_iterator end() const { return const_iterator(const_pointer(mpData + mCount * mStride), mStride); }
@@ -163,6 +171,9 @@ public:
 	constexpr const_reference operator[](size_type n) const { return *const_pointer(mpData + mStride*n); }
 
 private:
+	template<typename>
+	friend class VDDTexSpecView;
+
 	char *mpData = nullptr;
 	size_t mCount = 0;
 	ptrdiff_t mStride = 0;

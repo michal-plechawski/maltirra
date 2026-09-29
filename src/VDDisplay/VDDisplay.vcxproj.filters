@@ -105,13 +105,13 @@
     <ClCompile Include="source\renderer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\platform\Windows_x64\VDDisplay\source\customeffectutils.cpp">
+    <ClCompile Include="source\customeffectutils.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\platform\Windows_x64\VDDisplay\source\customeffectbase.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\platform\Windows_x64\VDDisplay\source\customeffectpassbase.cpp">
+    <ClCompile Include="source\customeffectpassbase.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\platform\Windows_x64\VDDisplay\source\customeffectimpld3d11.cpp">
@@ -203,7 +203,7 @@
     <ClInclude Include="..\h\vd2\VDDisplay\displaytypes.h">
       <Filter>Interface Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\platform\Windows_x64\VDDisplay\h\vd2\VDDisplay\internal\customeffectutils.h">
+    <ClInclude Include="..\h\vd2\VDDisplay\internal\customeffectutils.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\platform\Windows_x64\VDDisplay\h\vd2\VDDisplay\internal\customeffect.h">
@@ -212,7 +212,7 @@
     <ClInclude Include="..\platform\Windows_x64\VDDisplay\h\vd2\VDDisplay\internal\customeffectbase.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\platform\Windows_x64\VDDisplay\h\vd2\VDDisplay\internal\customeffectpassbase.h">
+    <ClInclude Include="..\h\vd2\VDDisplay\internal\customeffectpassbase.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\platform\Windows_x64\VDDisplay\h\vd2\VDDisplay\internal\customeffectd3d11.h">

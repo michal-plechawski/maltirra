@@ -14,7 +14,11 @@
 //	You should have received a copy of the GNU General Public License along
 //	with this program. If not, see <http://www.gnu.org/licenses/>.
 
-#include "stdafx.h"
+#include <cstdio>
+#include <cstring>
+
+#include <vd2/system/Error.h>
+#include <vd2/system/math.h>
 #include <vd2/VDDisplay/internal/customeffectpassbase.h>
 #include <vd2/VDDisplay/internal/customeffectutils.h>
 
@@ -35,29 +39,25 @@ VDDCustomEffectFrameRef VDDCustomEffectFrameRef::Parse(VDStringSpanA name, uint3
 			return VDDCustomEffectFrameRef { true, 0, 0 };
 
 		uint32 index = 0;
-		bool hasIndex = false;
+		size_t indexStart = name.size();
 
-		if (name.back() >= '0' && name.back() <= '9') {
-			hasIndex = true;
+		while(indexStart && name[indexStart - 1] >= '0' && name[indexStart - 1] <= '9')
+			--indexStart;
 
-			while(!name.empty()) {
-				const char ch = name.back();
+		const bool hasIndex = indexStart != name.size();
+		if (hasIndex) {
+			const VDStringSpanA indexText = name.subspan(indexStart);
 
-				if (ch < '0' || ch > '9')
-					break;
+			for(const char ch : indexText) {
+				const uint32 digit = (uint32)(ch - '0');
 
-				if (index > UINT32_MAX/10)
+				if (index > (UINT32_MAX - digit) / 10)
 					return {};
 
-				index *= 10;
-
-				uint32 digit = (uint32)(ch - '0');
-				if (UINT32_MAX - index < digit)
-					return {};
-
-				index += digit;
-				name.remove_suffix(1);
+				index = index * 10 + digit;
 			}
+
+			name = name.subspan(0, indexStart);
 		}
 
 		if (name == "PREV") {
@@ -77,7 +77,7 @@ VDDCustomEffectFrameRef VDDCustomEffectFrameRef::Parse(VDStringSpanA name, uint3
 		}
 
 		if (name == "PASS") {
-			if (!hasIndex || (index < 1 || index+1 > currentPassIndex))
+			if (!hasIndex || index < 1 || index >= currentPassIndex)
 				throw VDException("Invalid reference from pass %u to parameter '%s'", currentPassIndex, VDStringA(name).c_str());
 
 			return VDDCustomEffectFrameRef { true, index, 0 };
@@ -254,6 +254,9 @@ void VDDCustomEffectVarStorage::GatherVecs(uint32 *dst, vdspan<const VDDCustomEf
 }
 
 uint32 VDDCustomEffectVarStorage::AllocateVarOffset(VDDCustomEffectVariable var, uint32 passIndex, uint32 elementIndex) {
+	if (var != VDDCustomEffectVariable::FrameCount)
+		elementIndex = 0;
+
 	const auto r = mVarMap.insert_as(VDDCustomEffectVarAddress { var, passIndex, elementIndex });
 
 	if (r.second) {
@@ -376,7 +379,7 @@ void VDDCustomEffectPassBase::ParseCommonProps(const VDDisplayCustomShaderProps&
 	if (frameCountModProp) {
 		unsigned mod;
 		char dummy;
-		if (1 != sscanf(frameCountModProp, "%u%c", &mod, &dummy) || mod == 0)
+		if (frameCountModProp[0] == '-' || 1 != sscanf(frameCountModProp, "%u%c", &mod, &dummy) || mod == 0)
 			throw VDException("Pass %u has invalid frame_count_mod value: %s", mPassIndex, frameCountModProp);
 
 		mFrameCountLimit = mod - 1;

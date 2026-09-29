@@ -107,6 +107,7 @@ bool ATTestTessaFormat(ATPortableTestContext& context);
 bool ATTestTessaProgram(ATPortableTestContext& context);
 bool ATTestVDDisplayBicubic(ATPortableTestContext& context);
 bool ATTestVDDisplayBloom(ATPortableTestContext& context);
+bool ATTestVDDisplayCustomEffect(ATPortableTestContext& context);
 bool ATTestVDDisplayDisplayTypes(ATPortableTestContext& context);
 bool ATTestVDDisplayFontBitmap(ATPortableTestContext& context);
 bool ATTestVDDisplayLogging(ATPortableTestContext& context);
@@ -263,6 +264,7 @@ const ATPortableTestCase *ATGetPortableTests(size_t& count) {
 		{ "Tessa_Program", ATTestTessaProgram },
 		{ "VDDisplay_Bicubic", ATTestVDDisplayBicubic },
 		{ "VDDisplay_Bloom", ATTestVDDisplayBloom },
+		{ "VDDisplay_CustomEffect", ATTestVDDisplayCustomEffect },
 		{ "VDDisplay_DisplayTypes", ATTestVDDisplayDisplayTypes },
 		{ "VDDisplay_FontBitmap", ATTestVDDisplayFontBitmap },
 		{ "VDDisplay_Logging", ATTestVDDisplayLogging },
