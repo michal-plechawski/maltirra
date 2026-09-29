@@ -77,7 +77,10 @@
     <ClCompile Include="..\platform\Windows_x64\VDDisplay\source\rendererd3d9.cpp" />
     <ClCompile Include="..\platform\Windows_x64\VDDisplay\source\renderergdi.cpp" />
     <ClCompile Include="..\platform\Windows_x64\VDDisplay\source\renderersoft.cpp" />
-    <ClCompile Include="..\platform\Windows_x64\VDDisplay\source\screenfx.cpp" />
+    <ClCompile Include="source\screenfx.cpp">
+      <ForcedIncludeFiles />
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+    </ClCompile>
     <ClCompile Include="source\textrenderer.cpp">
       <ForcedIncludeFiles />
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
@@ -121,7 +124,7 @@
     <ClInclude Include="..\h\vd2\VDDisplay\renderer.h" />
     <ClInclude Include="..\h\vd2\VDDisplay\renderersoft.h" />
     <ClInclude Include="..\h\vd2\VDDisplay\textrenderer.h" />
-    <ClInclude Include="..\platform\Windows_x64\VDDisplay\h\vd2\VDDisplay\internal\screenfx.h" />
+    <ClInclude Include="..\h\vd2\VDDisplay\internal\screenfx.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="autogen\displayd3d9_shader.inl" />

@@ -14,7 +14,11 @@
 //	You should have received a copy of the GNU General Public License along
 //	with this program. If not, see <http://www.gnu.org/licenses/>.
 
-#include <stdafx.h>
+#include <algorithm>
+#include <cmath>
+#include <cstring>
+#include <iterator>
+
 #include <vd2/system/cpuaccel.h>
 #include <vd2/system/math.h>
 #include <vd2/system/vdstl.h>
@@ -52,6 +56,12 @@ void VDDisplayCreateScanlineMaskTexture(uint32 *scanlineTex, ptrdiff_t pitch, ui
 }
 
 void VDDisplayCreateScanlineMaskTexture(uint32 *scanlineTex, ptrdiff_t pitch, uint32 srcH, uint32 dstH, float outY, float outH, uint32 texSize, float intensity, bool renderLinear) {
+	if (!dstH || outH <= 0)
+		return;
+
+	if (!pitch)
+		pitch = sizeof(uint32);
+
 	vdblock<float> rawMask(dstH);
 
 	// Compute the stepping rate over the scanline mask pattern and check if we are
@@ -97,12 +107,16 @@ void VDDisplayCreateScanlineMaskTexture(uint32 *scanlineTex, ptrdiff_t pitch, ui
 
 		uint32 px = (uint32)(y * 255.0f + 0.5f) * 0x01010101;
 
-		scanlineTex[i] = px;
+		*(uint32 *)((char *)scanlineTex + pitch * i) = px;
 	}
 
 	// Repeat the last entry to the end of the texture so it clamps cleanly.
-	if (dstH < texSize)
-		std::fill(scanlineTex + dstH, scanlineTex + texSize, scanlineTex[dstH - 1]); 
+	if (dstH < texSize) {
+		const uint32 lastPixel = *(const uint32 *)((const char *)scanlineTex + pitch * (dstH - 1));
+
+		for(uint32 i=dstH; i<texSize; ++i)
+			*(uint32 *)((char *)scanlineTex + pitch * i) = lastPixel;
+	}
 }
 
 ////////////////////////////////////////////////////////////////////////////////

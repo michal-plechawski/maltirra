@@ -81,7 +81,7 @@
     <ClCompile Include="source\fontbitmap.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\platform\Windows_x64\VDDisplay\source\screenfx.cpp">
+    <ClCompile Include="source\screenfx.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\platform\Windows_x64\VDDisplay\source\options.cpp">
@@ -188,7 +188,7 @@
     <ClInclude Include="..\h\vd2\VDDisplay\logging.h">
       <Filter>Interface Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\platform\Windows_x64\VDDisplay\h\vd2\VDDisplay\internal\screenfx.h">
+    <ClInclude Include="..\h\vd2\VDDisplay\internal\screenfx.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\platform\Windows_x64\h\vd2\VDDisplay\renderergdi.h">

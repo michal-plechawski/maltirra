@@ -454,6 +454,9 @@
 	<ClCompile Include="source\TestVDDisplay_RendererPortable.cpp">
 	  <Filter>Source Files</Filter>
 	</ClCompile>
+	<ClCompile Include="source\TestVDDisplay_ScreenFXPortable.cpp">
+	  <Filter>Source Files</Filter>
+	</ClCompile>
 	<ClCompile Include="source\TestVDDisplay_TextRendererPortable.cpp">
 	  <Filter>Source Files</Filter>
 	</ClCompile>
