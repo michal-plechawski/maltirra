@@ -27,9 +27,6 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\platform\Windows_x64\VDDisplay\source\bicubic.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="..\platform\Windows_x64\VDDisplay\source\display.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -96,6 +93,9 @@
     <ClCompile Include="source\displaytypes.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="source\bicubic.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
     <ClCompile Include="source\logging.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -122,7 +122,7 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\platform\Windows_x64\VDDisplay\h\bicubic.h">
+    <ClInclude Include="..\h\vd2\VDDisplay\bicubic.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\platform\Windows_x64\VDDisplay\h\displaydrv3d.h">

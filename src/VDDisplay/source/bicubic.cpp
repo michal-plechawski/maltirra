@@ -1,6 +1,5 @@
-#include <stdafx.h>
 #include <vd2/system/math.h>
-#include "bicubic.h"
+#include <vd2/VDDisplay/bicubic.h>
 
 // Theory of operation:
 //

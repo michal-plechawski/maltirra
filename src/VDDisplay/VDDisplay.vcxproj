@@ -28,7 +28,10 @@
     </ClCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="..\platform\Windows_x64\VDDisplay\source\bicubic.cpp" />
+    <ClCompile Include="source\bicubic.cpp">
+      <ForcedIncludeFiles />
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+    </ClCompile>
     <ClCompile Include="..\platform\Windows_x64\VDDisplay\source\bloom.cpp" />
     <ClCompile Include="..\platform\Windows_x64\VDDisplay\source\customeffectimpld3d11.cpp" />
     <ClCompile Include="..\platform\Windows_x64\VDDisplay\source\customeffectbase.cpp" />
@@ -80,7 +83,7 @@
     <ClInclude Include="..\h\vd2\VDDisplay\logging.h" />
     <ClInclude Include="..\h\vd2\VDDisplay\minid3dx.h" />
     <ClInclude Include="..\platform\Windows_x64\h\vd2\VDDisplay\renderergdi.h" />
-    <ClInclude Include="..\platform\Windows_x64\VDDisplay\h\bicubic.h" />
+    <ClInclude Include="..\h\vd2\VDDisplay\bicubic.h" />
     <ClInclude Include="..\platform\Windows_x64\VDDisplay\h\displaydrvd3d9.h" />
     <ClInclude Include="..\platform\Windows_x64\VDDisplay\h\vd2\VDDisplay\internal\bloom.h" />
     <ClInclude Include="..\platform\Windows_x64\VDDisplay\h\vd2\VDDisplay\internal\customeffectimpld3d11.h" />

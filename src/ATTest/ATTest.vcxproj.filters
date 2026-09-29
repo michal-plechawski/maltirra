@@ -433,6 +433,9 @@
 	<ClCompile Include="source\TestTessa_ProgramPortable.cpp">
 	  <Filter>Source Files</Filter>
 	</ClCompile>
+	<ClCompile Include="source\TestVDDisplay_BicubicPortable.cpp">
+	  <Filter>Source Files</Filter>
+	</ClCompile>
 	<ClCompile Include="source\TestVDDisplay_DisplayTypesPortable.cpp">
 	  <Filter>Source Files</Filter>
 	</ClCompile>
@@ -455,6 +458,9 @@
 	  <Filter>Source Files</Filter>
 	</ClCompile>
 	<ClCompile Include="..\Tessa\source\Program.cpp">
+	  <Filter>Source Files</Filter>
+	</ClCompile>
+	<ClCompile Include="..\VDDisplay\source\bicubic.cpp">
 	  <Filter>Source Files</Filter>
 	</ClCompile>
 	<ClCompile Include="..\VDDisplay\source\displaytypes.cpp">

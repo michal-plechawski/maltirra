@@ -105,6 +105,7 @@ bool ATTestTessaConfig(ATPortableTestContext& context);
 bool ATTestTessaContext(ATPortableTestContext& context);
 bool ATTestTessaFormat(ATPortableTestContext& context);
 bool ATTestTessaProgram(ATPortableTestContext& context);
+bool ATTestVDDisplayBicubic(ATPortableTestContext& context);
 bool ATTestVDDisplayDisplayTypes(ATPortableTestContext& context);
 bool ATTestVDDisplayLogging(ATPortableTestContext& context);
 bool ATTestVDDisplayRenderCache(ATPortableTestContext& context);
@@ -255,6 +256,7 @@ const ATPortableTestCase *ATGetPortableTests(size_t& count) {
 		{ "Tessa_Context", ATTestTessaContext },
 		{ "Tessa_Format", ATTestTessaFormat },
 		{ "Tessa_Program", ATTestTessaProgram },
+		{ "VDDisplay_Bicubic", ATTestVDDisplayBicubic },
 		{ "VDDisplay_DisplayTypes", ATTestVDDisplayDisplayTypes },
 		{ "VDDisplay_Logging", ATTestVDDisplayLogging },
 		{ "VDDisplay_RenderCache", ATTestVDDisplayRenderCache },

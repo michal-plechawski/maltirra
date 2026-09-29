@@ -26,7 +26,7 @@
 #include <vd2/VDDisplay/internal/bloom.h>
 #include <vd2/VDDisplay/internal/customeffectd3d11.h>
 #include <vd2/VDDisplay/internal/screenfx.h>
-#include "bicubic.h"
+#include <vd2/VDDisplay/bicubic.h>
 #include "displaynode3d.h"
 #include "image_shader.inl"
 

@@ -437,6 +437,9 @@
 	<ClCompile Include="source\TestTessa_ProgramPortable.cpp">
 	  <PrecompiledHeader>NotUsing</PrecompiledHeader>
 	</ClCompile>
+	<ClCompile Include="source\TestVDDisplay_BicubicPortable.cpp">
+	  <PrecompiledHeader>NotUsing</PrecompiledHeader>
+	</ClCompile>
 	<ClCompile Include="source\TestVDDisplay_DisplayTypesPortable.cpp">
 	  <PrecompiledHeader>NotUsing</PrecompiledHeader>
 	</ClCompile>
@@ -459,6 +462,9 @@
 	  <PrecompiledHeader>NotUsing</PrecompiledHeader>
 	</ClCompile>
 	<ClCompile Include="..\Tessa\source\Program.cpp">
+	  <PrecompiledHeader>NotUsing</PrecompiledHeader>
+	</ClCompile>
+	<ClCompile Include="..\VDDisplay\source\bicubic.cpp">
 	  <PrecompiledHeader>NotUsing</PrecompiledHeader>
 	</ClCompile>
 	<ClCompile Include="..\VDDisplay\source\displaytypes.cpp">
