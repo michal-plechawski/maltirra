@@ -84,7 +84,7 @@ jobs:
             obj/ReleaseAMD64/
             lib/ReleaseAMD64/
             out/ReleaseAMD64/
-          key: altirra-v2-${{ runner.os }}-${{ runner.arch }}-${{ steps.toolchain.outputs.cache-key }}-release-${{ hashFiles('src/**') }}
+          key: altirra-v2-${{ runner.os }}-${{ runner.arch }}-${{ steps.toolchain.outputs.cache-key }}-release-${{ hashFiles('src/**') }}-${{ hashFiles('.github/workflows/windows-x64.yml', 'scripts/prepare-msbuild-cache.ps1') }}
           restore-keys: |
             altirra-v2-${{ runner.os }}-${{ runner.arch }}-${{ steps.toolchain.outputs.cache-key }}-release-
 
@@ -243,7 +243,7 @@ jobs:
             obj/ProfileAMD64/
             lib/ProfileAMD64/
             out/ProfileAMD64/
-          key: altirra-v2-${{ runner.os }}-${{ runner.arch }}-${{ steps.toolchain.outputs.cache-key }}-profiletest-${{ hashFiles('src/**') }}
+          key: altirra-v2-${{ runner.os }}-${{ runner.arch }}-${{ steps.toolchain.outputs.cache-key }}-profiletest-${{ hashFiles('src/**') }}-${{ hashFiles('.github/workflows/windows-x64.yml', 'scripts/prepare-msbuild-cache.ps1') }}
           restore-keys: |
             altirra-v2-${{ runner.os }}-${{ runner.arch }}-${{ steps.toolchain.outputs.cache-key }}-profiletest-
 
