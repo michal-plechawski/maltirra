@@ -128,7 +128,7 @@ jobs:
         run: |
           & $env:MSBUILD_EXE 'src\Altirra.sln' `
             /m `
-            /t:Altirra `
+            /t:Altirra:Build `
             /p:Configuration=Release `
             /p:Platform=x64 `
             /verbosity:minimal
@@ -315,7 +315,7 @@ jobs:
         run: |
           $buildOutput = & $env:MSBUILD_EXE 'src\Altirra.sln' `
             /m `
-            /t:AltirraTest `
+            /t:AltirraTest:Build `
             /p:Configuration=ProfileTest `
             /p:Platform=x64 `
             /verbosity:minimal 2>&1
