@@ -87,13 +87,14 @@ bool ATNetSocket::IsHardClosing_Locked() const {
 }
 
 int ATNetSocket::Release() {
-	const int rc = vdrefcounted::Release();
+	vdrefptr<ATNetSocketSyncContext> syncContext = mpSyncContext;
+	int rc;
 
-	if (rc == 1) {
-		vdsynchronized(mpSyncContext->mMutex) {
-			if (mSocketIndex >= 0 && mpSyncContext->mpWorker)
-				mpSyncContext->mpWorker->RequestSocketUpdate_Locked(*this);
-		}
+	vdsynchronized(syncContext->mMutex) {
+		rc = vdrefcounted::Release();
+
+		if (rc == 1 && mSocketIndex >= 0 && syncContext->mpWorker)
+			syncContext->mpWorker->RequestSocketUpdate_Locked(*this);
 	}
 
 	return rc;

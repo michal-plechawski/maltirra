@@ -67,19 +67,17 @@ bool ATNetSocket::IsHardClosing_Locked() const {
 }
 
 int ATNetSocket::Release() {
-	const int rc = vdrefcounted::Release();
+	vdrefptr<ATNetSocketSyncContext> syncContext = mpSyncContext;
+	int rc;
 
-	if (rc == 1) {
-		// We might be the final release -- check if we need to request a
-		// socket update. If we are in the table, the table will be holding a
-		// ref on the socket, so reaching 1 is final release.
-		vdsynchronized(mpSyncContext->mMutex) {
-			if (mSocketIndex >= 0) {
-				// yup, we are registered in the table -- request an update so this socket gets collected
-				if (mpSyncContext->mpWorker)
-					mpSyncContext->mpWorker->RequestSocketUpdate_Locked(*this);
-			}
-		}
+	// Serialize the transition to the table-only reference with collection.
+	// Otherwise, the worker can drop the final reference after the decrement
+	// and destroy this socket while this method is still accessing it.
+	vdsynchronized(syncContext->mMutex) {
+		rc = vdrefcounted::Release();
+
+		if (rc == 1 && mSocketIndex >= 0 && syncContext->mpWorker)
+			syncContext->mpWorker->RequestSocketUpdate_Locked(*this);
 	}
 
 	return rc;

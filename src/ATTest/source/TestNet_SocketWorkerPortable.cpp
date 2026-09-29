@@ -176,24 +176,15 @@ bool ATTestNetSocketWorker(ATPortableTestContext& context) {
 
 	vdrefptr<IATDatagramSocket> receiver;
 	ATSocketStatus receiverStatus {};
-	uint16 receiverPort = 0;
-	for(uint16 candidate = 49503; candidate < 49535; ++candidate) {
-		receiver = ATNetBind(ATSocketAddress::CreateLocalhostIPv4(candidate), false);
-		AT_PORTABLE_TEST_ASSERT(context, receiver != nullptr);
-		receiver->SetOnEvent(&dispatcher,
-			[&](const ATSocketStatus& status) { receiverStatus = status; }, true);
-		if (ATWaitForSocketWorkerEvent(dispatcher, dispatchSignal, [&] {
-				return !receiverStatus.mbConnecting || receiverStatus.mError != ATSocketError::None;
-			}) && receiverStatus.mError == ATSocketError::None) {
-			receiverPort = candidate;
-			break;
-		}
-
-		receiver->SetOnEvent(nullptr, nullptr, false);
-		receiver->CloseSocket(true);
-		receiver = nullptr;
-		receiverStatus = {};
-	}
+	receiver = ATNetBind(ATSocketAddress::CreateLocalhostIPv4(0), false);
+	AT_PORTABLE_TEST_ASSERT(context, receiver != nullptr);
+	receiver->SetOnEvent(&dispatcher,
+		[&](const ATSocketStatus& status) { receiverStatus = status; }, true);
+	AT_PORTABLE_TEST_ASSERT(context, ATWaitForSocketWorkerEvent(dispatcher, dispatchSignal, [&] {
+		return !receiverStatus.mbConnecting || receiverStatus.mError != ATSocketError::None;
+	}));
+	AT_PORTABLE_TEST_ASSERT(context, receiverStatus.mError == ATSocketError::None);
+	const uint16 receiverPort = receiver->GetLocalAddress().mPort;
 	AT_PORTABLE_TEST_ASSERT(context, receiverPort != 0);
 
 	static constexpr uint32 kEmulatedAddress = 0x0A000002;
