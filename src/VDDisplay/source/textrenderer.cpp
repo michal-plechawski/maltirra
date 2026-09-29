@@ -1,10 +1,11 @@
-#include <stdafx.h>
+#include <cwchar>
+
 #include <vd2/Kasumi/pixmap.h>
 #include <vd2/system/memory.h>
 #include <vd2/VDDisplay/textrenderer.h>
 
 VDDisplayTextRenderer::VDDisplayTextRenderer()
-	: mpRenderer(NULL)
+	: mpRenderer(nullptr)
 	, mGeneration(1)
 	, mColor(0)
 {
@@ -38,7 +39,7 @@ void VDDisplayTextRenderer::Begin() {
 }
 
 void VDDisplayTextRenderer::End() {
-	SetFont(NULL);
+	SetFont(nullptr);
 }
 
 void VDDisplayTextRenderer::SetFont(IVDDisplayFont *font) {
@@ -61,7 +62,7 @@ void VDDisplayTextRenderer::SetPosition(int x, int y) {
 
 void VDDisplayTextRenderer::DrawTextLine(int x, int y, const wchar_t *text) {
 	SetPosition(x, y);
-	DrawTextSpan(text, wcslen(text));
+	DrawTextSpan(text, (uint32)wcslen(text));
 }
 
 void VDDisplayTextRenderer::DrawTextSpan(const wchar_t *text, uint32 numChars) {
@@ -69,12 +70,11 @@ void VDDisplayTextRenderer::DrawTextSpan(const wchar_t *text, uint32 numChars) {
 		return;
 
 	mBlts.clear();
-
 	mGlyphPlacements.clear();
 
 	vdrect32 bounds;
 	vdpoint32 nextPos;
-	mpFont->ShapeText(text, numChars, mGlyphPlacements, &bounds, NULL, &nextPos);
+	mpFont->ShapeText(text, numChars, mGlyphPlacements, &bounds, nullptr, &nextPos);
 
 	sint32 x = mDrawX;
 	sint32 y = mDrawY;
@@ -160,7 +160,7 @@ failed:
 
 void VDDisplayTextRenderer::Discard() {
 	++mGeneration;
-	VDMemsetPointer(mpHashTable, NULL, 64);
+	VDMemsetPointer(mpHashTable, nullptr, 64);
 	mHashNodeAllocator.Clear();
 	mX = 0;
 	mY = 0;
@@ -187,7 +187,7 @@ const VDDisplayTextRenderer::HashNode *VDDisplayTextRenderer::PrepareGlyph(IVDDi
 
 		node = Allocate(fontId, glyphIndex, w, h);
 		if (!node)
-			return NULL;
+			return nullptr;
 
 		node->mAdvance = metrics.mAdvance;
 		node->mDx = metrics.mX;
@@ -213,10 +213,13 @@ const VDDisplayTextRenderer::HashNode *VDDisplayTextRenderer::PrepareGlyph(IVDDi
 }
 
 VDDisplayTextRenderer::HashNode *VDDisplayTextRenderer::Allocate(uintptr fontId, uint32 c, uint32 w, uint32 h) {
+	if (w > mWidth || h > mHeight)
+		return nullptr;
+
 	if (mX + w > mWidth) {
 		if (mY + mLineHeight + h + 1 > mHeight)
-			return NULL;
-		
+			return nullptr;
+
 		mX = 0;
 		mY += mLineHeight + 1;
 		mLineHeight = 0;
@@ -224,7 +227,7 @@ VDDisplayTextRenderer::HashNode *VDDisplayTextRenderer::Allocate(uintptr fontId,
 
 	HashNode *node = mHashNodeAllocator.Allocate<HashNode>();
 	if (!node)
-		return NULL;
+		return nullptr;
 
 	node->mpNext = mpHashTable[c & 0x3f];
 	mpHashTable[c & 0x3f] = node;

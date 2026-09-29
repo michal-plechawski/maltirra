@@ -246,6 +246,7 @@ portable_test_sources=(
 	src/ATTest/source/TestVDDisplay_LoggingPortable.cpp
 	src/ATTest/source/TestVDDisplay_RenderCachePortable.cpp
 	src/ATTest/source/TestVDDisplay_RendererPortable.cpp
+	src/ATTest/source/TestVDDisplay_TextRendererPortable.cpp
 	src/ATTest/source/TestSystem_Binary.cpp
 	src/ATTest/source/TestSystem_BitMath.cpp
 	src/ATTest/source/TestSystem_Cache.cpp
@@ -312,6 +313,7 @@ portable_test_sources=(
 	src/VDDisplay/source/logging.cpp
 	src/VDDisplay/source/rendercache.cpp
 	src/VDDisplay/source/renderer.cpp
+	src/VDDisplay/source/textrenderer.cpp
 	src/Altirra/source/artifacting_filters.cpp
 	src/Altirra/source/audiorawsource.cpp
 	src/Altirra/source/audiostocksamples.cpp

@@ -451,6 +451,9 @@
 	<ClCompile Include="source\TestVDDisplay_RendererPortable.cpp">
 	  <Filter>Source Files</Filter>
 	</ClCompile>
+	<ClCompile Include="source\TestVDDisplay_TextRendererPortable.cpp">
+	  <Filter>Source Files</Filter>
+	</ClCompile>
 	<ClCompile Include="..\Tessa\source\Config.cpp">
 	  <Filter>Source Files</Filter>
 	</ClCompile>
