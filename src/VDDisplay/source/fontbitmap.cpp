@@ -1,4 +1,6 @@
-#include <stdafx.h>
+#include <algorithm>
+#include <cstdint>
+
 #include <vd2/Kasumi/pixmap.h>
 #include <vd2/Kasumi/pixmapops.h>
 #include <vd2/VDDisplay/internal/fontbitmap.h>
@@ -31,14 +33,15 @@ void VDDisplayFontBitmap::Init(const VDDisplayFontMetrics& metrics, uint32 numGl
 	std::sort(sortIndex.begin(), sortIndex.end(), [chars](uint32 x, uint32 y) { return chars[x] < chars[y]; });
 
 	mGlyphChars.resize(numGlyphs);
-	for(uint32 i=0; i<numGlyphs; ++i)
-		mGlyphChars[i] = chars[sortIndex[i]];
-
 	mGlyphInfos.resize(numGlyphs);
-	for(uint32 i=0; i<numGlyphs; ++i)
-		mGlyphInfos[i] = glyphInfos[sortIndex[i]];
+	for(uint32 i=0; i<numGlyphs; ++i) {
+		const uint32 originalIndex = sortIndex[i];
+		mGlyphChars[i] = chars[originalIndex];
+		mGlyphInfos[i] = glyphInfos[originalIndex];
 
-	mMissingGlyphIndex = sortIndex[missingGlyph];
+		if (originalIndex == missingGlyph)
+			mMissingGlyphIndex = i;
+	}
 }
 
 void VDDisplayFontBitmap::Shutdown() {
@@ -130,6 +133,8 @@ void VDDisplayFontBitmap::ShapeTextInternal(const wchar_t *s, uint32 n, uint32 m
 				break;
 			}
 
+			++counted;
+
 			if (minPos > x)
 				minPos = x;
 
@@ -142,7 +147,7 @@ void VDDisplayFontBitmap::ShapeTextInternal(const wchar_t *s, uint32 n, uint32 m
 			if (glyphPlacements) {
 				VDDisplayFontGlyphPlacement& pl = (*glyphPlacements)[gpbase + i];
 				pl.mGlyphIndex = glyphIndex;
-				pl.mCellX = x;
+				pl.mCellX = x0;
 				pl.mX = x2;
 				pl.mY = y2;
 				pl.mOriginalOffset = i;
@@ -155,6 +160,9 @@ void VDDisplayFontBitmap::ShapeTextInternal(const wchar_t *s, uint32 n, uint32 m
 				maxGPos = x2 + glyphInfo.mWidth;
 		}
 	}
+
+	if (glyphPlacements)
+		glyphPlacements->resize(gpbase + counted);
 
 	if (minGPos > minPos)
 		minGPos = minPos;

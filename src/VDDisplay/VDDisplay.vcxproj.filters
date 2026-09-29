@@ -78,7 +78,7 @@
     <ClCompile Include="..\platform\Windows_x64\VDDisplay\source\customeffectimpld3d9.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\platform\Windows_x64\VDDisplay\source\fontbitmap.cpp">
+    <ClCompile Include="source\fontbitmap.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\platform\Windows_x64\VDDisplay\source\screenfx.cpp">
@@ -182,7 +182,7 @@
     <ClInclude Include="..\platform\Windows_x64\VDDisplay\h\vd2\VDDisplay\internal\customeffectd3d9.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\platform\Windows_x64\VDDisplay\h\vd2\VDDisplay\internal\fontbitmap.h">
+    <ClInclude Include="..\h\vd2\VDDisplay\internal\fontbitmap.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\h\vd2\VDDisplay\logging.h">

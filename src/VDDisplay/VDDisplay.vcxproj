@@ -51,7 +51,10 @@
       <ForcedIncludeFiles />
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="..\platform\Windows_x64\VDDisplay\source\fontbitmap.cpp" />
+    <ClCompile Include="source\fontbitmap.cpp">
+      <ForcedIncludeFiles />
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+    </ClCompile>
     <ClCompile Include="..\platform\Windows_x64\VDDisplay\source\fontgdi.cpp" />
     <ClCompile Include="source\logging.cpp">
       <ForcedIncludeFiles />
@@ -98,7 +101,7 @@
     <ClInclude Include="..\platform\Windows_x64\VDDisplay\h\displaymgr.h" />
     <ClInclude Include="..\platform\Windows_x64\VDDisplay\h\displaynode3d.h" />
     <ClInclude Include="..\platform\Windows_x64\VDDisplay\h\vd2\VDDisplay\internal\customeffectutilsd3d.h" />
-    <ClInclude Include="..\platform\Windows_x64\VDDisplay\h\vd2\VDDisplay\internal\fontbitmap.h" />
+    <ClInclude Include="..\h\vd2\VDDisplay\internal\fontbitmap.h" />
     <ClInclude Include="..\platform\Windows_x64\VDDisplay\h\vd2\VDDisplay\internal\fontgdi.h" />
     <ClInclude Include="..\platform\Windows_x64\VDDisplay\h\renderer3d.h" />
     <ClInclude Include="..\platform\Windows_x64\VDDisplay\h\vd2\VDDisplay\internal\options.h" />

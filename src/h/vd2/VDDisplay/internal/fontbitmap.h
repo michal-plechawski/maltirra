@@ -1,8 +1,8 @@
 #ifndef f_VD2_VDDISPLAY_FONTBITMAP_H
 #define f_VD2_VDDISPLAY_FONTBITMAP_H
 
-#include <vd2/system/unknown.h>
 #include <vd2/system/refcount.h>
+#include <vd2/system/unknown.h>
 #include <vd2/system/vectors.h>
 #include <vd2/system/vdstl.h>
 #include <vd2/VDDisplay/font.h>
