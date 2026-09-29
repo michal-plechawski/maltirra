@@ -87,7 +87,7 @@
     <ClCompile Include="..\platform\Windows_x64\VDDisplay\source\options.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\platform\Windows_x64\VDDisplay\source\bloom.cpp">
+    <ClCompile Include="source\bloom.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="source\displaytypes.cpp">
@@ -197,7 +197,7 @@
     <ClInclude Include="..\platform\Windows_x64\VDDisplay\h\vd2\VDDisplay\internal\options.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\platform\Windows_x64\VDDisplay\h\vd2\VDDisplay\internal\bloom.h">
+    <ClInclude Include="..\h\vd2\VDDisplay\internal\bloom.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\h\vd2\VDDisplay\displaytypes.h">

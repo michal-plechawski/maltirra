@@ -436,6 +436,9 @@
 	<ClCompile Include="source\TestVDDisplay_BicubicPortable.cpp">
 	  <Filter>Source Files</Filter>
 	</ClCompile>
+	<ClCompile Include="source\TestVDDisplay_BloomPortable.cpp">
+	  <Filter>Source Files</Filter>
+	</ClCompile>
 	<ClCompile Include="source\TestVDDisplay_DisplayTypesPortable.cpp">
 	  <Filter>Source Files</Filter>
 	</ClCompile>

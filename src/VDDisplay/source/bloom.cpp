@@ -14,11 +14,12 @@
 //	You should have received a copy of the GNU General Public License along
 //	with this program. If not, see <http://www.gnu.org/licenses/>.
 
-#include <stdafx.h>
+#include <algorithm>
+#include <cmath>
+#include <iterator>
 #include <numeric>
 #include <vd2/VDDisplay/display.h>
 #include <vd2/VDDisplay/internal/bloom.h>
-#include <vd2/VDDisplay/internal/options.h>
 
 uint32 g_VDDispBloomCoeffsChanged = 0;
 VDDBloomV2Settings g_VDDispBloomV2Settings;
@@ -54,7 +55,14 @@ VDDBloomV2RenderParams VDDComputeBloomV2Parameters(const VDDBloomV2ControlParams
 		pyramidWeights[i] = filter((float)i - filterBias);
 
 	// normalize weights
-	float pyramidWeightScale = controlParams.mIndirectIntensity / std::accumulate(std::begin(pyramidWeights), std::end(pyramidWeights), 0.0f);
+	const float pyramidWeightSum = std::accumulate(std::begin(pyramidWeights), std::end(pyramidWeights), 0.0f);
+	float pyramidWeightScale = 0.0f;
+
+	if (pyramidWeightSum > 1e-10f) {
+		pyramidWeightScale = controlParams.mIndirectIntensity / pyramidWeightSum;
+	} else {
+		pyramidWeights[7] = controlParams.mIndirectIntensity;
+	}
 
 	for(float& weight : pyramidWeights)
 		weight *= pyramidWeightScale;
