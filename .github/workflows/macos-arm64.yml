@@ -64,6 +64,15 @@ jobs:
             exit "$build_exit"
           fi
 
+          cache_summary=$(grep '^Object cache summary:' "$build_log" | tail -1 || true)
+          if [[ -n "$cache_summary" ]]; then
+            {
+              echo '### macOS ARM64 object cache'
+              echo
+              echo "$cache_summary"
+            } >> "$GITHUB_STEP_SUMMARY"
+          fi
+
       - name: Run portable tests
         run: |
           test_log="$RUNNER_TEMP/macos-arm64-tests.log"

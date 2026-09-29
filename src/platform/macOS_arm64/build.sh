@@ -31,20 +31,49 @@ compile_one() {
 	fi
 
 	local object_file="$build_root/$source_file.o"
+	local dependency_file="$object_file.d"
 	local stamp_file="$object_file.sha256"
-	local source_hash
 	local object_hash
+	local dependency_text
+	local dependency_files
 
-	source_hash=$(shasum -a 256 "$source_file" | awk '{print $1}')
-	object_hash=$(printf '%s\n%s\n' "$MACOS_ARM64_BUILD_SIGNATURE" "$source_hash" | shasum -a 256 | awk '{print $1}')
+	if [[ -f $dependency_file ]]; then
+		dependency_text=$(sed -e '1s/^[^:]*: //' -e 's/\\$//' "$dependency_file" | tr '\n' ' ')
+		IFS=' ' read -r -a dependency_files <<< "$dependency_text"
+	else
+		dependency_files=()
+	fi
 
-	if [[ -f $object_file && -f $stamp_file && $(<"$stamp_file") == "$object_hash" ]]; then
-		printf 'CACHED  %s\n' "$source_file"
-		return
+	if [[ -f $object_file && -f $stamp_file && ${#dependency_files[@]} -gt 0 ]]; then
+		local dependency
+		local dependencies_present=true
+		for dependency in "${dependency_files[@]}"; do
+			if [[ ! -f $dependency ]]; then
+				dependencies_present=false
+				break
+			fi
+		done
+
+		if [[ $dependencies_present == true ]]; then
+			object_hash=$(
+				{
+					printf '%s\n' "$MACOS_ARM64_BUILD_SIGNATURE"
+					shasum -a 256 "${dependency_files[@]}"
+				} |
+				shasum -a 256 |
+				awk '{print $1}'
+			)
+
+			if [[ $(<"$stamp_file") == "$object_hash" ]]; then
+				printf 'CACHED  %s\n' "$source_file"
+				return
+			fi
+		fi
 	fi
 
 	mkdir -p "$(dirname "$object_file")"
 	local temporary_object="$object_file.tmp.$$"
+	local temporary_dependency="$dependency_file.tmp.$$"
 	local temporary_stamp="$stamp_file.tmp.$$"
 
 	"$compiler" "${common_flags[@]}" \
@@ -59,10 +88,25 @@ compile_one() {
 		-Isrc/Altirra/h \
 		-Isrc/ATIO/h \
 		-Isrc/h \
+		-MMD \
+		-MF "$temporary_dependency" \
+		-MT "$object_file" \
 		-c "$source_file" \
 		-o "$temporary_object"
 
+	dependency_text=$(sed -e '1s/^[^:]*: //' -e 's/\\$//' "$temporary_dependency" | tr '\n' ' ')
+	IFS=' ' read -r -a dependency_files <<< "$dependency_text"
+	object_hash=$(
+		{
+			printf '%s\n' "$MACOS_ARM64_BUILD_SIGNATURE"
+			shasum -a 256 "${dependency_files[@]}"
+		} |
+		shasum -a 256 |
+		awk '{print $1}'
+	)
+
 	mv "$temporary_object" "$object_file"
+	mv "$temporary_dependency" "$dependency_file"
 	printf '%s\n' "$object_hash" > "$temporary_stamp"
 	mv "$temporary_stamp" "$stamp_file"
 	printf 'COMPILED %s\n' "$source_file"
@@ -91,24 +135,13 @@ fi
 
 mkdir -p "$build_root"
 
-headers_hash=$(
-	find src \
-		-path src/platform/Windows_x64 -prune -o \
-		-type f \( -name '*.h' -o -name '*.hpp' -o -name '*.inl' \) -print |
-		LC_ALL=C sort |
-		while IFS= read -r header_file; do
-			shasum -a 256 "$header_file"
-		done |
-		shasum -a 256 |
-		awk '{print $1}'
-)
-
 compiler_version=$($compiler --version)
-build_format_version=3
+sdk_version=$(xcrun --sdk macosx --show-sdk-version)
+build_format_version=4
 MACOS_ARM64_BUILD_SIGNATURE=$(printf '%s\n%s\n%s\n%s\n' \
 	"$compiler_version" \
 	"${common_flags[*]}" \
-	"$headers_hash" \
+	"$sdk_version" \
 	"$build_format_version" |
 	shasum -a 256 |
 	awk '{print $1}')
@@ -127,8 +160,14 @@ find src \
 source_count=$(wc -l < "$source_list" | tr -d ' ')
 printf 'Compiling %s C++ translation units with %s parallel jobs.\n' "$source_count" "$jobs"
 
+compile_status="$build_root/compile-status.txt"
 tr '\n' '\0' < "$source_list" |
-	xargs -0 -P "$jobs" -n 1 "$BASH_SOURCE" --compile-one
+	xargs -0 -P "$jobs" -n 1 "$BASH_SOURCE" --compile-one |
+	tee "$compile_status"
+
+compiled_count=$(grep -c '^COMPILED ' "$compile_status" || true)
+cached_count=$(grep -c '^CACHED  ' "$compile_status" || true)
+printf 'Object cache summary: %s reused, %s compiled.\n' "$cached_count" "$compiled_count"
 
 mkdir -p "$output_root"
 portable_test_executable="$output_root/AltirraPortableTests"
@@ -534,6 +573,8 @@ manifest="$build_root/build-manifest.txt"
 	printf 'platform=macOS_arm64\n'
 	printf 'compiler=%s\n' "$(printf '%s\n' "$compiler_version" | head -n 1)"
 	printf 'translation_units=%s\n' "$source_count"
+	printf 'cached_objects=%s\n' "$cached_count"
+	printf 'compiled_objects=%s\n' "$compiled_count"
 	printf 'build_signature=%s\n' "$MACOS_ARM64_BUILD_SIGNATURE"
 	printf 'portable_test_executable=%s\n' "${portable_test_executable#$repository_root/}"
 	printf 'help_index=%s\n' "${help_output#$repository_root/}/contents.html"
