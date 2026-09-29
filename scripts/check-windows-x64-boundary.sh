@@ -9,9 +9,9 @@ platform_include_pattern='^[[:space:]]*#[[:space:]]*include[[:space:]]*[<"][^>"]
 compiler_intrinsic_pattern='^[[:space:]]*#[[:space:]]*include[[:space:]]*[<"](intrin|emmintrin|immintrin|xmmintrin)[.]h[>"]'
 architecture_impl_pattern='(__m(64|128|256)|_mm[0-9]*_|_Interlocked|__shift(left|right)128)'
 
-# The trace and Vorbis codecs intentionally keep equivalent scalar, SSE, and
-# NEON paths together; they are architecture-dispatched and have no Windows
-# dependency.
+# The trace, Vorbis, and screen effect code intentionally keep equivalent
+# scalar, SSE, and NEON paths together; they are architecture-dispatched and
+# have no Windows dependency.
 
 include_violations=$(
   git grep -n -i -E \
@@ -39,6 +39,7 @@ architecture_impl_violations=$(
     ':!src/Altirra/source/tracefileencoding.cpp' \
     ':!src/ATIO/source/vorbisdecoder.cpp' \
     ':!src/ATIO/source/vorbismisc.cpp' \
+    ':!src/VDDisplay/source/screenfx.cpp' \
     ':!src/h/vd2/system/atomic.h' \
     ':!src/h/vd2/system/int128.h' \
     ':!src/h/vd2/system/math.h' || true
