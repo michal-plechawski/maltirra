@@ -20,7 +20,6 @@
 
 bool VDDInternalOptions::sbD3D9LimitPS1_1 = false;
 bool VDDInternalOptions::sbD3D9LimitPS2_0 = false;
-bool VDDInternalOptions::sbShowCustomShaderStats = false;
 
 void VDVideoDisplaySetDXFlipModeEnabled(bool enable) {
 	VDTInternalOptions::sbEnableDXFlipMode = enable;
@@ -56,8 +55,4 @@ void VDVideoDisplaySetD3D11Force9_3(bool enable) {
 
 void VDVideoDisplaySetD3D11Force10_0(bool enable) {
 	VDTInternalOptions::sbD3D11Force10_0 = enable;
-}
-
-void VDVideoDisplaySetShowCustomShaderStats(bool enable) {
-	VDDInternalOptions::sbShowCustomShaderStats = enable;
 }

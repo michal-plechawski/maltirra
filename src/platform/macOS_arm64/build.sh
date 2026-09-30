@@ -352,6 +352,7 @@ portable_test_sources=(
 	src/Tessa/source/Program.cpp
 	src/VDDisplay/source/bicubic.cpp
 	src/VDDisplay/source/bloom.cpp
+	src/VDDisplay/source/customeffectbase.cpp
 	src/VDDisplay/source/customeffectpassbase.cpp
 	src/VDDisplay/source/customeffectutils.cpp
 	src/VDDisplay/source/displaytypes.cpp

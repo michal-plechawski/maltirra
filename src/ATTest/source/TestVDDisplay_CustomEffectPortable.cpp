@@ -3,9 +3,18 @@
 #include <algorithm>
 #include <bit>
 #include <climits>
+#include <cstring>
 #include <iterator>
+#include <string>
+#include <vector>
 
 #include <at/attest/portabletest.h>
+#include <vd2/system/file.h>
+#include <vd2/system/filesys.h>
+#include <vd2/system/thread.h>
+#include <vd2/system/time.h>
+#include <vd2/VDDisplay/display.h>
+#include <vd2/VDDisplay/internal/customeffectbase.h>
 #include <vd2/VDDisplay/internal/customeffectpassbase.h>
 #include <vd2/VDDisplay/internal/customeffectutils.h>
 
@@ -23,6 +32,93 @@ namespace {
 		vdint2 GetRenderSize(const vdint2& sourceSize, const vdint2& viewportSize) const {
 			return ComputeRenderSize(sourceSize, viewportSize);
 		}
+	};
+
+	class TestParsedEffectPass final : public VDDCustomEffectPassBase {
+	public:
+		TestParsedEffectPass(uint32 passIndex, const VDDisplayCustomShaderProps& props, std::vector<std::string>& events)
+			: VDDCustomEffectPassBase(passIndex)
+			, mEvents(events) {
+			ParseCommonProps(props);
+		}
+
+		void ResetVariables(VDDCustomEffectVarStorage&, uint32 prevOutputFramesNeeded, bool outputFilteringNeeded) override {
+			mEvents.push_back(
+				"reset:" + std::to_string(mPassIndex)
+				+ ":" + std::to_string(prevOutputFramesNeeded)
+				+ ":" + (outputFilteringNeeded ? "linear" : "point"));
+		}
+
+	private:
+		std::vector<std::string>& mEvents;
+	};
+
+	class TestCustomEffectPipeline final : public VDDCustomEffectBase {
+	public:
+		~TestCustomEffectPipeline() {
+			for(VDDCustomEffectPassBase *pass : mPasses)
+				delete pass;
+		}
+
+		bool ContainsFinalBlit() const override { return false; }
+		bool HasTimingInfo() const override { return false; }
+		vdspan<const VDDisplayCustomShaderPassInfo> GetPassTimings() override { return {}; }
+
+		bool IsNewFrame() const { return mbNewFrame; }
+
+		std::vector<std::string> mEvents;
+		std::vector<VDStringW> mTexturePaths;
+		std::vector<VDStringW> mPassBasePaths;
+		uint32 mProfilingInitCount = 0;
+
+	protected:
+		void LoadTexture(const char *name, const wchar_t *path, bool linear) override {
+			mEvents.push_back(std::string("texture:") + name + (linear ? ":linear" : ":point"));
+			mTexturePaths.emplace_back(path);
+		}
+
+		void BeginPasses(uint32 numPasses) override {
+			mEvents.push_back("begin:" + std::to_string(numPasses));
+		}
+
+		void AddPass(uint32 passIndex, const VDDisplayCustomShaderProps& props, const char *shaderPath, const wchar_t *basePath) override {
+			mEvents.push_back("pass:" + std::to_string(passIndex) + ":" + shaderPath);
+			mPassBasePaths.emplace_back(basePath);
+			mMaxPrevFramesPerPass[passIndex] = passIndex + 2;
+			mPasses.push_back(new TestParsedEffectPass(passIndex, props, mEvents));
+		}
+
+		void EndPasses() override {
+			mEvents.push_back("end");
+		}
+
+		void InitProfiling() override {
+			++mProfilingInitCount;
+			mEvents.push_back("profiling");
+		}
+	};
+
+	class TestCustomEffectConfigFile {
+	public:
+		TestCustomEffectConfigFile() {
+			VDStringW name;
+			name.sprintf(
+				L"altirra-customeffect-%u-%llu.cgp",
+				static_cast<unsigned>(VDGetCurrentProcessId()),
+				static_cast<unsigned long long>(VDGetCurrentTick64()));
+			mPath = VDGetFullPath(name.c_str());
+		}
+
+		~TestCustomEffectConfigFile() {
+			VDRemoveFile(mPath.c_str());
+		}
+
+		void Write(const char *contents) const {
+			VDFileStream stream(mPath.c_str(), nsVDFile::kWrite | nsVDFile::kCreateAlways);
+			stream.Write(contents, static_cast<sint32>(strlen(contents)));
+		}
+
+		VDStringW mPath;
 	};
 
 	template<typename T_Fn>
@@ -173,6 +269,59 @@ bool ATTestVDDisplayCustomEffect(ATPortableTestContext& context) {
 	AT_PORTABLE_TEST_ASSERT(context, invalidFramebufferProps.Add(VDDCsPropKeyView("srgb_framebuffer", 2), VDStringSpanA("true")));
 	AT_PORTABLE_TEST_ASSERT(context, invalidFramebufferProps.Add(VDDCsPropKeyView("float_framebuffer", 2), VDStringSpanA("true")));
 	AT_PORTABLE_TEST_ASSERT(context, ThrowsVDException([&] { TestCustomEffectPass(2).Parse(invalidFramebufferProps); }));
+
+	TestCustomEffectConfigFile config;
+	config.Write(
+		"textures = LUT ; mask\n"
+		"LUT = lut.png\n"
+		"LUT_linear = false\n"
+		"mask = textures/mask.tga\n"
+		"shaders = 2\n"
+		"shader0 = first.fx\n"
+		"shader1 = second.fx\n"
+		"filter_linear1 = true\n"
+		"shader_show_stats = true\n");
+
+	TestCustomEffectPipeline pipeline;
+	pipeline.Parse(config.mPath.c_str());
+	const VDStringW configBasePath = VDFileSplitPathLeftSpan(VDStringSpanW(config.mPath));
+	const std::vector<std::string> expectedEvents {
+		"texture:LUT:point",
+		"texture:mask:linear",
+		"begin:2",
+		"pass:0:first.fx",
+		"pass:1:second.fx",
+		"end",
+		"reset:0:2:linear",
+		"reset:1:3:point",
+		"profiling",
+	};
+	AT_PORTABLE_TEST_ASSERT(context, pipeline.mEvents == expectedEvents);
+	AT_PORTABLE_TEST_ASSERT(context, pipeline.mTexturePaths.size() == 2);
+	AT_PORTABLE_TEST_ASSERT(context, pipeline.mTexturePaths[0] == VDMakePath(configBasePath.c_str(), L"lut.png"));
+	AT_PORTABLE_TEST_ASSERT(context, pipeline.mTexturePaths[1] == VDMakePath(configBasePath.c_str(), L"textures/mask.tga"));
+	AT_PORTABLE_TEST_ASSERT(context, pipeline.mPassBasePaths.size() == 2);
+	AT_PORTABLE_TEST_ASSERT(context, pipeline.mPassBasePaths[0] == configBasePath);
+	AT_PORTABLE_TEST_ASSERT(context, pipeline.mPassBasePaths[1] == configBasePath);
+	AT_PORTABLE_TEST_ASSERT(context, pipeline.GetMaxPrevFrames() == 2);
+	AT_PORTABLE_TEST_ASSERT(context, pipeline.mProfilingInitCount == 1);
+	AT_PORTABLE_TEST_ASSERT(context, !pipeline.IsNewFrame());
+	pipeline.IncrementFrame();
+	AT_PORTABLE_TEST_ASSERT(context, pipeline.IsNewFrame());
+
+	config.Write("textures = missing\nshader0 = only.fx\n");
+	AT_PORTABLE_TEST_ASSERT(context, ThrowsVDException([&] { TestCustomEffectPipeline().Parse(config.mPath.c_str()); }));
+	config.Write("shaders = 0\n");
+	AT_PORTABLE_TEST_ASSERT(context, ThrowsVDException([&] { TestCustomEffectPipeline().Parse(config.mPath.c_str()); }));
+	config.Write("shaders = 2\nshader0 = only.fx\n");
+	AT_PORTABLE_TEST_ASSERT(context, ThrowsVDException([&] { TestCustomEffectPipeline().Parse(config.mPath.c_str()); }));
+
+	config.Write("shader0 = only.fx\n");
+	VDVideoDisplaySetShowCustomShaderStats(true);
+	TestCustomEffectPipeline globallyProfiledPipeline;
+	globallyProfiledPipeline.Parse(config.mPath.c_str());
+	VDVideoDisplaySetShowCustomShaderStats(false);
+	AT_PORTABLE_TEST_ASSERT(context, globallyProfiledPipeline.mProfilingInitCount == 1);
 
 	return true;
 }

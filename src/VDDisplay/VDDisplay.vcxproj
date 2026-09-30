@@ -37,7 +37,10 @@
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="..\platform\Windows_x64\VDDisplay\source\customeffectimpld3d11.cpp" />
-    <ClCompile Include="..\platform\Windows_x64\VDDisplay\source\customeffectbase.cpp" />
+    <ClCompile Include="source\customeffectbase.cpp">
+      <ForcedIncludeFiles />
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+    </ClCompile>
     <ClCompile Include="source\customeffectpassbase.cpp">
       <ForcedIncludeFiles />
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
@@ -108,10 +111,10 @@
     <ClInclude Include="..\h\vd2\VDDisplay\bicubic.h" />
     <ClInclude Include="..\platform\Windows_x64\VDDisplay\h\displaydrvd3d9.h" />
     <ClInclude Include="..\platform\Windows_x64\VDDisplay\h\vd2\VDDisplay\internal\customeffectimpld3d11.h" />
-    <ClInclude Include="..\platform\Windows_x64\VDDisplay\h\vd2\VDDisplay\internal\customeffectbase.h" />
+    <ClInclude Include="..\h\vd2\VDDisplay\internal\customeffectbase.h" />
     <ClInclude Include="..\platform\Windows_x64\VDDisplay\h\vd2\VDDisplay\internal\customeffectimpld3d9.h" />
     <ClInclude Include="..\h\vd2\VDDisplay\internal\customeffectpassbase.h" />
-    <ClInclude Include="..\platform\Windows_x64\VDDisplay\h\vd2\VDDisplay\internal\customeffect.h" />
+    <ClInclude Include="..\h\vd2\VDDisplay\internal\customeffect.h" />
     <ClInclude Include="..\platform\Windows_x64\VDDisplay\h\vd2\VDDisplay\internal\customeffectd3d11.h" />
     <ClInclude Include="..\h\vd2\VDDisplay\internal\customeffectutils.h" />
     <ClInclude Include="..\platform\Windows_x64\VDDisplay\h\vd2\VDDisplay\internal\customeffectd3d9.h" />

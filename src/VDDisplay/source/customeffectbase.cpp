@@ -14,12 +14,19 @@
 //	You should have received a copy of the GNU General Public License along
 //	with this program. If not, see <http://www.gnu.org/licenses/>.
 
-#include "stdafx.h"
 #include <vd2/system/file.h>
 #include <vd2/system/filesys.h>
+#include <vd2/VDDisplay/display.h>
 #include <vd2/VDDisplay/internal/customeffectbase.h>
 #include <vd2/VDDisplay/internal/customeffectutils.h>
-#include <vd2/VDDisplay/internal/options.h>
+
+namespace {
+	bool g_VDDShowCustomShaderStats = false;
+}
+
+void VDVideoDisplaySetShowCustomShaderStats(bool enable) {
+	g_VDDShowCustomShaderStats = enable;
+}
 
 int VDDCustomEffectBase::AddRef() {
 	return vdrefcount::AddRef();
@@ -100,7 +107,7 @@ void VDDCustomEffectBase::Parse(const wchar_t *path) {
 	}
 
 	// set up profiling if enabled
-	const bool profile = VDDInternalOptions::sbShowCustomShaderStats || props.GetBool(VDDCsPropKeyView("shader_show_stats", nullptr), false);
+	const bool profile = g_VDDShowCustomShaderStats || props.GetBool(VDDCsPropKeyView("shader_show_stats", nullptr), false);
 	if (profile)
 		InitProfiling();
 }
