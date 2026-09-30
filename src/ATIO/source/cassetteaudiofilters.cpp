@@ -62,13 +62,48 @@ namespace {
 		}
 	}
 
+#if VD_CPU_ARM64
+	void minMax16x2_NEON(const sint16 * VDRESTRICT src, uint32 n, sint32& minvL, sint32& maxvL, sint32& minvR, sint32& maxvR) {
+		if (n >= 8) {
+			int16x8x2_t v = vld2q_s16(src);
+			int16x8_t minL = v.val[0];
+			int16x8_t maxL = v.val[0];
+			int16x8_t minR = v.val[1];
+			int16x8_t maxR = v.val[1];
+			src += 16;
+			n -= 8;
+
+			while(n >= 8) {
+				v = vld2q_s16(src);
+				minL = vminq_s16(minL, v.val[0]);
+				maxL = vmaxq_s16(maxL, v.val[0]);
+				minR = vminq_s16(minR, v.val[1]);
+				maxR = vmaxq_s16(maxR, v.val[1]);
+				src += 16;
+				n -= 8;
+			}
+
+			minvL = std::min(minvL, (sint32)vminvq_s16(minL));
+			maxvL = std::max(maxvL, (sint32)vmaxvq_s16(maxL));
+			minvR = std::min(minvR, (sint32)vminvq_s16(minR));
+			maxvR = std::max(maxvR, (sint32)vmaxvq_s16(maxR));
+		}
+
+		minMax16x2_scalar(src, n, minvL, maxvL, minvR, maxvR);
+	}
+#endif
+
 	void minMax16x2(const sint16 * VDRESTRICT src, uint32 n, sint32& minvL, sint32& maxvL, sint32& minvR, sint32& maxvR) {
-#if VD_CPU_X86 || VD_CPU_X64
+#if VD_CPU_ARM64
+		minMax16x2_NEON(src, n, minvL, maxvL, minvR, maxvR);
+#elif VD_CPU_X86 || VD_CPU_X64
 		if (SSE2_enabled)
 			ATCassetteAudioMinMax16x2_SSE2(src, n, minvL, maxvL, minvR, maxvR);
 		else
-#endif
 			minMax16x2_scalar(src, n, minvL, maxvL, minvR, maxvR);
+#else
+		minMax16x2_scalar(src, n, minvL, maxvL, minvR, maxvR);
+#endif
 	}
 }
 

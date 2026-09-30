@@ -70,34 +70,64 @@ namespace {
 			state = state * UINT32_C(1664525) + UINT32_C(1013904223);
 			sample = static_cast<sint16>(state >> 16);
 		}
+		samples[32] = -32768;
+		samples[33] = 32767;
+		samples[34] = 32767;
+		samples[35] = -32768;
 
-		for(size_t offset = 8; offset < 16; ++offset) {
-			for(uint32 n = 1; n <= 48; ++n) {
-				if (offset + n > 88)
+		struct InitialValues {
+			sint32 mMinL;
+			sint32 mMaxL;
+			sint32 mMinR;
+			sint32 mMaxR;
+		};
+		static constexpr InitialValues kInitialValues[] = {
+			{ 0, 0, 0, 0 },
+			{ -1234, 5678, -4321, 8765 },
+			{ -50000, 50000, -60000, 60000 },
+			{ 100000, -100000, 90000, -90000 },
+		};
+
+		for(size_t offset = 0; offset < 16; ++offset) {
+			for(uint32 n = 1; n <= 64; ++n) {
+				if (offset + n * 2 > samples.size())
 					continue;
 
-				sint32 refMinL = 0;
-				sint32 refMaxL = 0;
-				sint32 refMinR = 0;
-				sint32 refMaxR = 0;
-				sint32 actualMinL = 0;
-				sint32 actualMaxL = 0;
-				sint32 actualMinR = 0;
-				sint32 actualMaxR = 0;
+				for(const InitialValues& initial : kInitialValues) {
+					sint32 refMinL = initial.mMinL;
+					sint32 refMaxL = initial.mMaxL;
+					sint32 refMinR = initial.mMinR;
+					sint32 refMaxR = initial.mMaxR;
+					sint32 actualMinL = initial.mMinL;
+					sint32 actualMaxL = initial.mMaxL;
+					sint32 actualMinR = initial.mMinR;
+					sint32 actualMaxR = initial.mMaxR;
 
-				const sint16 *const src = samples.data() + offset * 2;
-				ATCassetteAudioMinMax16x2_Reference(
-					src, n, refMinL, refMaxL, refMinR, refMaxR);
-				ATCassetteAudioMinMax16x2_Accelerated(
-					src, n,
-					actualMinL, actualMaxL, actualMinR, actualMaxR);
+					const sint16 *const src = samples.data() + offset;
+					ATCassetteAudioMinMax16x2_Reference(
+						src, n, refMinL, refMaxL, refMinR, refMaxR);
+					ATCassetteAudioMinMax16x2_Accelerated(
+						src, n,
+						actualMinL, actualMaxL, actualMinR, actualMaxR);
 
-				AT_PORTABLE_TEST_ASSERT(context, actualMinL == refMinL);
-				AT_PORTABLE_TEST_ASSERT(context, actualMaxL == refMaxL);
-				AT_PORTABLE_TEST_ASSERT(context, actualMinR == refMinR);
-				AT_PORTABLE_TEST_ASSERT(context, actualMaxR == refMaxR);
+					AT_PORTABLE_TEST_ASSERT(context, actualMinL == refMinL);
+					AT_PORTABLE_TEST_ASSERT(context, actualMaxL == refMaxL);
+					AT_PORTABLE_TEST_ASSERT(context, actualMinR == refMinR);
+					AT_PORTABLE_TEST_ASSERT(context, actualMaxR == refMaxR);
+				}
 			}
 		}
+
+		sint32 minL = -123;
+		sint32 maxL = 456;
+		sint32 minR = -789;
+		sint32 maxR = 1024;
+		ATCassetteAudioMinMax16x2_Accelerated(
+			nullptr, 0, minL, maxL, minR, maxR);
+		AT_PORTABLE_TEST_ASSERT(context, minL == -123);
+		AT_PORTABLE_TEST_ASSERT(context, maxL == 456);
+		AT_PORTABLE_TEST_ASSERT(context, minR == -789);
+		AT_PORTABLE_TEST_ASSERT(context, maxR == 1024);
 
 		return true;
 	}

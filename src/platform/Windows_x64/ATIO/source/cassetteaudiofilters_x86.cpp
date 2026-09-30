@@ -22,6 +22,18 @@
 void ATCassetteAudioMinMax16x2_SSE2(
 	const sint16 *VDRESTRICT src, uint32 n,
 	sint32& minvL, sint32& maxvL, sint32& minvR, sint32& maxvR) {
+	if (!n)
+		return;
+
+	// The vector path uses zero in masked lanes and 16-bit accumulators. Fall
+	// back for uncommon initial ranges where either assumption would alter the
+	// scalar contract.
+	if (minvL < -32768 || minvL > 0 || maxvL < 0 || maxvL > 32767
+		|| minvR < -32768 || minvR > 0 || maxvR < 0 || maxvR > 32767) {
+		ATCassetteAudioMinMax16x2_Reference(src, n, minvL, maxvL, minvR, maxvR);
+		return;
+	}
+
 	// We do unaligned loads from this array, so it's important that we
 	// avoid data cache unit (DCU) split penalties on older CPUs.
 	alignas(64) static const uint64 windowTable[6] = {
