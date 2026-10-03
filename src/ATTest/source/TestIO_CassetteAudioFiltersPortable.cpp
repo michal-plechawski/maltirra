@@ -90,7 +90,7 @@ namespace {
 
 		for(size_t offset = 0; offset < 16; ++offset) {
 			for(uint32 n = 1; n <= 64; ++n) {
-				if (offset + n * 2 > samples.size())
+				if ((offset + n) * 2 > samples.size())
 					continue;
 
 				for(const InitialValues& initial : kInitialValues) {
@@ -103,7 +103,7 @@ namespace {
 					sint32 actualMinR = initial.mMinR;
 					sint32 actualMaxR = initial.mMaxR;
 
-					const sint16 *const src = samples.data() + offset;
+					const sint16 *const src = samples.data() + offset * 2;
 					ATCassetteAudioMinMax16x2_Reference(
 						src, n, refMinL, refMaxL, refMinR, refMaxR);
 					ATCassetteAudioMinMax16x2_Accelerated(
