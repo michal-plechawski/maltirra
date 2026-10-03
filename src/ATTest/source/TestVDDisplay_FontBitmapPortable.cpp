@@ -1,6 +1,8 @@
 // Portable VDDisplay bitmap font tests.
 
+#include <algorithm>
 #include <cstring>
+#include <vector>
 
 #include <at/attest/portabletest.h>
 #include <vd2/system/refcount.h>
@@ -92,6 +94,87 @@ bool ATTestVDDisplayFontBitmap(ATPortableTestContext& context) {
 	AT_PORTABLE_TEST_ASSERT(context, font->FitString(L"AMZ", 3, 2, &fitCount) == vdsize32(0, 6));
 	AT_PORTABLE_TEST_ASSERT(context, fitCount == 0);
 	AT_PORTABLE_TEST_ASSERT(context, font->MeasureString(L"AMZ", 3, false) == vdsize32(15, 6));
+
+	vdrefptr<IVDDisplayFont> systemFont;
+	AT_PORTABLE_TEST_ASSERT(context, VDCreateDisplaySystemFont(-18, false, "Helvetica", ~systemFont));
+	AT_PORTABLE_TEST_ASSERT(context, systemFont != nullptr);
+
+	VDDisplayFontMetrics systemMetrics {};
+	systemFont->GetMetrics(systemMetrics);
+	AT_PORTABLE_TEST_ASSERT(context, systemMetrics.mAscent > 0);
+	AT_PORTABLE_TEST_ASSERT(context, systemMetrics.mDescent >= 0);
+	vdrefptr<IVDDisplayFont> positiveHeightFont;
+	AT_PORTABLE_TEST_ASSERT(context, VDCreateDisplaySystemFont(18, false, "Helvetica", ~positiveHeightFont));
+	VDDisplayFontMetrics positiveHeightMetrics {};
+	positiveHeightFont->GetMetrics(positiveHeightMetrics);
+	AT_PORTABLE_TEST_ASSERT(context,
+		positiveHeightMetrics.mAscent + positiveHeightMetrics.mDescent
+			<= systemMetrics.mAscent + systemMetrics.mDescent);
+
+	vdfastvector<VDDisplayFontGlyphPlacement> systemPlacements;
+	vdrect32 systemCellBounds;
+	vdrect32 systemGlyphBounds;
+	vdpoint32 systemNextPos;
+	systemFont->ShapeText(
+		L"Ag", 2, systemPlacements,
+		&systemCellBounds, &systemGlyphBounds, &systemNextPos);
+	AT_PORTABLE_TEST_ASSERT(context, systemPlacements.size() == 2);
+	AT_PORTABLE_TEST_ASSERT(context, systemPlacements[0].mOriginalOffset == 0);
+	AT_PORTABLE_TEST_ASSERT(context, systemPlacements[1].mOriginalOffset == 1);
+	AT_PORTABLE_TEST_ASSERT(context, systemNextPos.x > 0);
+	AT_PORTABLE_TEST_ASSERT(context, systemCellBounds.height() == systemMetrics.mAscent + systemMetrics.mDescent);
+	AT_PORTABLE_TEST_ASSERT(context, systemGlyphBounds.width() > 0);
+
+	VDDisplayFontGlyphMetrics systemGlyphMetrics {};
+	systemFont->GetGlyphMetrics(systemPlacements[0].mGlyphIndex, systemGlyphMetrics);
+	AT_PORTABLE_TEST_ASSERT(context, systemGlyphMetrics.mWidth > 0);
+	AT_PORTABLE_TEST_ASSERT(context, systemGlyphMetrics.mHeight == systemMetrics.mAscent + systemMetrics.mDescent);
+	AT_PORTABLE_TEST_ASSERT(context, systemGlyphMetrics.mAdvance > 0);
+
+	const int glyphWidth = systemGlyphMetrics.mWidth;
+	const int glyphHeight = systemGlyphMetrics.mHeight;
+	const int glyphPitch = glyphWidth + 2;
+	std::vector<uint32> systemGlyphPixels((glyphPitch * (glyphHeight + 2)), 0x12345678);
+	VDPixmap systemGlyphPixmap {};
+	systemGlyphPixmap.data = systemGlyphPixels.data() + glyphPitch + 1;
+	systemGlyphPixmap.pitch = glyphPitch * sizeof(uint32);
+	systemGlyphPixmap.w = glyphWidth;
+	systemGlyphPixmap.h = glyphHeight;
+	systemGlyphPixmap.format = nsVDPixmap::kPixFormat_XRGB8888;
+	AT_PORTABLE_TEST_ASSERT(context, systemFont->GetGlyphImage(
+		systemPlacements[0].mGlyphIndex, false, systemGlyphPixmap));
+	bool hasLitPixel = false;
+	for(int y = 0; y < glyphHeight; ++y) {
+		const uint32 *row = systemGlyphPixmap.GetPixelRow<uint32>(y);
+		for(int x = 0; x < glyphWidth; ++x)
+			hasLitPixel |= (row[x] & 0x00FFFFFF) != 0;
+	}
+	AT_PORTABLE_TEST_ASSERT(context, hasLitPixel);
+	AT_PORTABLE_TEST_ASSERT(context, systemGlyphPixels.front() == 0x12345678);
+	AT_PORTABLE_TEST_ASSERT(context, systemGlyphPixels.back() == 0x12345678);
+
+	std::fill(systemGlyphPixels.begin(), systemGlyphPixels.end(), 0x12345678);
+	AT_PORTABLE_TEST_ASSERT(context, systemFont->GetGlyphImage(
+		systemPlacements[0].mGlyphIndex, true, systemGlyphPixmap));
+	bool hasInvertedLitPixel = false;
+	bool hasInvertedBackgroundPixel = false;
+	for(int y = 0; y < glyphHeight; ++y) {
+		const uint32 *row = systemGlyphPixmap.GetPixelRow<uint32>(y);
+		for(int x = 0; x < glyphWidth; ++x) {
+			hasInvertedLitPixel |= (row[x] & 0x00FFFFFF) != 0;
+			hasInvertedBackgroundPixel |= (row[x] & 0x00FFFFFF) == 0;
+		}
+	}
+	AT_PORTABLE_TEST_ASSERT(context, hasInvertedLitPixel);
+	AT_PORTABLE_TEST_ASSERT(context, hasInvertedBackgroundPixel);
+
+	uint32 systemFitCount = 99;
+	const vdsize32 systemMeasured = systemFont->MeasureString(L"Ag", 2, false);
+	AT_PORTABLE_TEST_ASSERT(context, systemMeasured.w > 0);
+	AT_PORTABLE_TEST_ASSERT(context, systemMeasured.h == systemMetrics.mAscent + systemMetrics.mDescent);
+	const vdsize32 systemFitted = systemFont->FitString(L"Ag", 2, (uint32)systemMeasured.w, &systemFitCount);
+	AT_PORTABLE_TEST_ASSERT(context, systemFitCount == 2);
+	AT_PORTABLE_TEST_ASSERT(context, systemFitted.w <= systemMeasured.w);
 
 	return true;
 }
