@@ -484,6 +484,9 @@
 	<ClCompile Include="..\VDDisplay\source\displaytypes.cpp">
 	  <Filter>Source Files</Filter>
 	</ClCompile>
+	<ClCompile Include="..\VDDisplay\source\displayframe.cpp">
+	  <Filter>Source Files</Filter>
+	</ClCompile>
 	<ClCompile Include="..\VDDisplay\source\logging.cpp">
 	  <Filter>Source Files</Filter>
 	</ClCompile>

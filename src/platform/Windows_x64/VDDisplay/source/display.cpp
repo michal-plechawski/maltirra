@@ -75,29 +75,6 @@ VDVideoDisplayManager *VDGetVideoDisplayManager() {
 
 ///////////////////////////////////////////////////////////////////////////
 
-VDVideoDisplayFrame::VDVideoDisplayFrame()
-	: mRefCount(0)
-{
-}
-
-VDVideoDisplayFrame::~VDVideoDisplayFrame() {
-}
-
-int VDVideoDisplayFrame::AddRef() {
-	return ++mRefCount;
-}
-
-int VDVideoDisplayFrame::Release() {
-	int rc = --mRefCount;
-
-	if (!rc)
-		delete this;
-
-	return rc;
-}
-
-///////////////////////////////////////////////////////////////////////////
-
 class VDVideoDisplayWindow final : public IVDVideoDisplay, public IVDVideoDisplayMinidriverCallback, public VDVideoDisplayClient {
 public:
 	static ATOM Register();

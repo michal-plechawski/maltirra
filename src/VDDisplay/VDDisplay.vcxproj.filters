@@ -30,6 +30,9 @@
     <ClCompile Include="..\platform\Windows_x64\VDDisplay\source\display.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+	<ClCompile Include="source\displayframe.cpp">
+	  <Filter>Source Files</Filter>
+	</ClCompile>
     <ClCompile Include="..\platform\Windows_x64\VDDisplay\source\displaydrv.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>

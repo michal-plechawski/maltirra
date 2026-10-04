@@ -59,6 +59,10 @@
     <ClCompile Include="..\platform\Windows_x64\VDDisplay\source\displaygdi.cpp" />
     <ClCompile Include="..\platform\Windows_x64\VDDisplay\source\displaymgr.cpp" />
     <ClCompile Include="..\platform\Windows_x64\VDDisplay\source\displaynode3d.cpp" />
+	<ClCompile Include="source\displayframe.cpp">
+	  <ForcedIncludeFiles />
+	  <PrecompiledHeader>NotUsing</PrecompiledHeader>
+	</ClCompile>
     <ClCompile Include="source\displaytypes.cpp">
       <ForcedIncludeFiles />
       <PrecompiledHeader>NotUsing</PrecompiledHeader>

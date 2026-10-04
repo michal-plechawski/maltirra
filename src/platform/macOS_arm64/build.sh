@@ -355,6 +355,7 @@ portable_test_sources=(
 	src/VDDisplay/source/customeffectbase.cpp
 	src/VDDisplay/source/customeffectpassbase.cpp
 	src/VDDisplay/source/customeffectutils.cpp
+	src/VDDisplay/source/displayframe.cpp
 	src/VDDisplay/source/displaytypes.cpp
 	src/VDDisplay/source/fontbitmap.cpp
 	src/VDDisplay/source/logging.cpp
