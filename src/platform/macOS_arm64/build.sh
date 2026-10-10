@@ -284,6 +284,7 @@ portable_test_sources=(
 	src/ATTest/source/TestVDDisplay_CustomEffectPortable.cpp
 	src/ATTest/source/TestVDDisplay_DisplayTypesPortable.cpp
 	src/ATTest/source/TestVDDisplay_FontBitmapPortable.cpp
+	src/ATTest/source/TestVDDisplay_PresentationBufferPortable.cpp
 	src/ATTest/source/TestVDDisplay_LoggingPortable.cpp
 	src/ATTest/source/TestVDDisplay_RenderCachePortable.cpp
 	src/ATTest/source/TestVDDisplay_RendererPortable.cpp
@@ -359,6 +360,7 @@ portable_test_sources=(
 	src/VDDisplay/source/displaytypes.cpp
 	src/VDDisplay/source/fontbitmap.cpp
 	src/VDDisplay/source/logging.cpp
+	src/VDDisplay/source/presentationbuffer.cpp
 	src/VDDisplay/source/rendercache.cpp
 	src/VDDisplay/source/renderer.cpp
 	src/VDDisplay/source/renderersoft.cpp

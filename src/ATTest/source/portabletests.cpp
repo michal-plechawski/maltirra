@@ -110,6 +110,7 @@ bool ATTestVDDisplayBloom(ATPortableTestContext& context);
 bool ATTestVDDisplayCustomEffect(ATPortableTestContext& context);
 bool ATTestVDDisplayDisplayTypes(ATPortableTestContext& context);
 bool ATTestVDDisplayFontBitmap(ATPortableTestContext& context);
+bool ATTestVDDisplayPresentationBuffer(ATPortableTestContext& context);
 bool ATTestVDDisplayLogging(ATPortableTestContext& context);
 bool ATTestVDDisplayRenderCache(ATPortableTestContext& context);
 bool ATTestVDDisplayRenderer(ATPortableTestContext& context);
@@ -267,6 +268,7 @@ const ATPortableTestCase *ATGetPortableTests(size_t& count) {
 		{ "VDDisplay_CustomEffect", ATTestVDDisplayCustomEffect },
 		{ "VDDisplay_DisplayTypes", ATTestVDDisplayDisplayTypes },
 		{ "VDDisplay_FontBitmap", ATTestVDDisplayFontBitmap },
+		{ "VDDisplay_PresentationBuffer", ATTestVDDisplayPresentationBuffer },
 		{ "VDDisplay_Logging", ATTestVDDisplayLogging },
 		{ "VDDisplay_RenderCache", ATTestVDDisplayRenderCache },
 		{ "VDDisplay_Renderer", ATTestVDDisplayRenderer },

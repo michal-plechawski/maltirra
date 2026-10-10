@@ -452,6 +452,9 @@
 	<ClCompile Include="source\TestVDDisplay_FontBitmapPortable.cpp">
 	  <PrecompiledHeader>NotUsing</PrecompiledHeader>
 	</ClCompile>
+	<ClCompile Include="source\TestVDDisplay_PresentationBufferPortable.cpp">
+	  <PrecompiledHeader>NotUsing</PrecompiledHeader>
+	</ClCompile>
 	<ClCompile Include="source\TestVDDisplay_LoggingPortable.cpp">
 	  <PrecompiledHeader>NotUsing</PrecompiledHeader>
 	</ClCompile>
@@ -492,6 +495,9 @@
 	  <PrecompiledHeader>NotUsing</PrecompiledHeader>
 	</ClCompile>
 	<ClCompile Include="..\VDDisplay\source\logging.cpp">
+	  <PrecompiledHeader>NotUsing</PrecompiledHeader>
+	</ClCompile>
+	<ClCompile Include="..\VDDisplay\source\presentationbuffer.cpp">
 	  <PrecompiledHeader>NotUsing</PrecompiledHeader>
 	</ClCompile>
 	<ClCompile Include="..\VDDisplay\source\rendercache.cpp">
