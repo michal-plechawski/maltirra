@@ -451,6 +451,12 @@
 	<ClCompile Include="source\TestVDDisplay_FrameQueuePortable.cpp">
 	  <Filter>Source Files</Filter>
 	</ClCompile>
+	<ClCompile Include="source\TestNativeUI_WindowProxyPortable.cpp">
+	  <Filter>Source Files</Filter>
+	</ClCompile>
+	<ClCompile Include="..\platform\Windows_x64\ATTest\source\nativewindowfixture.cpp">
+	  <Filter>Source Files</Filter>
+	</ClCompile>
 	<ClCompile Include="source\TestVDDisplay_SoftwareCompositionPortable.cpp">
 	  <Filter>Source Files</Filter>
 	</ClCompile>
