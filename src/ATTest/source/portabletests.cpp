@@ -117,10 +117,13 @@ bool ATTestVDDisplayRenderCache(ATPortableTestContext& context);
 bool ATTestVDDisplayRenderer(ATPortableTestContext& context);
 bool ATTestVDDisplayRendererSoft(ATPortableTestContext& context);
 bool ATTestVDDisplayScreenFX(ATPortableTestContext& context);
+bool ATTestVDDisplaySoftwareComposition(ATPortableTestContext& context);
 bool ATTestVDDisplayTextRenderer(ATPortableTestContext& context);
 #if defined(__APPLE__)
 bool ATTestVDDisplayViewMac(ATPortableTestContext& context);
 bool ATTestVDDisplayAdapterMac(ATPortableTestContext& context);
+bool ATTestVDDisplayCompositionMac(ATPortableTestContext& context);
+bool ATTestVDDisplayNativeViewMac(ATPortableTestContext& context);
 #endif
 bool ATTestSystemBinary(ATPortableTestContext& context);
 bool ATTestSystemBitMath(ATPortableTestContext& context);
@@ -280,10 +283,13 @@ const ATPortableTestCase *ATGetPortableTests(size_t& count) {
 		{ "VDDisplay_Renderer", ATTestVDDisplayRenderer },
 		{ "VDDisplay_RendererSoft", ATTestVDDisplayRendererSoft },
 		{ "VDDisplay_ScreenFX", ATTestVDDisplayScreenFX },
+		{ "VDDisplay_SoftwareComposition", ATTestVDDisplaySoftwareComposition },
 		{ "VDDisplay_TextRenderer", ATTestVDDisplayTextRenderer },
 #if defined(__APPLE__)
 		{ "VDDisplay_ViewMac", ATTestVDDisplayViewMac },
 		{ "VDDisplay_AdapterMac", ATTestVDDisplayAdapterMac },
+		{ "VDDisplay_CompositionMac", ATTestVDDisplayCompositionMac },
+		{ "VDDisplay_NativeViewMac", ATTestVDDisplayNativeViewMac },
 #endif
 		{ "System_Binary", ATTestSystemBinary },
 		{ "System_BitMath", ATTestSystemBitMath },

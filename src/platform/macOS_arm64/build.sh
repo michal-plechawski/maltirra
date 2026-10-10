@@ -291,9 +291,12 @@ portable_test_sources=(
 	src/ATTest/source/TestVDDisplay_RendererPortable.cpp
 	src/ATTest/source/TestVDDisplay_RendererSoftPortable.cpp
 	src/ATTest/source/TestVDDisplay_ScreenFXPortable.cpp
+	src/ATTest/source/TestVDDisplay_SoftwareCompositionPortable.cpp
 	src/ATTest/source/TestVDDisplay_TextRendererPortable.cpp
 	src/platform/macOS_arm64/ATTest/source/TestVDDisplay_ViewMac.cpp
 	src/platform/macOS_arm64/ATTest/source/TestVDDisplay_AdapterMac.cpp
+	src/platform/macOS_arm64/ATTest/source/TestVDDisplay_CompositionMac.cpp
+	src/platform/macOS_arm64/ATTest/source/TestVDDisplay_NativeViewMac.mm
 	src/ATTest/source/TestSystem_Binary.cpp
 	src/ATTest/source/TestSystem_BitMath.cpp
 	src/ATTest/source/TestSystem_Cache.cpp
@@ -369,6 +372,7 @@ portable_test_sources=(
 	src/VDDisplay/source/renderer.cpp
 	src/VDDisplay/source/renderersoft.cpp
 	src/VDDisplay/source/screenfx.cpp
+	src/VDDisplay/source/softwarecomposition.cpp
 	src/VDDisplay/source/textrenderer.cpp
 	src/platform/macOS_arm64/VDDisplay/source/fontcoretext.mm
 	src/platform/macOS_arm64/VDDisplay/source/displayview_macos.mm

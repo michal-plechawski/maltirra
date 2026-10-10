@@ -14,6 +14,7 @@
 #include <vd2/VDDisplay/displayview_macos.h>
 #include <vd2/VDDisplay/internal/framequeue.h>
 #include <vd2/VDDisplay/internal/presentationbuffer.h>
+#include <vd2/VDDisplay/internal/softwarecomposition.h>
 
 namespace {
 	// Match the synchronous cross-thread behavior of the Windows control. Keep
@@ -34,7 +35,8 @@ namespace {
 	}
 
 	struct DisplayState : std::enable_shared_from_this<DisplayState> {
-		explicit DisplayState(VDGUIHandle view) : mView(view) {
+		DisplayState(VDGUIHandle view, sint32 width, sint32 height)
+			: mView(view), mHeadlessWidth(width), mHeadlessHeight(height) {
 			[reinterpret_cast<NSView *>(view) retain];
 		}
 		~DisplayState() {
@@ -42,9 +44,102 @@ namespace {
 		}
 
 		void ApplyLayout() {
-			VDDisplayViewSetLayoutMac(mView, mbSourceRect ? &mSourceRect : nullptr,
-				mbDestRect ? &mDestRect : nullptr, mBackgroundColor,
-				mFilterMode != IVDVideoDisplay::kFilterPoint);
+			mbNeedsRefresh = true;
+			mComposition.Invalidate();
+			if (!RePresent())
+				ScheduleRefresh();
+		}
+
+		void Initialize() {
+			const std::weak_ptr<DisplayState> weak = shared_from_this();
+			VDDisplayViewSetRefreshCallbackMac(mView, [weak] {
+				if (const auto state = weak.lock(); state && !state->mbShutdown) {
+					state->mbNeedsRefresh = true;
+					state->mComposition.Invalidate();
+					state->ScheduleRefresh();
+				}
+			});
+		}
+
+		void ScheduleRefresh() {
+			if (mbShutdown || mbRefreshScheduled)
+				return;
+			mbRefreshScheduled = true;
+			const auto state = shared_from_this();
+			dispatch_async(dispatch_get_main_queue(), ^{
+				state->mbRefreshScheduled = false;
+				if (!state->mbShutdown && state->mbNeedsRefresh) {
+					try { state->RePresent(); }
+					catch (...) { /* Preserve the last output; do not unwind a dispatch block. */ }
+				}
+			});
+		}
+
+		bool Compose(CGImageRef sourceImage, sint32 sourceWidth, sint32 sourceHeight, bool solidColor) {
+			if (mbShutdown)
+				return false;
+			const VDDisplayViewOutputInfoMac output = mView
+				? VDDisplayViewGetOutputInfoMac(mView)
+				: VDDisplayViewOutputInfoMac { mHeadlessWidth ? mHeadlessWidth : sourceWidth,
+					mHeadlessHeight ? mHeadlessHeight : sourceHeight, 1, 1 };
+			if (output.mWidth <= 0 || output.mHeight <= 0)
+				return false;
+			const bool useSourceRect = mbSourceRect && !solidColor;
+			const bool useDestRect = mbDestRect;
+			const vdrect32 sourceRect = mSourceRect;
+			const vdrect32f destRect = mDestRect;
+			const uint32 background = mBackgroundColor;
+			const bool bilinear = mFilterMode != IVDVideoDisplay::kFilterPoint;
+			CGImageRef image = nullptr;
+			bool rendered = false;
+			try {
+				rendered = mComposition.Render(output.mWidth, output.mHeight,
+					[&](const VDPixmap& target) {
+						CGColorSpaceRef colorSpace = CGColorSpaceCreateWithName(kCGColorSpaceSRGB);
+						if (!colorSpace) return false;
+						const CGBitmapInfo bitmapInfo = (CGBitmapInfo)(
+							(uint32)kCGBitmapByteOrder32Little | (uint32)kCGImageAlphaNoneSkipFirst);
+						CGContextRef context = CGBitmapContextCreate(target.data, target.w, target.h,
+							8, (size_t)target.pitch, colorSpace, bitmapInfo);
+						CGColorSpaceRelease(colorSpace);
+						if (!context) return false;
+						CGContextTranslateCTM(context, 0, target.h);
+						CGContextScaleCTM(context, output.mScaleX, -output.mScaleY);
+						VDDrawDisplayImageMac(context, sourceImage,
+							CGRectMake(0, 0, target.w / output.mScaleX, target.h / output.mScaleY),
+							useSourceRect ? &sourceRect : nullptr, useDestRect ? &destRect : nullptr,
+							background, bilinear);
+						CGContextRelease(context);
+						return true;
+					}, [&](const VDPixmap& target) {
+						image = VDCreateDisplayImageMac(target);
+						return image != nullptr;
+					});
+			} catch (...) {
+				if (image) CGImageRelease(image);
+				throw;
+			}
+			if (rendered && !mbShutdown) {
+				mbNeedsRefresh = false;
+				VDDisplayViewSetLayoutMac(mView, nullptr, nullptr, background, false);
+				VDDisplayViewSetImageMac(mView, image);
+			}
+			if (image) CGImageRelease(image);
+			return rendered && !mbShutdown;
+		}
+
+		bool RePresent() {
+			const VDPixmap& source = mpPresented->GetPixmap();
+			CGImageRef image = source.data ? VDCreateDisplayImageMac(source) : nullptr;
+			if (source.data && !image)
+				return false;
+			bool result = false;
+			try { result = Compose(image, source.w, source.h, mbSolidColor); }
+			catch (...) { if (image) CGImageRelease(image); throw; }
+			if (image) CGImageRelease(image);
+			if (result && !mbShutdown)
+				CompleteCapture();
+			return result;
 		}
 
 		void NotifyStatus() {
@@ -64,18 +159,33 @@ namespace {
 		}
 
 		bool Render(const VDPixmap& source, bool allowConversion,
-			bool useScreenFX, IVDVideoDisplayScreenFXEngine *engine, bool notifyCapture = true) {
+			bool useScreenFX, IVDVideoDisplayScreenFXEngine *engine, bool notifyCapture = true,
+			bool solidColor = false) {
 			if (mbShutdown || (useScreenFX && !engine))
 				return false;
 			const VDPixmap px = useScreenFX ? engine->ApplyScreenFX(source) : source;
 			if (mbShutdown || !mpStaging->Update(px, allowConversion))
 				return false;
+			// A hidden/zero-size view still accepts an owned video snapshot. The
+			// resize callback presents it later, without rereading producer memory.
+			if (mView && !VDDisplayViewGetOutputInfoMac(mView).mWidth) {
+				mpPresented.swap(mpStaging);
+				mbSolidColor = solidColor;
+				mbNeedsRefresh = true;
+				VDDisplayViewSetMessageMac(mView, nullptr);
+				return true;
+			}
 			CGImageRef image = VDCreateDisplayImageMac(mpStaging->GetPixmap());
 			if (!image)
 				return false;
-			mpPresented.swap(mpStaging);
-			VDDisplayViewSetImageMac(mView, image);
+			bool composed = false;
+			try { composed = Compose(image, px.w, px.h, solidColor); }
+			catch (...) { CGImageRelease(image); throw; }
 			CGImageRelease(image);
+			if (!composed)
+				return false;
+			mpPresented.swap(mpStaging);
+			mbSolidColor = solidColor;
 			VDDisplayViewSetMessageMac(mView, nullptr);
 			if (notifyCapture)
 				CompleteCapture();
@@ -88,7 +198,7 @@ namespace {
 			if (!fn)
 				return;
 			VDPixmapBuffer snapshot;
-			const VDPixmap& px = mpPresented->GetPixmap();
+			const VDPixmap& px = mComposition.GetPixmap();
 			if (px.data) {
 				snapshot.assign(px);
 				fn(&snapshot);
@@ -144,11 +254,16 @@ namespace {
 		}
 
 		VDGUIHandle mView;
+		sint32 mHeadlessWidth = 0;
+		sint32 mHeadlessHeight = 0;
 		IVDVideoDisplay *mpOwner = nullptr;
 		IVDVideoDisplayCallback *mpCallback = nullptr;
 		VDDisplayFrameQueue mFrames;
 		std::atomic<bool> mbScheduled { false };
 		bool mbShutdown = false; // All fields below are confined to the main thread.
+		bool mbRefreshScheduled = false;
+		bool mbNeedsRefresh = false;
+		bool mbSolidColor = false;
 		bool mbNotifying = false;
 		int mLastStatus = -1;
 		VDPixmap mSource {};
@@ -165,14 +280,17 @@ namespace {
 		vdfunction<void(int)> mStatusFn;
 		vdfunction<void(IVDVideoDisplay::ProfileEvent, uintptr)> mProfileFn;
 		vdfunction<void(const VDPixmap *)> mCaptureFn;
+		VDDisplaySoftwareComposition mComposition;
 		std::unique_ptr<VDDisplayPresentationBuffer> mpPresented = std::make_unique<VDDisplayPresentationBuffer>();
 		std::unique_ptr<VDDisplayPresentationBuffer> mpStaging = std::make_unique<VDDisplayPresentationBuffer>();
 	};
 
 	class VDVideoDisplayMac final : public IVDVideoDisplay {
 	public:
-		explicit VDVideoDisplayMac(VDGUIHandle view) : mpState(std::make_shared<DisplayState>(view)) {
+		VDVideoDisplayMac(VDGUIHandle view, sint32 width, sint32 height)
+			: mpState(std::make_shared<DisplayState>(view, width, height)) {
 			mpState->mpOwner = this;
+			mpState->Initialize();
 		}
 
 		void Destroy() override {
@@ -186,6 +304,8 @@ namespace {
 				s->mpCallback = nullptr;
 				s->mStatusFn = nullptr;
 				s->mProfileFn = nullptr;
+				VDDisplayViewSetRefreshCallbackMac(s->mView, nullptr);
+				s->mComposition.Shutdown();
 				s->Flush();
 				VDDisplayViewClearMac(s->mView);
 				auto capture = std::move(s->mCaptureFn);
@@ -203,6 +323,7 @@ namespace {
 				s->Flush();
 				s->mpPresented->Clear();
 				s->mpStaging->Clear();
+				s->mComposition.Clear();
 				VDDisplayViewClearMac(s->mView);
 				VDDisplayViewSetMessageMac(s->mView, nullptr);
 			});
@@ -214,6 +335,7 @@ namespace {
 				if (s->mbShutdown) return;
 				s->Flush();
 				s->mpPresented->Clear();
+				s->mComposition.Clear();
 				VDDisplayViewClearMac(s->mView);
 				VDDisplayViewSetMessageMac(s->mView, message);
 			});
@@ -243,7 +365,7 @@ namespace {
 				px.w = px.h = 1;
 				px.pitch = sizeof color;
 				px.format = nsVDPixmap::kPixFormat_XRGB8888;
-				s->Render(px, false, false, nullptr);
+				s->Render(px, false, false, nullptr, true, true);
 			});
 		}
 
@@ -278,13 +400,15 @@ namespace {
 			OnDisplayMain([&] {
 				if (s->mbShutdown) return;
 				if (s->mFrames.GetLastFrame()) {
-					[reinterpret_cast<NSView *>(s->mView) setNeedsDisplay:YES];
+					s->RePresent();
 				} else if (s->mbPersistent && s->mSource.data) {
 					s->Render(s->mSource, s->mbAllowConversion, s->mbSourceFX, s->mpSourceFX);
 				} else if (s->mpCallback) {
+					s->RePresent();
+					if (s->mbShutdown) return;
 					s->mpCallback->DisplayRequestUpdate(s->mpOwner);
 				} else {
-					[reinterpret_cast<NSView *>(s->mView) setNeedsDisplay:YES];
+					s->RePresent();
 				}
 			});
 		}
@@ -318,7 +442,9 @@ namespace {
 				auto old = std::move(s->mCaptureFn);
 				s->mCaptureFn = std::move(fn);
 				if (old) old(nullptr);
-				if (!s->mbShutdown && s->mpPresented->GetPixmap().data) s->CompleteCapture();
+				if (s->mbShutdown || s->mComposition.IsRendering()) return;
+				if (s->mbNeedsRefresh && !s->RePresent()) return;
+				if (!s->mbShutdown && s->mComposition.GetPixmap().data) s->CompleteCapture();
 			});
 		}
 
@@ -373,7 +499,14 @@ namespace {
 		void SetHDREnabled(bool) override {}
 		void SetCustomDesiredRefreshRate(float, float, float) override {}
 		void SetPixelSharpness(float, float) override {}
-		void SetCompositor(IVDDisplayCompositor *) override {}
+		void SetCompositor(IVDDisplayCompositor *compositor) override {
+			const auto s = mpState;
+			OnDisplayMain([&] {
+				if (s->mbShutdown) return;
+				s->mComposition.SetCompositor(compositor);
+				if (!s->mbShutdown) s->ApplyLayout();
+			});
+		}
 		void SetSDRBrightness(float) override {}
 		void SetAccelerationMode(AccelerationMode) override {}
 
@@ -403,7 +536,7 @@ namespace {
 				s->mpSourceFX = engine;
 				result = true;
 				s->NotifyStatus();
-				if (!s->mbShutdown && autoUpdate && src.data) s->CompleteCapture();
+				if (!s->mbShutdown && !s->mbNeedsRefresh && autoUpdate && src.data) s->CompleteCapture();
 			});
 			return result;
 		}
@@ -411,8 +544,9 @@ namespace {
 	};
 }
 
-IVDVideoDisplay *VDCreateVideoDisplayMac(VDGUIHandle view) {
-	if (![NSThread isMainThread])
+IVDVideoDisplay *VDCreateVideoDisplayMac(VDGUIHandle view, sint32 width, sint32 height) {
+	if (![NSThread isMainThread] || width < 0 || height < 0
+		|| (!!width != !!height) || (view && (width || height)))
 		return nullptr;
-	return new VDVideoDisplayMac(view);
+	return new VDVideoDisplayMac(view, width, height);
 }

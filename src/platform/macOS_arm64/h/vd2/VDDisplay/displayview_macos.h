@@ -8,6 +8,7 @@
 
 #include <vd2/system/vdtypes.h>
 #include <vd2/system/vectors.h>
+#include <vd2/system/function.h>
 #include <vd2/Kasumi/pixmap.h>
 
 // Creates an immutable Core Graphics image from a positive-pitch XRGB8888
@@ -37,5 +38,17 @@ void VDDisplayViewSetImageMac(VDGUIHandle view, CGImageRef image);
 void VDDisplayViewSetLayoutMac(VDGUIHandle view, const vdrect32 *sourceRect,
 	const vdrect32f *destRect, uint32 backgroundColor, bool bilinear);
 void VDDisplayViewSetMessageMac(VDGUIHandle view, const wchar_t *message);
+
+struct VDDisplayViewOutputInfoMac {
+	sint32 mWidth = 0;
+	sint32 mHeight = 0;
+	float mScaleX = 1;
+	float mScaleY = 1;
+};
+
+// Output dimensions are backing pixels; layout coordinates remain view points.
+// These functions and the refresh callback run on the main thread.
+VDDisplayViewOutputInfoMac VDDisplayViewGetOutputInfoMac(VDGUIHandle view);
+void VDDisplayViewSetRefreshCallbackMac(VDGUIHandle view, vdfunction<void()> callback);
 
 #endif

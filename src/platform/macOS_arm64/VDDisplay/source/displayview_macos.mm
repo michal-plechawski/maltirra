@@ -3,6 +3,7 @@
 
 #include <cstring>
 #include <cwchar>
+#include <cmath>
 #include <limits>
 #include <mutex>
 #include <new>
@@ -140,6 +141,7 @@ void VDDrawDisplayImageMac(CGContextRef context, CGImageRef image, CGRect bounds
 	uint32 _backgroundColor;
 	bool _bilinear;
 	NSString *_message;
+	vdfunction<void()> *_refreshCallback;
 }
 
 - (bool)setSource:(const VDPixmap&)source allowConversion:(bool)allowConversion;
@@ -149,6 +151,8 @@ void VDDrawDisplayImageMac(CGContextRef context, CGImageRef image, CGRect bounds
 - (void)setLayout:(const vdrect32 *)sourceRect destination:(const vdrect32f *)destRect
 	background:(uint32)backgroundColor bilinear:(bool)bilinear;
 - (void)setMessage:(const wchar_t *)message;
+- (void)setRefreshCallback:(vdfunction<void()>)callback;
+- (void)refreshOutput;
 
 @end
 
@@ -175,6 +179,7 @@ void VDDrawDisplayImageMac(CGContextRef context, CGImageRef image, CGRect bounds
 	delete _presentationBuffer;
 	delete _mutex;
 	[_message release];
+	delete _refreshCallback;
 	[super dealloc];
 }
 
@@ -184,6 +189,35 @@ void VDDrawDisplayImageMac(CGContextRef context, CGImageRef image, CGRect bounds
 
 - (BOOL)isFlipped {
 	return YES;
+}
+
+- (void)setRefreshCallback:(vdfunction<void()>)callback {
+	if (!_refreshCallback)
+		_refreshCallback = new vdfunction<void()>;
+	*_refreshCallback = std::move(callback);
+}
+
+- (void)refreshOutput {
+	if (_refreshCallback) {
+		const auto callback = *_refreshCallback;
+		if (callback)
+			callback();
+	}
+}
+
+- (void)setFrameSize:(NSSize)size {
+	[super setFrameSize:size];
+	[self refreshOutput];
+}
+
+- (void)setBoundsSize:(NSSize)size {
+	[super setBoundsSize:size];
+	[self refreshOutput];
+}
+
+- (void)viewDidChangeBackingProperties {
+	[super viewDidChangeBackingProperties];
+	[self refreshOutput];
 }
 
 - (bool)setSource:(const VDPixmap&)source allowConversion:(bool)allowConversion {
@@ -361,4 +395,22 @@ void VDDisplayViewSetLayoutMac(VDGUIHandle view, const vdrect32 *sourceRect,
 
 void VDDisplayViewSetMessageMac(VDGUIHandle view, const wchar_t *message) {
 	[reinterpret_cast<VDMacVideoDisplayView *>(view) setMessage:message];
+}
+
+VDDisplayViewOutputInfoMac VDDisplayViewGetOutputInfoMac(VDGUIHandle view) {
+	NSView *displayView = reinterpret_cast<NSView *>(view);
+	if (!displayView)
+		return {};
+	const NSRect bounds = [displayView bounds];
+	const NSRect backing = [displayView convertRectToBacking:bounds];
+	const double width = std::ceil(NSWidth(backing));
+	const double height = std::ceil(NSHeight(backing));
+	if (!std::isfinite(width) || !std::isfinite(height) || width <= 0 || height <= 0
+		|| width > INT32_MAX || height > INT32_MAX || NSWidth(bounds) <= 0 || NSHeight(bounds) <= 0)
+		return {};
+	return { (sint32)width, (sint32)height, (float)(width / NSWidth(bounds)), (float)(height / NSHeight(bounds)) };
+}
+
+void VDDisplayViewSetRefreshCallbackMac(VDGUIHandle view, vdfunction<void()> callback) {
+	[reinterpret_cast<VDMacVideoDisplayView *>(view) setRefreshCallback:std::move(callback)];
 }

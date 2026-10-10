@@ -79,6 +79,10 @@
 	  <ForcedIncludeFiles />
 	  <PrecompiledHeader>NotUsing</PrecompiledHeader>
 	</ClCompile>
+	<ClCompile Include="source\softwarecomposition.cpp">
+	  <ForcedIncludeFiles />
+	  <PrecompiledHeader>NotUsing</PrecompiledHeader>
+	</ClCompile>
     <ClCompile Include="..\platform\Windows_x64\VDDisplay\source\fontgdi.cpp" />
     <ClCompile Include="source\logging.cpp">
       <ForcedIncludeFiles />
@@ -137,6 +141,7 @@
     <ClInclude Include="..\h\vd2\VDDisplay\internal\fontbitmap.h" />
 	<ClInclude Include="..\h\vd2\VDDisplay\internal\presentationbuffer.h" />
 	<ClInclude Include="..\h\vd2\VDDisplay\internal\framequeue.h" />
+	<ClInclude Include="..\h\vd2\VDDisplay\internal\softwarecomposition.h" />
     <ClInclude Include="..\platform\Windows_x64\VDDisplay\h\vd2\VDDisplay\internal\fontgdi.h" />
     <ClInclude Include="..\platform\Windows_x64\VDDisplay\h\renderer3d.h" />
     <ClInclude Include="..\platform\Windows_x64\VDDisplay\h\vd2\VDDisplay\internal\options.h" />

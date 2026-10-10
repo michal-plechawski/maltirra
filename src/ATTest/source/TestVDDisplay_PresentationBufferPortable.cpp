@@ -80,6 +80,14 @@ bool ATTestVDDisplayPresentationBuffer(ATPortableTestContext& context) {
 	AT_PORTABLE_TEST_ASSERT(context, buffer.GetPixmap().h == 2);
 	AT_PORTABLE_TEST_ASSERT(context, buffer.GetPixmap().GetPixelRow<uint32>(0)[0] == 0x00A0B0C0);
 
+	// A one-row descriptor can pass the allocation-size limit while overflowing
+	// the pixmap allocator's signed row-pitch intermediate. Reject before access.
+	VDPixmap overflowingPitchSource = bottomUpSource;
+	overflowingPitchSource.w = 600000000;
+	overflowingPitchSource.h = 1;
+	AT_PORTABLE_TEST_ASSERT(context, !buffer.Update(overflowingPitchSource, false));
+	AT_PORTABLE_TEST_ASSERT(context, buffer.GetPixmap().w == 2);
+
 	uint32 argbPixel = 0x80402010;
 	const VDPixmap unsupportedSource = MakePixmap(&argbPixel, 1, 1, sizeof argbPixel, kPixFormat_ARGB8888);
 	AT_PORTABLE_TEST_ASSERT(context, !buffer.Update(unsupportedSource, true));

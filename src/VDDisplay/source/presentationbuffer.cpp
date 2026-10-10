@@ -69,6 +69,10 @@ bool VDDisplayPresentationBuffer::Update(const VDPixmap& source, bool allowConve
 		return false;
 
 	const uint64 targetPitch = (((uint64)source.w * sizeof(uint32)) + 15) & ~UINT64_C(15);
+	// VDPixmapBuffer computes its aligned row pitch through a signed 32-bit
+	// intermediate before converting it to ptrdiff_t.
+	if (targetPitch > INT32_MAX)
+		return false;
 	// VDPixmapBuffer stores its allocation size through a 32-bit intermediate
 	// and debug builds add guard bytes around it.
 	if (targetPitch * (uint64)source.h > UINT32_MAX - 28)

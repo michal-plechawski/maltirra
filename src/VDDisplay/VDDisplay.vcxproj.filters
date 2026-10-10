@@ -90,6 +90,9 @@
 	<ClCompile Include="source\framequeue.cpp">
 	  <Filter>Source Files</Filter>
 	</ClCompile>
+	<ClCompile Include="source\softwarecomposition.cpp">
+	  <Filter>Source Files</Filter>
+	</ClCompile>
     <ClCompile Include="source\screenfx.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -198,6 +201,9 @@
 	  <Filter>Header Files</Filter>
 	</ClInclude>
 	<ClInclude Include="..\h\vd2\VDDisplay\internal\framequeue.h">
+	  <Filter>Header Files</Filter>
+	</ClInclude>
+	<ClInclude Include="..\h\vd2\VDDisplay\internal\softwarecomposition.h">
 	  <Filter>Header Files</Filter>
 	</ClInclude>
     <ClInclude Include="..\h\vd2\VDDisplay\logging.h">
