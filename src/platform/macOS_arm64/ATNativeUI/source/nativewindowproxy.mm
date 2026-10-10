@@ -233,7 +233,8 @@ void ATUINativeWindowProxy::InsertBelow(VDGUIHandle reference) {
 VDStringW ATUINativeWindowProxy::GetCaption() const {
 	const id object = Object(mhwnd);
 	NSString *text = View(object) ? [View(object) accessibilityLabel] : [Window(object) title];
-	if ([object isKindOfClass:[NSControl class]]) text = [(NSControl *)object stringValue];
+	if ([object isKindOfClass:[NSButton class]]) text = [(NSButton *)object title];
+	else if ([object isKindOfClass:[NSControl class]]) text = [(NSControl *)object stringValue];
 	return text ? VDTextU8ToW(VDStringSpanA([text UTF8String])) : VDStringW();
 }
 void ATUINativeWindowProxy::SetCaption(const wchar_t *caption) {
@@ -242,7 +243,8 @@ void ATUINativeWindowProxy::SetCaption(const wchar_t *caption) {
 	NSString *text = [NSString stringWithUTF8String:utf8.c_str()] ?: @"";
 	if (NSView *view = View(object)) {
 		[view setAccessibilityLabel:text];
-		if ([view isKindOfClass:[NSControl class]]) [(NSControl *)view setStringValue:text];
+		if ([view isKindOfClass:[NSButton class]]) [(NSButton *)view setTitle:text];
+		else if ([view isKindOfClass:[NSControl class]]) [(NSControl *)view setStringValue:text];
 	} else [Window(object) setTitle:text];
 }
 void ATUINativeWindowProxy::Invalidate() { [Client(Object(mhwnd)) setNeedsDisplay:YES]; }

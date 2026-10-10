@@ -57,6 +57,20 @@ bool ATTestNativeUIWindowProxyMac(ATPortableTestContext& context) {
 		AT_PORTABLE_TEST_ASSERT(context, proxy.GetSize().w == 410 && proxy.GetSize().h == 290);
 		proxy.SetCaption(L"Altirra \u0105\u03A9 \U0001F680");
 		AT_PORTABLE_TEST_ASSERT(context, proxy.GetCaption() == L"Altirra \u0105\u03A9 \U0001F680");
+		// Button captions are titles, not NSControl's stringValue (which can
+		// instead represent the numeric on/off state of its cell).
+		NSButton *button = [[[NSButton alloc] initWithFrame:NSMakeRect(0, 0, 80, 24)] autorelease];
+		[button setButtonType:NSButtonTypeSwitch];
+		[button setState:NSControlStateValueOn];
+		ATUINativeWindowProxy buttonProxy(reinterpret_cast<VDGUIHandle>(button));
+		buttonProxy.SetCaption(L"Pokey \u0105");
+		AT_PORTABLE_TEST_ASSERT(context, [[button title] isEqualToString:@"Pokey \u0105"]);
+		AT_PORTABLE_TEST_ASSERT(context, [button state] == NSControlStateValueOn);
+		AT_PORTABLE_TEST_ASSERT(context, buttonProxy.GetCaption() == L"Pokey \u0105");
+		buttonProxy.SetEnabled(false);
+		AT_PORTABLE_TEST_ASSERT(context, ![button isEnabled]);
+		buttonProxy.SetTabStop(false);
+		AT_PORTABLE_TEST_ASSERT(context, [button refusesFirstResponder]);
 
 		// Attach the production video view to a real window. Its top-left geometry
 		// and screen transforms must work under an unflipped content view.
