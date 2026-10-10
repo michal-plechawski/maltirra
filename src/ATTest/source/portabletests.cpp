@@ -110,6 +110,7 @@ bool ATTestVDDisplayBloom(ATPortableTestContext& context);
 bool ATTestVDDisplayCustomEffect(ATPortableTestContext& context);
 bool ATTestVDDisplayDisplayTypes(ATPortableTestContext& context);
 bool ATTestVDDisplayFontBitmap(ATPortableTestContext& context);
+bool ATTestVDDisplayFrameQueue(ATPortableTestContext& context);
 bool ATTestVDDisplayPresentationBuffer(ATPortableTestContext& context);
 bool ATTestVDDisplayLogging(ATPortableTestContext& context);
 bool ATTestVDDisplayRenderCache(ATPortableTestContext& context);
@@ -119,6 +120,7 @@ bool ATTestVDDisplayScreenFX(ATPortableTestContext& context);
 bool ATTestVDDisplayTextRenderer(ATPortableTestContext& context);
 #if defined(__APPLE__)
 bool ATTestVDDisplayViewMac(ATPortableTestContext& context);
+bool ATTestVDDisplayAdapterMac(ATPortableTestContext& context);
 #endif
 bool ATTestSystemBinary(ATPortableTestContext& context);
 bool ATTestSystemBitMath(ATPortableTestContext& context);
@@ -271,6 +273,7 @@ const ATPortableTestCase *ATGetPortableTests(size_t& count) {
 		{ "VDDisplay_CustomEffect", ATTestVDDisplayCustomEffect },
 		{ "VDDisplay_DisplayTypes", ATTestVDDisplayDisplayTypes },
 		{ "VDDisplay_FontBitmap", ATTestVDDisplayFontBitmap },
+		{ "VDDisplay_FrameQueue", ATTestVDDisplayFrameQueue },
 		{ "VDDisplay_PresentationBuffer", ATTestVDDisplayPresentationBuffer },
 		{ "VDDisplay_Logging", ATTestVDDisplayLogging },
 		{ "VDDisplay_RenderCache", ATTestVDDisplayRenderCache },
@@ -280,6 +283,7 @@ const ATPortableTestCase *ATGetPortableTests(size_t& count) {
 		{ "VDDisplay_TextRenderer", ATTestVDDisplayTextRenderer },
 #if defined(__APPLE__)
 		{ "VDDisplay_ViewMac", ATTestVDDisplayViewMac },
+		{ "VDDisplay_AdapterMac", ATTestVDDisplayAdapterMac },
 #endif
 		{ "System_Binary", ATTestSystemBinary },
 		{ "System_BitMath", ATTestSystemBitMath },

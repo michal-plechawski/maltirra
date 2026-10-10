@@ -284,6 +284,7 @@ portable_test_sources=(
 	src/ATTest/source/TestVDDisplay_CustomEffectPortable.cpp
 	src/ATTest/source/TestVDDisplay_DisplayTypesPortable.cpp
 	src/ATTest/source/TestVDDisplay_FontBitmapPortable.cpp
+	src/ATTest/source/TestVDDisplay_FrameQueuePortable.cpp
 	src/ATTest/source/TestVDDisplay_PresentationBufferPortable.cpp
 	src/ATTest/source/TestVDDisplay_LoggingPortable.cpp
 	src/ATTest/source/TestVDDisplay_RenderCachePortable.cpp
@@ -292,6 +293,7 @@ portable_test_sources=(
 	src/ATTest/source/TestVDDisplay_ScreenFXPortable.cpp
 	src/ATTest/source/TestVDDisplay_TextRendererPortable.cpp
 	src/platform/macOS_arm64/ATTest/source/TestVDDisplay_ViewMac.cpp
+	src/platform/macOS_arm64/ATTest/source/TestVDDisplay_AdapterMac.cpp
 	src/ATTest/source/TestSystem_Binary.cpp
 	src/ATTest/source/TestSystem_BitMath.cpp
 	src/ATTest/source/TestSystem_Cache.cpp
@@ -360,6 +362,7 @@ portable_test_sources=(
 	src/VDDisplay/source/displayframe.cpp
 	src/VDDisplay/source/displaytypes.cpp
 	src/VDDisplay/source/fontbitmap.cpp
+	src/VDDisplay/source/framequeue.cpp
 	src/VDDisplay/source/logging.cpp
 	src/VDDisplay/source/presentationbuffer.cpp
 	src/VDDisplay/source/rendercache.cpp
@@ -369,6 +372,7 @@ portable_test_sources=(
 	src/VDDisplay/source/textrenderer.cpp
 	src/platform/macOS_arm64/VDDisplay/source/fontcoretext.mm
 	src/platform/macOS_arm64/VDDisplay/source/displayview_macos.mm
+	src/platform/macOS_arm64/VDDisplay/source/display_macos.mm
 	src/Altirra/source/artifacting_filters.cpp
 	src/Altirra/source/audiorawsource.cpp
 	src/Altirra/source/audiostocksamples.cpp

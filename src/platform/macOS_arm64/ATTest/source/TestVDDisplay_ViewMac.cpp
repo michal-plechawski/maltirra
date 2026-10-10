@@ -89,5 +89,40 @@ bool ATTestVDDisplayViewMac(ATPortableTestContext& context) {
 	pixmap.h = 3;
 	AT_PORTABLE_TEST_ASSERT(context, VDCreateDisplayImageMac(pixmap) == nullptr);
 
+	// Exercise the exact draw helper used by NSView in a top-left context.
+	// Asymmetric rows catch double flips; a destination inset checks background
+	// fill and clipping, and a bottom-row crop checks source coordinates.
+	uint32 pattern[4] { 0x00FF0000, 0x0000FF00, 0x000000FF, 0x00FFFFFF };
+	pixmap.data = pattern;
+	pixmap.w = pixmap.h = 2;
+	pixmap.pitch = 2 * sizeof(uint32);
+	CGImageRef patternImage = VDCreateDisplayImageMac(pixmap);
+	AT_PORTABLE_TEST_ASSERT(context, patternImage != nullptr);
+	uint32 rendered[16] {};
+	colorSpace = CGColorSpaceCreateWithName(kCGColorSpaceSRGB);
+	bitmapContext = CGBitmapContextCreate(rendered, 4, 4, 8, 4 * sizeof(uint32), colorSpace, bitmapInfo);
+	AT_PORTABLE_TEST_ASSERT(context, bitmapContext != nullptr);
+	CGContextTranslateCTM(bitmapContext, 0, 4);
+	CGContextScaleCTM(bitmapContext, 1, -1);
+	const CGRect bounds = CGRectMake(0, 0, 4, 4);
+	const vdrect32f dest(1, 1, 3, 3);
+	VDDrawDisplayImageMac(bitmapContext, patternImage, bounds, nullptr, &dest, 0x00123456, false);
+	// Bitmap storage is top-to-bottom even though its default user-space CTM
+	// points upward. The simulated flipped view plus helper must preserve rows.
+	const auto pixelAt = [&](int x, int y) { return rendered[y * 4 + x] & 0x00FFFFFF; };
+	AT_PORTABLE_TEST_ASSERT(context, pixelAt(0, 0) == 0x00123456);
+	AT_PORTABLE_TEST_ASSERT(context, pixelAt(3, 3) == 0x00123456);
+	AT_PORTABLE_TEST_ASSERT(context, pixelAt(1, 1) == 0x00FF0000);
+	AT_PORTABLE_TEST_ASSERT(context, pixelAt(2, 1) == 0x0000FF00);
+	AT_PORTABLE_TEST_ASSERT(context, pixelAt(1, 2) == 0x000000FF);
+	AT_PORTABLE_TEST_ASSERT(context, pixelAt(2, 2) == 0x00FFFFFF);
+	const vdrect32 sourceCrop(0, 1, 2, 2);
+	VDDrawDisplayImageMac(bitmapContext, patternImage, bounds, &sourceCrop, &dest, 0, false);
+	AT_PORTABLE_TEST_ASSERT(context, pixelAt(1, 1) == 0x000000FF);
+	AT_PORTABLE_TEST_ASSERT(context, pixelAt(2, 2) == 0x00FFFFFF);
+	CGContextRelease(bitmapContext);
+	CGColorSpaceRelease(colorSpace);
+	CGImageRelease(patternImage);
+
 	return true;
 }

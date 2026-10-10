@@ -2,6 +2,7 @@
 // Copyright (C) 2026 Avery Lee
 
 #include <cstring>
+#include <cwchar>
 #include <limits>
 #include <mutex>
 #include <new>
@@ -12,6 +13,7 @@
 
 #include <vd2/VDDisplay/displayview_macos.h>
 #include <vd2/VDDisplay/internal/presentationbuffer.h>
+#include <vd2/system/VDString.h>
 
 CGImageRef VDCreateDisplayImageMac(const VDPixmap& pixmap) {
 	using namespace nsVDPixmap;
@@ -85,17 +87,68 @@ CGImageRef VDCreateDisplayImageMac(const VDPixmap& pixmap) {
 	return image;
 }
 
+void VDDrawDisplayImageMac(CGContextRef context, CGImageRef image, CGRect bounds,
+	const vdrect32 *sourceRect, const vdrect32f *destRect, uint32 backgroundColor,
+	bool bilinear) {
+	if (!context)
+		return;
+
+	CGContextSaveGState(context);
+	CGContextClipToRect(context, bounds);
+	CGContextSetRGBFillColor(context, ((backgroundColor >> 16) & 255) / 255.0,
+		((backgroundColor >> 8) & 255) / 255.0, (backgroundColor & 255) / 255.0, 1);
+	CGContextFillRect(context, bounds);
+
+	CGImageRef croppedImage = nullptr;
+	if (image && sourceRect) {
+		if (sourceRect->right > sourceRect->left && sourceRect->bottom > sourceRect->top) {
+			const CGRect sourceBounds = CGRectMake(0, 0, CGImageGetWidth(image), CGImageGetHeight(image));
+			const CGRect crop = CGRectIntersection(sourceBounds, CGRectMake(sourceRect->left,
+				sourceRect->top, (double)sourceRect->right - sourceRect->left,
+				(double)sourceRect->bottom - sourceRect->top));
+			if (!CGRectIsEmpty(crop) && !CGRectIsNull(crop))
+				croppedImage = CGImageCreateWithImageInRect(image, crop);
+		}
+		image = croppedImage;
+	}
+
+	const CGRect dest = destRect
+		? CGRectMake(destRect->left, destRect->top, destRect->width(), destRect->height())
+		: bounds;
+	if (image && !CGRectIsEmpty(dest)) {
+		CGContextSetInterpolationQuality(context, bilinear ? kCGInterpolationLow : kCGInterpolationNone);
+		CGContextSetBlendMode(context, kCGBlendModeCopy);
+		CGContextTranslateCTM(context, CGRectGetMinX(dest), CGRectGetMaxY(dest));
+		CGContextScaleCTM(context, 1, -1);
+		CGContextDrawImage(context, CGRectMake(0, 0, CGRectGetWidth(dest), CGRectGetHeight(dest)), image);
+	}
+	if (croppedImage)
+		CGImageRelease(croppedImage);
+	CGContextRestoreGState(context);
+}
+
 @interface VDMacVideoDisplayView : NSView {
 @private
 	std::mutex *_mutex;
 	VDDisplayPresentationBuffer *_presentationBuffer;
 	CGImageRef _image;
 	bool _redisplayPending;
+	bool _hasSourceRect;
+	bool _hasDestRect;
+	vdrect32 _sourceRect;
+	vdrect32f _destRect;
+	uint32 _backgroundColor;
+	bool _bilinear;
+	NSString *_message;
 }
 
 - (bool)setSource:(const VDPixmap&)source allowConversion:(bool)allowConversion;
 - (void)clearFrame;
 - (void)requestRedisplay;
+- (void)setImage:(CGImageRef)image;
+- (void)setLayout:(const vdrect32 *)sourceRect destination:(const vdrect32f *)destRect
+	background:(uint32)backgroundColor bilinear:(bool)bilinear;
+- (void)setMessage:(const wchar_t *)message;
 
 @end
 
@@ -121,6 +174,7 @@ CGImageRef VDCreateDisplayImageMac(const VDPixmap& pixmap) {
 
 	delete _presentationBuffer;
 	delete _mutex;
+	[_message release];
 	[super dealloc];
 }
 
@@ -167,6 +221,45 @@ CGImageRef VDCreateDisplayImageMac(const VDPixmap& pixmap) {
 	[self requestRedisplay];
 }
 
+- (void)setImage:(CGImageRef)image {
+	if (image)
+		CGImageRetain(image);
+	CGImageRef oldImage = nullptr;
+	{
+		std::lock_guard<std::mutex> lock(*_mutex);
+		oldImage = _image;
+		_image = image;
+	}
+	if (oldImage)
+		CGImageRelease(oldImage);
+	[self requestRedisplay];
+}
+
+- (void)setLayout:(const vdrect32 *)sourceRect destination:(const vdrect32f *)destRect
+	background:(uint32)backgroundColor bilinear:(bool)bilinear {
+	_hasSourceRect = sourceRect != nullptr;
+	_hasDestRect = destRect != nullptr;
+	if (sourceRect)
+		_sourceRect = *sourceRect;
+	if (destRect)
+		_destRect = *destRect;
+	_backgroundColor = backgroundColor;
+	_bilinear = bilinear;
+	[self requestRedisplay];
+}
+
+- (void)setMessage:(const wchar_t *)message {
+	NSString *text = nil;
+	if (message) {
+		const VDStringA utf8 = VDTextWToU8(message, (int)std::wcslen(message));
+		text = [[NSString alloc] initWithBytes:utf8.data() length:utf8.size()
+			encoding:NSUTF8StringEncoding];
+	}
+	[_message release];
+	_message = text;
+	[self requestRedisplay];
+}
+
 - (void)requestRedisplay {
 	bool scheduleRedisplay = false;
 	{
@@ -202,8 +295,6 @@ CGImageRef VDCreateDisplayImageMac(const VDPixmap& pixmap) {
 		return;
 
 	const CGRect bounds = NSRectToCGRect([self bounds]);
-	CGContextSetRGBFillColor(context, 0, 0, 0, 1);
-	CGContextFillRect(context, bounds);
 
 	CGImageRef image = nullptr;
 	{
@@ -212,20 +303,17 @@ CGImageRef VDCreateDisplayImageMac(const VDPixmap& pixmap) {
 			image = CGImageRetain(_image);
 	}
 
-	if (!image)
-		return;
-
-	CGContextSaveGState(context);
-	CGContextSetInterpolationQuality(context, kCGInterpolationNone);
-	CGContextSetBlendMode(context, kCGBlendModeCopy);
-	CGContextTranslateCTM(context, CGRectGetMinX(bounds), CGRectGetMaxY(bounds));
-	CGContextScaleCTM(context, 1, -1);
-	CGContextDrawImage(
-		context,
-		CGRectMake(0, 0, CGRectGetWidth(bounds), CGRectGetHeight(bounds)),
-		image);
-	CGContextRestoreGState(context);
-	CGImageRelease(image);
+	VDDrawDisplayImageMac(context, image, bounds, _hasSourceRect ? &_sourceRect : nullptr,
+		_hasDestRect ? &_destRect : nullptr, _backgroundColor, _bilinear);
+	if (image)
+		CGImageRelease(image);
+	if ([_message length]) {
+		NSDictionary *attributes = @{ NSFontAttributeName: [NSFont systemFontOfSize:13],
+			NSForegroundColorAttributeName: [NSColor whiteColor] };
+		const NSSize size = [_message sizeWithAttributes:attributes];
+		[_message drawAtPoint:NSMakePoint(CGRectGetMidX(bounds) - size.width / 2,
+			CGRectGetMidY(bounds) - size.height / 2) withAttributes:attributes];
+	}
 }
 
 @end
@@ -259,4 +347,18 @@ void VDDisplayViewClearMac(VDGUIHandle view) {
 	VDMacVideoDisplayView *displayView = reinterpret_cast<VDMacVideoDisplayView *>(view);
 	if (displayView)
 		[displayView clearFrame];
+}
+
+void VDDisplayViewSetImageMac(VDGUIHandle view, CGImageRef image) {
+	[reinterpret_cast<VDMacVideoDisplayView *>(view) setImage:image];
+}
+
+void VDDisplayViewSetLayoutMac(VDGUIHandle view, const vdrect32 *sourceRect,
+	const vdrect32f *destRect, uint32 backgroundColor, bool bilinear) {
+	[reinterpret_cast<VDMacVideoDisplayView *>(view) setLayout:sourceRect destination:destRect
+		background:backgroundColor bilinear:bilinear];
+}
+
+void VDDisplayViewSetMessageMac(VDGUIHandle view, const wchar_t *message) {
+	[reinterpret_cast<VDMacVideoDisplayView *>(view) setMessage:message];
 }

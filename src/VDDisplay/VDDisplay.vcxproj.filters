@@ -87,6 +87,9 @@
 	<ClCompile Include="source\presentationbuffer.cpp">
 	  <Filter>Source Files</Filter>
 	</ClCompile>
+	<ClCompile Include="source\framequeue.cpp">
+	  <Filter>Source Files</Filter>
+	</ClCompile>
     <ClCompile Include="source\screenfx.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -192,6 +195,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
 	<ClInclude Include="..\h\vd2\VDDisplay\internal\presentationbuffer.h">
+	  <Filter>Header Files</Filter>
+	</ClInclude>
+	<ClInclude Include="..\h\vd2\VDDisplay\internal\framequeue.h">
 	  <Filter>Header Files</Filter>
 	</ClInclude>
     <ClInclude Include="..\h\vd2\VDDisplay\logging.h">

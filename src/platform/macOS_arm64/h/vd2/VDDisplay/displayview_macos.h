@@ -7,12 +7,20 @@
 #include <CoreGraphics/CoreGraphics.h>
 
 #include <vd2/system/vdtypes.h>
+#include <vd2/system/vectors.h>
 #include <vd2/Kasumi/pixmap.h>
 
 // Creates an immutable Core Graphics image from a positive-pitch XRGB8888
 // pixmap. The returned image owns its pixel snapshot and must be released by
 // the caller with CGImageRelease().
 CGImageRef VDCreateDisplayImageMac(const VDPixmap& pixmap);
+
+// Draws into a context whose origin is at the top left, as in a flipped
+// NSView. Shared with offscreen rendering tests. Source coordinates are pixels;
+// destination coordinates are points in the view.
+void VDDrawDisplayImageMac(CGContextRef context, CGImageRef image, CGRect bounds,
+	const vdrect32 *sourceRect, const vdrect32f *destRect, uint32 backgroundColor,
+	bool bilinear);
 
 // The view is returned retained. Creation must run on the main thread;
 // destruction and frame updates may run on any thread. The caller must finish
@@ -22,5 +30,12 @@ VDGUIHandle VDCreateDisplayViewMac();
 void VDDestroyDisplayViewMac(VDGUIHandle view);
 bool VDDisplayViewSetSourceMac(VDGUIHandle view, const VDPixmap& source, bool allowConversion);
 void VDDisplayViewClearMac(VDGUIHandle view);
+
+// The view retains the image; the caller keeps its own ownership. Layout and
+// message updates must run on the main thread.
+void VDDisplayViewSetImageMac(VDGUIHandle view, CGImageRef image);
+void VDDisplayViewSetLayoutMac(VDGUIHandle view, const vdrect32 *sourceRect,
+	const vdrect32f *destRect, uint32 backgroundColor, bool bilinear);
+void VDDisplayViewSetMessageMac(VDGUIHandle view, const wchar_t *message);
 
 #endif
