@@ -117,6 +117,9 @@ bool ATTestVDDisplayRenderer(ATPortableTestContext& context);
 bool ATTestVDDisplayRendererSoft(ATPortableTestContext& context);
 bool ATTestVDDisplayScreenFX(ATPortableTestContext& context);
 bool ATTestVDDisplayTextRenderer(ATPortableTestContext& context);
+#if defined(__APPLE__)
+bool ATTestVDDisplayViewMac(ATPortableTestContext& context);
+#endif
 bool ATTestSystemBinary(ATPortableTestContext& context);
 bool ATTestSystemBitMath(ATPortableTestContext& context);
 bool ATTestSystemCache(ATPortableTestContext& context);
@@ -275,6 +278,9 @@ const ATPortableTestCase *ATGetPortableTests(size_t& count) {
 		{ "VDDisplay_RendererSoft", ATTestVDDisplayRendererSoft },
 		{ "VDDisplay_ScreenFX", ATTestVDDisplayScreenFX },
 		{ "VDDisplay_TextRenderer", ATTestVDDisplayTextRenderer },
+#if defined(__APPLE__)
+		{ "VDDisplay_ViewMac", ATTestVDDisplayViewMac },
+#endif
 		{ "System_Binary", ATTestSystemBinary },
 		{ "System_BitMath", ATTestSystemBitMath },
 		{ "System_Cache", ATTestSystemCache },
