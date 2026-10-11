@@ -25,8 +25,7 @@ timing, SECAM, priority, light-pen sensing, and JSON snapshot continuation
 `Altirra_GTIADisplayMac` connects actual indexed GTIA output and the Atari
 palette generator to a native AppKit window/display and checks its rendered
 pixels against captures. This is a video-pipeline test, not a running emulator:
-ANTIC, full GTIA frame orchestration, and simulator integration are still in
-the Windows-only subtree.
+ANTIC and simulator integration are still in the Windows-only subtree.
 
 The full software artifacting engine (`src/Altirra/source/artifacting.cpp`)
 is shared too: indexed/RGB conversion, NTSC/PAL artifacting (including 14MHz
@@ -72,4 +71,26 @@ text attribute fetches across the end of RAM, pending-register snapshots,
 U1MB register-page overrides, and live backing-RAM
 changes. Owned RAM is saved; externally shared RAM is intentionally not saved
 by the VBXE device. This is component verification, not a booted Atari machine:
-full GTIA/ANTIC and simulator/application wiring remain to be ported.
+ANTIC and simulator/application wiring remain to be ported.
+
+The complete GTIA emulator (`src/Altirra/source/gtia.cpp`) is now shared too:
+registers, players/missiles, collisions, trigger/switch callbacks, scanlines,
+frame allocation/recycling, artifacting, and VBXE RGB rendering. The shared
+core calls platform playfield unpackers: Windows retains SSE2 for complete
+aligned blocks, while macOS uses bounded NEON blocks; tails never access
+padding around the caller's buffers. Empty playfield spans are no-ops.
+Standalone heap instances explicitly initialize synchronization, sprite lists,
+output pointers, and scanline state instead of relying on static zeroing.
+
+`Altirra_GTIARegisters`, `Altirra_GTIASnapshot`, and `Altirra_GTIAPlayfield`
+cover callbacks, SECAM line-edge trigger timing, real serialized snapshots,
+pending register changes on repeated restoration, and exact kernel bytes and
+bounds. GTIA snapshots now preserve the synchronization cursor; older snapshots
+without it default to the start-of-line baseline.
+
+`Altirra_GTIAFrameMac` drives actual 262-line GTIA frames into an attached
+AppKit display, then checks captured playfield/background pixels. It also binds
+the real VBXE, programs a repeated SR XDL in its RAM, and checks both the
+produced RGB frame and native capture against color-corrected palette output.
+The deterministic test clock supplies ANTIC-facing inputs; this is not yet a
+CPU-driven/booted machine. The display queue and rendering are production code.

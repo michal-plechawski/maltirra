@@ -19,6 +19,7 @@
 #define AT_GTIA_H
 
 #include <vd2/system/function.h>
+#include <vd2/system/vdalloc.h>
 #include <vd2/system/linearalloc.h>
 #include <vd2/system/refcount.h>
 #include <vd2/system/vdstl.h>
@@ -472,10 +473,10 @@ protected:
 	};
 
 	struct Sprite {
-		SpriteState mState;
-		SpriteImage *mpImageHead;
-		SpriteImage *mpImageTail;
-		int mLastSync;
+		SpriteState mState {};
+		SpriteImage *mpImageHead = nullptr;
+		SpriteImage *mpImageTail = nullptr;
+		int mLastSync = -2;
 
 		void Sync(int pos);
 	};
@@ -500,10 +501,10 @@ protected:
 
 	// critical variables - sync
 	IATGTIAEmulatorConnections *mpConn; 
-	int		mLastSyncX;
+	int		mLastSyncX = -2;
 	VBlankMode		mVBlankMode;
-	bool	mbANTICHiresMode;
-	bool	mbHiresMode;
+	bool	mbANTICHiresMode = false;
+	bool	mbHiresMode = false;
 
 	typedef vdfastvector<RegisterChange> RegisterChanges;
 	RegisterChanges mRegisterChanges;
@@ -513,16 +514,16 @@ protected:
 	// critical variables - sprite update
 	uint8	mSpritePos[8];
 	bool	mbSpritesActive;
-	bool	mbPMRendered;
+	bool	mbPMRendered = false;
 	SpriteImage *mpFreeSpriteImages;
 	Sprite	mSprites[8];
 	uint8	mPlayerCollFlags[4];
 	uint8	mMissileCollFlags[4];
 
 	// non-critical variables
-	IVDVideoDisplay *mpDisplay;
+	IVDVideoDisplay *mpDisplay = nullptr;
 	ATNotifyList<IATGTIAVideoTap *> mVideoTaps;
-	uint32	mY;
+	uint32	mY = 0;
 
 	AnalysisMode	mAnalysisMode;
 	ATArtifactMode	mArtifactMode;
@@ -577,14 +578,14 @@ protected:
 	uint8	mTRIGSECAM[4];
 	uint32	mTRIGSECAMLastUpdate[4];
 
-	uint8	*mpDst;
+	uint8	*mpDst = nullptr;
 	vdrefptr<ATFrameBuffer>	mpFrame;
 	vdrefptr<ATFrameBuffer>	mpDroppedFrame;
-	VDPixmap	mRawFrame;
-	uint64	mFrameTimestamp;
+	VDPixmap	mRawFrame {};
+	uint64	mFrameTimestamp = 0;
 	ATFrameTracker *mpFrameTracker;
-	bool	mbMixedRendering;	// GTIA mode with non-hires or pseudo mode E
-	bool	mbGTIADisableTransition;
+	bool	mbMixedRendering = false;	// GTIA mode with non-hires or pseudo mode E
+	bool	mbGTIADisableTransition = false;
 	bool	mbTurbo;
 	bool	mbCTIAMode;
 	bool	mb50HzMode;
@@ -600,9 +601,9 @@ protected:
 
 	vdvector<LightSensor> mLightSensors;
 
-	VDALIGN(16)	uint8	mMergeBuffer[228+12];
-	VDALIGN(16)	uint8	mAnticData[228+12];
-	bool	mbScanlinesWithHiRes[240];
+	VDALIGN(16)	uint8	mMergeBuffer[228+12] {};
+	VDALIGN(16)	uint8	mAnticData[228+12] {};
+	bool	mbScanlinesWithHiRes[240] {};
 
 	ATColorParams mActiveColorParams;
 	ATColorSettings mColorSettings;

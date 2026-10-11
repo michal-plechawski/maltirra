@@ -15,7 +15,13 @@
 //	along with this program; if not, write to the Free Software
 //	Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
-#include <stdafx.h>
+#include <algorithm>
+#include <cmath>
+#include <cstring>
+#include <iterator>
+#include <utility>
+#include <vd2/system/error.h>
+#include <vd2/system/memory.h>
 #include <numeric>
 #include <vd2/system/binary.h>
 #include <vd2/system/cpuaccel.h>
@@ -35,10 +41,10 @@
 #include "gtiatables.h"
 #include "gtiarenderer.h"
 #include "palettegenerator.h"
-#include "console.h"
+#include "consoletext.h"
 #include "artifacting.h"
 #include "savestate.h"
-#include "uirender.h"
+#include "gtiaplayfield.h"
 #include "vbxe.h"
 
 using namespace ATGTIA;
@@ -69,20 +75,6 @@ AT_DEFINE_ENUM_TABLE_BEGIN(ATVideoDeinterlaceMode)
 	{ ATVideoDeinterlaceMode::None, "none" },
 	{ ATVideoDeinterlaceMode::AdaptiveBob, "adaptivebob" },
 AT_DEFINE_ENUM_TABLE_END(ATVideoDeinterlaceMode, ATVideoDeinterlaceMode::None)
-
-#ifdef VD_CPU_X86
-extern "C" void VDCDECL atasm_update_playfield_160_sse2(
-	void *dst,
-	const uint8 *src,
-	uint32 n
-);
-#endif
-
-#if defined(VD_CPU_X86) || defined(VD_CPU_X64)
-#include "gtia_sse2_intrin.inl"
-#elif defined(VD_CPU_ARM64)
-#include "gtia_neon.inl"
-#endif
 
 ///////////////////////////////////////////////////////////////////////////
 
@@ -1474,9 +1466,17 @@ public:
 		rw.Transfer("register_changes", &mRegisterChanges);
 		rw.Transfer("hires_latch", &mbHiresLatch);
 		rw.Transfer("active_prior", &mActivePRIOR);
+		// Encode relative to the -2 start-of-line baseline: an absent integer
+		// field reads as zero in older snapshots, which must mean -2, not 0.
+		sint32 syncOffset = mLastSyncX + 2;
+		rw.Transfer("sync_offset", &syncOffset);
 		rw.Transfer("renderer_state", &mpRendererState);
 
 		if constexpr (rw.IsReader) {
+			if (syncOffset < 0 || syncOffset > 230)
+				throw ATInvalidSaveStateException();
+			mLastSyncX = syncOffset - 2;
+
 			const size_t n = mRegisterChanges.size();
 
 			if (n % 3)
@@ -1499,6 +1499,7 @@ public:
 	}
 
 	vdfastvector<sint16> mRegisterChanges;
+	sint32 mLastSyncX = -2;
 	bool mbHiresLatch;
 	uint8 mActivePRIOR;
 
@@ -1619,6 +1620,7 @@ void ATGTIAEmulator::SaveState(IATObjectState **pp) {
 
 	obj2->mbHiresLatch = mbHiresMode;
 	obj2->mActivePRIOR = mActivePRIOR;
+	obj2->mLastSyncX = mLastSyncX;
 
 	for(int i=mRCIndex; i<mRCCount; ++i) {
 		const RegisterChange& rc = mRegisterChanges[i];
@@ -1642,6 +1644,8 @@ void ATGTIAEmulator::LoadState(const IATObjectState *state) {
 }
 
 void ATGTIAEmulator::LoadState(const ATSaveStateGtia& gstate) {
+	ResetSprites();
+
 	// P/M pos
 	for(int i=0; i<4; ++i)
 		mSpritePos[i] = gstate.mHPOSP[i];
@@ -1697,6 +1701,7 @@ void ATGTIAEmulator::LoadState(const ATSaveStateGtia& gstate) {
 	mRCCount = 0;
 
 	mActivePRIOR = mPRIOR;
+	mLastSyncX = -2;
 	mbHiresMode = mbANTICHiresMode && !(mPRIOR & 0xC0);
 
 	if (gstate.mpInternalState) {
@@ -1704,6 +1709,7 @@ void ATGTIAEmulator::LoadState(const ATSaveStateGtia& gstate) {
 
 		mbHiresMode = gistate.mbHiresLatch;
 		mActivePRIOR = gistate.mActivePRIOR;
+		mLastSyncX = gistate.mLastSyncX;
 
 		size_t len = gistate.mRegisterChanges.size();
 		size_t numChanges = len / 3;
@@ -2358,27 +2364,7 @@ void ATGTIAEmulator::UpdatePlayfield160(uint32 x, const uint8 *__restrict src, u
 		return;
 
 	VDASSERT(x < 114);
-	uint8 *__restrict dst = &mMergeBuffer[x*2];
-
-#ifdef VD_CPU_X86
-	if (SSE2_enabled) {
-		atasm_update_playfield_160_sse2(dst, src, n);
-		return;
-	}
-#endif
-
-#ifdef VD_CPU_AMD64
-	atasm_update_playfield_160_sse2(dst, src, n);
-#elif defined(VD_CPU_ARM64)
-	atasm_update_playfield_160_neon(dst, src, n);
-#else
-	do {
-		const uint8 byte = *src++;
-		dst[0] = (byte >>  4) & 15;
-		dst[1] = (byte      ) & 15;
-		dst += 2;
-	} while(--n);
-#endif
+	ATGTIAUnpackPlayfield160(&mMergeBuffer[x*2], src, n);
 }
 
 void ATGTIAEmulator::UpdatePlayfield320(uint32 x, uint8 byte) {
@@ -2394,21 +2380,11 @@ void ATGTIAEmulator::UpdatePlayfield320(uint32 x, uint8 byte) {
 }
 
 void ATGTIAEmulator::UpdatePlayfield320(uint32 x, const uint8 *src, uint32 n) {
-	VDASSERT(x < 228);
+	if (!n)
+		return;
 
-#if VD_CPU_X86 || VD_CPU_X64
-	atasm_update_playfield_320_sse2(mMergeBuffer, mAnticData, src, x, n);
-#else
-	memset(&mMergeBuffer[x], PF2, n*2);
-	
-	uint8 *VDRESTRICT dst = &mAnticData[x];
-	do {
-		const uint8 byte = *src++;
-		dst[0] = (byte >> 2) & 3;
-		dst[1] = (byte >> 0) & 3;
-		dst += 2;
-	} while(--n);
-#endif
+	VDASSERT(x < 228);
+	ATGTIAUnpackPlayfield320(mMergeBuffer, mAnticData, src, x, n);
 }
 
 namespace {

@@ -175,9 +175,15 @@
     <ClCompile Include="..\platform\Windows_x64\Altirra\source\firmwaremanager.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\platform\Windows_x64\Altirra\source\gtia.cpp">
+    <ClCompile Include="source\gtia.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\platform\Windows_x64\Altirra\source\gtiaplayfield.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClInclude Include="h\gtiaplayfield.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
     <ClCompile Include="source\gtiarenderer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -1224,7 +1230,7 @@
     <ClInclude Include="h\firmwaremanager.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\platform\Windows_x64\Altirra\h\gtia.h">
+    <ClInclude Include="h\gtia.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="h\gtiarenderer.h">

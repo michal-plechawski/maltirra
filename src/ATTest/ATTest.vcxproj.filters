@@ -253,6 +253,12 @@
 	<ClCompile Include="source\TestAltirra_VBXEDevicePortable.cpp">
 	  <Filter>Source Files</Filter>
 	</ClCompile>
+	<ClCompile Include="source\TestAltirra_GTIACorePortable.cpp">
+	  <Filter>Source Files</Filter>
+	</ClCompile>
+	<ClCompile Include="source\TestAltirra_GTIAPlayfieldPortable.cpp">
+	  <Filter>Source Files</Filter>
+	</ClCompile>
 	<ClCompile Include="source\TestAudio_FiltersPortable.cpp">
 	  <Filter>Source Files</Filter>
 	</ClCompile>

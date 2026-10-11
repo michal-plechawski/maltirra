@@ -312,7 +312,13 @@
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="..\platform\Windows_x64\Altirra\source\firmwaremanager.cpp" />
-    <ClCompile Include="..\platform\Windows_x64\Altirra\source\gtia.cpp" />
+    <ClCompile Include="source\gtia.cpp">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="..\platform\Windows_x64\Altirra\source\gtiaplayfield.cpp">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClInclude Include="h\gtiaplayfield.h" />
     <ClCompile Include="source\gtiarenderer.cpp">
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
     </ClCompile>
@@ -687,7 +693,7 @@
     <ClInclude Include="h\encode_png.h" />
     <ClInclude Include="h\firmwaredetect.h" />
     <ClInclude Include="h\firmwaremanager.h" />
-    <ClInclude Include="..\platform\Windows_x64\Altirra\h\gtia.h" />
+    <ClInclude Include="h\gtia.h" />
     <ClInclude Include="h\gtiarenderer.h" />
     <ClInclude Include="h\gtiatables.h" />
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\hlebasicloader.h" />
