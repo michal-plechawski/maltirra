@@ -301,6 +301,10 @@ portable_test_sources=(
 	src/platform/macOS_arm64/ATTest/source/nativewindowfixture.mm
 	src/platform/macOS_arm64/ATTest/source/TestNativeUI_WindowProxyMac.mm
 	src/platform/macOS_arm64/ATNativeUI/source/nativewindowproxy.mm
+	src/ATTest/source/TestNativeUI_WindowLifecyclePortable.cpp
+	src/platform/macOS_arm64/ATTest/source/nativewindowlifecyclefixture.mm
+	src/platform/macOS_arm64/ATTest/source/TestNativeUI_WindowEventsMac.mm
+	src/platform/macOS_arm64/ATNativeUI/source/uinativewindow.mm
 	src/ATTest/source/TestSystem_Binary.cpp
 	src/ATTest/source/TestSystem_BitMath.cpp
 	src/ATTest/source/TestSystem_Cache.cpp

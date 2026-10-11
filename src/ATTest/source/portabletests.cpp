@@ -125,8 +125,10 @@ bool ATTestVDDisplayAdapterMac(ATPortableTestContext& context);
 bool ATTestVDDisplayCompositionMac(ATPortableTestContext& context);
 bool ATTestVDDisplayNativeViewMac(ATPortableTestContext& context);
 bool ATTestNativeUIWindowProxyMac(ATPortableTestContext& context);
+bool ATTestNativeUIWindowEventsMac(ATPortableTestContext& context);
 #endif
 bool ATTestNativeUIWindowProxy(ATPortableTestContext& context);
+bool ATTestNativeUIWindowLifecycle(ATPortableTestContext& context);
 bool ATTestSystemBinary(ATPortableTestContext& context);
 bool ATTestSystemBitMath(ATPortableTestContext& context);
 bool ATTestSystemCache(ATPortableTestContext& context);
@@ -293,8 +295,10 @@ const ATPortableTestCase *ATGetPortableTests(size_t& count) {
 		{ "VDDisplay_CompositionMac", ATTestVDDisplayCompositionMac },
 		{ "VDDisplay_NativeViewMac", ATTestVDDisplayNativeViewMac },
 		{ "NativeUI_WindowProxyMac", ATTestNativeUIWindowProxyMac },
+		{ "NativeUI_WindowEventsMac", ATTestNativeUIWindowEventsMac },
 #endif
 		{ "NativeUI_WindowProxy", ATTestNativeUIWindowProxy },
+		{ "NativeUI_WindowLifecycle", ATTestNativeUIWindowLifecycle },
 		{ "System_Binary", ATTestSystemBinary },
 		{ "System_BitMath", ATTestSystemBitMath },
 		{ "System_Cache", ATTestSystemCache },

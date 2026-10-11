@@ -110,7 +110,9 @@ void ATUINativeWindowProxy::Close() {
 void ATUINativeWindowProxy::Destroy() {
 	const id object = Object(mhwnd);
 	mhwnd = nullptr;
-	if (NSView *view = View(object)) [view removeFromSuperview];
+	if ([object respondsToSelector:@selector(atDestroyNativeWindow)])
+		[object performSelector:@selector(atDestroyNativeWindow)];
+	else if (NSView *view = View(object)) [view removeFromSuperview];
 	else [Window(object) close];
 }
 bool ATUINativeWindowProxy::IsEnabled() const {

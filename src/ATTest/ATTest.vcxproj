@@ -455,6 +455,12 @@
 	<ClCompile Include="source\TestVDDisplay_FrameQueuePortable.cpp">
 	  <PrecompiledHeader>NotUsing</PrecompiledHeader>
 	</ClCompile>
+	<ClCompile Include="source\TestNativeUI_WindowLifecyclePortable.cpp">
+	  <PrecompiledHeader>NotUsing</PrecompiledHeader>
+	</ClCompile>
+	<ClCompile Include="..\platform\Windows_x64\ATTest\source\nativewindowlifecyclefixture.cpp">
+	  <PrecompiledHeader>NotUsing</PrecompiledHeader>
+	</ClCompile>
 	<ClCompile Include="source\TestNativeUI_WindowProxyPortable.cpp">
 	  <PrecompiledHeader>NotUsing</PrecompiledHeader>
 	</ClCompile>
