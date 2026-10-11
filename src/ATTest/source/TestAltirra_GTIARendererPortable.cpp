@@ -2,6 +2,7 @@
 #include <algorithm>
 #include <array>
 #include <cstring>
+#include <cstdio>
 #include <memory>
 #include <at/atcore/snapshotimpl.h>
 #include <at/attest/portabletest.h>
@@ -59,7 +60,9 @@ namespace {
 					for(int width = 0; width <= 34; ++width) {
 						Line fast, general;
 						for(int x = 0; x < 240; ++x) {
-							fast.merge[x] = mode == 0 ? kPF[x % 5] : mode == 1 ? (x & 1 ? 4 : 0) : mode == 3 ? 4 : 0;
+							// GTIA UpdatePlayfield320 always supplies PF2 for hires
+							// data. Background occurs only on a blank AN bus.
+							fast.merge[x] = mode == 0 ? kPF[x % 5] : mode == 1 ? (fast.antic[x] || (x & 1) ? 4 : 0) : mode == 3 ? 4 : 0;
 							general.merge[x] = fast.merge[x];
 						}
 						ATGTIARenderer accelerated, reference;
@@ -71,7 +74,15 @@ namespace {
 						reference.RenderScanline(start, true, true, true);
 						accelerated.RenderScanline(start + width, true, false, false);
 						reference.RenderScanline(start + width, true, true, true);
-						AT_PORTABLE_TEST_ASSERT(context, fast.pixels == general.pixels);
+						if (fast.pixels != general.pixels) {
+							static char detail[160];
+							std::snprintf(detail, sizeof detail, "fast/general mismatch: mode=%d SECAM=%d start=%d width=%d",
+								mode, int(secam), start, width);
+							context.mpFile = __FILE__;
+							context.mLine = __LINE__;
+							context.mpExpression = detail;
+							return false;
+						}
 						for(int x = 34; x < start + width; ++x)
 							for(int half = 0; half < 2; ++half)
 								AT_PORTABLE_TEST_ASSERT(context, fast.pixels[2*x + half] == ExpectedPixel(fast, mode, secam, x, half));
