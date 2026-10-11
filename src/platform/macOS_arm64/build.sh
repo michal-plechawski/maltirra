@@ -211,6 +211,7 @@ portable_test_sources=(
 	src/ATTest/source/TestAltirra_IRQControllerPortable.cpp
 	src/ATTest/source/TestAltirra_HLEUtilsPortable.cpp
 	src/ATTest/source/TestAltirra_GTIATablesPortable.cpp
+	src/ATTest/source/TestAltirra_GTIARendererPortable.cpp
 	src/ATTest/source/TestAltirra_HostDeviceUtilsPortable.cpp
 	src/ATTest/source/TestAltirra_IDERawImagePortable.cpp
 	src/ATTest/source/TestAltirra_IDEVHDImagePortable.cpp
@@ -297,6 +298,7 @@ portable_test_sources=(
 	src/platform/macOS_arm64/ATTest/source/TestVDDisplay_AdapterMac.cpp
 	src/platform/macOS_arm64/ATTest/source/TestVDDisplay_CompositionMac.cpp
 	src/platform/macOS_arm64/ATTest/source/TestVDDisplay_NativeViewMac.mm
+	src/platform/macOS_arm64/ATTest/source/TestAltirra_GTIADisplayMac.mm
 	src/ATTest/source/TestNativeUI_WindowProxyPortable.cpp
 	src/platform/macOS_arm64/ATTest/source/nativewindowfixture.mm
 	src/platform/macOS_arm64/ATTest/source/TestNativeUI_WindowProxyMac.mm
@@ -427,6 +429,7 @@ portable_test_sources=(
 	src/Altirra/source/firmwaredetect.cpp
 	src/Altirra/source/hleutils.cpp
 	src/Altirra/source/gtiatables.cpp
+	src/Altirra/source/gtiarenderer.cpp
 	src/Altirra/source/inputdefs.cpp
 	src/Altirra/source/inputmap.cpp
 	src/Altirra/source/irqcontroller.cpp

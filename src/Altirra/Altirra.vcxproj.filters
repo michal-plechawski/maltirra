@@ -166,7 +166,7 @@
     <ClCompile Include="..\platform\Windows_x64\Altirra\source\gtia.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\platform\Windows_x64\Altirra\source\gtiarenderer.cpp">
+    <ClCompile Include="source\gtiarenderer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="source\gtiatables.cpp">
@@ -1209,7 +1209,7 @@
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\gtia.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\platform\Windows_x64\Altirra\h\gtiarenderer.h">
+    <ClInclude Include="h\gtiarenderer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="h\gtiatables.h">
@@ -1925,7 +1925,7 @@
     <None Include="..\..\out\release\1030firmware.bin">
       <Filter>Resource Files</Filter>
     </None>
-    <None Include="h\gtiarenderer_ssse3_intrin.inl">
+    <None Include="..\platform\Windows_x64\Altirra\h\gtiarenderer_ssse3_intrin.inl">
       <Filter>Header Files</Filter>
     </None>
     <None Include="h\gtia_sse2_intrin.inl">
@@ -1973,7 +1973,10 @@
     <None Include="..\..\out\Release\rapidpbi16.bin">
       <Filter>Resource Files</Filter>
     </None>
-    <None Include="h\gtiarenderer_neon.inl">
+    <None Include="..\platform\Windows_x64\Altirra\h\gtiarenderer_simd.inl">
+      <Filter>Header Files</Filter>
+    </None>
+    <None Include="..\platform\Windows_x64\Altirra\h\gtiarenderer_neon.inl">
       <Filter>Header Files</Filter>
     </None>
     <None Include="h\gtia_neon.inl">

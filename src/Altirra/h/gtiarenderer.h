@@ -23,6 +23,8 @@
 #include <vd2/system/vdstl_vectorview.h>
 #include "gtiatables.h"
 
+// Platform-neutral scanline renderer; accelerated kernels live in platform/.
+
 class ATSaveStateReader;
 class IATSerializable;
 

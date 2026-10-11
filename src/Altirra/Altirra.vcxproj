@@ -301,7 +301,9 @@
     </ClCompile>
     <ClCompile Include="..\platform\Windows_x64\Altirra\source\firmwaremanager.cpp" />
     <ClCompile Include="..\platform\Windows_x64\Altirra\source\gtia.cpp" />
-    <ClCompile Include="..\platform\Windows_x64\Altirra\source\gtiarenderer.cpp" />
+    <ClCompile Include="source\gtiarenderer.cpp">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+    </ClCompile>
     <ClCompile Include="source\gtiatables.cpp">
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
     </ClCompile>
@@ -670,7 +672,7 @@
     <ClInclude Include="h\firmwaredetect.h" />
     <ClInclude Include="h\firmwaremanager.h" />
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\gtia.h" />
-    <ClInclude Include="..\platform\Windows_x64\Altirra\h\gtiarenderer.h" />
+    <ClInclude Include="h\gtiarenderer.h" />
     <ClInclude Include="h\gtiatables.h" />
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\hlebasicloader.h" />
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\hleciohook.h" />
@@ -850,8 +852,9 @@
     <None Include="h\cpumachine.inl" />
     <None Include="..\..\out\release\850handler.bin" />
     <None Include="..\..\out\release\850relocator.bin" />
-    <None Include="h\gtiarenderer_neon.inl" />
-    <None Include="h\gtiarenderer_ssse3_intrin.inl" />
+    <None Include="..\platform\Windows_x64\Altirra\h\gtiarenderer_neon.inl" />
+    <None Include="..\platform\Windows_x64\Altirra\h\gtiarenderer_ssse3_intrin.inl" />
+    <None Include="..\platform\Windows_x64\Altirra\h\gtiarenderer_simd.inl" />
     <None Include="h\gtia_neon.inl" />
     <None Include="h\gtia_sse2_intrin.inl" />
     <None Include="res\1030relay.pcm" />

@@ -15,7 +15,8 @@
 //	along with this program; if not, write to the Free Software
 //	Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
-#include <stdafx.h>
+#include <algorithm>
+#include <cstring>
 #include <vd2/system/cpuaccel.h>
 #include <at/atcore/snapshotimpl.h>
 #include "gtiarenderer.h"
@@ -24,26 +25,7 @@
 
 using namespace ATGTIA;
 
-#ifdef VD_CPU_X86
-extern "C" void VDCDECL atasm_gtia_render_lores_fast_ssse3(
-	void *dst,
-	const uint8 *src,
-	uint32 n,
-	const uint8 *color_table
-);
-
-extern "C" void VDCDECL atasm_gtia_render_mode8_fast_ssse3(
-	void *dst,
-	const uint8 *src,
-	const uint8 *lumasrc,
-	uint32 n,
-	const uint8 *color_table
-);
-#elif VD_CPU_X64
-#include "gtiarenderer_ssse3_intrin.inl"
-#elif VD_CPU_ARM64
-#include "gtiarenderer_neon.inl"
-#endif
+#include "gtiarenderer_simd.inl"
 
 ATGTIARenderer::ATGTIARenderer()
 	: mpMergeBuffer(NULL)
@@ -53,6 +35,9 @@ ATGTIARenderer::ATGTIARenderer()
 	, mRCIndex(0)
 	, mRCCount(0)
 	, mbHiresMode(false)
+	, mbGTIAEnableTransition(false)
+	, mbGTIATransitionFromHiresMode(false)
+	, mTransitionPhase(0)
 	, mbVBlank(true)
 	, mbSECAMMode(false)
 	, mPRIOR(0)
@@ -270,7 +255,7 @@ uint32 ATGTIARenderer::SenseScanline(int hpx1, int hpx2, const uint8 *weights) c
 	weights += (chpx1 - hpx1);
 
 	// compute dot product against luma
-	const uint8 *src = &mpDst[hpx1];
+	const uint8 *src = &mpDst[chpx1];
 	size_t n = (size_t)(chpx2 - chpx1);
 	uint32 sum = 0;
 
@@ -340,6 +325,8 @@ void ATGTIARenderer::ExchangeState(T& io) {
 }
 
 void ATGTIARenderer::LoadState(ATSaveStateReader& reader) {
+	// Historical raw-state layout has no transition fields. Preserve its
+	// format; new snapshots use the IATSerializable overload below.
 	ExchangeState(reader);
 
 	// read register changes
@@ -362,6 +349,10 @@ void ATGTIARenderer::ResetState() {
 	mbHiresMode = false;
 	mPRIOR = 0;
 	mX = 0;
+	mbGTIAEnableTransition = false;
+	mbGTIATransitionFromHiresMode = false;
+	mTransitionPhase = 0;
+	UpdatePriorityTable();
 }
 
 class ATSaveStateGtiaRenderer final : public ATSnapExchangeObject<ATSaveStateGtiaRenderer, "ATSaveStateGtiaRenderer"> {
@@ -372,12 +363,18 @@ public:
 		rw.Transfer("active_prior", &mPRIOR);
 		rw.Transfer("hires_mode", &mbHiresMode);
 		rw.Transfer("render_x", &mX);
+		rw.Transfer("gtia_transition", &mbGTIAEnableTransition);
+		rw.Transfer("transition_from_hires", &mbGTIATransitionFromHiresMode);
+		rw.Transfer("transition_phase", &mTransitionPhase);
 	}
 
 	vdfastvector<uint8> mRegisterChanges;
 	bool mbHiresMode;
 	uint8 mX;
 	uint8 mPRIOR;
+	bool mbGTIAEnableTransition = false;
+	bool mbGTIATransitionFromHiresMode = false;
+	uint8 mTransitionPhase = 0;
 };
 
 void ATGTIARenderer::SaveState(IATSerializable **ser) const {
@@ -386,9 +383,13 @@ void ATGTIARenderer::SaveState(IATSerializable **ser) const {
 	data->mbHiresMode = mbHiresMode;
 	data->mPRIOR = mPRIOR;
 	data->mX = mX;
-	data->mRegisterChanges.resize(mRCCount * 3);
+	data->mbGTIAEnableTransition = mbGTIAEnableTransition;
+	data->mbGTIATransitionFromHiresMode = mbGTIATransitionFromHiresMode;
+	data->mTransitionPhase = mTransitionPhase;
+	const int pendingCount = mRCCount - mRCIndex;
+	data->mRegisterChanges.resize(pendingCount * 3);
 
-	for(int i=0; i<mRCCount; ++i) {
+	for(int i=0; i<pendingCount; ++i) {
 		const auto& rc = mRegisterChanges[mRCIndex + i];
 
 		data->mRegisterChanges[i*3 + 0] = rc.mPos;
@@ -410,6 +411,9 @@ void ATGTIARenderer::LoadState(IATSerializable *ser) {
 		mbHiresMode = data.mbHiresMode;
 		mPRIOR = data.mPRIOR;
 		mX = data.mX;
+		mbGTIAEnableTransition = data.mbGTIAEnableTransition;
+		mbGTIATransitionFromHiresMode = data.mbGTIATransitionFromHiresMode;
+		mTransitionPhase = data.mTransitionPhase;
 
 		mRCIndex = 0;
 		mRCCount = data.mRegisterChanges.size() / 3;
@@ -941,15 +945,19 @@ void ATGTIARenderer::RenderMode10(int x1, int x2) {
 	if (!w)
 		return;
 
-	const uint8 *__restrict lumasrc = &mpAnticBuffer[(x1 - 1) & ~1];
+	// Clock zero has no previous AN pair in this scanline. Treat its
+	// prehistory as zero rather than reading before the caller's buffer.
+	const uint8 *__restrict lumasrc = &mpAnticBuffer[std::max(0, (x1 - 1) & ~1)];
 	if (!(x1 & 1)) {
-		uint8 l1 = lumasrc[0]*4 + lumasrc[1];
-		lumasrc += 2;
+		uint8 l1 = x1 ? lumasrc[0]*4 + lumasrc[1] : 0;
+		if (x1)
+			lumasrc += 2;
 
 		uint8 c4 = kMode10Lookup[l1] & kPFMask[*src & 15];
 
 		dst[0] = dst[1] = colorTable[priTable[c4 | (*src++ & 0xf8)]];
 		dst += 2;
+		--w;
 	}
 
 	int w2 = w >> 1;
@@ -1004,15 +1012,16 @@ void ATGTIARenderer::RenderMode10Fast(int x1, int x2) {
 		colorTable[kColorPF3]
 	};
 
-	const uint8 *__restrict lumasrc = &mpAnticBuffer[(x1 - 1) & ~1];
+	const uint8 *__restrict lumasrc = &mpAnticBuffer[std::max(0, (x1 - 1) & ~1)];
 
 	int w = x2 - x1;
 	if (!w)
 		return;
 
 	if (!(x1 & 1)) {
-		uint8 l1 = lumasrc[0]*4 + lumasrc[1];
-		lumasrc += 2;
+		uint8 l1 = x1 ? lumasrc[0]*4 + lumasrc[1] : 0;
+		if (x1)
+			lumasrc += 2;
 		uint8 c4 = colorLookup[l1];
 
 		dst[0] = dst[1] = c4;

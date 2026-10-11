@@ -37,6 +37,7 @@ bool ATTestAltirraCPUHookManager(ATPortableTestContext& context);
 bool ATTestAltirraIRQController(ATPortableTestContext& context);
 bool ATTestAltirraHLEUtils(ATPortableTestContext& context);
 bool ATTestAltirraGTIATables(ATPortableTestContext& context);
+bool ATTestAltirraGTIARenderer(ATPortableTestContext& context);
 bool ATTestAltirraHostDeviceUtils(ATPortableTestContext& context);
 bool ATTestAltirraIDERawImage(ATPortableTestContext& context);
 bool ATTestAltirraIDEVHDImage(ATPortableTestContext& context);
@@ -124,6 +125,7 @@ bool ATTestVDDisplayViewMac(ATPortableTestContext& context);
 bool ATTestVDDisplayAdapterMac(ATPortableTestContext& context);
 bool ATTestVDDisplayCompositionMac(ATPortableTestContext& context);
 bool ATTestVDDisplayNativeViewMac(ATPortableTestContext& context);
+bool ATTestAltirraGTIADisplayMac(ATPortableTestContext& context);
 bool ATTestNativeUIWindowProxyMac(ATPortableTestContext& context);
 bool ATTestNativeUIWindowEventsMac(ATPortableTestContext& context);
 #endif
@@ -207,6 +209,7 @@ const ATPortableTestCase *ATGetPortableTests(size_t& count) {
 		{ "Altirra_IRQController", ATTestAltirraIRQController },
 		{ "Altirra_HLEUtils", ATTestAltirraHLEUtils },
 		{ "Altirra_GTIATables", ATTestAltirraGTIATables },
+		{ "Altirra_GTIARenderer", ATTestAltirraGTIARenderer },
 		{ "Altirra_HostDeviceUtils", ATTestAltirraHostDeviceUtils },
 		{ "Altirra_IDERawImage", ATTestAltirraIDERawImage },
 		{ "Altirra_IDEVHDImage", ATTestAltirraIDEVHDImage },
@@ -294,6 +297,7 @@ const ATPortableTestCase *ATGetPortableTests(size_t& count) {
 		{ "VDDisplay_AdapterMac", ATTestVDDisplayAdapterMac },
 		{ "VDDisplay_CompositionMac", ATTestVDDisplayCompositionMac },
 		{ "VDDisplay_NativeViewMac", ATTestVDDisplayNativeViewMac },
+		{ "Altirra_GTIADisplayMac", ATTestAltirraGTIADisplayMac },
 		{ "NativeUI_WindowProxyMac", ATTestNativeUIWindowProxyMac },
 		{ "NativeUI_WindowEventsMac", ATTestNativeUIWindowEventsMac },
 #endif

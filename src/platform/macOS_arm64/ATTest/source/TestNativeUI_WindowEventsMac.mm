@@ -51,6 +51,16 @@ namespace {
 		NSView *mpView;
 		~ReleaseView() { [mpView release]; }
 	};
+	template<typename T>
+	bool PumpUntil(T complete) {
+		// Closing a window in a preceding test can stop one AppKit run-loop
+		// iteration early. Wait for the required deferred callback, not for
+		// one assumed 10ms iteration, with a bounded deadline on failure.
+		const CFAbsoluteTime deadline = CFAbsoluteTimeGetCurrent() + 1;
+		while(!complete() && CFAbsoluteTimeGetCurrent() < deadline)
+			CFRunLoopRunInMode(kCFRunLoopDefaultMode, 0.01, false);
+		return complete();
+	}
 	NSEvent *Key(NSEventType type, uint16 key = 0, NSEventModifierFlags flags = 0) {
 		return [NSEvent keyEventWithType:type location:NSZeroPoint modifierFlags:flags timestamp:0
 			windowNumber:0 context:nil characters:@"a" charactersIgnoringModifiers:@"a" isARepeat:NO keyCode:key];
@@ -165,8 +175,7 @@ bool ATTestNativeUIWindowEventsMac(ATPortableTestContext& context) {
 		paint->mOnPaint = [&] { paint->Destroy(); paint = nullptr; };
 		Draw(paintView);
 		AT_PORTABLE_TEST_ASSERT(context, paintCounts.mPaint == 1 && paintCounts.mDestroyed == 0 && paintCounts.mDeleted == 0);
-		CFRunLoopRunInMode(kCFRunLoopDefaultMode, 0.01, false);
-		AT_PORTABLE_TEST_ASSERT(context, paintCounts.mDestroyed == 1 && paintCounts.mDeleted == 1);
+		AT_PORTABLE_TEST_ASSERT(context, PumpUntil([&] { return paintCounts.mDestroyed == 1 && paintCounts.mDeleted == 1; }));
 
 		// Reparented children belong to the new native root, not a stale list on
 		// the old root. Generic AppKit containers must not break this ownership.
@@ -209,8 +218,7 @@ bool ATTestNativeUIWindowEventsMac(ATPortableTestContext& context) {
 		nestedPaint->mOnPaint = [&] { parentPaint->Destroy(); };
 		Draw(nestedView);
 		AT_PORTABLE_TEST_ASSERT(context, parentPaintCounts.mDestroyed == 0 && nestedPaintCounts.mDestroyed == 0);
-		CFRunLoopRunInMode(kCFRunLoopDefaultMode, 0.01, false);
-		AT_PORTABLE_TEST_ASSERT(context, parentPaintCounts.mDestroyed == 1 && nestedPaintCounts.mDestroyed == 1);
+		AT_PORTABLE_TEST_ASSERT(context, PumpUntil([&] { return parentPaintCounts.mDestroyed == 1 && nestedPaintCounts.mDestroyed == 1; }));
 	}
 	return true;
 }
