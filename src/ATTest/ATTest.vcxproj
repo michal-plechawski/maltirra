@@ -260,6 +260,13 @@
 	<ClCompile Include="source\TestAltirra_GTIAPlayfieldPortable.cpp">
 	  <PrecompiledHeader>NotUsing</PrecompiledHeader>
 	</ClCompile>
+	<ClCompile Include="source\TestAltirra_ANTICCorePortable.cpp">
+	  <PrecompiledHeader>NotUsing</PrecompiledHeader>
+	</ClCompile>
+	<ClCompile Include="source\TestAltirra_ANTICKernelsPortable.cpp">
+	  <PrecompiledHeader>NotUsing</PrecompiledHeader>
+	</ClCompile>
+	<ClInclude Include="source\anticportablefixture.h" />
 	<ClCompile Include="source\TestAudio_FiltersPortable.cpp">
 	  <PrecompiledHeader>NotUsing</PrecompiledHeader>
 	</ClCompile>

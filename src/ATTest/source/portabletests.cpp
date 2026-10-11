@@ -90,6 +90,10 @@ bool ATTestAltirraVBXEDevice(ATPortableTestContext& context);
 bool ATTestAltirraGTIARegisters(ATPortableTestContext& context);
 bool ATTestAltirraGTIASnapshot(ATPortableTestContext& context);
 bool ATTestAltirraGTIAPlayfield(ATPortableTestContext& context);
+bool ATTestAltirraANTICRegisters(ATPortableTestContext& context);
+bool ATTestAltirraANTICTiming(ATPortableTestContext& context);
+bool ATTestAltirraANTICSnapshot(ATPortableTestContext& context);
+bool ATTestAltirraANTICKernels(ATPortableTestContext& context);
 bool ATTestAudioFilters(ATPortableTestContext& context);
 bool ATTestAudioEdgePlayer(ATPortableTestContext& context);
 bool ATTestAudioNativeOutput(ATPortableTestContext& context);
@@ -138,6 +142,7 @@ bool ATTestVDDisplayCompositionMac(ATPortableTestContext& context);
 bool ATTestVDDisplayNativeViewMac(ATPortableTestContext& context);
 bool ATTestAltirraGTIADisplayMac(ATPortableTestContext& context);
 bool ATTestAltirraGTIAFrameMac(ATPortableTestContext& context);
+bool ATTestAltirraANTICFrameMac(ATPortableTestContext& context);
 bool ATTestAltirraConsoleMac(ATPortableTestContext& context);
 bool ATTestNativeUIWindowProxyMac(ATPortableTestContext& context);
 bool ATTestNativeUIWindowEventsMac(ATPortableTestContext& context);
@@ -275,6 +280,10 @@ const ATPortableTestCase *ATGetPortableTests(size_t& count) {
 		{ "Altirra_GTIARegisters", ATTestAltirraGTIARegisters },
 		{ "Altirra_GTIASnapshot", ATTestAltirraGTIASnapshot },
 		{ "Altirra_GTIAPlayfield", ATTestAltirraGTIAPlayfield },
+		{ "Altirra_ANTICRegisters", ATTestAltirraANTICRegisters },
+		{ "Altirra_ANTICTiming", ATTestAltirraANTICTiming },
+		{ "Altirra_ANTICSnapshot", ATTestAltirraANTICSnapshot },
+		{ "Altirra_ANTICKernels", ATTestAltirraANTICKernels },
 		{ "Audio_Filters", ATTestAudioFilters },
 		{ "Audio_EdgePlayer", ATTestAudioEdgePlayer },
 		{ "Audio_NativeOutput", ATTestAudioNativeOutput },
@@ -323,6 +332,7 @@ const ATPortableTestCase *ATGetPortableTests(size_t& count) {
 		{ "VDDisplay_NativeViewMac", ATTestVDDisplayNativeViewMac },
 		{ "Altirra_GTIADisplayMac", ATTestAltirraGTIADisplayMac },
 		{ "Altirra_GTIAFrameMac", ATTestAltirraGTIAFrameMac },
+		{ "Altirra_ANTICFrameMac", ATTestAltirraANTICFrameMac },
 		{ "Altirra_ConsoleMac", ATTestAltirraConsoleMac },
 		{ "NativeUI_WindowProxyMac", ATTestNativeUIWindowProxyMac },
 		{ "NativeUI_WindowEventsMac", ATTestNativeUIWindowEventsMac },

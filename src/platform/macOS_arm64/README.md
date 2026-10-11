@@ -25,7 +25,7 @@ timing, SECAM, priority, light-pen sensing, and JSON snapshot continuation
 `Altirra_GTIADisplayMac` connects actual indexed GTIA output and the Atari
 palette generator to a native AppKit window/display and checks its rendered
 pixels against captures. This is a video-pipeline test, not a running emulator:
-ANTIC and simulator integration are still in the Windows-only subtree.
+Simulator integration is still in the Windows-only subtree.
 
 The full software artifacting engine (`src/Altirra/source/artifacting.cpp`)
 is shared too: indexed/RGB conversion, NTSC/PAL artifacting (including 14MHz
@@ -71,7 +71,7 @@ text attribute fetches across the end of RAM, pending-register snapshots,
 U1MB register-page overrides, and live backing-RAM
 changes. Owned RAM is saved; externally shared RAM is intentionally not saved
 by the VBXE device. This is component verification, not a booted Atari machine:
-ANTIC and simulator/application wiring remain to be ported.
+Simulator/application wiring remains to be ported.
 
 The complete GTIA emulator (`src/Altirra/source/gtia.cpp`) is now shared too:
 registers, players/missiles, collisions, trigger/switch callbacks, scanlines,
@@ -94,3 +94,27 @@ the real VBXE, programs a repeated SR XDL in its RAM, and checks both the
 produced RGB frame and native capture against color-corrected palette output.
 The deterministic test clock supplies ANTIC-facing inputs; this is not yet a
 CPU-driven/booted machine. The display queue and rendering are production code.
+
+The complete ANTIC emulator (`src/Altirra/source/antic.cpp`) is shared:
+display-list execution, bitmap/text decode, scrolling, player/missile DMA,
+refresh, WSYNC/RDY, NMI timing, tracing, and save states. Its platform kernels
+keep SSE2 on Windows x64 and use bounded NEON text decode on macOS; the scalar
+refresh contract is also checked on Windows, including the last valid refresh
+cycle (106). The 128-byte DMA-pattern alignment and ring-buffer padding remain
+intact. ANTIC cancels all scheduler callbacks at shutdown; the Windows simulator
+explicitly detaches it before its scheduler and bus are destroyed.
+
+`Altirra_ANTICRegisters`, `Altirra_ANTICTiming`, `Altirra_ANTICSnapshot`, and
+`Altirra_ANTICKernels` cover masks and delayed CHBASE writes, WSYNC, DLI/VBI/RNMI,
+serialized mid-line buffer/cursor continuation, repeated restoration, pending
+event replacement, malformed queue/offset rejection, shutdown cancellation,
+and exact SIMD/scalar bytes and bounds. Snapshot restoration fixes include the
+queued-write index, copying the actual line buffers, retaining ring offsets,
+and remembering the WSYNC held-bus value.
+
+`Altirra_ANTICFrameMac` runs a real RAM-resident text display list through ANTIC
+DMA and GTIA, then captures its native AppKit display. It checks display-list,
+screen-name and glyph fetches, display-list history, indexed framebuffer bytes,
+and captured palette RGB values. The test supplies a memory bus and clocks, not
+a CPU or the full simulator; booting a machine and application wiring still
+remain to be implemented.

@@ -1149,6 +1149,10 @@ void ATSimulator::Shutdown() {
 		mpCPUHookManager = NULL;
 	}
 
+	// mScheduler is declared after mAntic and is destroyed first. Detach ANTIC
+	// while scheduler, CPU and bus owners are still alive.
+	mAntic.Shutdown();
+
 	if (mpSimEventManager) {
 		mpSimEventManager->Shutdown();
 		delete mpSimEventManager;

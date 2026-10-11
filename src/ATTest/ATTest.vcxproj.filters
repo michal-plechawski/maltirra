@@ -259,6 +259,15 @@
 	<ClCompile Include="source\TestAltirra_GTIAPlayfieldPortable.cpp">
 	  <Filter>Source Files</Filter>
 	</ClCompile>
+	<ClCompile Include="source\TestAltirra_ANTICCorePortable.cpp">
+	  <Filter>Source Files</Filter>
+	</ClCompile>
+	<ClCompile Include="source\TestAltirra_ANTICKernelsPortable.cpp">
+	  <Filter>Source Files</Filter>
+	</ClCompile>
+	<ClInclude Include="source\anticportablefixture.h">
+	  <Filter>Header Files</Filter>
+	</ClInclude>
 	<ClCompile Include="source\TestAudio_FiltersPortable.cpp">
 	  <Filter>Source Files</Filter>
 	</ClCompile>

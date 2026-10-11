@@ -23,6 +23,7 @@
 #endif
 
 #include <vd2/system/vdtypes.h>
+#include <vd2/system/vdstl.h>
 #include <at/atcore/scheduler.h>
 
 class ATGTIAEmulator;
@@ -138,6 +139,8 @@ public:
 	}
 
 	void Init(ATAnticEmulatorConnections *conn, ATGTIAEmulator *gtia, ATScheduler *sch, ATSimulatorEventManager *simevmgr, uint8 *busData);
+	// Cancel callbacks before the scheduler and bus owners are destroyed.
+	void Shutdown();
 	void SetBusRefreshData(const uint8 *refreshData) {
 		mpBusRefreshData = refreshData;
 	}

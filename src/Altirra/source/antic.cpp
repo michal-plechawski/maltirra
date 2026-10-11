@@ -15,21 +15,23 @@
 //	along with this program; if not, write to the Free Software
 //	Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
-#include <stdafx.h>
+#include <algorithm>
+#include <cstring>
+#include <iterator>
+#include <utility>
+#include <vd2/system/error.h>
+#include <vd2/system/vdstring.h>
 #include <vd2/system/binary.h>
 #include <at/atcore/scheduler.h>
 #include <at/atcore/serialization.h>
 #include <at/atcore/snapshotimpl.h>
 #include "antic.h"
 #include "gtia.h"
-#include "console.h"
+#include "consoletext.h"
+#include "antickernels.h"
 #include "savestate.h"
 #include "simeventmanager.h"
 #include "trace.h"
-
-#if VD_CPU_X86 || VD_CPU_X64
-#include "antic_sse2.inl"
-#endif
 
 namespace {
 	const uint8 kModeToFetchRate[16]={
@@ -56,6 +58,7 @@ ATAnticEmulator::ATAnticEmulator() {
 }
 
 ATAnticEmulator::~ATAnticEmulator() {
+	Shutdown();
 }
 
 void ATAnticEmulator::Init(ATAnticEmulatorConnections *mem, ATGTIAEmulator *gtia, ATScheduler *sch, ATSimulatorEventManager *simevmgr, uint8 *busData) {
@@ -67,6 +70,26 @@ void ATAnticEmulator::Init(ATAnticEmulatorConnections *mem, ATGTIAEmulator *gtia
 	mpBusRefreshData = busData;
 
 	memset(mActivityMap, 0, sizeof mActivityMap);
+}
+
+void ATAnticEmulator::Shutdown() {
+	if (mpScheduler) {
+		mpScheduler->UnsetEvent(mpRegisterUpdateEvent);
+		mpScheduler->UnsetEvent(mpEventWSYNC);
+		mpScheduler->UnsetEvent(mpEventRNMI);
+	}
+	if (mpConn && mbWSYNCActive)
+		mpConn->AnticNegateRDY();
+	mbWSYNCActive = false;
+	mpScheduler = nullptr;
+	mpConn = nullptr;
+	mpGTIA = nullptr;
+	mpSimEventMgr = nullptr;
+	mpBusData = nullptr;
+	mpBusRefreshData = nullptr;
+	mpTraceContext = nullptr;
+	mpTraceChannelFrames = nullptr;
+	mpTraceChannelDisplayList = nullptr;
 }
 
 void ATAnticEmulator::SetPALMode(bool pal) {
@@ -1256,24 +1279,7 @@ void ATAnticEmulator::Decode(int offset) {
 						dst += 2;
 					}
 				} else {
-#if VD_CPU_X86 || VD_CPU_X64
-					x = ATAnticDecodeMode2_SSE2(dst, src, chdata, x, limit, mCharInvert, mCharBlink);
-#else
-					for(; x < limit; x += 2) {
-						uint8 c = *src++;
-						uint8 d = *chdata++;
-
-						uint8 himask = (c & 128) ? 0xff : 0;
-						uint8 inv = himask & mCharInvert;
-
-						d &= (~himask | mCharBlink);
-						d ^= inv;
-					
-						dst[0] = d >> 4;
-						dst[1] = d & 15;
-						dst += 2;
-					}
-#endif
+					x = ATAnticDecodeMode2(dst, src, chdata, x, limit, mCharInvert, mCharBlink);
 				}
 				break;
 
@@ -2176,6 +2182,7 @@ void ATAnticEmulator::LoadStatePrivate(ATSaveStateReader& reader) {
 		ru.mTime = t + reader.ReadUint32();
 		ru.mReg = reader.ReadUint8();
 		ru.mValue = reader.ReadUint8();
+		mRegisterUpdates.push_back(ru);
 	}
 
 	const uint8 dataReadOffset = reader.ReadUint8();
@@ -2229,10 +2236,6 @@ void ATAnticEmulator::EndLoadStateInternal() {
 	UpdateFont();
 	UpdateCurrentCharRow();
 
-	mpPFDataWrite = mPFDataBuffer;
-	mpPFDataRead = mPFDataBuffer;
-	mpPFCharFetchPtr = mPFCharBuffer;
-
 	UpdateDMAPattern();
 
 	ExecuteQueuedUpdates();
@@ -2263,6 +2266,8 @@ public:
 		rw.Transfer("pf_dma_enabled", &mbPFDMAEnabled);
 		rw.Transfer("pf_dma_active", &mbPFDMAActive);
 		rw.Transfer("wsync_active", &mbWSYNCActive);
+		rw.Transfer("wsync_hold_value", &mWSYNCHoldValue);
+		rw.Transfer("pf_rendered", &mbPFRendered);
 		rw.Transfer("wsync_release", &mbWSYNCRelease);
 		rw.Transfer("rnmi_pending", &mbRNMIPending);
 		rw.Transfer("hscroll_enabled", &mbHScrollEnabled);
@@ -2322,6 +2327,17 @@ public:
 		rw.Transfer("wsync_pending", &mWSYNCPending);
 		rw.Transfer("phantom_player_dma", &mbPhantomPlayerDMA);
 		rw.Transfer("missile_dma_disabled_late", &mbMissileDMADisabledLate);
+
+		if constexpr (T::IsReader) {
+			if (mRegisterUpdates.size() % 3 || mPFDataRead > 114
+				|| mPFDataWrite > 114 || mPFCharRead > 114)
+				throw ATInvalidSaveStateException();
+			for(size_t i = 0; i < mRegisterUpdates.size(); i += 3) {
+				if (mRegisterUpdates[i] >= 100000000 || mRegisterUpdates[i + 1] > 255
+					|| mRegisterUpdates[i + 2] > 255)
+					throw ATInvalidSaveStateException();
+			}
+		}
 	}
 
 	uint8 mPFDataRead = 0;
@@ -2341,6 +2357,7 @@ public:
 	bool	mbPFDMAEnabled = false;
 	bool	mbPFDMAActive = false;
 	bool	mbWSYNCActive = false;
+	uint8	mWSYNCHoldValue = 0;
 	bool	mbPFRendered = false;			// true if any pixels have been rendered this scanline by the playfield
 	bool	mbWSYNCRelease = false;
 	bool	mbRNMIPending = false;
@@ -2445,7 +2462,7 @@ void ATAnticEmulator::TransferInternalState(T& obj2) {
 		mRegisterUpdates.resize(n);
 
 		for(uint32 i=0, j=0; i<n; ++i, j+=3) {
-			mRegisterUpdates[j] = QueuedRegisterUpdate {
+			mRegisterUpdates[i] = QueuedRegisterUpdate {
 				t + obj2.mRegisterUpdates[j + 0],
 				(uint8)obj2.mRegisterUpdates[j + 1],
 				(uint8)obj2.mRegisterUpdates[j + 2]
@@ -2460,9 +2477,9 @@ void ATAnticEmulator::TransferInternalState(T& obj2) {
 		obj2.mPFDataWrite = (uint8)(mpPFDataWrite - mPFDataBuffer);
 		obj2.mPFCharRead = (uint8)(mpPFCharFetchPtr - mPFCharBuffer);
 	} else {
-		mpPFDataRead = mPFDataBuffer + obj2.mPFDataRead % 114;
-		mpPFDataWrite = mPFDataBuffer + obj2.mPFDataWrite % 114;
-		mpPFCharFetchPtr = mPFCharBuffer + obj2.mPFCharRead % 114;
+		mpPFDataRead = mPFDataBuffer + obj2.mPFDataRead;
+		mpPFDataWrite = mPFDataBuffer + obj2.mPFDataWrite;
+		mpPFCharFetchPtr = mPFCharBuffer + obj2.mPFCharRead;
 	}
 
 	TRANSFER(mbDLExtraLoadsPending);
@@ -2477,6 +2494,7 @@ void ATAnticEmulator::TransferInternalState(T& obj2) {
 	TRANSFER(mbPFDMAEnabled);
 	TRANSFER(mbPFDMAActive);
 	TRANSFER(mbWSYNCActive);
+	TRANSFER(mWSYNCHoldValue);
 	TRANSFER(mbPFRendered);
 	TRANSFER(mbWSYNCRelease);
 	TRANSFER(mbHScrollEnabled);
@@ -2533,6 +2551,21 @@ void ATAnticEmulator::TransferInternalState(T& obj2) {
 	TRANSFER(mbPhantomPlayerDMA);
 	TRANSFER(mbMissileDMADisabledLate);
 
+	if constexpr (write) {
+		std::copy_n(mPFDataBuffer, sizeof obj2.mPFDataBuffer, obj2.mPFDataBuffer);
+		std::copy_n(mPFCharBuffer, sizeof obj2.mPFCharBuffer, obj2.mPFCharBuffer);
+		std::copy_n(mPFDecodeBuffer, sizeof obj2.mPFDecodeBuffer, obj2.mPFDecodeBuffer);
+	} else {
+		// Snapshots store the logical buffers, not SIMD padding. Clear the padding
+		// too so repeated restoration cannot inherit bytes from a later frame.
+		memset(mPFDataBuffer, 0, sizeof mPFDataBuffer);
+		memset(mPFCharBuffer, 0, sizeof mPFCharBuffer);
+		memset(mPFDecodeBuffer, 0, sizeof mPFDecodeBuffer);
+		std::copy_n(obj2.mPFDataBuffer, sizeof obj2.mPFDataBuffer, mPFDataBuffer);
+		std::copy_n(obj2.mPFCharBuffer, sizeof obj2.mPFCharBuffer, mPFCharBuffer);
+		std::copy_n(obj2.mPFDecodeBuffer, sizeof obj2.mPFDecodeBuffer, mPFDecodeBuffer);
+	}
+
 #undef TRANSFER
 }
 
@@ -2567,6 +2600,11 @@ void ATAnticEmulator::LoadState(const IATObjectState *state) {
 }
 
 void ATAnticEmulator::LoadState(const ATSaveStateAntic& astate) {
+	mpScheduler->UnsetEvent(mpRegisterUpdateEvent);
+	mpScheduler->UnsetEvent(mpEventWSYNC);
+	mpScheduler->UnsetEvent(mpEventRNMI);
+	const bool wasWSYNCActive = mbWSYNCActive;
+
 	mX = astate.mX;
 	mY = astate.mY;
 	mDMACTL = astate.mDMACTL;
@@ -2589,6 +2627,17 @@ void ATAnticEmulator::LoadState(const ATSaveStateAntic& astate) {
 	TransferInternalState<false>(istate);
 
 	EndLoadStateInternal();
+
+	if (mbWSYNCActive != wasWSYNCActive) {
+		if (mbWSYNCActive)
+			mpConn->AnticAssertRDY();
+		else
+			mpConn->AnticNegateRDY();
+	}
+	if (mbWSYNCActive)
+		mWSYNCCycleOffset = mHALTCycles + mRDYCycleOffset - mX;
+	if (mWSYNCPending)
+		mpScheduler->SetEvent(1, this, kATAnticEvent_WSYNC, mpEventWSYNC);
 
 	if (istate.mbRNMIPending)
 		RequestNMI();
@@ -2621,52 +2670,6 @@ void ATAnticEmulator::SetTraceContext(ATTraceContext *context) {
 		mpTraceChannelDisplayList = nullptr;
 		mpTraceChannelFrames = nullptr;
 	}
-}
-
-inline void ATAnticSetDMACycles(void *dst0, uint32 start, uint32 end, uint8 cyclePattern, uint8 dmaMask) {
-	if (end > 115)
-		end = 115;
-
-	if (end <= start)
-		return;
-
-#if VD_CPU_X86 || VD_CPU_X64
-	ATAnticSetDMACycles_SSE2(dst0, start, end, cyclePattern, dmaMask);
-#else
-	uint8 *VDRESTRICT dst = (uint8 *)dst0;
-
-	for (uint32 i = start; i < end; ++i) {
-		if (cyclePattern & (1 << (i & 7)))
-			dst[i] |= dmaMask;
-	}
-#endif
-}
-
-inline void ATAnticSetRefreshCycles(uint8 *dmaPattern) {
-#if VD_CPU_X86 || VD_CPU_X64
-	ATAnticSetRefreshCycles_SSE2(dmaPattern);
-#else
-	// This is very simple. Refresh does 9 cycles every 4 starting at cycle 25.
-	// If DMA is already occurring, the refresh occurs on the next available cycle.
-	// If refresh hasn't gotten a chance to run by the time the next refresh cycle
-	// occurs, it is simply dropped. The latest a refresh cycle will ever run is
-	// 106, which happens on a wide 40 char badline.
-	uint8 *VDRESTRICT dp = dmaPattern;
-	int r = 24;
-	for(int x=25; x<61; x += 4) {
-		if (r >= x)
-			continue;
-
-		r = x;
-
-		while(r < 107) {
-			if (!(dp[r++] & 1)) {
-				++dp[r-1];
-				break;
-			}
-		}
-	}
-#endif
 }
 
 void ATAnticEmulator::UpdateDMAPattern() {
@@ -2715,11 +2718,7 @@ void ATAnticEmulator::UpdateDMAPattern() {
 				break;
 		}
 
-#if VD_CPU_X86 || VD_CPU_X64
-		ATAnticClearDMACycles_SSE2(mDMAPattern);
-#else
-		memset(mDMAPattern, 0, sizeof(mDMAPattern));
-#endif
+		ATAnticClearDMACycles(mDMAPattern);
 
 		// Playfield DMA
 		// =============

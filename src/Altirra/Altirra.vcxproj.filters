@@ -43,7 +43,10 @@
     <ClCompile Include="..\platform\Windows_x64\Altirra\source\allocator.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\platform\Windows_x64\Altirra\source\antic.cpp">
+    <ClCompile Include="source\antic.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\platform\Windows_x64\Altirra\source\antickernels.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="source\artifactingparams.cpp">
@@ -1122,7 +1125,10 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\platform\Windows_x64\Altirra\h\antic.h">
+    <ClInclude Include="h\antic.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="h\antickernels.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="h\artifactingparams.h">
