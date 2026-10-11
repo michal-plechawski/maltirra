@@ -451,7 +451,7 @@
     <ClCompile Include="..\platform\Windows_x64\Altirra\source\ultimate1mb.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\platform\Windows_x64\Altirra\source\vbxe.cpp">
+    <ClCompile Include="source\vbxe.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\platform\Windows_x64\Altirra\source\verifier.cpp">
@@ -1416,7 +1416,7 @@
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\ultimate1mb.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\platform\Windows_x64\Altirra\h\vbxe.h">
+    <ClInclude Include="h\vbxe.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\verifier.h">

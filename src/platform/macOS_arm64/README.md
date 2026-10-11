@@ -56,3 +56,20 @@ diagnostic output panel, not yet a debugger command interpreter.
 `Altirra_ConsoleText` checks formatting, beam tags, buffer limits, and actual
 log-file bytes on both platforms. `Altirra_ConsoleMac` exercises native text,
 Unicode, resizing, closure/reopening, and closure during text-storage callbacks.
+
+The complete VBXE core and device wrapper (`src/Altirra/source/vbxe.cpp`) are
+shared: MEMAC A/B mappings, CPU/ANTIC access, blitter DMA and scheduled IRQs,
+XDL overlays (bitmap and 80-column text), palettes, and device snapshots. The
+core keeps the original algorithms and uses the shared diagnostic console.
+Packed character-generator stores no longer alias byte arrays as uint32.
+
+`Altirra_VBXEMemory`, `Altirra_VBXEBlitter`, `Altirra_VBXEVideo`, and
+`Altirra_VBXEDevice` use the real memory manager, scheduler, IRQ controller,
+palette generator, artifacting engine, and production device factory. Tests
+cover MEMAC priority/access bits/window truncation, wrapped multi-row DMA,
+completion/ack/reset/shutdown IRQs, guarded SR/HR/text scanlines, palette RAM,
+text attribute fetches across the end of RAM, pending-register snapshots,
+U1MB register-page overrides, and live backing-RAM
+changes. Owned RAM is saved; externally shared RAM is intentionally not saved
+by the VBXE device. This is component verification, not a booted Atari machine:
+full GTIA/ANTIC and simulator/application wiring remain to be ported.

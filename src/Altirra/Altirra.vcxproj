@@ -622,7 +622,9 @@
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="..\platform\Windows_x64\Altirra\source\updatefeed_win32.cpp" />
-    <ClCompile Include="..\platform\Windows_x64\Altirra\source\vbxe.cpp" />
+    <ClCompile Include="source\vbxe.cpp">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+    </ClCompile>
     <ClCompile Include="source\vbxestate.cpp">
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
     </ClCompile>
@@ -810,7 +812,7 @@
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\uitypes.h" />
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\uivideodisplaywindow.h" />
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\ultimate1mb.h" />
-    <ClInclude Include="..\platform\Windows_x64\Altirra\h\vbxe.h" />
+    <ClInclude Include="h\vbxe.h" />
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\verifier.h" />
     <ClInclude Include="h\versioninfo.h" />
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\videowriter.h" />

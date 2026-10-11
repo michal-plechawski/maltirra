@@ -19,6 +19,7 @@
 #define f_AT_VBXE_H
 
 #include <vd2/system/vdstl.h>
+#include <vd2/system/unknown.h>
 #include <at/atcore/scheduler.h>
 
 class ATConsoleOutput;
@@ -367,9 +368,9 @@ private:
 	uint8	mPriorityTables[32][256][2];
 	uint8	mPriorityTablesHi[32][256][2];
 
-	uint32	mPalette[4][256];			// render palette (corrected version)
-	uint32	mArchPalette[4][256];		// architectural palette (uncorrected version)
-	uint32	mDefaultPalette[256];
+	uint32	mPalette[4][256] {};		// render palette (corrected version)
+	uint32	mArchPalette[4][256] {};	// architectural palette (uncorrected version)
+	uint32	mDefaultPalette[256] {};
 
 	uint8	mOverlayDecode[912];		// 28MHz (640) - decoded pixels
 	uint8	mOvPriDecode[456*2];		// 14MHz (320) - priority,collision pairs

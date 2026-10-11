@@ -83,6 +83,10 @@ bool ATTestAltirraVideoStillImage(ATPortableTestContext& context);
 bool ATTestAltirraVideoManager(ATPortableTestContext& context);
 bool ATTestAltirraVersionInfo(ATPortableTestContext& context);
 bool ATTestAltirraVBXEState(ATPortableTestContext& context);
+bool ATTestAltirraVBXEMemory(ATPortableTestContext& context);
+bool ATTestAltirraVBXEBlitter(ATPortableTestContext& context);
+bool ATTestAltirraVBXEVideo(ATPortableTestContext& context);
+bool ATTestAltirraVBXEDevice(ATPortableTestContext& context);
 bool ATTestAudioFilters(ATPortableTestContext& context);
 bool ATTestAudioEdgePlayer(ATPortableTestContext& context);
 bool ATTestAudioNativeOutput(ATPortableTestContext& context);
@@ -260,6 +264,10 @@ const ATPortableTestCase *ATGetPortableTests(size_t& count) {
 		{ "Altirra_VideoManager", ATTestAltirraVideoManager },
 		{ "Altirra_VersionInfo", ATTestAltirraVersionInfo },
 		{ "Altirra_VBXEState", ATTestAltirraVBXEState },
+		{ "Altirra_VBXEMemory", ATTestAltirraVBXEMemory },
+		{ "Altirra_VBXEBlitter", ATTestAltirraVBXEBlitter },
+		{ "Altirra_VBXEVideo", ATTestAltirraVBXEVideo },
+		{ "Altirra_VBXEDevice", ATTestAltirraVBXEDevice },
 		{ "Audio_Filters", ATTestAudioFilters },
 		{ "Audio_EdgePlayer", ATTestAudioEdgePlayer },
 		{ "Audio_NativeOutput", ATTestAudioNativeOutput },

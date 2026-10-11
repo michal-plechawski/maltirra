@@ -15,7 +15,11 @@
 //	along with this program; if not, write to the Free Software
 //	Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
-#include <stdafx.h>
+#include <algorithm>
+#include <cstring>
+#include <vd2/system/memory.h>
+#include <vd2/system/refcount.h>
+#include <vd2/system/vdalloc.h>
 #include <at/atcore/consoleoutput.h>
 #include <at/atcore/deviceimpl.h>
 #include <at/atcore/devicesnapshot.h>
@@ -27,7 +31,7 @@
 #include "vbxestate.h"
 #include "gtiarenderer.h"
 #include "gtiatables.h"
-#include "console.h"
+#include "consoletext.h"
 #include "memorymanager.h"
 #include "irqcontroller.h"
 #include "trace.h"
@@ -204,6 +208,11 @@ void ATVBXEEmulator::SetSharedMemoryMode(bool sharedMemory) {
 
 void ATVBXEEmulator::SetMemory(void *memory) {
 	mpMemory = (uint8 *)memory;
+
+	// Live MEMAC layers cache their backing pointer. Rebind before the device
+	// releases its old allocation or replaces an externally owned buffer.
+	if (mpMemMan)
+		UpdateMemoryMaps();
 }
 
 void ATVBXEEmulator::Init(ATIRQController *irqController, ATMemoryManager *memman, ATScheduler *sch) {
@@ -221,6 +230,12 @@ void ATVBXEEmulator::Shutdown() {
 	}
 
 	ShutdownMemoryMaps();
+	mpMemMan = nullptr;
+
+	if (mpIRQController) {
+		mpIRQController->Negate(kATIRQSource_VBXE, false);
+		mpIRQController = nullptr;
+	}
 }
 
 void ATVBXEEmulator::ColdReset() {
@@ -275,6 +290,9 @@ void ATVBXEEmulator::ColdReset() {
 }
 
 void ATVBXEEmulator::WarmReset() {
+	if (mpIRQController)
+		mpIRQController->Negate(kATIRQSource_VBXE, false);
+
 	// VIDEO_CONTROL: set to 0
 	mbXdlEnabled	= false;
 	mbExtendedColor = false;
@@ -1209,7 +1227,7 @@ vdrefptr<IATObjectState> ATVBXEEmulator::SaveState() const {
 	uint8 *rcdst = state->mGtiaRegisterChanges.data();
 
 	for(int i=0; i<numRC; ++i) {
-		const RegisterChange& rc = mRegisterChanges[i];
+		const RegisterChange& rc = mRegisterChanges[mRCIndex + i];
 
 		rcdst[0] = rc.mPos;
 		rcdst[1] = rc.mReg;
@@ -1506,6 +1524,12 @@ void ATVBXEEmulator::ShutdownMemoryMaps() {
 }
 
 void ATVBXEEmulator::UpdateMemoryMaps() {
+	if (!mpMemory) {
+		mpMemMan->EnableLayer(mpMemLayerMEMACA, false);
+		mpMemMan->EnableLayer(mpMemLayerMEMACB, false);
+		return;
+	}
+
 	if (mb5200Mode) {
 		// Window A ($D800-E7FF)
 		uint8 *winA = mpMemory + (((uint32)mMemAcBankA << 12) & 0x7F000);
@@ -3456,7 +3480,7 @@ void ATVBXEEmulator::RenderOverlay80Text(uint8 *dst, int rx1, int x1, int w) {
 		do {
 			const uint32 fetchAddr = (mOvAddr + ((x1 >> 1) & ~1)) & 0x7FFFF;
 			uint8 ch = VBXE_FETCH_NOWRAP(fetchAddr);
-			uint8 attr = VBXE_FETCH_NOWRAP(fetchAddr + 1);
+			uint8 attr = VBXE_FETCH(fetchAddr + 1);
 			uint8 data = chbase[(uint32)ch << 3];
 
 			uint32 baseColor = (uint32)(attr & 0x7f) * 0x01010101;
@@ -3465,13 +3489,14 @@ void ATVBXEEmulator::RenderOverlay80Text(uint8 *dst, int rx1, int x1, int w) {
 
 			if (attr & 0x80) {
 				result = (~mask & 0x80808080) + baseColor;
-				*(uint32 *)transDst = 0xFFFFFFFF;
+				const uint32 opaque = 0xFFFFFFFF;
+				memcpy(transDst, &opaque, sizeof opaque);
 			} else {
 				result = mask & baseColor;
-				*(uint32 *)transDst = mask;
+				memcpy(transDst, &mask, sizeof mask);
 			}
 
-			*(uint32 *)dst = result;
+			memcpy(dst, &result, sizeof result);
 
 			dst += 4;
 			transDst += 4;
@@ -3481,7 +3506,7 @@ void ATVBXEEmulator::RenderOverlay80Text(uint8 *dst, int rx1, int x1, int w) {
 		do {
 			const uint32 fetchAddr = (mOvAddr + ((x1 >> 1) & ~1)) & 0x7FFFF;
 			uint8 ch = VBXE_FETCH_NOWRAP(fetchAddr);
-			uint8 attr = VBXE_FETCH_NOWRAP(fetchAddr + 1);
+			uint8 attr = VBXE_FETCH(fetchAddr + 1);
 			uint8 data = chbase[(uint32)ch << 3];
 
 			uint32 baseColor = (uint32)(attr & 0x7f) * 0x01010101;
@@ -3493,7 +3518,7 @@ void ATVBXEEmulator::RenderOverlay80Text(uint8 *dst, int rx1, int x1, int w) {
 			else
 				result = (mask & baseColor) + (~mask & 0x80808080);
 
-			*(uint32 *)dst = result;
+			memcpy(dst, &result, sizeof result);
 
 			dst += 4;
 			x1 += 2;
@@ -4245,6 +4270,7 @@ void ATVBXEDevice::Init() {
 
 void ATVBXEDevice::Shutdown() {
 	mEmulator.Shutdown();
+	mEmulator.SetMemory(nullptr);
 
 	FreeVBXEMemory();
 

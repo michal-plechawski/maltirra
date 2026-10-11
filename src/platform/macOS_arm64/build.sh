@@ -258,6 +258,8 @@ portable_test_sources=(
 	src/ATTest/source/TestAltirra_VideoManagerPortable.cpp
 	src/ATTest/source/TestAltirra_VersionInfoPortable.cpp
 	src/ATTest/source/TestAltirra_VBXEStatePortable.cpp
+	src/ATTest/source/TestAltirra_VBXEPortable.cpp
+	src/ATTest/source/TestAltirra_VBXEDevicePortable.cpp
 	src/ATTest/source/TestAudio_FiltersPortable.cpp
 	src/ATTest/source/TestAudio_EdgePlayerPortable.cpp
 	src/ATTest/source/TestAudio_NativeOutputPortable.cpp
@@ -396,6 +398,7 @@ portable_test_sources=(
 	src/Altirra/source/artifactingparams.cpp
 	src/Altirra/source/artifacting.cpp
 	src/Altirra/source/consoletext.cpp
+	src/Altirra/source/vbxe.cpp
 	src/platform/macOS_arm64/Altirra/source/console_macos.mm
 	src/Altirra/source/audiorawsource.cpp
 	src/Altirra/source/audiostocksamples.cpp
