@@ -1472,7 +1472,7 @@ public:
 		rw.Transfer("sync_offset", &syncOffset);
 		rw.Transfer("renderer_state", &mpRendererState);
 
-		if constexpr (rw.IsReader) {
+		if constexpr (T::IsReader) {
 			if (syncOffset < 0 || syncOffset > 230)
 				throw ATInvalidSaveStateException();
 			mLastSyncX = syncOffset - 2;
