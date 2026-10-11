@@ -267,6 +267,15 @@
 	  <PrecompiledHeader>NotUsing</PrecompiledHeader>
 	</ClCompile>
 	<ClInclude Include="source\anticportablefixture.h" />
+	<ClCompile Include="source\TestAltirra_PIAPortable.cpp">
+	  <PrecompiledHeader>NotUsing</PrecompiledHeader>
+	</ClCompile>
+	<ClCompile Include="source\TestAltirra_PIACountedInputsPortable.cpp">
+	  <PrecompiledHeader>NotUsing</PrecompiledHeader>
+	</ClCompile>
+	<ClCompile Include="source\TestAudio_PokeyHardwarePortable.cpp">
+	  <PrecompiledHeader>NotUsing</PrecompiledHeader>
+	</ClCompile>
 	<ClCompile Include="source\TestAudio_FiltersPortable.cpp">
 	  <PrecompiledHeader>NotUsing</PrecompiledHeader>
 	</ClCompile>

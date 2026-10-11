@@ -122,8 +122,6 @@ public:
 
 private:
 	struct CountedMask32 {
-		struct Impl;
-
 		alignas(16) uint8 mCounts[32] {};
 
 		void AddZeroBits(uint32 mask);

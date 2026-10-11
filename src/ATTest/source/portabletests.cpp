@@ -94,6 +94,14 @@ bool ATTestAltirraANTICRegisters(ATPortableTestContext& context);
 bool ATTestAltirraANTICTiming(ATPortableTestContext& context);
 bool ATTestAltirraANTICSnapshot(ATPortableTestContext& context);
 bool ATTestAltirraANTICKernels(ATPortableTestContext& context);
+bool ATTestAltirraPIAInputs(ATPortableTestContext& context);
+bool ATTestAltirraPIARegisters(ATPortableTestContext& context);
+bool ATTestAltirraPIAIRQ(ATPortableTestContext& context);
+bool ATTestAltirraPIAFloating(ATPortableTestContext& context);
+bool ATTestAltirraPIASnapshot(ATPortableTestContext& context);
+bool ATTestAltirraPIACountedInputs(ATPortableTestContext& context);
+bool ATTestAudioPokeyRegisters(ATPortableTestContext& context);
+bool ATTestAudioPokeyTimers(ATPortableTestContext& context);
 bool ATTestAudioFilters(ATPortableTestContext& context);
 bool ATTestAudioEdgePlayer(ATPortableTestContext& context);
 bool ATTestAudioNativeOutput(ATPortableTestContext& context);
@@ -284,6 +292,14 @@ const ATPortableTestCase *ATGetPortableTests(size_t& count) {
 		{ "Altirra_ANTICTiming", ATTestAltirraANTICTiming },
 		{ "Altirra_ANTICSnapshot", ATTestAltirraANTICSnapshot },
 		{ "Altirra_ANTICKernels", ATTestAltirraANTICKernels },
+		{ "Altirra_PIAInputs", ATTestAltirraPIAInputs },
+		{ "Altirra_PIARegisters", ATTestAltirraPIARegisters },
+		{ "Altirra_PIAIRQ", ATTestAltirraPIAIRQ },
+		{ "Altirra_PIAFloating", ATTestAltirraPIAFloating },
+		{ "Altirra_PIASnapshot", ATTestAltirraPIASnapshot },
+		{ "Altirra_PIACountedInputs", ATTestAltirraPIACountedInputs },
+		{ "Audio_PokeyRegisters", ATTestAudioPokeyRegisters },
+		{ "Audio_PokeyTimers", ATTestAudioPokeyTimers },
 		{ "Audio_Filters", ATTestAudioFilters },
 		{ "Audio_EdgePlayer", ATTestAudioEdgePlayer },
 		{ "Audio_NativeOutput", ATTestAudioNativeOutput },

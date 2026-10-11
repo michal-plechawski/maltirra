@@ -396,7 +396,12 @@
     <ClCompile Include="..\platform\Windows_x64\Altirra\source\pbidisk.cpp" />
     <ClCompile Include="..\platform\Windows_x64\Altirra\source\pclink.cpp" />
     <ClCompile Include="..\platform\Windows_x64\Altirra\source\pclink_win32.cpp" />
-    <ClCompile Include="..\platform\Windows_x64\Altirra\source\pia.cpp" />
+    <ClCompile Include="source\pia.cpp">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="..\platform\Windows_x64\Altirra\source\piacountedinputs.cpp">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+    </ClCompile>
     <ClCompile Include="..\platform\Windows_x64\Altirra\source\pipeserial_win32.cpp" />
     <ClCompile Include="..\platform\Windows_x64\Altirra\source\pocketmodem.cpp" />
     <ClCompile Include="source\pokeysavecompat.cpp">
@@ -731,7 +736,8 @@
     <ClInclude Include="h\pbi.h" />
     <ClInclude Include="h\pclinkerror.h" />
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\pclink.h" />
-    <ClInclude Include="..\platform\Windows_x64\Altirra\h\pia.h" />
+    <ClInclude Include="h\pia.h" />
+    <ClInclude Include="h\piacountedinputs.h" />
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\profiler.h" />
     <ClInclude Include="h\scsidisk.h" />
 	<ClInclude Include="h\rverter.h" />

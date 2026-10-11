@@ -118,3 +118,26 @@ screen-name and glyph fetches, display-list history, indexed framebuffer bytes,
 and captured palette RGB values. The test supplies a memory bus and clocks, not
 a CPU or the full simulator; booting a machine and application wiring still
 remain to be implemented.
+
+The complete PIA core (`src/Altirra/source/pia.cpp`) is shared: port direction
+and output registers, combined external and dynamic inputs, output callbacks,
+CA/CB control and IRQ latches, floating port-B input decay, tracing, and saved
+states. Counted-input kernels retain SSE2 on Windows x64 and use NEON on macOS;
+both operate on exactly 32 aligned bytes and keep the original wrapping counts.
+
+`Altirra_PIAInputs`, `Altirra_PIARegisters`, `Altirra_PIAIRQ`,
+`Altirra_PIAFloating`, `Altirra_PIASnapshot`, and `Altirra_PIACountedInputs`
+cover input allocation/exhaustion/reuse, callback filtering, dynamic inputs on
+both ports, control edges and IRQ acknowledgement, scheduler-relative decay,
+real JSON snapshot restoration, and scalar/SIMD equivalence with buffer guards.
+Removing a non-final dynamic port-B input now moves the last entry from port B,
+not port A. Restored PIA latches also reconcile their shared IRQ contributions
+during `PostLoadState`, including loading a clear state over an asserted IRQ.
+
+`Audio_PokeyRegisters` and `Audio_PokeyTimers` exercise the existing production
+POKEY core with its real scheduler and renderer tables. Timer tests check the
+cycle immediately before and at IRQ assertion for fast timer 1 and slow timers
+2/4 at both 64 kHz and 15 kHz, retaining the divider phase after SKCTL reset and
+STIMER reload. They also verify active-low status and IRQEN acknowledgement.
+These remain component tests: main CPU execution and simulator/application
+wiring still need to be ported before a machine can boot on macOS.

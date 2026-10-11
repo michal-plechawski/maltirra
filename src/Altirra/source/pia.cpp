@@ -15,7 +15,10 @@
 //	along with this program; if not, write to the Free Software
 //	Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
-#include <stdafx.h>
+#include <algorithm>
+#include <cstring>
+#include <utility>
+#include <vd2/system/vdstring.h>
 #include <vd2/system/binary.h>
 #include <vd2/system/bitmath.h>
 #include <at/atcore/scheduler.h>
@@ -23,128 +26,22 @@
 #include <at/attest/test.h>
 #include "pia.h"
 #include "irqcontroller.h"
-#include "console.h"
+#include "consoletext.h"
+#include "piacountedinputs.h"
 #include "savestate.h"
 #include "trace.h"
 
-#if VD_CPU_ARM64
-#include <arm_neon.h>
-#endif
+void ATPIAEmulator::CountedMask32::AddZeroBits(uint32 mask) {
+	ATPIAAddZeroBits(mCounts, mask);
+}
 
-///////////////////////////////////////////////////////////////////////////////
+void ATPIAEmulator::CountedMask32::RemoveZeroBits(uint32 mask) {
+	ATPIARemoveZeroBits(mCounts, mask);
+}
 
-#if VD_CPU_X86 || VD_CPU_X64
-	struct ATPIAEmulator::CountedMask32::Impl {
-		struct BitMasks {
-			__m128i v0;
-			__m128i v1;
-		};
-
-		static BitMasks ExpandMask(uint32 mask) {
-			__m128i v = _mm_cvtsi32_si128(mask);
-
-			v = _mm_unpacklo_epi8(v, v);
-			v = _mm_unpacklo_epi8(v, v);
-
-			__m128i v0 = _mm_shuffle_epi32(v, 0x50);
-			__m128i v1 = _mm_shuffle_epi32(v, 0xFA);
-
-			__m128i vbitmask  = _mm_set_epi8(-128, 64, 32, 16, 8, 4, 2, 1, -128, 64, 32, 16, 8, 4, 2, 1);
-			v0 = _mm_and_si128(v0, vbitmask);
-			v1 = _mm_and_si128(v1, vbitmask);
-
-			__m128i vzero = _mm_setzero_si128();
-			return BitMasks {
-				_mm_cmpeq_epi8(v0, vzero),
-				_mm_cmpeq_epi8(v1, vzero)
-			};
-		}
-	};
-
-	void ATPIAEmulator::CountedMask32::AddZeroBits(uint32 mask) {
-		const Impl::BitMasks bitMasks = Impl::ExpandMask(mask);
-
-		_mm_store_si128((__m128i *)mCounts + 0, _mm_sub_epi8(_mm_load_si128((const __m128i *)mCounts + 0), bitMasks.v0));
-		_mm_store_si128((__m128i *)mCounts + 1, _mm_sub_epi8(_mm_load_si128((const __m128i *)mCounts + 1), bitMasks.v1));
-	}
-
-	void ATPIAEmulator::CountedMask32::RemoveZeroBits(uint32 mask) {
-		const Impl::BitMasks bitMasks = Impl::ExpandMask(mask);
-
-		_mm_store_si128((__m128i *)mCounts + 0, _mm_add_epi8(_mm_load_si128((const __m128i *)mCounts + 0), bitMasks.v0));
-		_mm_store_si128((__m128i *)mCounts + 1, _mm_add_epi8(_mm_load_si128((const __m128i *)mCounts + 1), bitMasks.v1));
-	}
-
-	uint32 ATPIAEmulator::CountedMask32::ReadZeroMask() const {
-		const __m128i vzero = _mm_setzero_si128();
-		const uint32 mask1 = _mm_movemask_epi8(_mm_cmpeq_epi8(_mm_load_si128((const __m128i *)mCounts + 0), vzero));
-		const uint32 mask2 = _mm_movemask_epi8(_mm_cmpeq_epi8(_mm_load_si128((const __m128i *)mCounts + 1), vzero));
-
-		return mask1 + (mask2 << 16);
-	}
-#elif VD_CPU_ARM64
-	struct ATPIAEmulator::CountedMask32::Impl {
-		static uint8x16x2_t ExpandMask(uint32 mask) {
-			static constexpr uint8 kBitMask[16] { 1, 2, 4, 8, 16, 32, 64, 128, 1, 2, 4, 8, 16, 32, 64, 128 };
-			uint8x16_t vbmask = vld1q_u8(kBitMask);
-			uint8x8_t v = vreinterpret_u8_u32(vmov_n_u32(mask));
-
-			uint8x16x2_t r;
-			r.val[0] = vceqq_u8(vandq_u8(vcombine_u8(vdup_lane_u8(v, 0), vdup_lane_u8(v, 1)), vbmask), vmovq_n_u8(0));
-			r.val[1] = vceqq_u8(vandq_u8(vcombine_u8(vdup_lane_u8(v, 2), vdup_lane_u8(v, 3)), vbmask), vmovq_n_u8(0));
-			return r;
-		}
-	};
-
-	void ATPIAEmulator::CountedMask32::AddZeroBits(uint32 mask) {
-		const uint8x16x2_t vmasks = Impl::ExpandMask(mask);
-		vst1q_u8(mCounts +  0, vsubq_u8(vld1q_u8(mCounts +  0), vmasks.val[0]));
-		vst1q_u8(mCounts + 16, vsubq_u8(vld1q_u8(mCounts + 16), vmasks.val[1]));
-	}
-
-	void ATPIAEmulator::CountedMask32::RemoveZeroBits(uint32 mask) {
-		const uint8x16x2_t vmasks = Impl::ExpandMask(mask);
-		vst1q_u8(mCounts +  0, vaddq_u8(vld1q_u8(mCounts +  0), vmasks.val[0]));
-		vst1q_u8(mCounts + 16, vaddq_u8(vld1q_u8(mCounts + 16), vmasks.val[1]));
-	}
-
-	uint32 ATPIAEmulator::CountedMask32::ReadZeroMask() const {
-		static constexpr uint8 kBitMask[8] { 1, 2, 4, 8, 16, 32, 64, 128 };
-		uint8x8_t vbmask = vld1_u8(kBitMask);
-
-		uint32 m0 = vaddv_u8(vand_u8(vceq_u8(vld1_u8(mCounts +  0), vmov_n_u8(0)), vbmask));
-		uint32 m1 = vaddv_u8(vand_u8(vceq_u8(vld1_u8(mCounts +  8), vmov_n_u8(0)), vbmask));
-		uint32 m2 = vaddv_u8(vand_u8(vceq_u8(vld1_u8(mCounts + 16), vmov_n_u8(0)), vbmask));
-		uint32 m3 = vaddv_u8(vand_u8(vceq_u8(vld1_u8(mCounts + 24), vmov_n_u8(0)), vbmask));
-
-		return m0 + (m1 << 8) + (m2 << 16) + (m3 << 24);
-	}
-#else
-	void ATPIAEmulator::CountedMask32::AddZeroBits(uint32 mask) {
-		for(int i=0; i<32; ++i) {
-			if (!(mask & (1 << i)))
-				++mCounts[i];
-		}
-	}
-
-	void ATPIAEmulator::CountedMask32::RemoveZeroBits(uint32 mask) {
-		for(int i=0; i<32; ++i) {
-			if (!(mask & (1 << i)))
-				--mCounts[i];
-		}
-	}
-
-	uint32 ATPIAEmulator::CountedMask32::ReadZeroMask() const {
-		uint32 v = 0;
-
-		for(int i=0; i<32; ++i) {
-			if (!mCounts[i])
-				v += (1 << i);
-		}
-
-		return v;
-	}
-#endif
+uint32 ATPIAEmulator::CountedMask32::ReadZeroMask() const {
+	return ATPIAReadZeroMask(mCounts);
+}
 
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -289,7 +186,7 @@ void ATPIAEmulator::UnregisterDynamicInput(bool portb, uint32 token) {
 		auto it2 = fns.begin() + pos;
 		
 		if (&*it2 != &fns.back())
-			*it2 = std::move(mDynamicInputs->back());
+			*it2 = std::move(fns.back());
 
 		fns.pop_back();
 
@@ -860,6 +757,19 @@ void ATPIAEmulator::PostLoadState() {
 	UpdateCA2();
 	UpdateCB2();
 	UpdateOutput();
+
+	// A restored latch must also restore its contribution to the shared IRQ
+	// line. Negate only inactive sources, keeping repeated loads level-stable.
+	const uint32 allSources = kATIRQSource_PIAA1 | kATIRQSource_PIAA2
+		| kATIRQSource_PIAB1 | kATIRQSource_PIAB2;
+	uint32 activeSources = 0;
+	if ((mPORTACTL & 0x81) == 0x81) activeSources |= kATIRQSource_PIAA1;
+	if ((mPORTACTL & 0x68) == 0x48) activeSources |= kATIRQSource_PIAA2;
+	if ((mPORTBCTL & 0x81) == 0x81) activeSources |= kATIRQSource_PIAB1;
+	if ((mPORTBCTL & 0x68) == 0x48) activeSources |= kATIRQSource_PIAB2;
+	NegateIRQs(allSources & ~activeSources);
+	if (activeSources)
+		AssertIRQs(activeSources);
 
 	if (mpFloatingInputs)
 		memset(mpFloatingInputs->mFloatTimers, 0, sizeof mpFloatingInputs->mFloatTimers);

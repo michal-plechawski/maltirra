@@ -283,7 +283,10 @@
     <ClCompile Include="..\platform\Windows_x64\Altirra\source\pclink_win32.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\platform\Windows_x64\Altirra\source\pia.cpp">
+    <ClCompile Include="source\pia.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\platform\Windows_x64\Altirra\source\piacountedinputs.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="source\printer.cpp">
@@ -1329,7 +1332,10 @@
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\pclink.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\platform\Windows_x64\Altirra\h\pia.h">
+    <ClInclude Include="h\pia.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="h\piacountedinputs.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\profiler.h">

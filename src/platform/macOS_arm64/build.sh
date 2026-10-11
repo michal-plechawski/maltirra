@@ -266,6 +266,9 @@ portable_test_sources=(
 	src/ATTest/source/TestAltirra_ANTICCorePortable.cpp
 	src/ATTest/source/TestAltirra_ANTICKernelsPortable.cpp
 	src/platform/macOS_arm64/ATTest/source/TestAltirra_ANTICFrameMac.mm
+	src/ATTest/source/TestAltirra_PIAPortable.cpp
+	src/ATTest/source/TestAltirra_PIACountedInputsPortable.cpp
+	src/ATTest/source/TestAudio_PokeyHardwarePortable.cpp
 	src/ATTest/source/TestAudio_FiltersPortable.cpp
 	src/ATTest/source/TestAudio_EdgePlayerPortable.cpp
 	src/ATTest/source/TestAudio_NativeOutputPortable.cpp
@@ -410,6 +413,8 @@ portable_test_sources=(
 	src/platform/macOS_arm64/Altirra/source/gtiaplayfield.cpp
 	src/Altirra/source/antic.cpp
 	src/platform/macOS_arm64/Altirra/source/antickernels.cpp
+	src/Altirra/source/pia.cpp
+	src/platform/macOS_arm64/Altirra/source/piacountedinputs.cpp
 	src/platform/macOS_arm64/Altirra/source/console_macos.mm
 	src/Altirra/source/audiorawsource.cpp
 	src/Altirra/source/audiostocksamples.cpp
