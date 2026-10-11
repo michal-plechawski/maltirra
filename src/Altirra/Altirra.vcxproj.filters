@@ -46,7 +46,13 @@
     <ClCompile Include="..\platform\Windows_x64\Altirra\source\antic.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\platform\Windows_x64\Altirra\source\artifacting.cpp">
+    <ClCompile Include="source\artifactingparams.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\platform\Windows_x64\Altirra\source\artifacting_colorcorrect.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="source\artifacting.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\platform\Windows_x64\Altirra\source\artifacting_ntsc_sse2.cpp">
@@ -1107,7 +1113,13 @@
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\antic.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\platform\Windows_x64\Altirra\h\artifacting.h">
+    <ClInclude Include="h\artifactingparams.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="h\artifacting_colorcorrect.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="h\artifacting.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="h\artifacting_filters.h">

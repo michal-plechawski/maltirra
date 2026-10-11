@@ -23,6 +23,28 @@
 #if defined(VD_CPU_ARM64)
 #include <arm_neon.h>
 
+void ATArtifactColorCorrect_NEON(uint8 *VDRESTRICT dst8, uint32 n,
+	const sint16 linearTab[256], const uint8 gammaTab[1024], const sint16 matrix[3][3]) {
+	const auto loadRow = [](const sint16 *row) {
+		return vcreate_s16((uint64)(uint16)row[0] | ((uint64)(uint16)row[1] << 16) | ((uint64)(uint16)row[2] << 32));
+	};
+	const int16x4_t m0 = loadRow(matrix[0]), m1 = loadRow(matrix[1]), m2 = loadRow(matrix[2]);
+	const uint16x4_t limit = vcreate_u16(0x0000'03FF'03FF'03FF);
+	for(uint32 i = 0; i < n; ++i) {
+		const int16x4_t r = vcreate_s16((uint16)linearTab[dst8[2]]);
+		const int16x4_t g = vcreate_s16((uint16)linearTab[dst8[1]]);
+		const int16x4_t b = vcreate_s16((uint16)linearTab[dst8[0]]);
+		int32x4_t rgb = vmull_lane_s16(m0, r, 0);
+		rgb = vmlal_lane_s16(rgb, m1, g, 0);
+		rgb = vmlal_lane_s16(rgb, m2, b, 0);
+		const uint16x4_t indices = vmin_u16(limit, vrshr_n_u16(vqshrun_n_s32(rgb, 16), 1));
+		dst8[2] = gammaTab[vget_lane_u16(indices, 0)];
+		dst8[1] = gammaTab[vget_lane_u16(indices, 1)];
+		dst8[0] = gammaTab[vget_lane_u16(indices, 2)];
+		dst8 += 4;
+	}
+}
+
 template<typename T>
 void ATArtifactBlendMayExchange_NEON(uint32 *dst, T *blendDst, uint32 n) {
 	using blendType = std::conditional_t<std::is_const_v<T>, const uint8x16_t, uint8x16_t>;

@@ -6,6 +6,7 @@
 #include <vd2/system/vdtypes.h>
 
 #if defined(VD_CPU_ARM64)
+void ATArtifactColorCorrect_NEON(uint8 *dst, uint32 n, const sint16 linearTab[256], const uint8 gammaTab[1024], const sint16 matrix[3][3]);
 void ATArtifactBlend_NEON(uint32 *dst, const uint32 *src, uint32 n);
 void ATArtifactBlendExchange_NEON(uint32 *dst, uint32 *blendDst, uint32 n);
 void ATArtifactBlendLinear_NEON(uint32 *dst, const uint32 *src, uint32 n, bool extendedRange);

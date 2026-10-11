@@ -59,7 +59,10 @@
 // --------------------
 // In monochrome mode, 
 
-#include <stdafx.h>
+#include <algorithm>
+#include <cmath>
+#include <cstring>
+#include <type_traits>
 #include <bit>
 #include <vd2/system/color.h>
 #include <vd2/system/cpuaccel.h>
@@ -70,10 +73,10 @@
 #include <at/atcore/configvar.h>
 #include <at/atcore/consoleoutput.h>
 #include "artifacting.h"
+#include "artifacting_colorcorrect.h"
 #include "artifacting_filters.h"
 #include "artifacting_neon.h"
 #include "artifacting_pal.h"
-#include "gtia.h"
 #include "gtiatables.h"
 #include "palettegenerator.h"
 
@@ -193,6 +196,9 @@ ATArtifactingEngine::ATArtifactingEngine()
 	, mbGammaIdentity(false)
 {
 	mArtifactingParams = ATArtifactingParams::GetDefault();
+	// Deinterlacing can read a previous field before one has been submitted.
+	memset(mPrevFrame14MHz, 0, sizeof mPrevFrame14MHz);
+	memset(mPALDelayLineUV, 0, sizeof mPALDelayLineUV);
 }
 
 ATArtifactingEngine::~ATArtifactingEngine() {
@@ -483,7 +489,7 @@ void ATArtifactingEngine::RecomputeColorTables() {
 	if (mbTintColorEnabled) {
 		if (useMonoPersistence) {
 			// make gamma 2.0 table for pass-through to mono persistence
-			for(int i=0; i<255; ++i) {
+			for(int i=0; i<256; ++i) {
 				mMonoTable[i] = 0x010101 * (int)(0.5f + powf((float)i / 255.0f, 2.0f/2.2f) * 255.0f);
 			}
 		} else
@@ -562,8 +568,11 @@ void ATArtifactingEngine::SuspendFrame() {
 	mbSavedBlendActive = mbBlendActive;
 	mbSavedBlendCopy = mbBlendCopy;
 	mbSavedBlendLinear = mbBlendLinear;
+	mbSavedBlendMonoPersistence = mbBlendMonoPersistence;
+	mbSavedDeinterlacing = mbDeinterlacing;
 	mbSavedExpandedRangeInput = mbExpandedRangeInput;
 	mbSavedExpandedRangeOutput = mbExpandedRangeOutput;
+	memcpy(mSavedPALDelayLine, mPALDelayLineUV, sizeof mSavedPALDelayLine);
 }
 
 void ATArtifactingEngine::ResumeFrame() {
@@ -574,8 +583,26 @@ void ATArtifactingEngine::ResumeFrame() {
 	mbBlendActive = mbSavedBlendActive;
 	mbBlendCopy = mbSavedBlendCopy;
 	mbBlendLinear = mbSavedBlendLinear;
+	mbBlendMonoPersistence = mbSavedBlendMonoPersistence;
+	mbDeinterlacing = mbSavedDeinterlacing;
 	mbExpandedRangeInput = mbSavedExpandedRangeInput;
 	mbExpandedRangeOutput = mbSavedExpandedRangeOutput;
+	memcpy(mPALDelayLineUV, mSavedPALDelayLine, sizeof mSavedPALDelayLine);
+	if (mbBlendMonoPersistence)
+		RecomputeMonoPersistence(mbPAL ? 1.0f / 50.0f : 1.0f / 60.0f);
+	if (mbBlendMonoPersistence != mbColorTablesMonoPersistence)
+		RecomputeColorTables();
+	if (!mbActiveTablesInited || mbActiveTablesSigned != mbExpandedRangeOutput)
+		RecomputeActiveTables(mbExpandedRangeOutput);
+	if (mbChromaArtifactsHi) {
+		if (mbPAL) {
+			if (!mbHighPALTablesInited || mbHighTablesSigned != mbExpandedRangeOutput)
+				RecomputePALTables(nullptr);
+		} else {
+			if (!mbHighNTSCTablesInited || mbHighTablesSigned != mbExpandedRangeOutput)
+				RecomputeNTSCTables(nullptr);
+		}
+	}
 }
 
 void ATArtifactingEngine::BeginFrame(
@@ -628,7 +655,7 @@ void ATArtifactingEngine::BeginFrame(
 
 	if (pal && chromaArtifacts) {
 		if (chromaArtifactHi) {
-#if defined(VD_CPU_AMD64)
+#if defined(VD_CPU_AMD64) || defined(VD_CPU_ARM64)
 			memset(mPALDelayLineUV, 0, sizeof mPALDelayLineUV);
 #else
 #if defined(VD_CPU_X86)
@@ -724,22 +751,25 @@ void ATArtifactingEngine::Artifact32(uint32 y, uint32 *dst, uint32 width, bool t
 
 void ATArtifactingEngine::InterpolateScanlines(uint32 *dst, const uint32 *src1, const uint32 *src2, uint32 n) {
 #if VD_CPU_X86 || VD_CPU_X64
-	if (SSE2_enabled) {
+	if (SSE2_enabled && !(n & 3) && !(((uintptr)dst | (uintptr)src1 | (uintptr)src2) & 15)) {
 		ATArtifactBlendScanlines_SSE2(dst, src1, src2, n, mArtifactingParams.mScanlineIntensity);
 		return;
 	}
 #elif VD_CPU_ARM64
-	ATArtifactBlendScanlines_NEON(dst, src1, src2, n, mArtifactingParams.mScanlineIntensity);
-	return;
+	if (!(n & 3) && !(((uintptr)dst | (uintptr)src1 | (uintptr)src2) & 15)) {
+		ATArtifactBlendScanlines_NEON(dst, src1, src2, n, mArtifactingParams.mScanlineIntensity);
+		return;
+	}
 #endif
 
+	const float intensity = std::clamp(mArtifactingParams.mScanlineIntensity, 0.0f, 1.0f);
 	for(uint32 i=0; i<n; ++i) {
-		uint32 prev = src1[i];
-		uint32 next = src2[i];
-		uint32 r = (prev | next) - (((prev ^ next) & 0xfefefe) >> 1);
-
-		r -= (r & 0xfcfcfc) >> 2;
-		dst[i] = r;
+		uint32 result = 0;
+		for(int shift = 0; shift < 32; shift += 8) {
+			const uint32 average = (((src1[i] >> shift) & 255) + ((src2[i] >> shift) & 255) + 1) >> 1;
+			result |= (uint32)(average * intensity + 0.5f) << shift;
+		}
+		dst[i] = result;
 	}
 }
 
@@ -1159,63 +1189,6 @@ void ATArtifactColorCorrect_Scalar(uint8 *VDRESTRICT dst8, uint32 N, const sint1
 		dst8 += 4;
 	}
 }
-
-#if VD_CPU_X86 || VD_CPU_X64
-void ATArtifactColorCorrect_SSE2(uint8 *VDRESTRICT dst8, uint32 N, const sint16 linearTab[256], const uint8 gammaTab[1024], const sint16 matrix16[3][3]) {
-	__m128i m0 = _mm_loadl_epi64((const __m128i *)matrix16[0]);
-	__m128i m1 = _mm_loadl_epi64((const __m128i *)matrix16[1]);
-	__m128i m2 = _mm_loadl_epi64((const __m128i *)matrix16[2]);
-	__m128i zero = _mm_setzero_si128();
-	__m128i limit = _mm_set_epi16(0, 0, 0, 0, 0, 1023, 1023, 1023);
-
-	for(uint32 i=0; i<N; ++i) {
-		// convert NTSC gamma to linear (2.2)
-		__m128i r = _mm_cvtsi32_si128((uint16)linearTab[dst8[2]]);
-		__m128i g = _mm_cvtsi32_si128((uint16)linearTab[dst8[1]]);
-		__m128i b = _mm_cvtsi32_si128((uint16)linearTab[dst8[0]]);
-
-		// convert to new color space
-		__m128i rgb = _mm_mulhi_epi16(_mm_shufflelo_epi16(r, 0), m0);
-		rgb = _mm_add_epi16(rgb, _mm_mulhi_epi16(_mm_shufflelo_epi16(g, 0), m1));
-		rgb = _mm_add_epi16(rgb, _mm_mulhi_epi16(_mm_shufflelo_epi16(b, 0), m2));
-
-		__m128i indices = _mm_max_epi16(zero, _mm_min_epi16(limit, _mm_srai_epi16(rgb, 1)));
-
-		dst8[2] = gammaTab[(uint32)_mm_extract_epi16(indices, 0)];
-		dst8[1] = gammaTab[(uint32)_mm_extract_epi16(indices, 1)];
-		dst8[0] = gammaTab[(uint32)_mm_extract_epi16(indices, 2)];
-		dst8 += 4;
-	}
-}
-#endif
-
-#if VD_CPU_ARM64
-void ATArtifactColorCorrect_NEON(uint8 *VDRESTRICT dst8, uint32 N, const sint16 linearTab[256], const uint8 gammaTab[1024], const sint16 matrix16[3][3]) {
-	int16x4_t m0 = vld1_s16(matrix16[0]);
-	int16x4_t m1 = vld1_s16(matrix16[1]);
-	int16x4_t m2 = vld1_s16(matrix16[2]);
-	uint16x4_t limit = vcreate_u16(0x0000'03FF'03FF'03FF);
-
-	for(uint32 i=0; i<N; ++i) {
-		// convert NTSC gamma to linear (2.2)
-		int16x4_t r = vcreate_s16(linearTab[dst8[2]]);
-		int16x4_t g = vcreate_s16(linearTab[dst8[1]]);
-		int16x4_t b = vcreate_s16(linearTab[dst8[0]]);
-
-		// convert to new color space
-		int32x4_t rgb = vmull_lane_s16(m0, r, 0);
-		rgb = vmlal_lane_s16(rgb, m1, g, 0);
-		rgb = vmlal_lane_s16(rgb, m2, b, 0);
-
-		uint16x4_t indices = vmin_u16(limit, vrshr_n_u16(vqshrun_n_s32(rgb, 16), 1));
-
-		dst8[2] = gammaTab[vget_lane_u16(indices, 0)];
-		dst8[1] = gammaTab[vget_lane_u16(indices, 1)];
-		dst8[0] = gammaTab[vget_lane_u16(indices, 2)];
-		dst8 += 4;
-	}
-}
-#endif
 
 void ATArtifactingEngine::ColorCorrect(uint8 *VDRESTRICT dst8, uint32 n) const {
 #if VD_CPU_ARM64

@@ -11,6 +11,7 @@
 #include <vd2/VDDisplay/displayview_macos.h>
 #include <gtiarenderer.h>
 #include <palettegenerator.h>
+#include <artifacting.h>
 
 namespace {
 	struct WindowGuard {
@@ -101,6 +102,34 @@ bool ATTestAltirraGTIADisplayMac(ATPortableTestContext& context) {
 			for(int x = 0; x < capture.w; ++x)
 				AT_PORTABLE_TEST_ASSERT(context, (drawn.GetPixelRow<uint32>(y)[x] & 0xffffff)
 					== (capture.GetPixelRow<uint32>(y)[x] & 0xffffff));
+
+		// Also submit actual postprocessed NTSC/PAL video through the RGB path.
+		std::unique_ptr<ATArtifactingEngine> effects(new ATArtifactingEngine);
+		effects->SetColorParams(params, palette.mColorMatchingMatrix ? &*palette.mColorMatchingMatrix : nullptr,
+			nullptr, ATMonitorMode::Color, 0);
+		alignas(16) std::array<uint32, ATArtifactingEngine::N * 2> processed {};
+		for(bool pal : { false, true }) {
+			for(bool high : { false, true }) {
+				effects->BeginFrame(pal, true, high, false, false, false, false, false, false, false, false);
+				effects->Artifact8(0, processed.data(), indices.data(), true, false, true);
+				const int factor = high ? 2 : 1;
+				source.data = processed.data() + 68 * factor;
+				source.w = 376 * factor;
+				source.pitch = 456 * factor * sizeof(uint32);
+				source.format = nsVDPixmap::kPixFormat_XRGB8888;
+				source.palette = nullptr;
+				[view setFrameSize:NSMakeSize(source.w, 8)];
+				AT_PORTABLE_TEST_ASSERT(context, display->SetSource(true, source, false));
+				display->RequestCapture([&](const VDPixmap *px) { if (px) capture.assign(*px); });
+				const auto videoOutput = VDDisplayViewGetOutputInfoMac(handle.get());
+				AT_PORTABLE_TEST_ASSERT(context, capture.w == videoOutput.mWidth && capture.h == videoOutput.mHeight);
+				AT_PORTABLE_TEST_ASSERT(context, capture.w >= source.w && capture.w % source.w == 0);
+				for(int y = 0; y < capture.h; ++y)
+					for(int x = 0; x < capture.w; ++x)
+						AT_PORTABLE_TEST_ASSERT(context, (capture.GetPixelRow<uint32>(y)[x] & 0xffffff)
+							== (processed[68 * factor + x / (capture.w / source.w)] & 0xffffff));
+			}
+		}
 		// Destroy display before the stack-backed scanline and palette expire.
 		display.reset();
 	}

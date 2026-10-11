@@ -19,7 +19,9 @@
 #define f_ARTIFACTING_H
 
 #include <vd2/system/memory.h>
-#include "gtia.h"
+#include <vd2/system/vectors.h>
+#include "artifactingparams.h"
+#include "palettegenerator.h"
 
 class vdfloat3x3;
 namespace nsVDVecMath {
@@ -115,8 +117,8 @@ private:
 	bool mbHighTablesSigned = false;
 	bool mbActiveTablesInited = false;
 	bool mbActiveTablesSigned = false;
-	bool mbChromaArtifacts;
-	bool mbChromaArtifactsHi;
+	bool mbChromaArtifacts = false;
+	bool mbChromaArtifactsHi = false;
 	bool mbBlendActive = false;
 	bool mbBlendCopy = false;
 	bool mbBlendLinear = false;
@@ -136,6 +138,8 @@ private:
 	bool mbSavedBlendActive = false;
 	bool mbSavedBlendCopy = false;
 	bool mbSavedBlendLinear = false;
+	bool mbSavedBlendMonoPersistence = false;
+	bool mbSavedDeinterlacing = false;
 	bool mbSavedExpandedRangeInput = false;
 	bool mbSavedExpandedRangeOutput = false;
 
@@ -185,6 +189,7 @@ private:
 		uint8 mPALDelayLine32[N*2*3];	// RGB24 @ 14MHz resolution
 		VDALIGN(16) uint32 mPALDelayLineUV[2][N];
 	};
+	uint8 mSavedPALDelayLine[sizeof mPALDelayLineUV] {};
 
 	union {
 		uint32 mPrevFrame7MHz[M*2][N];

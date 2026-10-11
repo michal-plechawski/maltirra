@@ -137,7 +137,15 @@
     <ClCompile Include="..\platform\Windows_x64\Altirra\source\about.cpp" />
     <ClCompile Include="..\platform\Windows_x64\Altirra\source\allocator.cpp" />
     <ClCompile Include="..\platform\Windows_x64\Altirra\source\antic.cpp" />
-    <ClCompile Include="..\platform\Windows_x64\Altirra\source\artifacting.cpp" />
+    <ClCompile Include="source\artifacting.cpp">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="source\artifactingparams.cpp">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="..\platform\Windows_x64\Altirra\source\artifacting_colorcorrect.cpp">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+    </ClCompile>
     <ClCompile Include="source\artifacting_filters.cpp">
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
     </ClCompile>
@@ -635,7 +643,9 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\antic.h" />
-    <ClInclude Include="..\platform\Windows_x64\Altirra\h\artifacting.h" />
+    <ClInclude Include="h\artifacting.h" />
+    <ClInclude Include="h\artifactingparams.h" />
+    <ClInclude Include="h\artifacting_colorcorrect.h" />
     <ClInclude Include="h\artifacting_filters.h" />
     <ClInclude Include="h\artifacting_neon.h" />
     <ClInclude Include="h\artifacting_pal.h" />

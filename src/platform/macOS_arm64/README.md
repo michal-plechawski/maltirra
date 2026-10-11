@@ -27,3 +27,15 @@ palette generator to a native AppKit window/display and checks its rendered
 pixels against captures. This is a video-pipeline test, not a running emulator:
 ANTIC, full GTIA frame orchestration, and simulator integration are still in
 the Windows-only subtree.
+
+The full software artifacting engine (`src/Altirra/source/artifacting.cpp`)
+is shared too: indexed/RGB conversion, NTSC/PAL artifacting (including 14MHz
+high artifacting), signed output, color correction, scanlines, frame blending,
+monochrome persistence, and adaptive deinterlacing. The existing SSE2 and NEON
+kernels remain selected for their respective CPUs. Portable tests cover the
+engine, every default artifacting parameter, and exact fixed-point kernel
+oracles. Suspend/resume is checked against uninterrupted processing, including
+PAL delay history and palette/filter changes during temporary updates.
+
+The native GTIA display test additionally submits processed NTSC/PAL output
+through the AppKit RGB display path at both resolutions.

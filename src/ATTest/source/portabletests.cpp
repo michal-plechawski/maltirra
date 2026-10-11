@@ -3,6 +3,9 @@
 #include <at/attest/portabletest.h>
 
 bool ATTestAltirraArtifactingFilters(ATPortableTestContext& context);
+bool ATTestAltirraArtifactingParams(ATPortableTestContext& context);
+bool ATTestAltirraArtifactingEngine(ATPortableTestContext& context);
+bool ATTestAltirraArtifactingColorCorrect(ATPortableTestContext& context);
 bool ATTestAltirraArtifactingNEON(ATPortableTestContext& context);
 bool ATTestAltirraArtifactingNTSCNEON(ATPortableTestContext& context);
 bool ATTestAltirraArtifactingPALNEON(ATPortableTestContext& context);
@@ -175,6 +178,9 @@ bool ATTestSystemZip(ATPortableTestContext& context);
 const ATPortableTestCase *ATGetPortableTests(size_t& count) {
 	static const ATPortableTestCase kTests[] = {
 		{ "Altirra_ArtifactingFilters", ATTestAltirraArtifactingFilters },
+		{ "Altirra_ArtifactingParams", ATTestAltirraArtifactingParams },
+		{ "Altirra_ArtifactingEngine", ATTestAltirraArtifactingEngine },
+		{ "Altirra_ArtifactingColorCorrect", ATTestAltirraArtifactingColorCorrect },
 		{ "Altirra_ArtifactingNEON", ATTestAltirraArtifactingNEON },
 		{ "Altirra_ArtifactingNTSCNEON", ATTestAltirraArtifactingNTSCNEON },
 		{ "Altirra_ArtifactingPALNEON", ATTestAltirraArtifactingPALNEON },
