@@ -5,6 +5,7 @@
 bool ATTestAltirraArtifactingFilters(ATPortableTestContext& context);
 bool ATTestAltirraArtifactingParams(ATPortableTestContext& context);
 bool ATTestAltirraArtifactingEngine(ATPortableTestContext& context);
+bool ATTestAltirraConsoleText(ATPortableTestContext& context);
 bool ATTestAltirraArtifactingColorCorrect(ATPortableTestContext& context);
 bool ATTestAltirraArtifactingNEON(ATPortableTestContext& context);
 bool ATTestAltirraArtifactingNTSCNEON(ATPortableTestContext& context);
@@ -129,6 +130,7 @@ bool ATTestVDDisplayAdapterMac(ATPortableTestContext& context);
 bool ATTestVDDisplayCompositionMac(ATPortableTestContext& context);
 bool ATTestVDDisplayNativeViewMac(ATPortableTestContext& context);
 bool ATTestAltirraGTIADisplayMac(ATPortableTestContext& context);
+bool ATTestAltirraConsoleMac(ATPortableTestContext& context);
 bool ATTestNativeUIWindowProxyMac(ATPortableTestContext& context);
 bool ATTestNativeUIWindowEventsMac(ATPortableTestContext& context);
 #endif
@@ -180,6 +182,7 @@ const ATPortableTestCase *ATGetPortableTests(size_t& count) {
 		{ "Altirra_ArtifactingFilters", ATTestAltirraArtifactingFilters },
 		{ "Altirra_ArtifactingParams", ATTestAltirraArtifactingParams },
 		{ "Altirra_ArtifactingEngine", ATTestAltirraArtifactingEngine },
+		{ "Altirra_ConsoleText", ATTestAltirraConsoleText },
 		{ "Altirra_ArtifactingColorCorrect", ATTestAltirraArtifactingColorCorrect },
 		{ "Altirra_ArtifactingNEON", ATTestAltirraArtifactingNEON },
 		{ "Altirra_ArtifactingNTSCNEON", ATTestAltirraArtifactingNTSCNEON },
@@ -304,6 +307,7 @@ const ATPortableTestCase *ATGetPortableTests(size_t& count) {
 		{ "VDDisplay_CompositionMac", ATTestVDDisplayCompositionMac },
 		{ "VDDisplay_NativeViewMac", ATTestVDDisplayNativeViewMac },
 		{ "Altirra_GTIADisplayMac", ATTestAltirraGTIADisplayMac },
+		{ "Altirra_ConsoleMac", ATTestAltirraConsoleMac },
 		{ "NativeUI_WindowProxyMac", ATTestNativeUIWindowProxyMac },
 		{ "NativeUI_WindowEventsMac", ATTestNativeUIWindowEventsMac },
 #endif

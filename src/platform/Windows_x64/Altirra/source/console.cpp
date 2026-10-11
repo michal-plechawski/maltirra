@@ -92,8 +92,18 @@ namespace {
 
 	HMENU	g_hmenuSrcContext;
 
-	VDFileStream *g_pLogFile;
-	VDTextOutputStream *g_pLogOutput;
+}
+
+IATUIDebuggerConsoleWindow *ATConsoleGetNativeTextOutput() {
+	return g_pConsoleWindow;
+}
+
+bool ATConsoleGetNativeBeamPosition(ATConsoleBeamPosition& position) {
+	ATAnticEmulator& antic = g_sim.GetAntic();
+	position.mFrame = antic.GetRawFrameCounter();
+	position.mVPos = antic.GetBeamY();
+	position.mHPos = antic.GetBeamX();
+	return true;
 }
 
 ///////////////////////////////////////////////////////////////////////////
@@ -894,91 +904,6 @@ void ATLoadDefaultPaneLayout() {
 		ATActivateUIPane(kATUIPaneId_History, false, true, kATUIPaneId_Registers, kATContainerDockCenter);
 	} else {
 		ATActivateUIPane(kATUIPaneId_Display, true);
-	}
-}
-
-void ATConsoleOpenLogFile(const wchar_t *path) {
-	ATConsoleCloseLogFile();
-
-	vdautoptr<VDFileStream> fs(new VDFileStream(path, nsVDFile::kWrite | nsVDFile::kDenyAll | nsVDFile::kCreateAlways));
-	vdautoptr<VDTextOutputStream> tos(new VDTextOutputStream(fs));
-
-	g_pLogFile = fs.release();
-	g_pLogOutput = tos.release();
-}
-
-void ATConsoleCloseLogFileNT() {
-	vdsafedelete <<= g_pLogOutput;
-	vdsafedelete <<= g_pLogFile;
-}
-
-void ATConsoleCloseLogFile() {
-	try {
-		if (g_pLogOutput)
-			g_pLogOutput->Flush();
-
-		if (g_pLogFile)
-			g_pLogFile->close();
-	} catch(...) {
-		ATConsoleCloseLogFileNT();
-		throw;
-	}
-
-	ATConsoleCloseLogFileNT();
-}
-
-void ATConsoleWrite(const char *s) {
-	if (g_pConsoleWindow) {
-		g_pConsoleWindow->Write(s);
-		g_pConsoleWindow->ShowEnd();
-	}
-
-	if (g_pLogOutput) {
-		for(;;) {
-			const char *lbreak = strchr(s, '\n');
-
-			if (!lbreak) {
-				g_pLogOutput->Write(s);
-				break;
-			}
-
-			g_pLogOutput->PutLine(s, (int)(lbreak - s));
-
-			s = lbreak+1;
-		}
-	}
-}
-
-void ATConsolePrintfImpl(const char *format, ...) {
-	if (g_pConsoleWindow) {
-		char buf[3072];
-		va_list val;
-
-		va_start(val, format);
-		const unsigned result = (unsigned)vsnprintf(buf, vdcountof(buf), format, val);
-		va_end(val);
-
-		if (result < vdcountof(buf))
-			ATConsoleWrite(buf);
-	}
-}
-
-void ATConsoleTaggedPrintfImpl(const char *format, ...) {
-	if (g_pConsoleWindow) {
-		ATAnticEmulator& antic = g_sim.GetAntic();
-		char buf[3072];
-
-		unsigned prefixLen = (unsigned)snprintf(buf, vdcountof(buf), "(%3d:%3d,%3d) ", antic.GetRawFrameCounter(), antic.GetBeamY(), antic.GetBeamX());
-		if (prefixLen < vdcountof(buf)) {
-			va_list val;
-
-			va_start(val, format);
-			const unsigned messageLen = (unsigned)vsnprintf(buf + prefixLen, vdcountof(buf) - prefixLen, format, val);
-			va_end(val);
-
-			if (messageLen < vdcountof(buf) - prefixLen)
-				ATConsoleWrite(buf);
-		}
 	}
 }
 

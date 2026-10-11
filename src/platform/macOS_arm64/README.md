@@ -39,3 +39,20 @@ PAL delay history and palette/filter changes during temporary updates.
 
 The native GTIA display test additionally submits processed NTSC/PAL output
 through the AppKit RGB display path at both resolutions.
+
+Diagnostic text formatting and file logging are shared in `consoletext.cpp`.
+Both formatted APIs work without a GUI when a log is open; timed messages use
+the real Windows ANTIC or an explicitly installed machine-timing provider.
+macOS does not fabricate beam positions before machine integration.
+
+The native macOS diagnostic console (`console_macos.mm`) uses a read-only,
+selectable NSTextView in a resizable AppKit window, with monospaced text and
+horizontal/vertical scrolling. Output does not implicitly open a window.
+Call `ATOpenConsole()` or `ATConsoleCreateMac()` on the main thread; serialize
+shared output and hook changes on that thread too. Each Write accepts a complete
+UTF-8 message, falling back to Latin-1 for legacy byte strings. This is the
+diagnostic output panel, not yet a debugger command interpreter.
+
+`Altirra_ConsoleText` checks formatting, beam tags, buffer limits, and actual
+log-file bytes on both platforms. `Altirra_ConsoleMac` exercises native text,
+Unicode, resizing, closure/reopening, and closure during text-storage callbacks.

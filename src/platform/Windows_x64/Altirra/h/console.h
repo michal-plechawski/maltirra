@@ -21,21 +21,11 @@
 #include <vd2/system/function.h>
 #include <vd2/system/VDString.h>
 #include <vd2/system/win32/miniwindows.h>
+#include <consoletext.h>
 
 struct ATDebuggerSourceFileInfo;
 
 ///////////////////////////////////////////////////////////////////////////
-void ATConsoleOpenLogFile(const wchar_t *path);
-void ATConsoleCloseLogFileNT();
-void ATConsoleCloseLogFile();
-
-void ATConsoleWrite(const char *s);
-void ATConsolePrintfImpl(const char *format, ...);
-void ATConsoleTaggedPrintfImpl(const char *format, ...);
-
-#define ATConsolePrintf(format, ...) ATConsolePrintfImpl(((void)sizeof printf(format __VA_OPT__(,) __VA_ARGS__), (format)) __VA_OPT__(,) __VA_ARGS__)
-#define ATConsoleTaggedPrintf(format, ...) ATConsoleTaggedPrintfImpl(((void)sizeof printf(format __VA_OPT__(,) __VA_ARGS__), (format)) __VA_OPT__(,) __VA_ARGS__)
-
 ///////////////////////////////////////////////////////////////////////////
 
 void ATConsoleGetFont(struct tagLOGFONTW& font, int& pointSizeTenths);
@@ -130,12 +120,6 @@ public:
 	static constexpr uint32 kTypeID = "IATUIDebuggerHistoryPane"_vdtypeid;
 
 	virtual bool JumpToCycle(uint32 cycle) = 0;
-};
-
-class IATUIDebuggerConsoleWindow {
-public:
-	virtual void Write(const char *s) = 0;
-	virtual void ShowEnd() = 0;
 };
 
 bool ATRestorePaneLayout(const char *name);

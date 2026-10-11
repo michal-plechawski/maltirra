@@ -49,6 +49,12 @@
     <ClCompile Include="source\artifactingparams.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="source\consoletext.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClInclude Include="h\consoletext.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
     <ClCompile Include="..\platform\Windows_x64\Altirra\source\artifacting_colorcorrect.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>

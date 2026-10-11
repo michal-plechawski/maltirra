@@ -143,6 +143,10 @@
     <ClCompile Include="source\artifactingparams.cpp">
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="source\consoletext.cpp">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClInclude Include="h\consoletext.h" />
     <ClCompile Include="..\platform\Windows_x64\Altirra\source\artifacting_colorcorrect.cpp">
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
     </ClCompile>

@@ -179,6 +179,8 @@ portable_test_sources=(
 	src/ATTest/source/TestAltirra_ArtifactingFiltersPortable.cpp
 	src/ATTest/source/TestAltirra_ArtifactingParamsPortable.cpp
 	src/ATTest/source/TestAltirra_ArtifactingEnginePortable.cpp
+	src/ATTest/source/TestAltirra_ConsoleTextPortable.cpp
+	src/platform/macOS_arm64/ATTest/source/TestAltirra_ConsoleMac.mm
 	src/ATTest/source/TestAltirra_ArtifactingColorCorrectPortable.cpp
 	src/ATTest/source/TestAltirra_ArtifactingNEONPortable.cpp
 	src/ATTest/source/TestAltirra_ArtifactingNTSCNEONPortable.cpp
@@ -393,6 +395,8 @@ portable_test_sources=(
 	src/Altirra/source/artifacting_filters.cpp
 	src/Altirra/source/artifactingparams.cpp
 	src/Altirra/source/artifacting.cpp
+	src/Altirra/source/consoletext.cpp
+	src/platform/macOS_arm64/Altirra/source/console_macos.mm
 	src/Altirra/source/audiorawsource.cpp
 	src/Altirra/source/audiostocksamples.cpp
 	src/Altirra/source/artifacting_neon.cpp
