@@ -205,6 +205,9 @@ Windows stack limit. PEA/PEI now check two-byte pushes, not pops; legal kernel
 entry exceptions no longer skip independent SIO checks. Out-of-range exception
 addresses cannot truncate and corrupt the sorted 16-bit set. Display-list
 overlap retains the original console-only warning behavior.
+Reentrant shutdown from either notifying SIO/ROM check stops the current
+instruction's remaining checks before accessing released machine connections;
+later observer entry points are harmless after shutdown.
 These verify the original observer, not an executing substitute CPU. Main CPU
 execution, remaining debugger dependencies, and full machine/application
 wiring are still unfinished.

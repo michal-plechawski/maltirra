@@ -281,5 +281,34 @@ bool ATTestAltirraCPUVerifierMachine(ATPortableTestContext& context) {
 		AT_PORTABLE_TEST_ASSERT(context, callbackConsole.mText.find("Loading over active display list") == std::string::npos);
 	}
 
+	// Failure callbacks may synchronously shut down the observer. In either
+	// notifying JMP check, stop before invoking released machine connections.
+	for (bool undocumented : { false, true }) {
+		VerifierHarness shutdownHarness(antic);
+		shutdownHarness.InitializeDisplayListRead(0x0010, 0xFFF0, 0x0030);
+		shutdownHarness.mCPU.mInsnPC = 0x4000;
+		shutdownHarness.mCPU.mP = 0x04;
+		shutdownHarness.mVerifier.SetFlags(kATVerifierFlag_CallingConventionViolations
+			| kATVerifierFlag_LoadingOverDisplayList
+			| (undocumented ? kATVerifierFlag_UndocumentedKernelEntry : 0));
+		if (undocumented)
+			shutdownHarness.mVerifier.RemoveAllowedTargets();
+		const uint32 callbackId = shutdownHarness.mEventManager.AddEventCallback(kATSimEvent_VerifierFailure, [&] {
+			shutdownHarness.mVerifier.Shutdown();
+		});
+		shutdownHarness.mVerifier.VerifyInsn(0x4C, ATKernelSymbols::SIOV);
+		shutdownHarness.mEventManager.RemoveEventCallback(callbackId);
+		AT_PORTABLE_TEST_ASSERT(context, shutdownHarness.mVerifierFailureCount == 1);
+		AT_PORTABLE_TEST_ASSERT(context, shutdownHarness.mDebugReadCount == 0);
+		shutdownHarness.mVerifier.SetFlags(kATVerifierFlag_AddressZero | kATVerifierFlag_InterruptRegs
+			| kATVerifierFlag_RecursiveNMI | kATVerifierFlag_AbnormalDMA);
+		shutdownHarness.mVerifier.VerifyInsn(0xA5, 0);
+		shutdownHarness.mVerifier.OnIRQEntry();
+		shutdownHarness.mVerifier.OnNMIEntry();
+		shutdownHarness.mVerifier.Shutdown();
+		shutdownHarness.mEventManager.NotifyEvent(kATSimEvent_AbnormalDMA);
+		AT_PORTABLE_TEST_ASSERT(context, shutdownHarness.mVerifierFailureCount == 1);
+	}
+
 	return true;
 }

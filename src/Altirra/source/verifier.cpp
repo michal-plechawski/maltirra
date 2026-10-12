@@ -169,6 +169,9 @@ void ATCPUVerifier::OnReset() {
 }
 
 void ATCPUVerifier::OnIRQEntry() {
+	if (!mpSimEventMgr)
+		return;
+
 	if (mFlags & kATVerifierFlag_InterruptRegs) {
 		StackRegState& rs = mStackRegState[mConnections.mpReadCPU().mS];
 		rs.mA = mConnections.mpReadCPU().mA;
@@ -181,6 +184,9 @@ void ATCPUVerifier::OnIRQEntry() {
 }
 
 void ATCPUVerifier::OnNMIEntry() {
+	if (!mpSimEventMgr)
+		return;
+
 	if (mFlags & kATVerifierFlag_InterruptRegs) {
 		StackRegState& rs = mStackRegState[mConnections.mpReadCPU().mS];
 		rs.mA = mConnections.mpReadCPU().mA;
@@ -207,6 +213,9 @@ void ATCPUVerifier::OnNMIEntry() {
 }
 
 void ATCPUVerifier::VerifyInsn(uint8 opcode, uint16 target) {
+	if (!mpSimEventMgr)
+		return;
+
 	switch(opcode) {
 		case 0xA5:	// LDA dp
 		case 0xA6:	// LDX dp
@@ -290,6 +299,8 @@ void ATCPUVerifier::VerifyInsn(uint8 opcode, uint16 target) {
 					ATConsolePrintf("          PC: %04X   Fault address: %04X\n", pc, target);
 					ATConsolePrintf("\n");
 					mpSimEventMgr->NotifyEvent(kATSimEvent_VerifierFailure);
+					if (!mpSimEventMgr)
+						return;
 				}
 			}
 
@@ -301,6 +312,8 @@ void ATCPUVerifier::VerifyInsn(uint8 opcode, uint16 target) {
 						ATConsolePrintf("          PC: %04X   Fault address: %04X\n", mConnections.mpReadCPU().mInsnPC, target);
 						ATConsolePrintf("\n");
 						mpSimEventMgr->NotifyEvent(kATSimEvent_VerifierFailure);
+						if (!mpSimEventMgr)
+							return;
 					}
 				}
 			}
