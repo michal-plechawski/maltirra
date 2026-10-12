@@ -96,6 +96,11 @@ bool ATTestAltirraANTICSnapshot(ATPortableTestContext& context);
 bool ATTestAltirraANTICKernels(ATPortableTestContext& context);
 bool ATTestAltirraPIAInputs(ATPortableTestContext& context);
 bool ATTestAltirraProfileBuilder(ATPortableTestContext& context);
+bool ATTestAltirraCPUHeatMapMemory(ATPortableTestContext& context);
+bool ATTestAltirraCPUHeatMapPropagation(ATPortableTestContext& context);
+bool ATTestAltirraCPUHeatMapStack(ATPortableTestContext& context);
+bool ATTestAltirraCPUHeatMapTraps(ATPortableTestContext& context);
+bool ATTestAltirraCPUHeatMapDiagnostics(ATPortableTestContext& context);
 bool ATTestAltirraProfileCounters(ATPortableTestContext& context);
 bool ATTestAltirraProfileFrames(ATPortableTestContext& context);
 bool ATTestAltirraProfileCallGraph(ATPortableTestContext& context);
@@ -298,6 +303,11 @@ const ATPortableTestCase *ATGetPortableTests(size_t& count) {
 		{ "Altirra_ANTICKernels", ATTestAltirraANTICKernels },
 		{ "Altirra_PIAInputs", ATTestAltirraPIAInputs },
 		{ "Altirra_ProfileBuilder", ATTestAltirraProfileBuilder },
+		{ "Altirra_CPUHeatMapMemory", ATTestAltirraCPUHeatMapMemory },
+		{ "Altirra_CPUHeatMapPropagation", ATTestAltirraCPUHeatMapPropagation },
+		{ "Altirra_CPUHeatMapStack", ATTestAltirraCPUHeatMapStack },
+		{ "Altirra_CPUHeatMapTraps", ATTestAltirraCPUHeatMapTraps },
+		{ "Altirra_CPUHeatMapDiagnostics", ATTestAltirraCPUHeatMapDiagnostics },
 		{ "Altirra_ProfileCounters", ATTestAltirraProfileCounters },
 		{ "Altirra_ProfileFrames", ATTestAltirraProfileFrames },
 		{ "Altirra_ProfileCallGraph", ATTestAltirraProfileCallGraph },

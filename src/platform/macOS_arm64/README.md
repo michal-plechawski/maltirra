@@ -161,3 +161,25 @@ separate main/interrupt rows at the same PC; BASIC-line and call-graph address
 records explicitly initialize their context instead of exposing allocator bits.
 These are deterministic history-analysis tests, not CPU execution tests; main
 instruction execution and its debugger/simulator integration remain unfinished.
+
+The CPU heat-map analysis (`src/Altirra/source/cpuheatmap.cpp`) is now shared:
+64K memory provenance/access/bit-validity tracking, register and stack
+propagation, the original opcode coverage, early/normal trap configuration,
+and diagnostic output through the real simulator event manager and console.
+Its common entry point takes the post-instruction stack pointer; the Windows
+adapter retains the existing CPU-shaped API and obtains that value from the
+real CPU. No substitute CPU or reduced opcode implementation is used.
+
+`Altirra_CPUHeatMapMemory`, `Altirra_CPUHeatMapPropagation`,
+`Altirra_CPUHeatMapStack`, `Altirra_CPUHeatMapTraps`, and
+`Altirra_CPUHeatMapDiagnostics` cover full-map/range clipping, all load/store
+and memory ALU addressing variants, all 24 memory read-modify-write variants,
+known/unknown data, stack wrapping, isolated trap flags, early/normal switching,
+and separately known N/V diagnostic bits. Large test instances are heap-owned
+for Windows' default stack limit. Regression fixes include LDX Z validity
+using X instead of A, hardware-store trap selection, hardware RMW classification
+and preservation, INC/DEC RAM provenance, and the diagnostic V-bit mask.
+Immediate arithmetic keeps the original heat-map lineage behavior.
+This layer analyzes completed instructions; it does not itself execute a CPU.
+Main CPU execution, its remaining debugger dependencies, and the complete
+simulator/application integration still remain to be ported.

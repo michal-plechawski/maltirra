@@ -64,6 +64,12 @@
 	<ClCompile Include="source\TestAltirra_ProfileBuilderPortable.cpp">
 	  <Filter>Source Files</Filter>
 	</ClCompile>
+	<ClCompile Include="source\TestAltirra_CPUHeatMapPortable.cpp">
+	  <Filter>Source Files</Filter>
+	</ClCompile>
+	<ClCompile Include="source\TestAltirra_CPUHeatMapTrapsPortable.cpp">
+	  <Filter>Source Files</Filter>
+	</ClCompile>
 	<ClCompile Include="source\TestAltirra_MemoryManagerPortable.cpp">
 	  <Filter>Source Files</Filter>
 	</ClCompile>

@@ -79,6 +79,8 @@ public:
 	void MarkMemoryRangeHardware(uint32 addr, uint32 len);
 	void PresetMemoryRange(uint32 addr, uint32 len);
 
+	// stackPointer is sampled after the instruction, matching the CPU adapter.
+	VDNOINLINE void ProcessInsn(uint8 opcode, uint16 addr, uint16 pc, uint8 stackPointer);
 	VDNOINLINE void ProcessInsn(const ATCPUEmulator& cpu, uint8 opcode, uint16 addr, uint16 pc);
 
 protected:

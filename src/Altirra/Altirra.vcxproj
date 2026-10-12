@@ -251,6 +251,9 @@
     <ClCompile Include="..\platform\Windows_x64\Altirra\source\cpu65c02.cpp" />
     <ClCompile Include="..\platform\Windows_x64\Altirra\source\cpu65c816.cpp" />
     <ClCompile Include="..\platform\Windows_x64\Altirra\source\cpuheatmap.cpp" />
+    <ClCompile Include="source\cpuheatmap.cpp">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+    </ClCompile>
     <ClCompile Include="source\cpuhookmanager.cpp">
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
     </ClCompile>
@@ -689,7 +692,7 @@
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\console.h" />
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\covox.h" />
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\cpu.h" />
-    <ClInclude Include="..\platform\Windows_x64\Altirra\h\cpuheatmap.h" />
+    <ClInclude Include="h\cpuheatmap.h" />
     <ClInclude Include="h\cpuhookmanager.h" />
     <ClInclude Include="h\cpumemory.h" />
     <ClInclude Include="h\cpustates.h" />

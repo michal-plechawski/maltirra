@@ -739,6 +739,9 @@
     <ClCompile Include="..\platform\Windows_x64\Altirra\source\cpuheatmap.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="source\cpuheatmap.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
     <ClCompile Include="..\platform\Windows_x64\Altirra\source\uipageddialog.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -1191,7 +1194,7 @@
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\cpu.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\platform\Windows_x64\Altirra\h\cpuheatmap.h">
+    <ClInclude Include="h\cpuheatmap.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="h\cpuhookmanager.h">
