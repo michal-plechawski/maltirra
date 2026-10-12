@@ -469,7 +469,10 @@
     <ClCompile Include="source\vbxe.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\platform\Windows_x64\Altirra\source\verifier.cpp">
+    <ClCompile Include="..\platform\Windows_x64\Altirra\source\verifieradapter.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="source\verifier.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\platform\Windows_x64\Altirra\source\videowriter.cpp">
@@ -1446,7 +1449,10 @@
     <ClInclude Include="h\vbxe.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\platform\Windows_x64\Altirra\h\verifier.h">
+    <ClInclude Include="h\verifier.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="h\cpumode.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="h\versioninfo.h">

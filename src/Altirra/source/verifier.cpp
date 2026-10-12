@@ -15,12 +15,14 @@
 //	along with this program; if not, write to the Free Software
 //	Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
-#include <stdafx.h>
+#include <algorithm>
+#include <cstring>
+#include <utility>
+#include <vd2/system/vdtypes.h>
+#include "cpuflags.h"
 #include <at/atcore/ksyms.h>
-#include "cpu.h"
-#include "console.h"
+#include "consoletext.h"
 #include "verifier.h"
-#include "simulator.h"
 #include "simeventmanager.h"
 
 ATCPUVerifier::ATCPUVerifier() {
@@ -30,14 +32,11 @@ ATCPUVerifier::~ATCPUVerifier() {
 	Shutdown();
 }
 
-void ATCPUVerifier::Init(ATCPUEmulator *cpu, ATCPUEmulatorMemory *mem, ATSimulator *sim, ATSimulatorEventManager *simevmgr) {
-	mpCPU = cpu;
-	mpMemory = mem;
-	mpSimulator = sim;
+void ATCPUVerifier::Init(ATCPUVerifierConnections connections, ATSimulatorEventManager *simevmgr) {
+	Shutdown();
+	mConnections = std::move(connections);
 	mpSimEventMgr = simevmgr;
-
 	mEventCallbackId = mpSimEventMgr->AddEventCallback(kATSimEvent_AbnormalDMA, [this] { OnAbnormalDMA(); });
-
 	OnReset();
 	ResetAllowedTargets();
 }
@@ -49,8 +48,9 @@ void ATCPUVerifier::Shutdown() {
 			mEventCallbackId = 0;
 		}
 
-		mpSimEventMgr = NULL;
+		mpSimEventMgr = nullptr;
 	}
+	mConnections = {};
 }
 
 void ATCPUVerifier::SetFlags(uint32 flags) {
@@ -71,6 +71,9 @@ void ATCPUVerifier::SetFlags(uint32 flags) {
 }
 
 void ATCPUVerifier::AddAllowedTarget(uint32 addr) {
+	if (addr > 0xFFFF)
+		return;
+
 	Addresses::iterator it(std::lower_bound(mAllowedTargets.begin(), mAllowedTargets.end(), addr));
 
 	if (it == mAllowedTargets.end() || *it != addr)
@@ -162,29 +165,29 @@ void ATCPUVerifier::GetAllowedTargets(vdfastvector<uint16>& exceptions) {
 
 void ATCPUVerifier::OnReset() {
 	mbInNMIRoutine = false;
-		memset(mStackRegState, 0, sizeof mStackRegState);
+	memset(mStackRegState, 0, sizeof mStackRegState);
 }
 
 void ATCPUVerifier::OnIRQEntry() {
 	if (mFlags & kATVerifierFlag_InterruptRegs) {
-		StackRegState& rs = mStackRegState[mpCPU->GetS()];
-		rs.mA = mpCPU->GetA();
-		rs.mX = mpCPU->GetX();
-		rs.mY = mpCPU->GetY();
+		StackRegState& rs = mStackRegState[mConnections.mpReadCPU().mS];
+		rs.mA = mConnections.mpReadCPU().mA;
+		rs.mX = mConnections.mpReadCPU().mX;
+		rs.mY = mConnections.mpReadCPU().mY;
 		rs.mbActive = true;
-		rs.mPC = mpCPU->GetInsnPC();
+		rs.mPC = mConnections.mpReadCPU().mInsnPC;
 		rs.mPad2 = 0;
 	}
 }
 
 void ATCPUVerifier::OnNMIEntry() {
 	if (mFlags & kATVerifierFlag_InterruptRegs) {
-		StackRegState& rs = mStackRegState[mpCPU->GetS()];
-		rs.mA = mpCPU->GetA();
-		rs.mX = mpCPU->GetX();
-		rs.mY = mpCPU->GetY();
+		StackRegState& rs = mStackRegState[mConnections.mpReadCPU().mS];
+		rs.mA = mConnections.mpReadCPU().mA;
+		rs.mX = mConnections.mpReadCPU().mX;
+		rs.mY = mConnections.mpReadCPU().mY;
 		rs.mbActive = true;
-		rs.mPC = mpCPU->GetInsnPC();
+		rs.mPC = mConnections.mpReadCPU().mInsnPC;
 		rs.mPad2 = 0;
 	}
 
@@ -194,16 +197,16 @@ void ATCPUVerifier::OnNMIEntry() {
 	if (mbInNMIRoutine) {
 		ATConsolePrintf("\n");
 		ATConsolePrintf("VERIFIER: Recursive NMI handler execution detected.\n");
-		ATConsolePrintf("          PC: %04X\n", mpCPU->GetPC());
+		ATConsolePrintf("          PC: %04X\n", mConnections.mpReadCPU().mPC);
 		ATConsolePrintf("\n");
 		mpSimEventMgr->NotifyEvent(kATSimEvent_VerifierFailure);
 	} else {
-		mNMIStackLevel = mpCPU->GetS();
+		mNMIStackLevel = mConnections.mpReadCPU().mS;
 		mbInNMIRoutine = true;
 	}
 }
 
-void ATCPUVerifier::VerifyInsn(const ATCPUEmulator& cpu, uint8 opcode, uint16 target) {
+void ATCPUVerifier::VerifyInsn(uint8 opcode, uint16 target) {
 	switch(opcode) {
 		case 0xA5:	// LDA dp
 		case 0xA6:	// LDX dp
@@ -212,7 +215,7 @@ void ATCPUVerifier::VerifyInsn(const ATCPUEmulator& cpu, uint8 opcode, uint16 ta
 				if (target == 0) {
 					ATConsolePrintf("\n");
 					ATConsolePrintf("VERIFIER: Possibly incorrect direct load of absolute address zero instead of immediate zero.\n");
-					ATConsolePrintf("          PC: %04X   Fault address: %04X\n", mpCPU->GetInsnPC(), target);
+					ATConsolePrintf("          PC: %04X   Fault address: %04X\n", mConnections.mpReadCPU().mInsnPC, target);
 					ATConsolePrintf("\n");
 					mpSimEventMgr->NotifyEvent(kATSimEvent_VerifierFailure);
 				}
@@ -257,7 +260,7 @@ void ATCPUVerifier::VerifyInsn(const ATCPUEmulator& cpu, uint8 opcode, uint16 ta
 					if (aliased) {
 						ATConsolePrintf("\n");
 						ATConsolePrintf("VERIFIER: Access to non-canonical hardware address detected.\n");
-						ATConsolePrintf("          PC: %04X   Fault address: %04X\n", mpCPU->GetInsnPC(), target);
+						ATConsolePrintf("          PC: %04X   Fault address: %04X\n", mConnections.mpReadCPU().mInsnPC, target);
 						ATConsolePrintf("\n");
 						mpSimEventMgr->NotifyEvent(kATSimEvent_VerifierFailure);
 					}
@@ -267,7 +270,7 @@ void ATCPUVerifier::VerifyInsn(const ATCPUEmulator& cpu, uint8 opcode, uint16 ta
 
 		case 0x20:	// JSR abs
 			if (mFlags & kATVerifierFlag_StackWrap) {
-				if (mpCPU->GetEmulationFlag() && mpCPU->GetS() < 0x03) {
+				if (mConnections.mpReadCPU().mbEmulation && mConnections.mpReadCPU().mS < 0x03) {
 					return FailStackOverflow();
 				}
 			}
@@ -276,34 +279,26 @@ void ATCPUVerifier::VerifyInsn(const ATCPUEmulator& cpu, uint8 opcode, uint16 ta
 
 		case 0x4C:	// JMP abs
 			if (mFlags & kATVerifierFlag_UndocumentedKernelEntry) {
-				uint16 pc = mpCPU->GetInsnPC();
+				uint16 pc = mConnections.mpReadCPU().mInsnPC;
 
-				// we only care if the target is in kernel ROM space
-				if (!mpSimulator->IsKernelROMLocation(target))
-					return;
-
-				// ignore jumps from kernel ROM
-				if (mpSimulator->IsKernelROMLocation(pc))
-					return;
-
-				// check for an allowed target
-				if (std::binary_search(mAllowedTargets.begin(), mAllowedTargets.end(), target))
-					return;
-
-				// trip a verifier failure
-				ATConsolePrintf("\n");
-				ATConsolePrintf("VERIFIER: Invalid jump into kernel ROM space detected.\n");
-				ATConsolePrintf("          PC: %04X   Fault address: %04X\n", pc, target);
-				ATConsolePrintf("\n");
-				mpSimEventMgr->NotifyEvent(kATSimEvent_VerifierFailure);
+				// Exceptions only suppress this check, not the independent SIO checks.
+				if (mConnections.mpIsKernelROM(target)
+					&& !mConnections.mpIsKernelROM(pc)
+					&& !std::binary_search(mAllowedTargets.begin(), mAllowedTargets.end(), target)) {
+					ATConsolePrintf("\n");
+					ATConsolePrintf("VERIFIER: Invalid jump into kernel ROM space detected.\n");
+					ATConsolePrintf("          PC: %04X   Fault address: %04X\n", pc, target);
+					ATConsolePrintf("\n");
+					mpSimEventMgr->NotifyEvent(kATSimEvent_VerifierFailure);
+				}
 			}
 
 			if (mFlags & kATVerifierFlag_CallingConventionViolations) {
-				if (target == ATKernelSymbols::SIOV && mpSimulator->IsKernelROMLocation(target)) {
-					if (mpCPU->GetP() & AT6502::kFlagI) {
+				if (target == ATKernelSymbols::SIOV && mConnections.mpIsKernelROM(target)) {
+					if (mConnections.mpReadCPU().mP & AT6502::kFlagI) {
 						ATConsolePrintf("\n");
 						ATConsolePrintf("VERIFIER: OS calling convention violation -- calling into SIO with I flag set (will hang)\n");
-						ATConsolePrintf("          PC: %04X   Fault address: %04X\n", mpCPU->GetInsnPC(), target);
+						ATConsolePrintf("          PC: %04X   Fault address: %04X\n", mConnections.mpReadCPU().mInsnPC, target);
 						ATConsolePrintf("\n");
 						mpSimEventMgr->NotifyEvent(kATSimEvent_VerifierFailure);
 					}
@@ -311,20 +306,18 @@ void ATCPUVerifier::VerifyInsn(const ATCPUEmulator& cpu, uint8 opcode, uint16 ta
 			}
 
 			if (mFlags & kATVerifierFlag_LoadingOverDisplayList) {
-				if (target == ATKernelSymbols::SIOV && mpSimulator->IsKernelROMLocation(target)) {
-					uint8 dir = mpSimulator->DebugReadByte(ATKernelSymbols::DSTATS);
+				if (target == ATKernelSymbols::SIOV && mConnections.mpIsKernelROM(target)) {
+					uint8 dir = mConnections.mpDebugReadByte(ATKernelSymbols::DSTATS);
 
 					if (dir & 0x40) {
-						const ATAnticEmulator& antic = mpSimulator->GetAntic();
+						uint16 ptr = mConnections.mpDebugReadWord(ATKernelSymbols::DBUFLO);
+						uint16 len = mConnections.mpDebugReadWord(ATKernelSymbols::DBYTLO);
+						uint16 dlist = mConnections.mpGetDisplayListPtr();
 
-						uint16 ptr = mpSimulator->DebugReadWord(ATKernelSymbols::DBUFLO);
-						uint16 len = mpSimulator->DebugReadWord(ATKernelSymbols::DBYTLO);
-						uint16 dlist = antic.GetDisplayListPtr();
-
-						if (antic.IsDisplayListEnabled() && ((dlist - ptr) & 0xffff) < len) {
+						if (mConnections.mpIsDisplayListEnabled() && ((dlist - ptr) & 0xffff) < len) {
 							ATConsolePrintf("\n");
 							ATConsolePrintf("VERIFIER: Loading over active display list.\n");
-							ATConsolePrintf("          PC: $%04X   Read range: $%04X-%04X  DLIST: $%04X\n", mpCPU->GetInsnPC(), ptr, ptr + len - 1, dlist);
+							ATConsolePrintf("          PC: $%04X   Read range: $%04X-%04X  DLIST: $%04X\n", mConnections.mpReadCPU().mInsnPC, ptr, ptr + len - 1, dlist);
 							ATConsolePrintf("\n");
 						}
 					}
@@ -334,7 +327,7 @@ void ATCPUVerifier::VerifyInsn(const ATCPUEmulator& cpu, uint8 opcode, uint16 ta
 
 		case 0x60:	// RTS
 			if (mFlags & kATVerifierFlag_StackWrap) {
-				if (mpCPU->GetEmulationFlag() && mpCPU->GetS() > 0xFD) {
+				if (mConnections.mpReadCPU().mbEmulation && mConnections.mpReadCPU().mS > 0xFD) {
 					return FailStackUnderflow();
 				}
 			}
@@ -342,10 +335,10 @@ void ATCPUVerifier::VerifyInsn(const ATCPUEmulator& cpu, uint8 opcode, uint16 ta
 
 		case 0x40:	// RTI
 			if (mFlags & kATVerifierFlag_InterruptRegs) {
-				StackRegState& rs = mStackRegState[mpCPU->GetS()];
-				uint8 a = mpCPU->GetA();
-				uint8 x = mpCPU->GetX();
-				uint8 y = mpCPU->GetY();
+				StackRegState& rs = mStackRegState[mConnections.mpReadCPU().mS];
+				uint8 a = mConnections.mpReadCPU().mA;
+				uint8 x = mConnections.mpReadCPU().mX;
+				uint8 y = mConnections.mpReadCPU().mY;
 
 				if (rs.mbActive) {
 					rs.mbActive = false;
@@ -354,7 +347,7 @@ void ATCPUVerifier::VerifyInsn(const ATCPUEmulator& cpu, uint8 opcode, uint16 ta
 						ATConsolePrintf("\n");
 						ATConsolePrintf("VERIFIER: Register mismatch between interrupt handler entry and exit.\n");
 						ATConsolePrintf("          Entry: PC=%04X  A=%02X X=%02X Y=%02X\n", rs.mPC, rs.mA, rs.mX, rs.mY);
-						ATConsolePrintf("          Exit:  PC=%04X  A=%02X X=%02X Y=%02X\n", mpCPU->GetInsnPC(), a, x, y);
+						ATConsolePrintf("          Exit:  PC=%04X  A=%02X X=%02X Y=%02X\n", mConnections.mpReadCPU().mInsnPC, a, x, y);
 						mpSimEventMgr->NotifyEvent(kATSimEvent_VerifierFailure);
 						return;
 					}
@@ -363,7 +356,7 @@ void ATCPUVerifier::VerifyInsn(const ATCPUEmulator& cpu, uint8 opcode, uint16 ta
 
 			if (mFlags & kATVerifierFlag_RecursiveNMI) {
 				if (mbInNMIRoutine) {
-					uint8 s = mpCPU->GetS();
+					uint8 s = mConnections.mpReadCPU().mS;
 
 					if ((uint8)(s - mNMIStackLevel) < 8)
 						mbInNMIRoutine = false;
@@ -371,7 +364,7 @@ void ATCPUVerifier::VerifyInsn(const ATCPUEmulator& cpu, uint8 opcode, uint16 ta
 			}
 
 			if (mFlags & kATVerifierFlag_StackWrap) {
-				if (mpCPU->GetEmulationFlag() && mpCPU->GetS() > 0xFC) {
+				if (mConnections.mpReadCPU().mbEmulation && mConnections.mpReadCPU().mS > 0xFC) {
 					return FailStackUnderflow();
 				}
 			}
@@ -393,10 +386,10 @@ void ATCPUVerifier::VerifyInsn(const ATCPUEmulator& cpu, uint8 opcode, uint16 ta
 		case 0xFD:	// SBC abs,X
 		case 0xFE:	// INC abs,X
 			if (mFlags & kATVerifierFlag_64KWrap) {
-				if (target < mpCPU->GetX()) {
+				if (target < mConnections.mpReadCPU().mX) {
 					ATConsolePrintf("\n");
 					ATConsolePrintf("VERIFIER: 64K address space wrap detected on abs,X indexing mode.\n");
-					ATConsolePrintf("          PC=%04X  X=%02X  Target=%04X\n", mpCPU->GetInsnPC(), mpCPU->GetX(), target);
+					ATConsolePrintf("          PC=%04X  X=%02X  Target=%04X\n", mConnections.mpReadCPU().mInsnPC, mConnections.mpReadCPU().mX, target);
 					mpSimEventMgr->NotifyEvent(kATSimEvent_VerifierFailure);
 					return;
 				}
@@ -413,10 +406,10 @@ void ATCPUVerifier::VerifyInsn(const ATCPUEmulator& cpu, uint8 opcode, uint16 ta
 		case 0xD9:	// CMP abs,Y
 		case 0xF9:	// SBC abs,Y
 			if (mFlags & kATVerifierFlag_64KWrap) {
-				if (target < mpCPU->GetY()) {
+				if (target < mConnections.mpReadCPU().mY) {
 					ATConsolePrintf("\n");
 					ATConsolePrintf("VERIFIER: 64K address space wrap detected on abs,Y indexing mode.\n");
-					ATConsolePrintf("          PC=%04X  Y=%02X  Target=%04X\n", mpCPU->GetInsnPC(), mpCPU->GetY(), target);
+					ATConsolePrintf("          PC=%04X  Y=%02X  Target=%04X\n", mConnections.mpReadCPU().mInsnPC, mConnections.mpReadCPU().mY, target);
 					mpSimEventMgr->NotifyEvent(kATSimEvent_VerifierFailure);
 					return;
 				}
@@ -432,10 +425,10 @@ void ATCPUVerifier::VerifyInsn(const ATCPUEmulator& cpu, uint8 opcode, uint16 ta
 		case 0xD1:	// CMP (zp),Y
 		case 0xF1:	// SBC (zp),Y
 			if (mFlags & kATVerifierFlag_64KWrap) {
-				if (target < mpCPU->GetY()) {
+				if (target < mConnections.mpReadCPU().mY) {
 					ATConsolePrintf("\n");
 					ATConsolePrintf("VERIFIER: 64K address space wrap detected on (zp),Y indexing mode.\n");
-					ATConsolePrintf("          PC=%04X  Y=%02X  Target=%04X\n", mpCPU->GetInsnPC(), mpCPU->GetY(), target);
+					ATConsolePrintf("          PC=%04X  Y=%02X  Target=%04X\n", mConnections.mpReadCPU().mInsnPC, mConnections.mpReadCPU().mY, target);
 					mpSimEventMgr->NotifyEvent(kATSimEvent_VerifierFailure);
 					return;
 				}
@@ -445,10 +438,10 @@ void ATCPUVerifier::VerifyInsn(const ATCPUEmulator& cpu, uint8 opcode, uint16 ta
 		case 0x1B:	// TCS
 		case 0x9A:	// TXS
 			if (mFlags & kATVerifierFlag_StackInZP816) {
-				if (mpCPU->GetS16() < 0x100) {
+				if (mConnections.mpReadCPU().mS16 < 0x100) {
 					ATConsolePrintf("\n");
 					ATConsolePrintf("VERIFIER: Stack pointer changed to point to page zero.\n");
-					ATConsolePrintf("          PC=%02X:%04X  S=%04X\n", mpCPU->GetK(), mpCPU->GetInsnPC(), mpCPU->GetS16());
+					ATConsolePrintf("          PC=%02X:%04X  S=%04X\n", mConnections.mpReadCPU().mK, mConnections.mpReadCPU().mInsnPC, mConnections.mpReadCPU().mS16);
 					mpSimEventMgr->NotifyEvent(kATSimEvent_VerifierFailure);
 					return;
 				}
@@ -458,67 +451,67 @@ void ATCPUVerifier::VerifyInsn(const ATCPUEmulator& cpu, uint8 opcode, uint16 ta
 		case 0x4B:	// PHK - 1 byte
 		case 0x8B:	// PHB - 1 byte
 			if (mFlags & kATVerifierFlag_StackWrap) {
-				if (mpCPU->GetCPUMode() == kATCPUMode_65C816 && mpCPU->GetEmulationFlag() && mpCPU->GetS() < 0x01)
+				if (mConnections.mpReadCPU().mMode == kATCPUMode_65C816 && mConnections.mpReadCPU().mbEmulation && mConnections.mpReadCPU().mS < 0x01)
 					return FailStackOverflow();
 			}
 			break;
 
 		case 0x0B:	// PHD - 2 bytes
+		case 0xD4:	// PEI (dp) - 2 bytes
+		case 0xF4:	// PEA abs - 2 bytes
 			if (mFlags & kATVerifierFlag_StackWrap) {
-				if (mpCPU->GetCPUMode() == kATCPUMode_65C816 && mpCPU->GetEmulationFlag() && mpCPU->GetS() < 0x02)
+				if (mConnections.mpReadCPU().mMode == kATCPUMode_65C816 && mConnections.mpReadCPU().mbEmulation && mConnections.mpReadCPU().mS < 0x02)
 					return FailStackOverflow();
 			}
 			break;
 
 		case 0xFC:	// JSR (abs,X) - 2 bytes
 			if (mFlags & kATVerifierFlag_StackWrap) {
-				if (mpCPU->GetCPUMode() == kATCPUMode_65C816 && mpCPU->GetEmulationFlag() && mpCPU->GetS() < 0x02)
+				if (mConnections.mpReadCPU().mMode == kATCPUMode_65C816 && mConnections.mpReadCPU().mbEmulation && mConnections.mpReadCPU().mS < 0x02)
 					return FailStackOverflow();
 			}
 			break;
 
 		case 0x22:	// JSL long - 3 bytes
 			if (mFlags & kATVerifierFlag_StackWrap) {
-				if (mpCPU->GetCPUMode() == kATCPUMode_65C816 && mpCPU->GetEmulationFlag() && mpCPU->GetS() < 0x03)
+				if (mConnections.mpReadCPU().mMode == kATCPUMode_65C816 && mConnections.mpReadCPU().mbEmulation && mConnections.mpReadCPU().mS < 0x03)
 					return FailStackOverflow();
 			}
 			break;
 
 		case 0xDA:	// PHX - 1 byte (in emulation mode)
 		case 0x5A:	// PHY - 1 byte (in emulation mode)
-			if (mpCPU->GetCPUMode() == kATCPUMode_6502)
+			if (mConnections.mpReadCPU().mMode == kATCPUMode_6502)
 				break;
 			[[fallthrough]];
 		case 0x48:	// PHA - 1 byte (in emulation mode)
 		case 0x08:	// PHP - 1 byte
-			if ((mFlags & kATVerifierFlag_StackWrap) && mpCPU->GetEmulationFlag() && mpCPU->GetS() < 0x01)
+			if ((mFlags & kATVerifierFlag_StackWrap) && mConnections.mpReadCPU().mbEmulation && mConnections.mpReadCPU().mS < 0x01)
 				return FailStackOverflow();
 			break;
 
 		case 0xAB:	// PLB - 1 byte
-		case 0xD4:	// PEI (dp) - 1 byte
 			if (mFlags & kATVerifierFlag_StackWrap) {
-				if (mpCPU->GetCPUMode() == kATCPUMode_65C816 && mpCPU->GetEmulationFlag() && mpCPU->GetS() >= 0xFF)
+				if (mConnections.mpReadCPU().mMode == kATCPUMode_65C816 && mConnections.mpReadCPU().mbEmulation && mConnections.mpReadCPU().mS >= 0xFF)
 					return FailStackUnderflow();
 			}
 			break;
 
 		case 0x2B:	// PLD - 2 bytes
-		case 0xF4:	// PEA abs - 2 bytes
 			if (mFlags & kATVerifierFlag_StackWrap) {
-				if (mpCPU->GetCPUMode() == kATCPUMode_65C816 && mpCPU->GetEmulationFlag() && mpCPU->GetS() >= 0xFE)
+				if (mConnections.mpReadCPU().mMode == kATCPUMode_65C816 && mConnections.mpReadCPU().mbEmulation && mConnections.mpReadCPU().mS >= 0xFE)
 					return FailStackUnderflow();
 			}
 			break;
 
 		case 0xFA:	// PLX - 1 byte (in emulation mode)
 		case 0x7A:	// PLY - 1 byte (in emulation mode)
-			if (mpCPU->GetCPUMode() == kATCPUMode_6502)
+			if (mConnections.mpReadCPU().mMode == kATCPUMode_6502)
 				break;
 			[[fallthrough]];
 		case 0x28:	// PLP
 		case 0x68:	// PLA
-			if ((mFlags & kATVerifierFlag_StackWrap) && mpCPU->GetEmulationFlag() && mpCPU->GetS() >= 0xFF)
+			if ((mFlags & kATVerifierFlag_StackWrap) && mConnections.mpReadCPU().mbEmulation && mConnections.mpReadCPU().mS >= 0xFF)
 				return FailStackUnderflow();
 			break;
 	}

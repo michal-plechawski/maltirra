@@ -25,6 +25,7 @@
 #include <vd2/system/vdtypes.h>
 #include <at/atcore/enumparse.h>
 #include <at/atcpu/history.h>
+#include "cpumode.h"
 
 class ATCPUEmulator;
 class ATCPUHookManager;
@@ -94,7 +95,7 @@ struct ATCPUStepCondition : public ATCPUStepConditionLink {
 	uint16 mIgnorePCLength = 0;
 
 	// Step callback called when the condition is met. If the callback is not set,
-	// the 
+	// the
 	ATCPUStepCallback mpCallback = nullptr;
 	void *mpCallbackData = nullptr;
 
@@ -102,15 +103,6 @@ struct ATCPUStepCondition : public ATCPUStepConditionLink {
 	static ATCPUStepCondition CreateAtStackLevel(uint8 s);
 	static ATCPUStepCondition CreateNMI();
 };
-
-enum ATCPUMode : uint8 {
-	kATCPUMode_6502,
-	kATCPUMode_65C02,
-	kATCPUMode_65C816,
-	kATCPUModeCount
-};
-
-AT_DECLARE_ENUM_TABLE(ATCPUMode);
 
 enum ATCPUSubMode : uint8 {
 	kATCPUSubMode_6502,

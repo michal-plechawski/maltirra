@@ -61,6 +61,12 @@
 	<ClCompile Include="source\TestAltirra_CPUStatesPortable.cpp">
 	  <Filter>Source Files</Filter>
 	</ClCompile>
+	<ClCompile Include="source\TestAltirra_CPUVerifierPortable.cpp">
+	  <Filter>Source Files</Filter>
+	</ClCompile>
+	<ClCompile Include="source\TestAltirra_CPUVerifierMachinePortable.cpp">
+	  <Filter>Source Files</Filter>
+	</ClCompile>
 	<ClCompile Include="source\TestAltirra_ProfileBuilderPortable.cpp">
 	  <Filter>Source Files</Filter>
 	</ClCompile>

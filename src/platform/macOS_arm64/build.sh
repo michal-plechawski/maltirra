@@ -196,6 +196,8 @@ portable_test_sources=(
 	src/ATTest/source/TestAltirra_CompatDBPortable.cpp
 	src/ATTest/source/TestAltirra_CPUMemoryPortable.cpp
 	src/ATTest/source/TestAltirra_CPUStatesPortable.cpp
+	src/ATTest/source/TestAltirra_CPUVerifierPortable.cpp
+	src/ATTest/source/TestAltirra_CPUVerifierMachinePortable.cpp
 	src/ATTest/source/TestAltirra_ProfileBuilderPortable.cpp
 	src/ATTest/source/TestAltirra_CPUHeatMapPortable.cpp
 	src/ATTest/source/TestAltirra_CPUHeatMapTrapsPortable.cpp
@@ -419,6 +421,7 @@ portable_test_sources=(
 	src/Altirra/source/pia.cpp
 	src/Altirra/source/profilebuilder.cpp
 	src/Altirra/source/cpuheatmap.cpp
+	src/Altirra/source/verifier.cpp
 	src/platform/macOS_arm64/Altirra/source/piacountedinputs.cpp
 	src/platform/macOS_arm64/Altirra/source/console_macos.mm
 	src/Altirra/source/audiorawsource.cpp

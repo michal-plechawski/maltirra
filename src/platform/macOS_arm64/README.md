@@ -183,3 +183,28 @@ Immediate arithmetic keeps the original heat-map lineage behavior.
 This layer analyzes completed instructions; it does not itself execute a CPU.
 Main CPU execution, its remaining debugger dependencies, and the complete
 simulator/application integration still remain to be ported.
+
+The complete CPU verifier (`src/Altirra/source/verifier.cpp`) is shared,
+including address-zero, non-canonical hardware, indexed 64K wrap, stack,
+IRQ/NMI register preservation and recursion, kernel-entry, SIO calling and
+display-list loading checks, plus abnormal-DMA notifications. Its connections
+read explicit CPU observations and machine services; the Windows adapter binds
+them to the real CPU, simulator memory/ROM queries, and ANTIC. Observations and
+flag/mapping queries remain live across synchronous failure callbacks, rather
+than caching an instruction-wide snapshot. CPU mode definitions now share the
+original byte-sized `cpumode.h` enum.
+
+`Altirra_CPUVerifierAddressing`, `Altirra_CPUVerifierStack`,
+`Altirra_CPUVerifierInterrupts`, `Altirra_CPUVerifierKernel`, and
+`Altirra_CPUVerifierMachine` cover all original indexed-opcode lists, hardware
+alias boundaries, emulation/native stack checks, IRQ/NMI bookkeeping and reset,
+callback registration/reinitialization/shutdown, sorted kernel exceptions,
+live callback changes, and actual ANTIC display-list enable/address state with
+modular half-open SIO read ranges. Large ANTIC fixtures are heap-owned for the
+Windows stack limit. PEA/PEI now check two-byte pushes, not pops; legal kernel
+entry exceptions no longer skip independent SIO checks. Out-of-range exception
+addresses cannot truncate and corrupt the sorted 16-bit set. Display-list
+overlap retains the original console-only warning behavior.
+These verify the original observer, not an executing substitute CPU. Main CPU
+execution, remaining debugger dependencies, and full machine/application
+wiring are still unfinished.
