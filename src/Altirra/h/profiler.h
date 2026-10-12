@@ -19,6 +19,9 @@
 #define f_AT_PROFILER_H
 
 #include <vd2/system/linearalloc.h>
+#include <vd2/system/refcount.h>
+#include <vd2/system/vdstl.h>
+#include <at/atcpu/history.h>
 #include <at/atcore/scheduler.h>
 
 class ATCPUEmulator;
@@ -117,7 +120,7 @@ public:
 
 	vdnothrow ATProfileSession& operator=(ATProfileSession&& src) vdnoexcept;
 
-	ATProfileMode mProfileMode;
+	ATProfileMode mProfileMode = kATProfileMode_Insns;
 	vdfastvector<ATProfileCounterMode> mCounterModes;
 	vdfastvector<ATProfileFrame *> mpFrames;
 
@@ -151,6 +154,7 @@ public:
 	ATCPUProfileBuilder();
 	~ATCPUProfileBuilder();
 
+	// Start a fresh run, discarding any previous (taken or untaken) session.
 	void Init(ATProfileMode mode, ATProfileCounterMode c1, ATProfileCounterMode c2);
 	void SetBoundaryRule(ATProfileBoundaryRule rule, uint32 param, uint32 param2);
 	void SetGlobalAddressesEnabled(bool enable);

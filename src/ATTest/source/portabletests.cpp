@@ -95,6 +95,10 @@ bool ATTestAltirraANTICTiming(ATPortableTestContext& context);
 bool ATTestAltirraANTICSnapshot(ATPortableTestContext& context);
 bool ATTestAltirraANTICKernels(ATPortableTestContext& context);
 bool ATTestAltirraPIAInputs(ATPortableTestContext& context);
+bool ATTestAltirraProfileBuilder(ATPortableTestContext& context);
+bool ATTestAltirraProfileCounters(ATPortableTestContext& context);
+bool ATTestAltirraProfileFrames(ATPortableTestContext& context);
+bool ATTestAltirraProfileCallGraph(ATPortableTestContext& context);
 bool ATTestAltirraPIARegisters(ATPortableTestContext& context);
 bool ATTestAltirraPIAIRQ(ATPortableTestContext& context);
 bool ATTestAltirraPIAFloating(ATPortableTestContext& context);
@@ -293,6 +297,10 @@ const ATPortableTestCase *ATGetPortableTests(size_t& count) {
 		{ "Altirra_ANTICSnapshot", ATTestAltirraANTICSnapshot },
 		{ "Altirra_ANTICKernels", ATTestAltirraANTICKernels },
 		{ "Altirra_PIAInputs", ATTestAltirraPIAInputs },
+		{ "Altirra_ProfileBuilder", ATTestAltirraProfileBuilder },
+		{ "Altirra_ProfileCounters", ATTestAltirraProfileCounters },
+		{ "Altirra_ProfileFrames", ATTestAltirraProfileFrames },
+		{ "Altirra_ProfileCallGraph", ATTestAltirraProfileCallGraph },
 		{ "Altirra_PIARegisters", ATTestAltirraPIARegisters },
 		{ "Altirra_PIAIRQ", ATTestAltirraPIAIRQ },
 		{ "Altirra_PIAFloating", ATTestAltirraPIAFloating },

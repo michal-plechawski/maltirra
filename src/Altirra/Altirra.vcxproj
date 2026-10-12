@@ -433,6 +433,9 @@
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="..\platform\Windows_x64\Altirra\source\profiler.cpp" />
+    <ClCompile Include="source\profilebuilder.cpp">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+    </ClCompile>
     <ClCompile Include="..\platform\Windows_x64\Altirra\source\profilerui.cpp" />
     <ClCompile Include="..\platform\Windows_x64\Altirra\source\rapidus.cpp" />
     <ClCompile Include="..\platform\Windows_x64\Altirra\source\rs232.cpp" />
@@ -738,7 +741,8 @@
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\pclink.h" />
     <ClInclude Include="h\pia.h" />
     <ClInclude Include="h\piacountedinputs.h" />
-    <ClInclude Include="..\platform\Windows_x64\Altirra\h\profiler.h" />
+    <ClInclude Include="h\profiler.h" />
+    <ClInclude Include="h\cpuflags.h" />
     <ClInclude Include="h\scsidisk.h" />
 	<ClInclude Include="h\rverter.h" />
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\sdrive.h" />

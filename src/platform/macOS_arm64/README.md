@@ -141,3 +141,23 @@ cycle immediately before and at IRQ assertion for fast timer 1 and slow timers
 STIMER reload. They also verify active-low status and IRQEN acknowledgement.
 These remain component tests: main CPU execution and simulator/application
 wiring still need to be ported before a machine can boot on macOS.
+
+CPU profiling's complete history-analysis layer is shared in
+`src/Altirra/source/profilebuilder.cpp`: sessions and ownership, instruction,
+function, call-graph, basic-block and BASIC-line profiling, auxiliary counters,
+automatic frame boundaries, frame merging, and inclusive call-graph statistics.
+The original live `ATCPUProfiler` collector remains in the Windows subtree
+until the main CPU is ported; the shared builder processes actual history-entry
+formats without a fabricated CPU or simulator. CPU status flags now live in
+the shared `cpuflags.h`, with their original values retained.
+
+`Altirra_ProfileBuilder`, `Altirra_ProfileCounters`, `Altirra_ProfileFrames`,
+and `Altirra_ProfileCallGraph` verify all five analysis modes, overlapping
+history batches, global addresses, taken/untaken branches and page crossings,
+redundant operations, call/return and IRQ contexts, PC/function/VBlank frame
+boundaries, discarded intervals, and exact exclusive/inclusive cycle totals.
+Session reuse and self-move retain correct ownership. Merging now preserves
+separate main/interrupt rows at the same PC; BASIC-line and call-graph address
+records explicitly initialize their context instead of exposing allocator bits.
+These are deterministic history-analysis tests, not CPU execution tests; main
+instruction execution and its debugger/simulator integration remain unfinished.

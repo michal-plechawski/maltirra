@@ -295,6 +295,9 @@
     <ClCompile Include="..\platform\Windows_x64\Altirra\source\profiler.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="source\profilebuilder.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
     <ClCompile Include="..\platform\Windows_x64\Altirra\source\profilerui.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -1338,7 +1341,10 @@
     <ClInclude Include="h\piacountedinputs.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\platform\Windows_x64\Altirra\h\profiler.h">
+    <ClInclude Include="h\profiler.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="h\cpuflags.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="res\resource.h">

@@ -4,8 +4,13 @@
 
 #include <at/attest/portabletest.h>
 #include <cpustates.h>
+#include <cpuflags.h>
 
 bool ATTestAltirraCPUStates(ATPortableTestContext& context) {
+	static_assert(AT6502::kFlagN == 0x80 && AT6502::kFlagV == 0x40);
+	static_assert(AT6502::kFlagM == 0x20 && AT6502::kFlagX == 0x10);
+	static_assert(AT6502::kFlagB == 0x10 && AT6502::kFlagD == 0x08);
+	static_assert(AT6502::kFlagI == 0x04 && AT6502::kFlagZ == 0x02 && AT6502::kFlagC == 0x01);
 	using AT6502States::ATCPUState;
 
 	static_assert(std::is_same_v<std::underlying_type_t<ATCPUState>, uint8>);

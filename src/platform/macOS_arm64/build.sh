@@ -196,6 +196,7 @@ portable_test_sources=(
 	src/ATTest/source/TestAltirra_CompatDBPortable.cpp
 	src/ATTest/source/TestAltirra_CPUMemoryPortable.cpp
 	src/ATTest/source/TestAltirra_CPUStatesPortable.cpp
+	src/ATTest/source/TestAltirra_ProfileBuilderPortable.cpp
 	src/ATTest/source/TestAltirra_MemoryManagerPortable.cpp
 	src/ATTest/source/TestAltirra_RTime8Portable.cpp
 	src/ATTest/source/TestAltirra_RVerterPortable.cpp
@@ -414,6 +415,7 @@ portable_test_sources=(
 	src/Altirra/source/antic.cpp
 	src/platform/macOS_arm64/Altirra/source/antickernels.cpp
 	src/Altirra/source/pia.cpp
+	src/Altirra/source/profilebuilder.cpp
 	src/platform/macOS_arm64/Altirra/source/piacountedinputs.cpp
 	src/platform/macOS_arm64/Altirra/source/console_macos.mm
 	src/Altirra/source/audiorawsource.cpp

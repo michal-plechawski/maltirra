@@ -129,19 +129,7 @@ enum ATCPUAdvanceMode {
 	kATCPUAdvanceMode_65816HiSpeed
 };
 
-namespace AT6502 {
-	enum {
-		kFlagN = 0x80,
-		kFlagV = 0x40,
-		kFlagM = 0x20,		// 65C816 native mode only
-		kFlagX = 0x10,		// 65C816 native mode only
-		kFlagB = 0x10,
-		kFlagD = 0x08,
-		kFlagI = 0x04,
-		kFlagZ = 0x02,
-		kFlagC = 0x01
-	};
-}
+#include "cpuflags.h"
 
 class ATCPUEmulator {
 	ATCPUEmulator(const ATCPUEmulator&) = delete;
