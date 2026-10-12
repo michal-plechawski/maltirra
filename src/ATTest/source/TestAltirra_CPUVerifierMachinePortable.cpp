@@ -37,6 +37,11 @@ namespace {
 	public:
 		explicit VerifierHarness(ANTICPortableFixture& antic)
 			: mpAntic(&antic) {
+			mVerifier.Init(MakeConnections(), &mEventManager);
+			mVerifierFailureCallback = mEventManager.AddEventCallback(kATSimEvent_VerifierFailure, [this] { ++mVerifierFailureCount; });
+		}
+
+		ATCPUVerifierConnections MakeConnections() {
 			ATCPUVerifierConnections connections;
 			connections.mpReadCPU = [this] { return mCPU; };
 			connections.mpIsKernelROM = [this](uint16 address) {
@@ -57,8 +62,7 @@ namespace {
 			};
 			connections.mpGetDisplayListPtr = [this] { return mpAntic->mAntic.GetDisplayListPtr(); };
 			connections.mpIsDisplayListEnabled = [this] { return mpAntic->mAntic.IsDisplayListEnabled(); };
-			mVerifier.Init(std::move(connections), &mEventManager);
-			mVerifierFailureCallback = mEventManager.AddEventCallback(kATSimEvent_VerifierFailure, [this] { ++mVerifierFailureCount; });
+			return connections;
 		}
 
 		~VerifierHarness() {
@@ -308,6 +312,30 @@ bool ATTestAltirraCPUVerifierMachine(ATPortableTestContext& context) {
 		shutdownHarness.mVerifier.Shutdown();
 		shutdownHarness.mEventManager.NotifyEvent(kATSimEvent_AbnormalDMA);
 		AT_PORTABLE_TEST_ASSERT(context, shutdownHarness.mVerifierFailureCount == 1);
+	}
+
+	// The real simulator's SetVerifierEnabled(false) also deletes the verifier.
+	// Do not inspect any member of the destroyed observer after notification.
+	for (bool undocumented : { false, true }) {
+		VerifierHarness deletionHarness(antic);
+		deletionHarness.InitializeDisplayListRead(0x0010, 0xFFF0, 0x0030);
+		deletionHarness.mCPU.mInsnPC = 0x4000;
+		deletionHarness.mCPU.mP = 0x04;
+		auto ownedVerifier = std::make_unique<ATCPUVerifier>();
+		ownedVerifier->Init(deletionHarness.MakeConnections(), &deletionHarness.mEventManager);
+		ownedVerifier->SetFlags(kATVerifierFlag_CallingConventionViolations | kATVerifierFlag_LoadingOverDisplayList
+			| (undocumented ? kATVerifierFlag_UndocumentedKernelEntry : 0));
+		if (undocumented)
+			ownedVerifier->RemoveAllowedTargets();
+		const uint32 callbackId = deletionHarness.mEventManager.AddEventCallback(kATSimEvent_VerifierFailure, [&] {
+			ownedVerifier->Shutdown();
+			ownedVerifier.reset();
+		});
+		ownedVerifier->VerifyInsn(0x4C, ATKernelSymbols::SIOV);
+		deletionHarness.mEventManager.RemoveEventCallback(callbackId);
+		AT_PORTABLE_TEST_ASSERT(context, !ownedVerifier);
+		AT_PORTABLE_TEST_ASSERT(context, deletionHarness.mVerifierFailureCount == 1);
+		AT_PORTABLE_TEST_ASSERT(context, deletionHarness.mDebugReadCount == 0);
 	}
 
 	return true;

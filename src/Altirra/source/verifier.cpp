@@ -34,6 +34,7 @@ ATCPUVerifier::~ATCPUVerifier() {
 
 void ATCPUVerifier::Init(ATCPUVerifierConnections connections, ATSimulatorEventManager *simevmgr) {
 	Shutdown();
+	mpLifetime = std::make_shared<Lifetime>();
 	mConnections = std::move(connections);
 	mpSimEventMgr = simevmgr;
 	mEventCallbackId = mpSimEventMgr->AddEventCallback(kATSimEvent_AbnormalDMA, [this] { OnAbnormalDMA(); });
@@ -42,6 +43,7 @@ void ATCPUVerifier::Init(ATCPUVerifierConnections connections, ATSimulatorEventM
 }
 
 void ATCPUVerifier::Shutdown() {
+	mpLifetime.reset();
 	if (mpSimEventMgr) {
 		if (mEventCallbackId) {
 			mpSimEventMgr->RemoveEventCallback(mEventCallbackId);
@@ -298,8 +300,10 @@ void ATCPUVerifier::VerifyInsn(uint8 opcode, uint16 target) {
 					ATConsolePrintf("VERIFIER: Invalid jump into kernel ROM space detected.\n");
 					ATConsolePrintf("          PC: %04X   Fault address: %04X\n", pc, target);
 					ATConsolePrintf("\n");
+					const std::weak_ptr<Lifetime> lifetime = mpLifetime;
 					mpSimEventMgr->NotifyEvent(kATSimEvent_VerifierFailure);
-					if (!mpSimEventMgr)
+					// The callback may have shut down or even deleted this object.
+					if (lifetime.expired())
 						return;
 				}
 			}
@@ -311,8 +315,9 @@ void ATCPUVerifier::VerifyInsn(uint8 opcode, uint16 target) {
 						ATConsolePrintf("VERIFIER: OS calling convention violation -- calling into SIO with I flag set (will hang)\n");
 						ATConsolePrintf("          PC: %04X   Fault address: %04X\n", mConnections.mpReadCPU().mInsnPC, target);
 						ATConsolePrintf("\n");
+						const std::weak_ptr<Lifetime> lifetime = mpLifetime;
 						mpSimEventMgr->NotifyEvent(kATSimEvent_VerifierFailure);
-						if (!mpSimEventMgr)
+						if (lifetime.expired())
 							return;
 					}
 				}

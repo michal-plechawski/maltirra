@@ -18,6 +18,7 @@
 #ifndef f_AT_VERIFIER_H
 #define f_AT_VERIFIER_H
 
+#include <memory>
 #include "simeventmanager.h"
 #include "cpumode.h"
 
@@ -100,6 +101,8 @@ private:
 	void FailStackUnderflow();
 
 	ATCPUVerifierConnections mConnections;
+	struct Lifetime {};
+	std::shared_ptr<Lifetime> mpLifetime;
 	ATSimulatorEventManager *mpSimEventMgr = nullptr;
 	uint32 mEventCallbackId = 0;
 

@@ -207,7 +207,9 @@ addresses cannot truncate and corrupt the sorted 16-bit set. Display-list
 overlap retains the original console-only warning behavior.
 Reentrant shutdown from either notifying SIO/ROM check stops the current
 instruction's remaining checks before accessing released machine connections;
-later observer entry points are harmless after shutdown.
+later observer entry points are harmless after shutdown. A per-initialization
+lifetime token also permits synchronous deletion by the failure callback
+(the real simulator's disable path) without reading the destroyed observer.
 These verify the original observer, not an executing substitute CPU. Main CPU
 execution, remaining debugger dependencies, and full machine/application
 wiring are still unfinished.
