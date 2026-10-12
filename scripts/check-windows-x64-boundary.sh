@@ -8,7 +8,7 @@ cd "$repository_root"
 # directory. A shared implementation and its platform adapter must not have
 # colliding basenames, even when their source directories differ.
 duplicate_object_names=$(
-  rg -o '<ClCompile Include="[^"]+"' src/Altirra/Altirra.vcxproj |
+  grep -o -E '<ClCompile Include="[^"]+"' src/Altirra/Altirra.vcxproj |
     sed 's/.*[\\/]//; s/"$//; s/[.][^.]*$//' |
     tr '[:upper:]' '[:lower:]' |
     sort |
