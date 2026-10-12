@@ -4,6 +4,23 @@ set -euo pipefail
 repository_root=$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)
 cd "$repository_root"
 
+# Altirra uses MSBuild's default basename.obj output in one intermediate
+# directory. A shared implementation and its platform adapter must not have
+# colliding basenames, even when their source directories differ.
+duplicate_object_names=$(
+  rg -o '<ClCompile Include="[^"]+"' src/Altirra/Altirra.vcxproj |
+    sed 's/.*[\\/]//; s/"$//; s/[.][^.]*$//' |
+    tr '[:upper:]' '[:lower:]' |
+    sort |
+    uniq -d
+)
+
+if [[ -n "$duplicate_object_names" ]]; then
+  printf '%s\n' 'Colliding MSBuild object basenames in Altirra.vcxproj:'
+  printf '%s\n' "$duplicate_object_names"
+  exit 1
+fi
+
 windows_include_pattern='^[[:space:]]*#[[:space:]]*include[[:space:]]*[<"](windows|windowsx|commctrl|commdlg|shellapi|shlobj|shlwapi|d3d[^/>]*|dxgi[^/>]*|xaudio[^/>]*|mmdeviceapi|audioclient|winsock[^/>]*|ws2tcpip|wrl)[.h>"/]'
 platform_include_pattern='^[[:space:]]*#[[:space:]]*include[[:space:]]*[<"][^>"]*(vd2/system/win32|platform[/\\]Windows_x64)[/\\]'
 compiler_intrinsic_pattern='^[[:space:]]*#[[:space:]]*include[[:space:]]*[<"](intrin|emmintrin|immintrin|xmmintrin)[.]h[>"]'

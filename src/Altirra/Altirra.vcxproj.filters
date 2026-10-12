@@ -736,7 +736,7 @@
     <ClCompile Include="..\platform\Windows_x64\Altirra\source\rapidus.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\platform\Windows_x64\Altirra\source\cpuheatmap.cpp">
+    <ClCompile Include="..\platform\Windows_x64\Altirra\source\cpuheatmapadapter.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="source\cpuheatmap.cpp">

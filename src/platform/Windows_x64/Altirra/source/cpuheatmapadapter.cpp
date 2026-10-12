@@ -19,6 +19,8 @@
 #include "cpu.h"
 #include "cpuheatmap.h"
 
+// Separate basename from the shared implementation for MSBuild object output.
+
 void ATCPUHeatMap::ProcessInsn(const ATCPUEmulator& cpu, uint8 opcode, uint16 addr, uint16 pc) {
 	ProcessInsn(opcode, addr, pc, cpu.GetS());
 }

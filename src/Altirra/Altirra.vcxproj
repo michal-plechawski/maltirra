@@ -250,7 +250,7 @@
     <ClCompile Include="..\platform\Windows_x64\Altirra\source\cpu6502ill.cpp" />
     <ClCompile Include="..\platform\Windows_x64\Altirra\source\cpu65c02.cpp" />
     <ClCompile Include="..\platform\Windows_x64\Altirra\source\cpu65c816.cpp" />
-    <ClCompile Include="..\platform\Windows_x64\Altirra\source\cpuheatmap.cpp" />
+    <ClCompile Include="..\platform\Windows_x64\Altirra\source\cpuheatmapadapter.cpp" />
     <ClCompile Include="source\cpuheatmap.cpp">
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
     </ClCompile>
