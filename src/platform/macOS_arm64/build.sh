@@ -196,6 +196,9 @@ portable_test_sources=(
 	src/ATTest/source/TestAltirra_CompatDBPortable.cpp
 	src/ATTest/source/TestAltirra_CPUMemoryPortable.cpp
 	src/ATTest/source/TestAltirra_CPUStatesPortable.cpp
+	src/ATTest/source/TestAltirra_DisasmOpcodesPortable.cpp
+	src/ATTest/source/TestAltirra_DisasmReferencesPortable.cpp
+	src/ATTest/source/TestAltirra_DisasmContextPortable.cpp
 	src/ATTest/source/TestAltirra_CPUVerifierPortable.cpp
 	src/ATTest/source/TestAltirra_CPUVerifierMachinePortable.cpp
 	src/ATTest/source/TestAltirra_BreakpointPCPortable.cpp
@@ -424,6 +427,8 @@ portable_test_sources=(
 	src/Altirra/source/profilebuilder.cpp
 	src/Altirra/source/cpuheatmap.cpp
 	src/Altirra/source/verifier.cpp
+	src/Altirra/source/disasm.cpp
+	src/ATCore/source/address.cpp
 	src/Altirra/source/bkptmanager.cpp
 	src/ATDebugger/source/breakpointsimpl.cpp
 	src/ATCPU/source/co6502.cpp

@@ -242,3 +242,29 @@ layers, including repeated shutdown/reinitialization. Windows additionally
 runs `Altirra_MainCPUBreakpoints` against the actual main CPU: setting every
 breakpoint retains the correct internal count, and clearing all removes only
 the breakpoint bits before ordinary PC breakpoints are restored.
+
+The full disassembler (`src/Altirra/source/disasm.cpp`) is shared, retaining
+the 6502/65C02/65C816 tables, Z80 prefix families, 8048/8051 and 6809 decoders,
+operand spans, live/history references, labels, opcode lengths, anchor search,
+and width prediction. The explicit formatter takes optional symbol/path-label
+services without global machine state. The Windows adapter retains the legacy
+entry points bound to the real debugger, CPU and simulator; portable callers
+use the explicit services and existing debug-target interface. CPU submode
+definitions now share `cpumode.h` with their original byte-sized values.
+
+`Altirra_Disasm6502`, `Altirra_DisasmOtherCPUs`, `Altirra_DisasmContext`,
+`Altirra_DisasmReferences`, `Altirra_DisasmSymbols`, and
+`Altirra_DisasmPrediction` check instruction goldens, every opcode in the
+6502-family width states, all base-byte values for other decoders and Z80
+prefixes, register conversion, bank-wrapped instruction capture, live versus
+historical indirect addresses, access widths, symbol flags, namespaces,
+operand/comment bounds, and exhaustive valid P/E prediction combinations.
+The reference fixture has actual separate 24-bit RAM backed by the production
+memory manager; fat fixtures are heap-owned. Address-read comparisons do not
+depend on the compiler's evaluation order for independent debug reads.
+
+Regressions fix NMOS indirect JMP's page wrap, 65C816 indirect JMP's PBK,
+8051 context selection and AJMP's post-instruction 2K page, wrapped branch
+symbol requests, disabled bit-branch symbols, and long `cart:` PC prefixes.
+These are debugger-component tests, not a booted machine: the main CPU and
+complete simulator/application integration still remain to be ported.

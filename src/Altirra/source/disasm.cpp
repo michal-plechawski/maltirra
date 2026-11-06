@@ -15,18 +15,22 @@
 //	along with this program; if not, write to the Free Software
 //	Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
-#include <stdafx.h>
+#include <algorithm>
+#include <cctype>
+#include <cstdlib>
+#include <cstring>
+#include <iterator>
+#include <vd2/system/vdtypes.h>
+#include <vd2/system/VDString.h>
+#include <at/atcpu/history.h>
+#include "cpuflags.h"
 #include <vd2/system/binary.h>
 #include <at/atcore/address.h>
 #include <at/atcpu/execstate.h>
 #include <at/atdebugger/symbols.h>
 #include <at/atdebugger/target.h>
-#include "simulator.h"
-#include "console.h"
-#include "debugger.h"
 #include "disasm.h"
 
-extern ATSimulator g_sim;
 
 namespace {
 	enum {
@@ -262,61 +266,61 @@ namespace {
 
 	const uint8 kModeTbl_6502[256][2]={
 		//			   0,       1,       2,       3,       4,       5,       6,       7,       8,       9,       A,       B,       C,       D,       E,       F
-		/* 00 */	Ip(BRK), Ix(ORA), Ip(KIL), Ix(SLO), Zp(NOP), Zp(ORA), Zp(ASL), Zp(SLO), Ip(PHP), Im(ORA), Ip(ASL), Im(ANC), Ab(NOP), Ab(ORA), Ab(ASL), Ab(SLO), 
-		/* 10 */	Re(BPL), Iy(ORA), Ip(KIL), Iy(SLO), Zx(NOP), Zx(ORA), Zx(ASL), Zx(SLO), Ip(CLC), Ay(ORA), Ip(NOP), Ay(SLO), Ax(NOP), Ax(ORA), Ax(ASL), Ax(SLO), 
-		/* 20 */	Ab(JSR), Ix(AND), Ip(KIL), Ix(RLA), Zp(BIT), Zp(AND), Zp(ROL), Zp(RLA), Ip(PLP), Im(AND), Ip(ROL), Im(ANC), Ab(BIT), Ab(AND), Ab(ROL), Ab(RLA), 
-		/* 30 */	Re(BMI), Iy(AND), Ip(KIL), Iy(RLA), Zx(NOP), Zx(AND), Zx(ROL), Zx(RLA), Ip(SEC), Ay(AND), Ip(NOP), Ay(RLA), Ax(NOP), Ax(AND), Ax(ROL), Ax(RLA), 
-		/* 40 */	Ip(RTI), Ix(EOR), Ip(KIL), Ix(SRE), Zp(NOP), Zp(EOR), Zp(LSR), Zp(SRE), Ip(PHA), Im(EOR), Ip(LSR), Im(ASR), Ab(JMP), Ab(EOR), Ab(LSR), Ab(SRE), 
-		/* 50 */	Re(BVC), Iy(EOR), Ip(KIL), Iy(SRE), Zx(NOP), Zx(EOR), Zx(LSR), Zx(SRE), Ip(CLI), Ay(EOR), Ip(NOP), Ay(SRE), Ax(NOP), Ax(EOR), Ax(LSR), Ax(SRE), 
-		/* 60 */	Ip(RTS), Ix(ADC), Ip(KIL), Ix(RRA), Zp(NOP), Zp(ADC), Zp(ROR), Zp(RRA), Ip(PLA), Im(ADC), Ip(ROR), Im(ARR), Ia(JMP), Ab(ADC), Ab(ROR), Ab(RRA), 
-		/* 70 */	Re(BVS), Iy(ADC), Ip(KIL), Iy(RRA), Zx(NOP), Zx(ADC), Zx(ROR), Zx(RRA), Ip(SEI), Ay(ADC), Ip(NOP), Ay(RRA), Ax(NOP), Ax(ADC), Ax(ROR), Ax(RRA), 
-		/* 80 */	Im(NOP), Ix(STA), Im(NOP), Ix(SAX), Zp(STY), Zp(STA), Zp(STX), Zp(SAX), Ip(DEY), Im(NOP), Ip(TXA), Im(ANE), Ab(STY), Ab(STA), Ab(STX), Ab(SAX), 
-		/* 90 */	Re(BCC), Iy(STA), Ip(KIL), Iy(SHA), Zx(STY), Zx(STA), Zy(STX), Zy(SAX), Ip(TYA), Ay(STA), Ip(TXS), Ay(SHS), Ax(SHY), Ax(STA), Ay(SHX), Ay(SHA), 
-		/* A0 */	Im(LDY), Ix(LDA), Im(LDX), Ix(LAX), Zp(LDY), Zp(LDA), Zp(LDX), Zp(LAX), Ip(TAY), Im(LDA), Ip(TAX), Im(LXA), Ab(LDY), Ab(LDA), Ab(LDX), Ab(LAX), 
-		/* B0 */	Re(BCS), Iy(LDA), Ip(KIL), Iy(LAX), Zx(LDY), Zx(LDA), Zy(LDX), Zy(LAX), Ip(CLV), Ay(LDA), Ip(TSX), Ab(LAS), Ax(LDY), Ax(LDA), Ay(LDX), Ay(LAX), 
-		/* C0 */	Im(CPY), Ix(CMP), Im(NOP), Ix(DCP), Zp(CPY), Zp(CMP), Zp(DEC), Zp(DCP), Ip(INY), Im(CMP), Ip(DEX), Im(SBX), Ab(CPY), Ab(CMP), Ab(DEC), Ab(DCP), 
-		/* D0 */	Re(BNE), Iy(CMP), Ip(KIL), Iy(DCP), Zx(NOP), Zx(CMP), Zx(DEC), Zx(DCP), Ip(CLD), Ay(CMP), Ip(NOP), Ay(DCP), Ax(NOP), Ax(CMP), Ax(DEC), Ax(DCP), 
-		/* E0 */	Im(CPX), Ix(SBC), Im(NOP), Ix(ISB), Zp(CPX), Zp(SBC), Zp(INC), Zp(ISB), Ip(INX), Im(SBC), Ip(NOP), Im(SBC), Ab(CPX), Ab(SBC), Ab(INC), Ab(ISB), 
+		/* 00 */	Ip(BRK), Ix(ORA), Ip(KIL), Ix(SLO), Zp(NOP), Zp(ORA), Zp(ASL), Zp(SLO), Ip(PHP), Im(ORA), Ip(ASL), Im(ANC), Ab(NOP), Ab(ORA), Ab(ASL), Ab(SLO),
+		/* 10 */	Re(BPL), Iy(ORA), Ip(KIL), Iy(SLO), Zx(NOP), Zx(ORA), Zx(ASL), Zx(SLO), Ip(CLC), Ay(ORA), Ip(NOP), Ay(SLO), Ax(NOP), Ax(ORA), Ax(ASL), Ax(SLO),
+		/* 20 */	Ab(JSR), Ix(AND), Ip(KIL), Ix(RLA), Zp(BIT), Zp(AND), Zp(ROL), Zp(RLA), Ip(PLP), Im(AND), Ip(ROL), Im(ANC), Ab(BIT), Ab(AND), Ab(ROL), Ab(RLA),
+		/* 30 */	Re(BMI), Iy(AND), Ip(KIL), Iy(RLA), Zx(NOP), Zx(AND), Zx(ROL), Zx(RLA), Ip(SEC), Ay(AND), Ip(NOP), Ay(RLA), Ax(NOP), Ax(AND), Ax(ROL), Ax(RLA),
+		/* 40 */	Ip(RTI), Ix(EOR), Ip(KIL), Ix(SRE), Zp(NOP), Zp(EOR), Zp(LSR), Zp(SRE), Ip(PHA), Im(EOR), Ip(LSR), Im(ASR), Ab(JMP), Ab(EOR), Ab(LSR), Ab(SRE),
+		/* 50 */	Re(BVC), Iy(EOR), Ip(KIL), Iy(SRE), Zx(NOP), Zx(EOR), Zx(LSR), Zx(SRE), Ip(CLI), Ay(EOR), Ip(NOP), Ay(SRE), Ax(NOP), Ax(EOR), Ax(LSR), Ax(SRE),
+		/* 60 */	Ip(RTS), Ix(ADC), Ip(KIL), Ix(RRA), Zp(NOP), Zp(ADC), Zp(ROR), Zp(RRA), Ip(PLA), Im(ADC), Ip(ROR), Im(ARR), Ia(JMP), Ab(ADC), Ab(ROR), Ab(RRA),
+		/* 70 */	Re(BVS), Iy(ADC), Ip(KIL), Iy(RRA), Zx(NOP), Zx(ADC), Zx(ROR), Zx(RRA), Ip(SEI), Ay(ADC), Ip(NOP), Ay(RRA), Ax(NOP), Ax(ADC), Ax(ROR), Ax(RRA),
+		/* 80 */	Im(NOP), Ix(STA), Im(NOP), Ix(SAX), Zp(STY), Zp(STA), Zp(STX), Zp(SAX), Ip(DEY), Im(NOP), Ip(TXA), Im(ANE), Ab(STY), Ab(STA), Ab(STX), Ab(SAX),
+		/* 90 */	Re(BCC), Iy(STA), Ip(KIL), Iy(SHA), Zx(STY), Zx(STA), Zy(STX), Zy(SAX), Ip(TYA), Ay(STA), Ip(TXS), Ay(SHS), Ax(SHY), Ax(STA), Ay(SHX), Ay(SHA),
+		/* A0 */	Im(LDY), Ix(LDA), Im(LDX), Ix(LAX), Zp(LDY), Zp(LDA), Zp(LDX), Zp(LAX), Ip(TAY), Im(LDA), Ip(TAX), Im(LXA), Ab(LDY), Ab(LDA), Ab(LDX), Ab(LAX),
+		/* B0 */	Re(BCS), Iy(LDA), Ip(KIL), Iy(LAX), Zx(LDY), Zx(LDA), Zy(LDX), Zy(LAX), Ip(CLV), Ay(LDA), Ip(TSX), Ab(LAS), Ax(LDY), Ax(LDA), Ay(LDX), Ay(LAX),
+		/* C0 */	Im(CPY), Ix(CMP), Im(NOP), Ix(DCP), Zp(CPY), Zp(CMP), Zp(DEC), Zp(DCP), Ip(INY), Im(CMP), Ip(DEX), Im(SBX), Ab(CPY), Ab(CMP), Ab(DEC), Ab(DCP),
+		/* D0 */	Re(BNE), Iy(CMP), Ip(KIL), Iy(DCP), Zx(NOP), Zx(CMP), Zx(DEC), Zx(DCP), Ip(CLD), Ay(CMP), Ip(NOP), Ay(DCP), Ax(NOP), Ax(CMP), Ax(DEC), Ax(DCP),
+		/* E0 */	Im(CPX), Ix(SBC), Im(NOP), Ix(ISB), Zp(CPX), Zp(SBC), Zp(INC), Zp(ISB), Ip(INX), Im(SBC), Ip(NOP), Im(SBC), Ab(CPX), Ab(SBC), Ab(INC), Ab(ISB),
 		/* F0 */	Re(BEQ), Iy(SBC), Ip(KIL), Iy(ISB), Zx(NOP), Zx(SBC), Zx(INC), Zx(ISB), Ip(SED), Ay(SBC), Ip(NOP), Ay(ISB), Ax(NOP), Ax(SBC), Ax(INC), Ax(ISB),
 	};
 
 	const uint8 kModeTbl_65C02[256][2]={
 		//			   0,       1,       2,       3,       4,       5,       6,       7,       8,       9,       A,       B,       C,       D,       E,       F
-		/* 00 */	Ip(BRK), Ix(ORA), xx(NOP), xx(NOP), Zp(TSB), Zp(ORA), Zp(ASL), Bz(RMB), Ip(PHP), Im(ORA), Ip(ASL), xx(NOP), Ab(TSB), Ab(ORA), Ab(ASL), Bb(BBR), 
-		/* 10 */	Re(BPL), Iy(ORA), Iz(ORA), xx(NOP), Zp(TRB), Zx(ORA), Zx(ASL), Bz(RMB), Ip(CLC), Ay(ORA), Ip(INC), xx(NOP), Ab(TRB), Ax(ORA), Ax(ASL), Bb(BBR), 
-		/* 20 */	Ab(JSR), Ix(AND), xx(NOP), xx(NOP), Zp(BIT), Zp(AND), Zp(ROL), Bz(RMB), Ip(PLP), Im(AND), Ip(ROL), xx(NOP), Ab(BIT), Ab(AND), Ab(ROL), Bb(BBR), 
-		/* 30 */	Re(BMI), Iy(AND), Iz(AND), xx(NOP), Zx(BIT), Zx(AND), Zx(ROL), Bz(RMB), Ip(SEC), Ay(AND), Ip(DEC), xx(NOP), Ax(BIT), Ax(AND), Ax(ROL), Bb(BBR), 
-		/* 40 */	Ip(RTI), Ix(EOR), xx(NOP), xx(NOP), Zp(NOP), Zp(EOR), Zp(LSR), Bz(RMB), Ip(PHA), Im(EOR), Ip(LSR), xx(NOP), Ab(JMP), Ab(EOR), Ab(LSR), Bb(BBR), 
-		/* 50 */	Re(BVC), Iy(EOR), Iz(EOR), xx(NOP), Zx(NOP), Zx(EOR), Zx(LSR), Bz(RMB), Ip(CLI), Ay(EOR), Ip(PHY), xx(NOP), Ax(NOP), Ax(EOR), Ax(LSR), Bb(BBR), 
-		/* 60 */	Ip(RTS), Ix(ADC), xx(NOP), xx(NOP), Zp(STZ), Zp(ADC), Zp(ROR), Bz(RMB), Ip(PLA), Im(ADC), Ip(ROR), xx(NOP), Ia(JMP), Ab(ADC), Ab(ROR), Bb(BBR), 
-		/* 70 */	Re(BVS), Iy(ADC), Iz(ADC), xx(NOP), Zx(STZ), Zx(ADC), Zx(ROR), Bz(RMB), Ip(SEI), Ay(ADC), Ip(PLY), xx(NOP), It(JMP), Ax(ADC), Ax(ROR), Bb(BBR), 
-		/* 80 */	Re(BRA), Ix(STA), xx(NOP), xx(NOP), Zp(STY), Zp(STA), Zp(STX), Bz(SMB), Ip(DEY), Im(BIT), Ip(TXA), xx(NOP), Ab(STY), Ab(STA), Ab(STX), Bb(BBS), 
-		/* 90 */	Re(BCC), Iy(STA), Iz(STA), xx(NOP), Zx(STY), Zx(STA), Zy(STX), Bz(SMB), Ip(TYA), Ay(STA), Ip(TXS), xx(NOP), Ab(STZ), Ax(STA), Ax(STZ), Bb(BBS), 
-		/* A0 */	Im(LDY), Ix(LDA), Im(LDX), xx(NOP), Zp(LDY), Zp(LDA), Zp(LDX), Bz(SMB), Ip(TAY), Im(LDA), Ip(TAX), xx(NOP), Ab(LDY), Ab(LDA), Ab(LDX), Bb(BBS), 
-		/* B0 */	Re(BCS), Iy(LDA), Iz(LDA), xx(NOP), Zx(LDY), Zx(LDA), Zy(LDX), Bz(SMB), Ip(CLV), Ay(LDA), Ip(TSX), xx(NOP), Ax(LDY), Ax(LDA), Ay(LDX), Bb(BBS), 
-		/* C0 */	Im(CPY), Ix(CMP), xx(NOP), xx(NOP), Zp(CPY), Zp(CMP), Zp(DEC), Bz(SMB), Ip(INY), Im(CMP), Ip(DEX), Ip(WAI), Ab(CPY), Ab(CMP), Ab(DEC), Bb(BBS), 
-		/* D0 */	Re(BNE), Iy(CMP), Iz(CMP), xx(NOP), xx(NOP), Zx(CMP), Zx(DEC), Bz(SMB), Ip(CLD), Ay(CMP), Ip(PHX), Ip(STP), Ax(NOP), Ax(CMP), Ax(DEC), Bb(BBS), 
-		/* E0 */	Im(CPX), Ix(SBC), xx(NOP), xx(NOP), Zp(CPX), Zp(SBC), Zp(INC), Bz(SMB), Ip(INX), Im(SBC), Ip(NOP), xx(NOP), Ab(CPX), Ab(SBC), Ab(INC), Bb(BBS), 
+		/* 00 */	Ip(BRK), Ix(ORA), xx(NOP), xx(NOP), Zp(TSB), Zp(ORA), Zp(ASL), Bz(RMB), Ip(PHP), Im(ORA), Ip(ASL), xx(NOP), Ab(TSB), Ab(ORA), Ab(ASL), Bb(BBR),
+		/* 10 */	Re(BPL), Iy(ORA), Iz(ORA), xx(NOP), Zp(TRB), Zx(ORA), Zx(ASL), Bz(RMB), Ip(CLC), Ay(ORA), Ip(INC), xx(NOP), Ab(TRB), Ax(ORA), Ax(ASL), Bb(BBR),
+		/* 20 */	Ab(JSR), Ix(AND), xx(NOP), xx(NOP), Zp(BIT), Zp(AND), Zp(ROL), Bz(RMB), Ip(PLP), Im(AND), Ip(ROL), xx(NOP), Ab(BIT), Ab(AND), Ab(ROL), Bb(BBR),
+		/* 30 */	Re(BMI), Iy(AND), Iz(AND), xx(NOP), Zx(BIT), Zx(AND), Zx(ROL), Bz(RMB), Ip(SEC), Ay(AND), Ip(DEC), xx(NOP), Ax(BIT), Ax(AND), Ax(ROL), Bb(BBR),
+		/* 40 */	Ip(RTI), Ix(EOR), xx(NOP), xx(NOP), Zp(NOP), Zp(EOR), Zp(LSR), Bz(RMB), Ip(PHA), Im(EOR), Ip(LSR), xx(NOP), Ab(JMP), Ab(EOR), Ab(LSR), Bb(BBR),
+		/* 50 */	Re(BVC), Iy(EOR), Iz(EOR), xx(NOP), Zx(NOP), Zx(EOR), Zx(LSR), Bz(RMB), Ip(CLI), Ay(EOR), Ip(PHY), xx(NOP), Ax(NOP), Ax(EOR), Ax(LSR), Bb(BBR),
+		/* 60 */	Ip(RTS), Ix(ADC), xx(NOP), xx(NOP), Zp(STZ), Zp(ADC), Zp(ROR), Bz(RMB), Ip(PLA), Im(ADC), Ip(ROR), xx(NOP), Ia(JMP), Ab(ADC), Ab(ROR), Bb(BBR),
+		/* 70 */	Re(BVS), Iy(ADC), Iz(ADC), xx(NOP), Zx(STZ), Zx(ADC), Zx(ROR), Bz(RMB), Ip(SEI), Ay(ADC), Ip(PLY), xx(NOP), It(JMP), Ax(ADC), Ax(ROR), Bb(BBR),
+		/* 80 */	Re(BRA), Ix(STA), xx(NOP), xx(NOP), Zp(STY), Zp(STA), Zp(STX), Bz(SMB), Ip(DEY), Im(BIT), Ip(TXA), xx(NOP), Ab(STY), Ab(STA), Ab(STX), Bb(BBS),
+		/* 90 */	Re(BCC), Iy(STA), Iz(STA), xx(NOP), Zx(STY), Zx(STA), Zy(STX), Bz(SMB), Ip(TYA), Ay(STA), Ip(TXS), xx(NOP), Ab(STZ), Ax(STA), Ax(STZ), Bb(BBS),
+		/* A0 */	Im(LDY), Ix(LDA), Im(LDX), xx(NOP), Zp(LDY), Zp(LDA), Zp(LDX), Bz(SMB), Ip(TAY), Im(LDA), Ip(TAX), xx(NOP), Ab(LDY), Ab(LDA), Ab(LDX), Bb(BBS),
+		/* B0 */	Re(BCS), Iy(LDA), Iz(LDA), xx(NOP), Zx(LDY), Zx(LDA), Zy(LDX), Bz(SMB), Ip(CLV), Ay(LDA), Ip(TSX), xx(NOP), Ax(LDY), Ax(LDA), Ay(LDX), Bb(BBS),
+		/* C0 */	Im(CPY), Ix(CMP), xx(NOP), xx(NOP), Zp(CPY), Zp(CMP), Zp(DEC), Bz(SMB), Ip(INY), Im(CMP), Ip(DEX), Ip(WAI), Ab(CPY), Ab(CMP), Ab(DEC), Bb(BBS),
+		/* D0 */	Re(BNE), Iy(CMP), Iz(CMP), xx(NOP), xx(NOP), Zx(CMP), Zx(DEC), Bz(SMB), Ip(CLD), Ay(CMP), Ip(PHX), Ip(STP), Ax(NOP), Ax(CMP), Ax(DEC), Bb(BBS),
+		/* E0 */	Im(CPX), Ix(SBC), xx(NOP), xx(NOP), Zp(CPX), Zp(SBC), Zp(INC), Bz(SMB), Ip(INX), Im(SBC), Ip(NOP), xx(NOP), Ab(CPX), Ab(SBC), Ab(INC), Bb(BBS),
 		/* F0 */	Re(BEQ), Iy(SBC), Iz(SBC), xx(NOP), Zx(NOP), Zx(SBC), Zx(INC), Bz(SMB), Ip(SED), Ay(SBC), Ip(PLX), xx(NOP), Ax(NOP), Ax(SBC), Ax(INC), Bb(BBS),
 	};
 
 	const uint8 kModeTbl_65C816[256][2]={
 		//			   0,       1,       2,       3,       4,       5,       6,       7,       8,       9,       A,       B,       C,       D,       E,       F
-		/* 00 */	Ip(BRK), Ix(ORA), Iv(COP), Sr(ORA), Zp(TSB), Zp(ORA), Zp(ASL), Xd(ORA), Ip(PHP),ImM(ORA), Ip(ASL), Ip(PHD), Ab(TSB), Ab(ORA), Ab(ASL), Lg(ORA), 
-		/* 10 */	Re(BPL), Iy(ORA), Iz(ORA), Sy(ORA), Zp(TRB), Zx(ORA), Zx(ASL), Xy(ORA), Ip(CLC), Ay(ORA), Ip(INC), Ip(TCS), Ab(TRB), Ax(ORA), Ax(ASL), Lx(ORA), 
-		/* 20 */	Ab(JSR), Ix(AND), Lg(JSL), Sr(AND), Zp(BIT), Zp(AND), Zp(ROL), Xd(AND), Ip(PLP),ImM(AND), Ip(ROL), Ip(PLD), Ab(BIT), Ab(AND), Ab(ROL), Lg(AND), 
-		/* 30 */	Re(BMI), Iy(AND), Iz(AND), Sy(AND), Zx(BIT), Zx(AND), Zx(ROL), Xy(AND), Ip(SEC), Ay(AND), Ip(DEC), Ip(TSC), Ax(BIT), Ax(AND), Ax(ROL), Lx(AND), 
-		/* 40 */	Ip(RTI), Ix(EOR), Ip(WDM), Sr(EOR), Mv(MVP), Zp(EOR), Zp(LSR), Xd(EOR), Ip(PHA),ImM(EOR), Ip(LSR), Ip(PHK), Ab(JMP), Ab(EOR), Ab(LSR), Lg(EOR), 
-		/* 50 */	Re(BVC), Iy(EOR), Iz(EOR), Sy(EOR), Mv(MVN), Zx(EOR), Zx(LSR), Xy(EOR), Ip(CLI), Ay(EOR), Ip(PHY), Ip(TCD), Lg(JMP), Ax(EOR), Ax(LSR), Lx(EOR), 
-		/* 60 */	Ip(RTS), Ix(ADC), Rl(PER), Sr(ADC), Zp(STZ), Zp(ADC), Zp(ROR), Xd(ADC), Ip(PLA),ImM(ADC), Ip(ROR), Ip(RTL), Ia(JMP), Ab(ADC), Ab(ROR), Lg(ADC), 
-		/* 70 */	Re(BVS), Iy(ADC), Iz(ADC), Sy(ADC), Zx(STZ), Zx(ADC), Zx(ROR), Xy(ADC), Ip(SEI), Ay(ADC), Ip(PLY), Ip(TDC), It(JMP), Ax(ADC), Ax(ROR), Lx(ADC), 
-		/* 80 */	Re(BRA), Ix(STA), Rl(BRL), Sr(STA), Zp(STY), Zp(STA), Zp(STX), Xd(STA), Ip(DEY),ImM(BIT), Ip(TXA), Ip(PHB), Ab(STY), Ab(STA), Ab(STX), Lg(STA), 
-		/* 90 */	Re(BCC), Iy(STA), Iz(STA), Sy(STA), Zx(STY), Zx(STA), Zy(STX), Xy(STA), Ip(TYA), Ay(STA), Ip(TXS), Ip(TXY), Ab(STZ), Ax(STA), Ax(STZ), Lx(STA), 
-		/* A0 */   ImX(LDY), Ix(LDA),ImX(LDX), Sr(LDA), Zp(LDY), Zp(LDA), Zp(LDX), Xd(LDA), Ip(TAY),ImM(LDA), Ip(TAX), Ip(PLB), Ab(LDY), Ab(LDA), Ab(LDX), Lg(LDA), 
-		/* B0 */	Re(BCS), Iy(LDA), Iz(LDA), Sy(LDA), Zx(LDY), Zx(LDA), Zy(LDX), Xy(LDA), Ip(CLV), Ay(LDA), Ip(TSX), Ip(TYX), Ax(LDY), Ax(LDA), Ay(LDX), Lx(LDA), 
-		/* C0 */   ImX(CPY), Ix(CMP), Im(REP), Sr(CMP), Zp(CPY), Zp(CMP), Zp(DEC), Xd(CMP), Ip(INY),ImM(CMP), Ip(DEX), Ip(WAI), Ab(CPY), Ab(CMP), Ab(DEC), Lg(CMP), 
-		/* D0 */	Re(BNE), Iy(CMP), Iz(CMP), Sy(CMP), Iz(PEI), Zx(CMP), Zx(DEC), Xy(CMP), Ip(CLD), Ay(CMP), Ip(PHX), Ip(STP), Il(JML), Ax(CMP), Ax(DEC), Lx(CMP), 
-		/* E0 */   ImX(CPX), Ix(SBC), Im(SEP), Sr(SBC), Zp(CPX), Zp(SBC), Zp(INC), Xd(SBC), Ip(INX),ImM(SBC), Ip(NOP), Ip(XBA), Ab(CPX), Ab(SBC), Ab(INC), Lg(SBC), 
+		/* 00 */	Ip(BRK), Ix(ORA), Iv(COP), Sr(ORA), Zp(TSB), Zp(ORA), Zp(ASL), Xd(ORA), Ip(PHP),ImM(ORA), Ip(ASL), Ip(PHD), Ab(TSB), Ab(ORA), Ab(ASL), Lg(ORA),
+		/* 10 */	Re(BPL), Iy(ORA), Iz(ORA), Sy(ORA), Zp(TRB), Zx(ORA), Zx(ASL), Xy(ORA), Ip(CLC), Ay(ORA), Ip(INC), Ip(TCS), Ab(TRB), Ax(ORA), Ax(ASL), Lx(ORA),
+		/* 20 */	Ab(JSR), Ix(AND), Lg(JSL), Sr(AND), Zp(BIT), Zp(AND), Zp(ROL), Xd(AND), Ip(PLP),ImM(AND), Ip(ROL), Ip(PLD), Ab(BIT), Ab(AND), Ab(ROL), Lg(AND),
+		/* 30 */	Re(BMI), Iy(AND), Iz(AND), Sy(AND), Zx(BIT), Zx(AND), Zx(ROL), Xy(AND), Ip(SEC), Ay(AND), Ip(DEC), Ip(TSC), Ax(BIT), Ax(AND), Ax(ROL), Lx(AND),
+		/* 40 */	Ip(RTI), Ix(EOR), Ip(WDM), Sr(EOR), Mv(MVP), Zp(EOR), Zp(LSR), Xd(EOR), Ip(PHA),ImM(EOR), Ip(LSR), Ip(PHK), Ab(JMP), Ab(EOR), Ab(LSR), Lg(EOR),
+		/* 50 */	Re(BVC), Iy(EOR), Iz(EOR), Sy(EOR), Mv(MVN), Zx(EOR), Zx(LSR), Xy(EOR), Ip(CLI), Ay(EOR), Ip(PHY), Ip(TCD), Lg(JMP), Ax(EOR), Ax(LSR), Lx(EOR),
+		/* 60 */	Ip(RTS), Ix(ADC), Rl(PER), Sr(ADC), Zp(STZ), Zp(ADC), Zp(ROR), Xd(ADC), Ip(PLA),ImM(ADC), Ip(ROR), Ip(RTL), Ia(JMP), Ab(ADC), Ab(ROR), Lg(ADC),
+		/* 70 */	Re(BVS), Iy(ADC), Iz(ADC), Sy(ADC), Zx(STZ), Zx(ADC), Zx(ROR), Xy(ADC), Ip(SEI), Ay(ADC), Ip(PLY), Ip(TDC), It(JMP), Ax(ADC), Ax(ROR), Lx(ADC),
+		/* 80 */	Re(BRA), Ix(STA), Rl(BRL), Sr(STA), Zp(STY), Zp(STA), Zp(STX), Xd(STA), Ip(DEY),ImM(BIT), Ip(TXA), Ip(PHB), Ab(STY), Ab(STA), Ab(STX), Lg(STA),
+		/* 90 */	Re(BCC), Iy(STA), Iz(STA), Sy(STA), Zx(STY), Zx(STA), Zy(STX), Xy(STA), Ip(TYA), Ay(STA), Ip(TXS), Ip(TXY), Ab(STZ), Ax(STA), Ax(STZ), Lx(STA),
+		/* A0 */   ImX(LDY), Ix(LDA),ImX(LDX), Sr(LDA), Zp(LDY), Zp(LDA), Zp(LDX), Xd(LDA), Ip(TAY),ImM(LDA), Ip(TAX), Ip(PLB), Ab(LDY), Ab(LDA), Ab(LDX), Lg(LDA),
+		/* B0 */	Re(BCS), Iy(LDA), Iz(LDA), Sy(LDA), Zx(LDY), Zx(LDA), Zy(LDX), Xy(LDA), Ip(CLV), Ay(LDA), Ip(TSX), Ip(TYX), Ax(LDY), Ax(LDA), Ay(LDX), Lx(LDA),
+		/* C0 */   ImX(CPY), Ix(CMP), Im(REP), Sr(CMP), Zp(CPY), Zp(CMP), Zp(DEC), Xd(CMP), Ip(INY),ImM(CMP), Ip(DEX), Ip(WAI), Ab(CPY), Ab(CMP), Ab(DEC), Lg(CMP),
+		/* D0 */	Re(BNE), Iy(CMP), Iz(CMP), Sy(CMP), Iz(PEI), Zx(CMP), Zx(DEC), Xy(CMP), Ip(CLD), Ay(CMP), Ip(PHX), Ip(STP), Il(JML), Ax(CMP), Ax(DEC), Lx(CMP),
+		/* E0 */   ImX(CPX), Ix(SBC), Im(SEP), Sr(SBC), Zp(CPX), Zp(SBC), Zp(INC), Xd(SBC), Ip(INX),ImM(SBC), Ip(NOP), Ip(XBA), Ab(CPX), Ab(SBC), Ab(INC), Lg(SBC),
 		/* F0 */	Re(BEQ), Iy(SBC), Iz(SBC), Sy(SBC), Ab(PEA), Zx(SBC), Zx(INC), Xy(SBC), Ip(SED), Ay(SBC), Ip(PLX), Ip(XCE), It(JSR), Ax(SBC), Ax(INC), Lx(SBC),
 	};
 
@@ -805,7 +809,7 @@ namespace AT6809Dsm {
 
 	static const char *const kNames[] = {
 		nullptr,
-		"ABX",	
+		"ABX",
 		"ADCA",
 		"ADCB",
 		"ADDA",
@@ -814,32 +818,32 @@ namespace AT6809Dsm {
 		"ANDA",
 		"ANDB",
 		"ANDCC",
-		"ASL",	
+		"ASL",
 		"ASLA",
 		"ASLB",
-		"ASR",	
+		"ASR",
 		"ASRA",
 		"ASRB",
-		"BCC",	
-		"BCS",	
-		"BEQ",	
-		"BGE",	
-		"BGT",	
-		"BHI",	
+		"BCC",
+		"BCS",
+		"BEQ",
+		"BGE",
+		"BGT",
+		"BHI",
 		"BITA",
 		"BITB",
-		"BLE",	
-		"BLS",	
-		"BLT",	
-		"BMI",	
-		"BNE",	
-		"BPL",	
-		"BRA",	
-		"BRN",	
-		"BSR",	
-		"BVC",	
-		"BVS",	
-		"CLR",	
+		"BLE",
+		"BLS",
+		"BLT",
+		"BMI",
+		"BNE",
+		"BPL",
+		"BRA",
+		"BRN",
+		"BSR",
+		"BVC",
+		"BVS",
+		"CLR",
 		"CLRA",
 		"CLRB",
 		"CMPA",
@@ -849,22 +853,22 @@ namespace AT6809Dsm {
 		"CMPU",
 		"CMPX",
 		"CMPY",
-		"COM",	
+		"COM",
 		"COMA",
 		"COMB",
 		"CWAI",
-		"DAA",	
-		"DEC",	
+		"DAA",
+		"DEC",
 		"DECA",
 		"DECB",
 		"EORA",
 		"EORB",
-		"EXG",	
-		"INC",	
+		"EXG",
+		"INC",
 		"INCA",
 		"INCB",
-		"JMP",	
-		"JSR",	
+		"JMP",
+		"JSR",
 		"LBCC",
 		"LBCS",
 		"LBEQ",
@@ -882,59 +886,59 @@ namespace AT6809Dsm {
 		"LBSR",
 		"LBVC",
 		"LBVS",
-		"LDA",	
-		"LDB",	
-		"LDD",	
-		"LDS",	
-		"LDU",	
-		"LDX",	
-		"LDY",	
+		"LDA",
+		"LDB",
+		"LDD",
+		"LDS",
+		"LDU",
+		"LDX",
+		"LDY",
 		"LEAS",
 		"LEAU",
 		"LEAX",
 		"LEAY",
-		"LSR",	
+		"LSR",
 		"LSRA",
 		"LSRB",
-		"MUL",	
-		"NEG",	
+		"MUL",
+		"NEG",
 		"NEGA",
 		"NEGB",
-		"NOP",	
-		"ORA",	
-		"ORB",	
+		"NOP",
+		"ORA",
+		"ORB",
 		"ORCC",
 		"PSHS",
 		"PSHU",
 		"PULS",
 		"PULU",
-		"ROL",	
+		"ROL",
 		"ROLA",
 		"ROLB",
-		"ROR",	
+		"ROR",
 		"RORA",
 		"RORB",
-		"RTI",	
-		"RTS",	
+		"RTI",
+		"RTS",
 		"SBCA",
 		"SBCB",
-		"SEX",	
-		"STA",	
-		"STB",	
-		"STD",	
-		"STS",	
-		"STU",	
-		"STX",	
-		"STY",	
+		"SEX",
+		"STA",
+		"STB",
+		"STD",
+		"STS",
+		"STU",
+		"STX",
+		"STY",
 		"SUBA",
 		"SUBB",
 		"SUBD",
-		"SWI",	
+		"SWI",
 		"SWI2",
 		"SWI3",
 		"SYNC",
-		"TFR",	
-		"TST",	
+		"TFR",
+		"TST",
 		"TSTA",
 		"TSTB",
 	};
@@ -1140,11 +1144,13 @@ namespace AT6809Dsm {
 	};
 }
 
-const char *ATGetSymbolName(uint32 addr, bool write) {
-	IATDebuggerSymbolLookup *symlookup = ATGetDebuggerSymbolLookup();
+namespace {
+const char *GetSymbolName(const ATDisasmServices& services, uint32 addr, bool write) {
+	if (!services.mpLookupSymbol)
+		return nullptr;
 
 	ATSymbol sym;
-	if (!symlookup->LookupSymbol(addr, write ? kATSymbol_Write : kATSymbol_Read | kATSymbol_Execute, sym))
+	if (!services.mpLookupSymbol(addr, write ? kATSymbol_Write : kATSymbol_Read | kATSymbol_Execute, sym))
 		return NULL;
 
 	if (sym.mOffset != addr)
@@ -1153,31 +1159,19 @@ const char *ATGetSymbolName(uint32 addr, bool write) {
 	return sym.mpName;
 }
 
-const char *ATGetSymbolNameOffset(uint32 addr, bool write, sint32& offset) {
-	IATDebuggerSymbolLookup *symlookup = ATGetDebuggerSymbolLookup();
+const char *GetSymbolNameOffset(const ATDisasmServices& services, uint32 addr, bool write, sint32& offset) {
+	if (!services.mpLookupSymbol)
+		return nullptr;
 
 	ATSymbol sym;
-	if (!symlookup->LookupSymbol(addr, write ? kATSymbol_Write : kATSymbol_Read | kATSymbol_Execute, sym))
+	if (!services.mpLookupSymbol(addr, write ? kATSymbol_Write : kATSymbol_Read | kATSymbol_Execute, sym))
 		return NULL;
 
 	offset = addr - (sint32)sym.mOffset;
 	return sym.mpName;
 }
-
-void ATDisassembleCaptureRegisterContext(ATCPUHistoryEntry& hent) {
-	ATCPUEmulator& cpu = g_sim.GetCPU();
-	hent.mP = cpu.GetP();
-	hent.mX = cpu.GetX();
-	hent.mExt.mXH = cpu.GetXH();
-	hent.mY = cpu.GetY();
-	hent.mExt.mYH = cpu.GetYH();
-	hent.mD = cpu.GetD();
-	hent.mS = cpu.GetS();
-	hent.mExt.mSH = cpu.GetSH();
-	hent.mB = cpu.GetB();
-	hent.mK = cpu.GetK();
-	hent.mbEmulation = cpu.GetEmulationFlag();
 }
+
 
 void ATDisassembleCaptureRegisterContext(IATDebugTarget *target, ATCPUHistoryEntry& hent) {
 	ATCPUExecState state;
@@ -1196,7 +1190,14 @@ void ATDisassembleCaptureRegisterContext(ATCPUHistoryEntry& hent, const ATCPUExe
 			hent.mP = state8048.mPSW;
 			break;
 		}
-								  
+
+		case kATDebugDisasmMode_8051: {
+			const ATCPUExecState8051& state8051 = execState.m8051;
+			hent.mA = state8051.mA;
+			hent.mP = state8051.mPSW;
+			break;
+		}
+
 		case kATDebugDisasmMode_Z80: {
 			const ATCPUExecStateZ80& stateZ80 = execState.mZ80;
 			hent.mZ80_A		= stateZ80.mA;
@@ -1247,36 +1248,7 @@ void ATDisassembleCaptureRegisterContext(ATCPUHistoryEntry& hent, const ATCPUExe
 	}
 }
 
-void ATDisassembleCaptureInsnContext(uint16 addr, uint8 bank, ATCPUHistoryEntry& hent) {
-	uint32 addr24 = addr + ((uint32)bank << 16);
-	uint8 opcode = g_sim.DebugGlobalReadByte(addr24);
-	uint8 byte1 = g_sim.DebugGlobalReadByte((addr24+1) & 0xffffff);
-	uint8 byte2 = g_sim.DebugGlobalReadByte((addr24+2) & 0xffffff);
-	uint8 byte3 = g_sim.DebugGlobalReadByte((addr24+3) & 0xffffff);
 
-	hent.mPC = addr;
-	hent.mK = bank;
-	hent.mOpcode[0] = opcode;
-	hent.mOpcode[1] = byte1;
-	hent.mOpcode[2] = byte2;
-	hent.mOpcode[3] = byte3;
-}
-
-void ATDisassembleCaptureInsnContext(uint32 globalAddr, ATCPUHistoryEntry& hent) {
-	const uint32 bankSpace = globalAddr & 0xFFFF0000;
-	uint8 opcode = g_sim.DebugGlobalReadByte(globalAddr);
-	uint8 byte1 = g_sim.DebugGlobalReadByte(bankSpace + ((globalAddr+1) & 0xffff));
-	uint8 byte2 = g_sim.DebugGlobalReadByte(bankSpace + ((globalAddr+2) & 0xffff));
-	uint8 byte3 = g_sim.DebugGlobalReadByte(bankSpace + ((globalAddr+3) & 0xffff));
-
-	hent.mPC = (uint16)globalAddr;
-	hent.mK = (uint8)(globalAddr >> 16);
-	hent.mGlobalPCBase = bankSpace;
-	hent.mOpcode[0] = opcode;
-	hent.mOpcode[1] = byte1;
-	hent.mOpcode[2] = byte2;
-	hent.mOpcode[3] = byte3;
-}
 
 void ATDisassembleCaptureInsnContext(IATDebugTarget *target, uint16 addr, uint8 bank, ATCPUHistoryEntry& hent) {
 	hent.mPC = addr;
@@ -1298,14 +1270,6 @@ void ATDisassembleCaptureInsnContext(IATDebugTarget *target, uint32 globalAddr, 
 		hent.mOpcode[i] = target->DebugReadByte(hent.mGlobalPCBase + ((globalAddr + i) & 0xffff));
 }
 
-uint16 ATDisassembleInsn(VDStringA& line, uint16 addr, bool decodeReferences) {
-	ATCPUHistoryEntry hent;
-	ATDisassembleCaptureRegisterContext(hent);
-	ATDisassembleCaptureInsnContext(addr, hent.mK, hent);
-
-	const ATCPUEmulator& cpu = g_sim.GetCPU();
-	return ATDisassembleInsn(line, g_sim.GetDebugTarget(), cpu.GetDisasmMode(), hent, decodeReferences, false, true, true, true).mNextPC;
-}
 
 namespace {
 	const char kHexDigits[16] = { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F' };
@@ -1369,7 +1333,7 @@ ATDisasmResult ATDisassembleInsnZ80(VDStringA& line, const ATCPUHistoryEntry& he
 
 	if (op0 == 0xDD || op0 == 0xFD) {
 		const uint8 op1 = hent.mOpcode[1];
-		
+
 		// Okay, we have an IX/IY-based instruction. This is invalid with DD/ED/FD
 		// prefixes, for which we just emit a byte. However, it is valid with the CB
 		// prefix.
@@ -1523,7 +1487,7 @@ ATDisasmResult ATDisassembleInsnZ80(VDStringA& line, const ATCPUHistoryEntry& he
 	return result;
 }
 
-ATDisasmResult ATDisassembleInsnMCS(VDStringA& line, const ATCPUHistoryEntry& hent, bool showCodeBytes, bool lowercaseOps, const MCSInsnTable& insnTable) {
+ATDisasmResult ATDisassembleInsnMCS(VDStringA& line, const ATCPUHistoryEntry& hent, bool showCodeBytes, bool lowercaseOps, const MCSInsnTable& insnTable, bool is8051) {
 	ATDisasmResult result {};
 
 	const uint8 op0 = hent.mOpcode[0];
@@ -1661,7 +1625,8 @@ ATDisasmResult ATDisassembleInsnMCS(VDStringA& line, const ATCPUHistoryEntry& he
 						break;
 
 					case ATMCSTokenMode::PCAbs11:
-						AppendIntelHex16(line, (uint16)((hent.mPC & 0x800) + ((uint32)(hent.mOpcode[0] & 0xE0) << 3) + *arg++), lowercaseOps);
+						AppendIntelHex16(line, (uint16)((is8051 ? (hent.mPC + oplen) & 0xF800 : hent.mPC & 0x800)
+							+ ((uint32)(hent.mOpcode[0] & 0xE0) << 3) + *arg++), lowercaseOps);
 						break;
 
 					case ATMCSTokenMode::PCAbs16:
@@ -2029,6 +1994,7 @@ ATDisasmResult ATDisassembleInsn6809(VDStringA& line, const ATCPUHistoryEntry& h
 }
 
 ATDisasmResult ATDisassembleInsn(VDStringA& line,
+	const ATDisasmServices& services,
 	IATDebugTarget *target,
 	ATDebugDisasmMode disasmMode,
 	const ATCPUHistoryEntry& hent,
@@ -2044,10 +2010,10 @@ ATDisasmResult ATDisassembleInsn(VDStringA& line,
 	bool showGlobalPC)
 {
 	if (disasmMode == kATDebugDisasmMode_8048)
-		return ATDisassembleInsnMCS(line, hent, showCodeBytes, lowercaseOps, kMCS48Insns);
+		return ATDisassembleInsnMCS(line, hent, showCodeBytes, lowercaseOps, kMCS48Insns, false);
 
 	if (disasmMode == kATDebugDisasmMode_8051)
-		return ATDisassembleInsnMCS(line, hent, showCodeBytes, lowercaseOps, kMCS51Insns);
+		return ATDisassembleInsnMCS(line, hent, showCodeBytes, lowercaseOps, kMCS51Insns, true);
 
 	if (disasmMode == kATDebugDisasmMode_Z80)
 		return ATDisassembleInsnZ80(line, hent, showCodeBytes, lowercaseOps);
@@ -2101,7 +2067,7 @@ ATDisasmResult ATDisassembleInsn(VDStringA& line,
 	const uint32 x = hent.mX + (is816 ? (uint32)hent.mExt.mXH << 8 : 0);
 	const uint32 y = hent.mY + (is816 ? (uint32)hent.mExt.mYH << 8 : 0);
 	const uint32 s16 = ((uint32)hent.mExt.mSH << 8) + hent.mS;
-	
+
 	const uint8 (*const tbl)[2] = kModeTbl[subMode];
 	const uint8 mode = tbl[opcode][0];
 	const uint8 opid = tbl[opcode][1];
@@ -2132,19 +2098,12 @@ ATDisasmResult ATDisassembleInsn(VDStringA& line,
 				line += ATAddressGetSpacePrefix(xpc);
 
 				const auto prefixLen = line.size() - addrStart;
-				if (prefixLen < 4)
-					line.append(4 - prefixLen, ' ');
-				
-				static const char kGPCTemplate[]="    : ";
-				line += kGPCTemplate;
-
-				// if address is above bank 0 or non-CPU address space is more than 16-bit,
-				// go to 6 digits
-				if (xpc >= 0x10000 && ATAddressGetSpaceSize(xpc) > 0x10000) {
-					WriteHex8(line, 8, (uint8)(xpc >> 16));
-				}
-
-				WriteHex16(line, 6, (uint16)xpc);
+				const bool longAddress = xpc >= 0x10000 && ATAddressGetSpaceSize(xpc) > 0x10000;
+				const size_t prefixWidth = longAddress ? 2 : 4;
+				if (prefixLen < prefixWidth)
+					line.append(prefixWidth - prefixLen, ' ');
+				// Reserve all address digits after the prefix, even for "cart:".
+				line.append_sprintf(longAddress ? "%06X: " : "%04X: ", xpc & (longAddress ? 0xFFFFFF : 0xFFFF));
 			}
 		}
 	} else {
@@ -2189,22 +2148,21 @@ ATDisasmResult ATDisassembleInsn(VDStringA& line,
 
 	size_t startPos = line.size();
 
-	const ATCPUEmulator& cpu = g_sim.GetCPU();
 
 	if (showLabels) {
 		VDStringA tempLabel;
 
 		const char *label = NULL;
-		
-		label = ATGetSymbolName(xpc, false);
 
-		if (!label && cpu.IsPathfindingEnabled() && cpu.IsPathStart(addr)) {
+		label = GetSymbolName(services, xpc, false);
+
+		if (!label && services.mpIsPathStart && services.mpIsPathStart(addr)) {
 			tempLabel.sprintf("L%04X", addr);
 			label = tempLabel.c_str();
 		}
 
 		size_t len = 0;
-		
+
 		if (label) {
 			if (!showLabelNamespaces) {
 				const char *dot = strchr(label, '.');
@@ -2253,7 +2211,7 @@ ATDisasmResult ATDisassembleInsn(VDStringA& line,
 	} else if (mode == kModeImmMode16 || mode == kModeImmIndex16) {
 		if (opsize == 3)
 			line.append_sprintf(" #$%02X%02X", byte2, byte1);
-		else 
+		else
 			line.append_sprintf(" #$%02X", byte1);
 	} else if (mode == kModeImm16) {
 		line.append_sprintf(" #$%02X%02X", byte2, byte1);
@@ -2291,7 +2249,7 @@ ATDisasmResult ATDisassembleInsn(VDStringA& line,
 		//	All branch		-> PBK
 		uint32 eaBank = 0;
 		uint32 eaMask = 0xFFFF;
-		
+
 		if (disasmMode == kATDebugDisasmMode_65C816) {
 			eaBank = (uint32)hent.mB << 16;
 			eaMask = 0xFFFFFF;
@@ -2333,13 +2291,13 @@ ATDisasmResult ATDisassembleInsn(VDStringA& line,
 
 		switch(mode) {
 			case kModeRel:
-				base = ea = addr + 2 + (sint8)byte1;
+				base = ea = static_cast<uint16>(addr + 2 + (sint8)byte1);
 				addr16 = true;
 				ea16 = true;
 				break;
 
 			case kModeRel16:
-				base = ea = addr + 3 + (sint16)((uint32)byte1 + ((uint32)byte2 << 8));
+				base = ea = static_cast<uint16>(addr + 3 + (sint16)((uint32)byte1 + ((uint32)byte2 << 8)));
 				addr16 = true;
 				ea16 = true;
 				break;
@@ -2403,8 +2361,13 @@ ATDisasmResult ATDisassembleInsn(VDStringA& line,
 
 				if (decodeRefsHistory)
 					ea = hent.mEA;
-				else
-					ea = target->DebugReadByte(base) + 256*target->DebugReadByte(base+1) + eaBank;
+				else {
+					const uint16 highAddr = disasmMode == kATDebugDisasmMode_6502
+						? static_cast<uint16>((base & 0xFF00) | ((base + 1) & 0xFF))
+						: static_cast<uint16>(base + 1);
+					ea = target->DebugReadByte(base) + 256*target->DebugReadByte(highAddr)
+						+ (is816 ? uint32(pbk) << 16 : 0);
+				}
 
 				addr16 = true;
 				ea16 = true;
@@ -2492,7 +2455,7 @@ ATDisasmResult ATDisassembleInsn(VDStringA& line,
 
 			case kModeBBit:
 				base = ea = byte1;
-				ea2 = addr + 3 + (sint8)byte2;
+				ea2 = static_cast<uint16>(addr + 3 + (sint8)byte2);
 				break;
 
 			case kModeLong:
@@ -2610,14 +2573,14 @@ ATDisasmResult ATDisassembleInsn(VDStringA& line,
 
 		const char *name = NULL;
 		sint32 offset;
-		
+
 		if (dolabel) {
 			uint32 symAddr = base;
 
 			if (!addr24)
 				symAddr += eaBank;
 
-			name = ATGetSymbolNameOffset(symAddr, write, offset);
+			name = GetSymbolNameOffset(services, symAddr, write, offset);
 		}
 
 		if (name) {
@@ -2666,7 +2629,7 @@ ATDisasmResult ATDisassembleInsn(VDStringA& line,
 
 			case kModeBBit:
 				{
-					const char *name2 = ATGetSymbolName(ea2, false);
+					const char *name2 = showSymbols ? GetSymbolName(services, ea2, false) : nullptr;
 
 					line.append(",");
 
@@ -2768,6 +2731,8 @@ ATDisasmResult ATDisassembleInsn(VDStringA& line,
 								case kATCPUSubMode_65C816_NativeM16X8:
 									access16 = true;
 									break;
+								default:
+									break;
 							}
 							break;
 
@@ -2776,6 +2741,8 @@ ATDisasmResult ATDisassembleInsn(VDStringA& line,
 								case kATCPUSubMode_65C816_NativeM16X16:
 								case kATCPUSubMode_65C816_NativeM8X16:
 									access16 = true;
+									break;
+								default:
 									break;
 							}
 							break;
@@ -2813,20 +2780,6 @@ ATDisasmResult ATDisassembleInsn(VDStringA& line,
 	return result;
 }
 
-uint16 ATDisassembleInsn(uint16 addr, uint8 bank) {
-	ATCPUHistoryEntry hent;
-	ATDisassembleCaptureRegisterContext(hent);
-	ATDisassembleCaptureInsnContext(addr, bank, hent);
-
-	const ATCPUEmulator& cpu = g_sim.GetCPU();
-
-	VDStringA buf;
-	addr = ATDisassembleInsn(buf, g_sim.GetDebugTarget(), cpu.GetDisasmMode(), hent, true, false, true, true, true).mNextPC;
-	buf += '\n';
-	ATConsoleWrite(buf.c_str());
-
-	return addr;
-}
 
 uint16 ATDisassembleGetFirstAnchor(IATDebugTarget *target, uint16 addr, uint16 targetAddr, uint32 addrBank) {
 	ATCPUSubMode subMode = kATCPUSubMode_6502;
@@ -2952,19 +2905,7 @@ void ATDisassemblePredictContext(ATCPUHistoryEntry& hent, ATDebugDisasmMode exec
 	}
 }
 
-int ATGetOpcodeLength(uint8 opcode) {
-	ATCPUEmulator& cpu = g_sim.GetCPU();
-	ATCPUSubMode subMode = cpu.GetCPUSubMode();
-	const uint8 (*const tbl)[2] = kModeTbl[subMode];
 
-	return kBytesPerModeTables[subMode][tbl[opcode][0]];
-}
-
-int ATGetOpcodeLength(uint8 opcode, uint8 p, bool emuMode) {
-	ATCPUEmulator& cpu = g_sim.GetCPU();
-
-	return ATGetOpcodeLength(opcode, p, emuMode, cpu.GetDisasmMode());
-}
 
 int ATGetOpcodeLength(uint8 opcode, uint8 p, bool emuMode, ATDebugDisasmMode disasmMode) {
 	ATCPUSubMode subMode;
@@ -3010,4 +2951,9 @@ uint32 ATGetOpcodeLengthZ80DDFD(uint8 opcode) {
 
 uint32 ATGetOpcodeLengthZ80DDFDCB(uint8 opcode) {
 	return kZ80InsnsDDFDCB[opcode].GetOpcodeLen();
+}
+
+int ATGetOpcodeLength(uint8 opcode, ATCPUSubMode subMode) {
+	const uint8 (*const tbl)[2] = kModeTbl[subMode];
+	return kBytesPerModeTables[subMode][tbl[opcode][0]];
 }

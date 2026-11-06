@@ -9,6 +9,10 @@
 
 bool ATTestAltirraCPUStates(ATPortableTestContext& context) {
 	static_assert(std::is_same_v<std::underlying_type_t<ATCPUMode>, uint8>);
+	static_assert(std::is_same_v<std::underlying_type_t<ATCPUSubMode>, uint8>);
+	static_assert(kATCPUSubMode_6502 == 0 && kATCPUSubMode_65C02 == 1);
+	static_assert(kATCPUSubMode_65C816_Emulation == 2 && kATCPUSubMode_65C816_NativeM16X16 == 3);
+	static_assert(kATCPUSubMode_65C816_NativeM8X8 == 6 && kATCPUSubModeCount == 7);
 	static_assert(kATCPUMode_6502 == 0 && kATCPUMode_65C02 == 1 && kATCPUMode_65C816 == 2 && kATCPUModeCount == 3);
 	static_assert(AT6502::kFlagN == 0x80 && AT6502::kFlagV == 0x40);
 	static_assert(AT6502::kFlagM == 0x20 && AT6502::kFlagX == 0x10);

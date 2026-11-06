@@ -21,6 +21,12 @@ bool ATTestAltirraConstants(ATPortableTestContext& context);
 bool ATTestAltirraCompatDB(ATPortableTestContext& context);
 bool ATTestAltirraCPUMemory(ATPortableTestContext& context);
 bool ATTestAltirraCPUStates(ATPortableTestContext& context);
+bool ATTestAltirraDisasm6502(ATPortableTestContext& context);
+bool ATTestAltirraDisasmOtherCPUs(ATPortableTestContext& context);
+bool ATTestAltirraDisasmContext(ATPortableTestContext& context);
+bool ATTestAltirraDisasmReferences(ATPortableTestContext& context);
+bool ATTestAltirraDisasmSymbols(ATPortableTestContext& context);
+bool ATTestAltirraDisasmPrediction(ATPortableTestContext& context);
 bool ATTestAltirraCPUVerifierAddressing(ATPortableTestContext& context);
 bool ATTestAltirraCPUVerifierStack(ATPortableTestContext& context);
 bool ATTestAltirraCPUVerifierInterrupts(ATPortableTestContext& context);
@@ -241,6 +247,12 @@ const ATPortableTestCase *ATGetPortableTests(size_t& count) {
 		{ "Altirra_CompatDB", ATTestAltirraCompatDB },
 		{ "Altirra_CPUMemory", ATTestAltirraCPUMemory },
 		{ "Altirra_CPUStates", ATTestAltirraCPUStates },
+		{ "Altirra_Disasm6502", ATTestAltirraDisasm6502 },
+		{ "Altirra_DisasmOtherCPUs", ATTestAltirraDisasmOtherCPUs },
+		{ "Altirra_DisasmContext", ATTestAltirraDisasmContext },
+		{ "Altirra_DisasmReferences", ATTestAltirraDisasmReferences },
+		{ "Altirra_DisasmSymbols", ATTestAltirraDisasmSymbols },
+		{ "Altirra_DisasmPrediction", ATTestAltirraDisasmPrediction },
 		{ "Altirra_CPUVerifierAddressing", ATTestAltirraCPUVerifierAddressing },
 		{ "Altirra_CPUVerifierStack", ATTestAltirraCPUVerifierStack },
 		{ "Altirra_CPUVerifierInterrupts", ATTestAltirraCPUVerifierInterrupts },

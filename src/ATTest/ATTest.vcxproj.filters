@@ -61,6 +61,15 @@
 	<ClCompile Include="source\TestAltirra_CPUStatesPortable.cpp">
 	  <Filter>Source Files</Filter>
 	</ClCompile>
+	<ClCompile Include="source\TestAltirra_DisasmOpcodesPortable.cpp">
+	  <Filter>Source Files</Filter>
+	</ClCompile>
+	<ClCompile Include="source\TestAltirra_DisasmReferencesPortable.cpp">
+	  <Filter>Source Files</Filter>
+	</ClCompile>
+	<ClCompile Include="source\TestAltirra_DisasmContextPortable.cpp">
+	  <Filter>Source Files</Filter>
+	</ClCompile>
 	<ClCompile Include="source\TestAltirra_CPUVerifierPortable.cpp">
 	  <Filter>Source Files</Filter>
 	</ClCompile>

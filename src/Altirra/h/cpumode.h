@@ -30,4 +30,15 @@ enum ATCPUMode : uint8 {
 
 AT_DECLARE_ENUM_TABLE(ATCPUMode);
 
+enum ATCPUSubMode : uint8 {
+	kATCPUSubMode_6502,
+	kATCPUSubMode_65C02,
+	kATCPUSubMode_65C816_Emulation,
+	kATCPUSubMode_65C816_NativeM16X16,
+	kATCPUSubMode_65C816_NativeM16X8,
+	kATCPUSubMode_65C816_NativeM8X16,
+	kATCPUSubMode_65C816_NativeM8X8,
+	kATCPUSubModeCount
+};
+
 #endif
