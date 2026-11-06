@@ -18,14 +18,30 @@
 #ifndef f_AT_BKPTMANAGER_H
 #define f_AT_BKPTMANAGER_H
 
+#include <memory>
 #include <vd2/system/vdstl.h>
 #include <vd2/system/event.h>
 #include <at/atdebugger/target.h>
+#include "simeventmanager.h"
 
 class ATCPUEmulator;
 class ATMemoryManager;
 class ATMemoryLayer;
 class ATSimulator;
+
+class ATBreakpointManager;
+
+// Bind the primary CPU and simulator services to the actual machine. Secondary
+// targets use the existing IATDebugTargetBreakpoints interface directly.
+struct ATBreakpointManagerConnections {
+	vdfunction<void(ATBreakpointManager *)> mpSetBreakpointManager;
+	vdfunction<void(uint16)> mpSetBreakpoint;
+	vdfunction<void(uint16)> mpClearBreakpoint;
+	vdfunction<void()> mpSetAllBreakpoints;
+	vdfunction<void()> mpClearAllBreakpoints;
+	vdfunction<uint32()> mpGetXPC;
+	vdfunction<void(ATSimulatorEvent)> mpPostInterruptingEvent;
+};
 
 typedef vdfastvector<uint32> ATBreakpointIndices;
 
@@ -56,11 +72,13 @@ public:
 	ATBreakpointManager();
 	~ATBreakpointManager();
 
+	void Init(ATBreakpointManagerConnections connections, ATMemoryManager *memmgr);
 	void Init(ATCPUEmulator *cpu, ATMemoryManager *memmgr, ATSimulator *sim);
 	void Shutdown();
 
 	bool AreBreakpointsSupported(uint32 targetIndex) const {
-		return mTargets[targetIndex].mpBreakpoints != nullptr;
+		return targetIndex == 0 ? bool(mConnections.mpSetBreakpoint)
+			: targetIndex < mTargets.size() && mTargets[targetIndex].mpBreakpoints != nullptr;
 	}
 
 	void AttachTarget(uint32 targetIndex, IATDebugTarget *target);
@@ -105,7 +123,16 @@ protected:
 		uint32	mTargetIndex;
 		uint32	mAddress;
 		uint8	mType;
+		uint64	mGeneration;
 	};
+
+	struct DispatchEntry {
+		uint32 mIndex;
+		uint64 mGeneration;
+	};
+
+	vdfastvector<DispatchEntry> SnapshotBreakpoints(const BreakpointIndices& indices) const;
+	bool IsCurrentBreakpoint(const DispatchEntry& entry) const;
 
 	struct BreakpointFreePred {
 		bool operator()(const BreakpointEntry& x) const {
@@ -118,7 +145,8 @@ protected:
 		uint32	mLength;			///< Length of range in bytes.
 		uint32	mIndex;				///< Breakpoint index.
 		uint32	mPriorLimit;		///< Highest address+length of any previous range.
-		uint8	mAttrFlags;			
+		uint8	mAttrFlags;
+		uint64	mGeneration;
 	};
 
 	struct BreakpointRangeAddressPred {
@@ -138,17 +166,20 @@ protected:
 	uint32 AllocBreakpoint();
 
 	void RecomputeRangePriorLimits();
+	void RecomputeRangeAttributes();
 	void RegisterAccessPage(uint32 address, bool read, bool write);
 	void UnregisterAccessPage(uint32 address, bool read, bool write);
 
 	void OnTargetPCBreakpoint(int code);
-	int CheckPCBreakpoints(uint32 targetIndex, uint32 pc, const BreakpointIndices *bps);	
+	int CheckPCBreakpoints(uint32 targetIndex, uint32 pc, const BreakpointIndices *bps);
 	static sint32 OnAccessTrapRead(void *thisptr, uint32 addr);
 	static bool OnAccessTrapWrite(void *thisptr, uint32 addr, uint8 value);
 
-	ATCPUEmulator *mpCPU;
-	ATMemoryManager *mpMemMgr;
-	ATSimulator *mpSim;
+	ATBreakpointManagerConnections mConnections;
+	struct Lifetime {};
+	std::shared_ptr<Lifetime> mpLifetime;
+	uint64 mNextGeneration = 0;
+	ATMemoryManager *mpMemMgr = nullptr;
 
 	vdfastvector<TargetInfo> mTargets;
 
@@ -186,6 +217,9 @@ protected:
 };
 
 inline int ATBreakpointManager::TestPCBreakpoint(uint32 targetIndex, uint32 bpc) {
+	if (targetIndex >= mCPUBreakpoints.size())
+		return kATSimEvent_None;
+
 	const BreakpointsByAddress& bps = mCPUBreakpoints[targetIndex];
 	BreakpointsByAddress::const_iterator it(bps.find((uint16)bpc));
 	if (it == bps.end()) {

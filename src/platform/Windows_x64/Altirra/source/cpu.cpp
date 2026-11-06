@@ -689,7 +689,7 @@ void ATCPUEmulator::ClearBreakpoint(uint16 addr) {
 
 void ATCPUEmulator::SetAllBreakpoints() {
 	if (mBreakpointCount < 0x10000) {
-		mBreakpointCount = 0;
+		mBreakpointCount = 0x10000;
 		mDebugFlags |= kDebugFlag_BP;
 
 		for(auto& insnFlags : mInsnFlags)
@@ -703,7 +703,7 @@ void ATCPUEmulator::ClearAllBreakpoints() {
 		mDebugFlags &= ~kDebugFlag_BP;
 
 		for(auto& insnFlags : mInsnFlags)
-			insnFlags &= kInsnFlagBreakPt;
+			insnFlags &= ~kInsnFlagBreakPt;
 	}
 }
 

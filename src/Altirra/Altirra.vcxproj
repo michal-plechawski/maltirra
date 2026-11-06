@@ -203,7 +203,10 @@
     <ClCompile Include="..\platform\Windows_x64\Altirra\source\aviwriter.cpp" />
     <ClCompile Include="..\platform\Windows_x64\Altirra\source\asyncdownloader_win32.cpp" />
     <ClCompile Include="..\platform\Windows_x64\Altirra\source\bit3.cpp" />
-    <ClCompile Include="..\platform\Windows_x64\Altirra\source\bkptmanager.cpp" />
+    <ClCompile Include="..\platform\Windows_x64\Altirra\source\bkptmanageradapter.cpp" />
+    <ClCompile Include="source\bkptmanager.cpp">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+    </ClCompile>
     <ClCompile Include="..\platform\Windows_x64\Altirra\source\blackbox.cpp" />
     <ClCompile Include="..\platform\Windows_x64\Altirra\source\blackboxfloppy.cpp" />
     <ClCompile Include="source\blockdevdiskadapter.cpp">
@@ -685,7 +688,7 @@
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\audiosampleplayer.h" />
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\audiowriter.h" />
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\aviwriter.h" />
-    <ClInclude Include="..\platform\Windows_x64\Altirra\h\bkptmanager.h" />
+    <ClInclude Include="h\bkptmanager.h" />
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\blackbox.h" />
     <ClInclude Include="h\callback.h" />
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\cartridge.h" />

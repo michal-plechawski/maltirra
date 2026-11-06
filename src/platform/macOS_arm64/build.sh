@@ -198,6 +198,8 @@ portable_test_sources=(
 	src/ATTest/source/TestAltirra_CPUStatesPortable.cpp
 	src/ATTest/source/TestAltirra_CPUVerifierPortable.cpp
 	src/ATTest/source/TestAltirra_CPUVerifierMachinePortable.cpp
+	src/ATTest/source/TestAltirra_BreakpointPCPortable.cpp
+	src/ATTest/source/TestAltirra_BreakpointMemoryPortable.cpp
 	src/ATTest/source/TestAltirra_ProfileBuilderPortable.cpp
 	src/ATTest/source/TestAltirra_CPUHeatMapPortable.cpp
 	src/ATTest/source/TestAltirra_CPUHeatMapTrapsPortable.cpp
@@ -422,6 +424,12 @@ portable_test_sources=(
 	src/Altirra/source/profilebuilder.cpp
 	src/Altirra/source/cpuheatmap.cpp
 	src/Altirra/source/verifier.cpp
+	src/Altirra/source/bkptmanager.cpp
+	src/ATDebugger/source/breakpointsimpl.cpp
+	src/ATCPU/source/co6502.cpp
+	src/ATCPU/source/co6502machine.cpp
+	src/ATCPU/source/decode6502.cpp
+	src/ATCPU/source/memorymap.cpp
 	src/platform/macOS_arm64/Altirra/source/piacountedinputs.cpp
 	src/platform/macOS_arm64/Altirra/source/console_macos.mm
 	src/Altirra/source/audiorawsource.cpp

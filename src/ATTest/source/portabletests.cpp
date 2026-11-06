@@ -26,6 +26,14 @@ bool ATTestAltirraCPUVerifierStack(ATPortableTestContext& context);
 bool ATTestAltirraCPUVerifierInterrupts(ATPortableTestContext& context);
 bool ATTestAltirraCPUVerifierKernel(ATPortableTestContext& context);
 bool ATTestAltirraCPUVerifierMachine(ATPortableTestContext& context);
+bool ATTestAltirraBreakpointPC(ATPortableTestContext& context);
+bool ATTestAltirraBreakpointInstructions(ATPortableTestContext& context);
+bool ATTestAltirraBreakpointTargets(ATPortableTestContext& context);
+bool ATTestAltirraBreakpointMemory(ATPortableTestContext& context);
+bool ATTestAltirraBreakpointRanges(ATPortableTestContext& context);
+#ifdef _WIN32
+bool ATTestAltirraMainCPUBreakpoints(ATPortableTestContext& context);
+#endif
 bool ATTestAltirraMemoryManager(ATPortableTestContext& context);
 bool ATTestAltirraRTime8(ATPortableTestContext& context);
 bool ATTestAltirraRVerter(ATPortableTestContext& context);
@@ -238,6 +246,14 @@ const ATPortableTestCase *ATGetPortableTests(size_t& count) {
 		{ "Altirra_CPUVerifierInterrupts", ATTestAltirraCPUVerifierInterrupts },
 		{ "Altirra_CPUVerifierKernel", ATTestAltirraCPUVerifierKernel },
 		{ "Altirra_CPUVerifierMachine", ATTestAltirraCPUVerifierMachine },
+		{ "Altirra_BreakpointPC", ATTestAltirraBreakpointPC },
+		{ "Altirra_BreakpointInstructions", ATTestAltirraBreakpointInstructions },
+		{ "Altirra_BreakpointTargets", ATTestAltirraBreakpointTargets },
+		{ "Altirra_BreakpointMemory", ATTestAltirraBreakpointMemory },
+		{ "Altirra_BreakpointRanges", ATTestAltirraBreakpointRanges },
+#ifdef _WIN32
+		{ "Altirra_MainCPUBreakpoints", ATTestAltirraMainCPUBreakpoints },
+#endif
 		{ "Altirra_MemoryManager", ATTestAltirraMemoryManager },
 		{ "Altirra_RTime8", ATTestAltirraRTime8 },
 		{ "Altirra_RVerter", ATTestAltirraRVerter },

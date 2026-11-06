@@ -213,3 +213,32 @@ lifetime token also permits synchronous deletion by the failure callback
 These verify the original observer, not an executing substitute CPU. Main CPU
 execution, remaining debugger dependencies, and full machine/application
 wiring are still unfinished.
+
+The complete breakpoint manager (`src/Altirra/source/bkptmanager.cpp`) is shared:
+per-target PC and instruction breakpoints, primary-CPU global XPC matching,
+24-bit read/write breakpoints, half-open ranges, 256-byte memory trap layers,
+event policies, and noisy/silent interrupt selection. A Windows adapter binds
+the original CPU/simulator API to actual machine methods; secondary targets
+retain the existing debugger breakpoint interface. Memory traps run through
+the real shared memory manager and pass through to RAM; debugger/ANTIC reads
+do not spuriously report CPU access breakpoints.
+
+`Altirra_BreakpointPC`, `Altirra_BreakpointInstructions`,
+`Altirra_BreakpointTargets`, `Altirra_BreakpointMemory`, and
+`Altirra_BreakpointRanges` cover ID allocation/reuse, aliases and XPC, ordinary
+and instruction traps, detach/reattach, synchronous one-shot removal and
+pending-ID reuse, shutdown, overlapping ranges, bank isolation, and overflow-
+safe range clipping. A real `ATCoProc6502` executes an LDA before stopping at
+the next PC through the production target breakpoint implementation; its
+scheduler has a bounded deadline. This is a coprocessor integration test, not
+evidence that the still-unported main CPU can execute on macOS.
+
+Clearing the final instruction breakpoint now restores the correct addresses
+on its own target. Reattachment restores retained breakpoint metadata; clearing
+a range preserves the attribute-gate union of all banks. Dispatch snapshots
+and generations make one-shot mutation and immediate ID reuse safe. Shutdown
+invalidates the dispatch lifetime and releases target handlers and memory
+layers, including repeated shutdown/reinitialization. Windows additionally
+runs `Altirra_MainCPUBreakpoints` against the actual main CPU: setting every
+breakpoint retains the correct internal count, and clearing all removes only
+the breakpoint bits before ordinary PC breakpoints are restored.

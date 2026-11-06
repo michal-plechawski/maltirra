@@ -64,6 +64,15 @@
 	<ClCompile Include="source\TestAltirra_CPUVerifierPortable.cpp">
 	  <Filter>Source Files</Filter>
 	</ClCompile>
+	<ClCompile Include="source\TestAltirra_BreakpointPCPortable.cpp">
+	  <Filter>Source Files</Filter>
+	</ClCompile>
+	<ClCompile Include="..\platform\Windows_x64\ATTest\source\TestAltirra_MainCPUBreakpoints.cpp">
+	  <Filter>Source Files</Filter>
+	</ClCompile>
+	<ClCompile Include="source\TestAltirra_BreakpointMemoryPortable.cpp">
+	  <Filter>Source Files</Filter>
+	</ClCompile>
 	<ClCompile Include="source\TestAltirra_CPUVerifierMachinePortable.cpp">
 	  <Filter>Source Files</Filter>
 	</ClCompile>
