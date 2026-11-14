@@ -115,7 +115,7 @@
     <ClCompile Include="..\platform\Windows_x64\Altirra\source\console.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\platform\Windows_x64\Altirra\source\covox.cpp">
+    <ClCompile Include="source\covox.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="source\cpu.cpp">
@@ -1200,7 +1200,7 @@
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\console.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\platform\Windows_x64\Altirra\h\covox.h">
+    <ClInclude Include="h\covox.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="h\cpu.h">

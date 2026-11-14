@@ -15,7 +15,9 @@
 //	along with this program; if not, write to the Free Software
 //	Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
-#include <stdafx.h>
+#include <algorithm>
+#include <iterator>
+#include <vd2/system/VDString.h>
 #include <vd2/system/binary.h>
 #include <at/atcore/audiomixer.h>
 #include <at/atcore/consoleoutput.h>
@@ -29,7 +31,6 @@
 #include <at/atcore/snapshotimpl.h>
 #include "covox.h"
 #include "memorymanager.h"
-#include "console.h"
 
 ATCovoxEmulator::ATCovoxEmulator() {
 	mpEdgeBufferL = new ATSyncAudioEdgeBuffer;
@@ -44,6 +45,9 @@ ATCovoxEmulator::~ATCovoxEmulator() {
 }
 
 void ATCovoxEmulator::SetAddressRange(uint32 addrLo, uint32 addrHi, bool passWrites) {
+	if (addrLo > addrHi || addrHi > 0xFFFF)
+		return;
+
 	if (mAddrLo != addrLo || mAddrHi != addrHi || mbPassWrites != passWrites) {
 		mAddrLo = addrLo;
 		mAddrHi = addrHi;
@@ -150,8 +154,6 @@ void ATCovoxEmulator::WriteMono(uint8 value) {
 		else
 			mpEdgeBufferL->mEdges.back().mDeltaValue += (float)deltaL;
 
-		mVolume[0] = value;
-		mVolume[3] = value;
 	}
 
 	const int deltaR = value*2 - (mVolume[1] + mVolume[2]);
@@ -161,10 +163,9 @@ void ATCovoxEmulator::WriteMono(uint8 value) {
 		else
 			mpEdgeBufferR->mEdges.back().mDeltaValue += (float)deltaR;
 
-		mVolume[1] = value;
-		mVolume[2] = value;
 	}
 
+	std::fill(std::begin(mVolume), std::end(mVolume), value);
 	mbUnbalanced = false;
 }
 
@@ -230,6 +231,9 @@ void ATCovoxEmulator::WriteAudio(const ATSyncAudioMixInfo& mixInfo) {
 	} else {
 		mpEdgeBufferL->mLeftVolume = kOutputScale;
 		mpEdgeBufferL->mRightVolume = kOutputScale;
+		// In a mono interval both channels have identical edges. The left
+		// buffer is mixed into both outputs; its right-hand duplicate is spent.
+		mpEdgeBufferR->mEdges.clear();
 	}
 
 	edgePlayer.AddEdgeBuffer(mpEdgeBufferL);
@@ -400,24 +404,15 @@ void ATDeviceCovox::GetSettings(ATPropertySet& settings) {
 }
 
 bool ATDeviceCovox::SetSettings(const ATPropertySet& settings) {
-	uint32 baseAddr = settings.GetUint32("base", 0xD600);
-	uint32 size = settings.GetUint32("size", 0);
+	const uint32 baseAddr = settings.GetUint32("base", 0xD600);
+	const uint32 requestedSize = settings.GetUint32("size", 0);
+	const uint32 maxSize = baseAddr == 0xD280 ? 0x80 : 0x100;
+	const uint32 size = requestedSize && requestedSize <= maxSize ? requestedSize : maxSize;
+	if (baseAddr > 0xFFFF || size > 0x10000 - baseAddr)
+		return false;
 
-	switch(baseAddr) {
-		case 0xD280:
-			mAddrLo = baseAddr;
-			mAddrHi = baseAddr + (size && size <= 0x80 ? size - 1 : 0x7F);
-			break;
-
-		case 0xD100:
-		case 0xD500:
-		case 0xD600:
-		case 0xD700:
-		default:
-			mAddrLo = baseAddr;
-			mAddrHi = baseAddr + (size && size <= 0x100 ? size - 1 : 0xFF);
-			break;
-	}
+	mAddrLo = baseAddr;
+	mAddrHi = baseAddr + size - 1;
 
 	mCovox.SetAddressRange(mAddrLo, mAddrHi, (mAddrLo & 0xFF00) != 0xD200);
 
@@ -428,7 +423,7 @@ bool ATDeviceCovox::SetSettings(const ATPropertySet& settings) {
 }
 
 void ATDeviceCovox::Init() {
-	mCovox.SetAddressRange(mAddrLo, mAddrHi, mAddrLo != 0xD280);
+	mCovox.SetAddressRange(mAddrLo, mAddrHi, (mAddrLo & 0xFF00) != 0xD200);
 	mCovox.Init(mpMemMan, mpScheduler, mpAudioMixer);
 }
 
@@ -452,6 +447,7 @@ void ATDeviceCovox::InitMemMap(ATMemoryManager *memmap) {
 bool ATDeviceCovox::GetMappedRange(uint32 index, uint32& lo, uint32& hi) const {
 	if (index == 0) {
 		lo = mAddrLo;
+		// Preserve the exclusive upper bound consumed by ReinitHookPage.
 		hi = mAddrHi + 1;
 		return true;
 	}
@@ -472,11 +468,14 @@ void ATDeviceCovox::DumpStatus(ATConsoleOutput& output) {
 }
 
 void ATDeviceCovox::InitCovoxControl(IATCovoxController& controller) {
+	if (mpCovoxController)
+		mpCovoxController->GetCovoxEnableNotifyList().Remove(&mCovoxCallback);
+
 	mpCovoxController = &controller;
+	mCovoxCallback = [this](bool enable) { OnCovoxEnabled(enable); };
 	mpCovoxController->GetCovoxEnableNotifyList().Add(&mCovoxCallback);
 
 	OnCovoxEnabled(mpCovoxController->IsCovoxEnabled());
-	mCovoxCallback = [this](bool enable) { OnCovoxEnabled(enable); };
 }
 
 vdrefptr<IATObjectState> ATDeviceCovox::SaveState(ATSnapshotContext& ctx) const {

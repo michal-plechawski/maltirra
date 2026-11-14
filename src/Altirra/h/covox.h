@@ -19,6 +19,7 @@
 #define f_AT_COVOX_H
 
 #include <vd2/system/memory.h>
+#include <vd2/system/vdtypes.h>
 #include <at/atcore/audiosource.h>
 #include <at/atcore/audiomixer.h>
 
@@ -36,7 +37,7 @@ class ATCovoxEmulator final : public VDAlignedObject<16>, public IATSyncAudioSou
 public:
 	ATCovoxEmulator();
 	~ATCovoxEmulator();
-	
+
 	bool IsFourChannels() const { return mbFourCh; }
 	void SetFourChannels(bool ch4) { mbFourCh = ch4; }
 	void SetAddressRange(uint32 lo, uint32 hi, bool passWrites);

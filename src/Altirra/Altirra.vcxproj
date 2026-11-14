@@ -247,7 +247,9 @@
     <ClCompile Include="source\constants.cpp">
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="..\platform\Windows_x64\Altirra\source\covox.cpp" />
+    <ClCompile Include="source\covox.cpp">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+    </ClCompile>
     <ClCompile Include="source\cpu.cpp">
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
     </ClCompile>
@@ -714,7 +716,7 @@
     <ClInclude Include="h\cheatengine.h" />
     <ClInclude Include="h\common_png.h" />
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\console.h" />
-    <ClInclude Include="..\platform\Windows_x64\Altirra\h\covox.h" />
+    <ClInclude Include="h\covox.h" />
     <ClInclude Include="h\cpu.h" />
     <ClInclude Include="h\cpuheatmap.h" />
     <ClInclude Include="h\cpuhookmanager.h" />

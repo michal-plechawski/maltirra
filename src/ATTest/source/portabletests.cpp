@@ -47,6 +47,11 @@ bool ATTestAltirraMainCPUSnapshot(ATPortableTestContext& context);
 bool ATTestAltirraMainCPUDebug(ATPortableTestContext& context);
 bool ATTestAltirraMainCPUDiagnostics(ATPortableTestContext& context);
 bool ATTestAltirraCPULiveProfiler(ATPortableTestContext& context);
+bool ATTestAltirraCovoxMemory(ATPortableTestContext& context);
+bool ATTestAltirraCovoxAudio(ATPortableTestContext& context);
+bool ATTestAltirraCovoxSnapshot(ATPortableTestContext& context);
+bool ATTestAltirraCovoxDevice(ATPortableTestContext& context);
+bool ATTestAltirraSimCovox(ATPortableTestContext& context);
 bool ATTestAltirraMemoryManager(ATPortableTestContext& context);
 bool ATTestAltirraRTime8(ATPortableTestContext& context);
 bool ATTestAltirraRVerter(ATPortableTestContext& context);
@@ -280,6 +285,11 @@ const ATPortableTestCase *ATGetPortableTests(size_t& count) {
 		{ "Altirra_MainCPUDebug", ATTestAltirraMainCPUDebug },
 		{ "Altirra_MainCPUDiagnostics", ATTestAltirraMainCPUDiagnostics },
 		{ "Altirra_CPULiveProfiler", ATTestAltirraCPULiveProfiler },
+		{ "Altirra_CovoxMemory", ATTestAltirraCovoxMemory },
+		{ "Altirra_CovoxAudio", ATTestAltirraCovoxAudio },
+		{ "Altirra_CovoxSnapshot", ATTestAltirraCovoxSnapshot },
+		{ "Altirra_CovoxDevice", ATTestAltirraCovoxDevice },
+		{ "Altirra_SimCovox", ATTestAltirraSimCovox },
 		{ "Altirra_MemoryManager", ATTestAltirraMemoryManager },
 		{ "Altirra_RTime8", ATTestAltirraRTime8 },
 		{ "Altirra_RVerter", ATTestAltirraRVerter },

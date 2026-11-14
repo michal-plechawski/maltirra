@@ -300,3 +300,29 @@ BASIC sampling keeps its original two-scanline interval on every update.
 This is real main-CPU execution on macOS, still within component tests. The
 complete simulator, device/application lifecycle, debugger command handling,
 and booted-machine connection to the native AppKit UI remain unfinished.
+
+The full Covox DAC and both device wrappers (`src/Altirra/source/covox.cpp`)
+are shared. This includes mono/four-channel register decoding, configurable
+memory overlays and write passthrough, scheduler-timestamped audio edges,
+stereo/mono mixing transitions, enable-controller notifications, latched-output
+snapshots, and SimCovox's actual PIA port-A connection. The original edge
+renderer processes the generated audio; no alternate DAC algorithm is used.
+
+`Altirra_CovoxMemory`, `Altirra_CovoxAudio`, `Altirra_CovoxSnapshot`,
+`Altirra_CovoxDevice`, and `Altirra_SimCovox` cover exact-range/alias decoding,
+page crossings and the end of the 16-bit bus, passthrough/consumed writes,
+scheduled edge coalescing and sample goldens, 32-bit clock wrap, reset,
+serialized snapshot continuation and mode rejection, factory settings,
+controller replacement, and PIA callback release/reinitialization. A real
+6502 program writes through the shared memory manager into Covox, with the
+resulting audio edges checked against its actual instruction cycles.
+
+Mono mixing now discards the duplicate right-channel edges after submitting
+the left buffer for both outputs, preventing their replay on later stereo
+frames. A mono write always updates all four DAC latches even when their
+summed output stays unchanged. Controller replacement removes the prior
+notification; POKEY-page passthrough policy is consistent before/after Init.
+Invalid ranges/settings cannot wrap or silently alias the 16-bit bus.
+The existing exclusive high bound reported to the simulator's HLE overlap
+checks is preserved; it differs from the older interface-header comment.
+Native device configuration UI and full machine wiring remain unfinished.
