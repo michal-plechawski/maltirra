@@ -14,13 +14,14 @@
 //	You should have received a copy of the GNU General Public License along
 //	with this program. If not, see <http://www.gnu.org/licenses/>.
 
-#include <stdafx.h>
+#include <algorithm>
+#include <utility>
 #include <at/ataudio/pokey.h>
 #include "antic.h"
 #include "portmanager.h"
 #include "gtia.h"
 #include "pia.h"
-#include "inputcontroller.h"
+#include "lightpen.h"
 
 class ATPortManager::ControllerPort final : public IATDeviceControllerPort {
 public:
@@ -32,10 +33,10 @@ public:
 	void Shutdown();
 
 	void SetSystemEnabled(bool enable12, bool enable34);
-	
+
 public:
 	bool IsPotNoiseEnabled() const override {
-		return mpParent->GetPotNoiseEnabled();
+		return mpParent && mpParent->GetPotNoiseEnabled();
 	}
 
 	void SetEnabled(bool enabled) override;
@@ -110,7 +111,17 @@ void ATPortManager::ControllerPort::Release() {
 }
 
 void ATPortManager::ControllerPort::Shutdown() {
-	DetachFromPIA();
+	if (!mpParent)
+		return;
+	auto outputHandler = std::move(mpOnOutputChanged);
+
+	if (mbEnabled) {
+		DetachFromPIA();
+		DetachPots();
+		DetachTrigger();
+	}
+	mbEnabled = false;
+	mbSystemEnabled = false;
 	mpParent = nullptr;
 }
 
@@ -179,6 +190,8 @@ void ATPortManager::ControllerPort::SetDirInputBits(uint8 states, uint8 changeMa
 }
 
 void ATPortManager::ControllerPort::SetOnDirOutputChanged(uint8 mask, vdfunction<void()> handler, bool callNow) {
+	if (!mpParent)
+		return;
 	mpOnOutputChanged = nullptr;
 	SetDirOutputMask(mask);
 
@@ -189,7 +202,7 @@ void ATPortManager::ControllerPort::SetOnDirOutputChanged(uint8 mask, vdfunction
 }
 
 uint8 ATPortManager::ControllerPort::GetCurrentDirOutput() const {
-	return !mbEnabled ? 15 : mpParent ? (mpParent->GetOutputState() >> (mPortIndex * 4)) & 15 : 0;
+	return mbEnabled && mpParent ? (mpParent->GetOutputState() >> (mPortIndex * 4)) & 15 : 15;
 }
 
 void ATPortManager::ControllerPort::SetTriggerDown(bool down) {
@@ -206,7 +219,7 @@ void ATPortManager::ControllerPort::ResetPotPosition(bool potB) {
 }
 
 void ATPortManager::ControllerPort::SetPotPosition(bool potB, sint32 pos) {
-	SetPotHiresPosition(potB, pos << 16, false);
+	SetPotHiresPosition(potB, std::clamp<sint32>(pos, 1, 228) * 65536, false);
 }
 
 void ATPortManager::ControllerPort::SetPotHiresPosition(bool potB, sint32 hiPos, bool grounded) {
@@ -347,6 +360,24 @@ void ATPortManager::Shutdown() {
 		port->Shutdown();
 
 	mControllerPorts.clear();
+	for (int i = 0; i < 4; ++i) {
+		mTriggerDownCounts[i] = 0;
+		mbTriggerOverride[i] = false;
+	}
+	if (mpGTIA && mpLightPen)
+		ReapplyTriggers();
+	for (int i = 0; i < 8; ++i) {
+		mPotHiPosArrays[i].clear();
+		mPotHiPosFreeIndices[i].clear();
+		mPotBasePos[i] = mPotHiPos[i] = kPotUnconnected;
+		if (mpPOKEY)
+			mpPOKEY->SetPotPosHires(i, kPotUnconnected);
+	}
+	mpPIA = nullptr;
+	mpGTIA = nullptr;
+	mpPOKEY = nullptr;
+	mpANTIC = nullptr;
+	mpLightPen = nullptr;
 }
 
 void ATPortManager::SetPorts34Enabled(bool enable) {
@@ -361,12 +392,14 @@ void ATPortManager::SetPorts34Enabled(bool enable) {
 void ATPortManager::SetTriggerOverride(unsigned index, bool down) {
 	if (mbTriggerOverride[index] != down) {
 		mbTriggerOverride[index] = down;
-
-		if (down)
-			mpGTIA->SetControllerTrigger(index, true);
-		else
-			mpGTIA->SetControllerTrigger(index, mTriggerDownCounts[index] && (index < 2 || mbPorts34Enabled));
+		UpdateTrigger(index);
 	}
+}
+
+void ATPortManager::UpdateTrigger(unsigned index) {
+	const bool down = mbTriggerOverride[index] || (mTriggerDownCounts[index] && (index < 2 || mbPorts34Enabled));
+	mpGTIA->SetControllerTrigger(index, down);
+	mpLightPen->SetPortTriggerState(index, down);
 }
 
 void ATPortManager::SetPotOverride(unsigned index, uint32 pos) {
@@ -378,17 +411,8 @@ void ATPortManager::SetPotOverride(unsigned index, uint32 pos) {
 }
 
 void ATPortManager::ReapplyTriggers() {
-	const bool states[4] {
-		mTriggerDownCounts[0] != 0 || mbTriggerOverride[0],
-		mTriggerDownCounts[1] != 0 || mbTriggerOverride[1],
-		(mbPorts34Enabled && mTriggerDownCounts[2] != 0) || mbTriggerOverride[2],
-		(mbPorts34Enabled && mTriggerDownCounts[3] != 0) || mbTriggerOverride[3]
-	};
-
-	for(int i=0; i<4; ++i) {
-		mpGTIA->SetControllerTrigger(i, states[i]);
-		mpLightPen->SetPortTriggerState(i, states[i]);
-	}
+	for (unsigned i = 0; i < 4; ++i)
+		UpdateTrigger(i);
 }
 
 void ATPortManager::AllocControllerPort(int controllerIndex, IATDeviceControllerPort **port) {
@@ -439,21 +463,13 @@ void ATPortManager::FreeController(ControllerPort& cport) {
 
 void ATPortManager::AdjustTriggerDown(int index, bool down) {
 	VDASSERT(index >= 0 && index < 4);
-	if (down) {
-		if (!mTriggerDownCounts[index]++) {
-			if (index < 2 || mbPorts34Enabled) {
-				mpGTIA->SetControllerTrigger(index, true);
-				mpLightPen->SetPortTriggerState(index, true);
-			}
-		}
-	} else {
-		if (!--mTriggerDownCounts[index]) {
-			if (index < 2 || mbPorts34Enabled) {
-				mpGTIA->SetControllerTrigger(index, false);
-				mpLightPen->SetPortTriggerState(index, false);
-			}
-		}
+	if (down)
+		++mTriggerDownCounts[index];
+	else {
+		VDASSERT(mTriggerDownCounts[index] > 0);
+		--mTriggerDownCounts[index];
 	}
+	UpdateTrigger(index);
 }
 
 void ATPortManager::AdjustPotPos(unsigned potIndex, sint32& potInputIndex, uint32 hiPos) {
@@ -475,11 +491,11 @@ void ATPortManager::AdjustPotPos(unsigned potIndex, sint32& potInputIndex, uint3
 			freeIndices.pop_back();
 		}
 
-		bool needUpdate = false;
+		bool needUpdate = hiPos == kPotGrounded;
 
 		if (hiPos < mPotHiPos[potIndex] || mPotHiPos[potIndex] == potHiPositions[potInputIndex])
 			needUpdate = true;
-		
+
 		potHiPositions[potInputIndex] = hiPos;
 
 		if (needUpdate)
@@ -511,8 +527,8 @@ void ATPortManager::UpdatePot(unsigned potIndex) {
 	uint32 lowestHiPos = mPotBasePos[potIndex];
 
 	for(uint32 hiPos : mPotHiPosArrays[potIndex]) {
-		if (hiPos == kPotGrounded) {
-			lowestHiPos = hiPos;
+		if (lowestHiPos == kPotGrounded || hiPos == kPotGrounded) {
+			lowestHiPos = kPotGrounded;
 			break;
 		}
 
@@ -528,27 +544,10 @@ void ATPortManager::UpdatePot(unsigned potIndex) {
 }
 
 uint32 ATPortManager::GetCyclesToBeamPosition(int xcyc, int y) const {
-	// adjust relative to current position
-	xcyc -= mpANTIC->GetBeamX();
-	y -= mpANTIC->GetBeamY();
-
-	// wrap x
-	xcyc %= 114;
-	if (xcyc < 0) {
-		xcyc += 114;
-		--y;
-	}
-
-	// wrap y
-	int h = (int)mpANTIC->GetScanlineCount();
-	y %= h;
-	if (y < 0)
-		y += h;
-
-	uint32 cyc = (uint32)(xcyc + y * 114);
-
-	if (!cyc)
-		cyc = h * 114;
-
-	return cyc;
+	const sint64 frame = static_cast<sint64>(mpANTIC->GetScanlineCount()) * 114;
+	const sint64 current = static_cast<sint64>(mpANTIC->GetBeamY()) * 114 + mpANTIC->GetBeamX();
+	sint64 delay = (static_cast<sint64>(y) * 114 + xcyc - current) % frame;
+	if (delay <= 0)
+		delay += frame;
+	return static_cast<uint32>(delay);
 }

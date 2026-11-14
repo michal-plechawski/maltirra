@@ -35,121 +35,6 @@ class ATAnticEmulator;
 
 ///////////////////////////////////////////////////////////////////////////
 
-AT_DEFINE_ENUM_TABLE_BEGIN(ATLightPenNoiseMode)
-	{ ATLightPenNoiseMode::None, "none" },
-	{ ATLightPenNoiseMode::Low, "low" },
-	{ ATLightPenNoiseMode::High, "high" },
-AT_DEFINE_ENUM_TABLE_END(ATLightPenNoiseMode, ATLightPenNoiseMode::None)
-
-// This accounts for the discrepancy between the emulator's ANTIC counters
-// and the real ANTIC counters, as well as delays in the light pen latch.
-constexpr int ATLightPenPort::kHorizOffset = 12;
-
-ATLightPenPort::ATLightPenPort() {
-}
-
-void ATLightPenPort::Init(ATAnticEmulator& antic, ATGTIAEmulator& gtia) {
-	mpAntic = &antic;
-	mpGTIA = &gtia;
-}
-
-bool ATLightPenPort::GetImmediateUpdateEnabled() const {
-	return mbImmediateUpdate;
-}
-
-void ATLightPenPort::SetImmediateUpdateEnabled(bool enable) {
-	mbImmediateUpdate = enable;
-}
-
-ATLightPenNoiseMode ATLightPenPort::GetNoiseMode() const {
-	return mNoiseMode;
-}
-
-void ATLightPenPort::SetNoiseMode(ATLightPenNoiseMode mode) {
-	mNoiseMode = mode;
-}
-
-void ATLightPenPort::ApplyCorrection(int dx, int dy) {
-	auto& adjust = mAdjust[mbLastWasPen];
-
-	adjust.x += dx;
-	adjust.y += dy;
-
-	if (adjust.x < -114)
-		adjust.x += 228 * ((adjust.x - 57) / 228);
-	else
-		adjust.x -= 228 * ((adjust.x + 57) / 228);
-}
-
-void ATLightPenPort::TriggerCorrection(bool phase, int x, int y) {
-	mTriggerCorrectionEvent.InvokeAll(phase, x, y);
-}
-
-void ATLightPenPort::SetIgnorePort34(bool ignore) {
-	mTriggerStateMask = ignore ? 0x03 : 0x0F;
-}
-
-void ATLightPenPort::SetPosition(bool pen, int x, int y) {
-	mbLastWasPen = pen;
-
-	if (mbImmediateUpdate) {
-		SetAnticPenPosition(x, y);
-	}
-
-	mbOddPhase = (x & 1) != 0;
-	mPenBeamX = x;
-	mPenBeamY = y;
-}
-
-void ATLightPenPort::SetPortTriggerState(int index, bool state) {
-	uint8 newState = mTriggerState;
-
-	if (state)
-		newState |= 1 << index;
-	else
-		newState &= ~(1 << index);
-
-	if (newState == mTriggerState)
-		return;
-
-	mTriggerState = newState;
-
-	if ((newState & mTriggerStateMask) && mpAntic && !mbImmediateUpdate) {
-		int beamX = mpAntic->GetBeamX() * 2 + kHorizOffset + (mbOddPhase ? 1 : 0);
-		int beamY = mpAntic->GetBeamY();
-
-		// if the current timing is close enough, correct to the pen position
-		if (abs(beamY - mPenBeamY) <= 2) {
-			beamX = mPenBeamX;
-			beamY = mPenBeamY;
-		}
-
-		SetAnticPenPosition(beamX, beamY);
-	}
-}
-
-void ATLightPenPort::SetAnticPenPosition(int x, int y) {
-	int yn = (int)mpAntic->GetScanlineCount();
-
-	int xc = x;
-	int yc = y;
-
-	yc += xc / 228;
-	xc %= 228;
-
-	if (xc < 0) {
-		xc += 228;
-		--yc;
-	}
-
-	yc %= yn;
-		
-	if (yc < 0)
-		yc += yn;
-
-	mpAntic->SetLightPenPosition(xc, yc);
-}
-
 ///////////////////////////////////////////////////////////////////////////
 
 ATPortInputController::ATPortInputController() {
@@ -374,7 +259,7 @@ void ATMouseController::UpdatePort() {
 	static const uint8 kAMTabY[4] = { 0x00, 0x01, 0x05, 0x04 };
 
 	uint32 val;
-		
+
 	if (mbAmigaMode)
 		val = kAMTabX[mAccumX & 3] + kAMTabY[mAccumY & 3];
 	else
@@ -1581,7 +1466,7 @@ vdint2 ATLightPenController::GetAnticLightPos(ATLightPenNoiseMode noiseMode) con
 		pos.x += 24;
 		pos.y += 1;
 	}
-	
+
 	// This is a hand-wavy algorithm to emulate some position-dependent horizontal
 	// noise that appears to be related to phosphors.
 	const sint32 hiY = mPosY*188;
@@ -1713,7 +1598,7 @@ void ATKeyboardController::SetDigitalTrigger(uint32 trigger, bool state) {
 		return;
 
 	const uint32 bit = (1 << trigger);
-	
+
 	if (state)
 		mKeyState |= bit;
 	else

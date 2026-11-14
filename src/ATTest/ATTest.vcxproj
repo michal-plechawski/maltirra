@@ -319,6 +319,13 @@
 	<ClInclude Include="source\covoxportablefixture.h" />
 	<ClInclude Include="source\slightsidportablefixture.h" />
 	<ClInclude Include="source\mmuportablefixture.h" />
+	<ClInclude Include="source\portmanagerportablefixture.h" />
+	<ClCompile Include="source\TestAltirra_PortManagerPortable.cpp">
+	  <PrecompiledHeader>NotUsing</PrecompiledHeader>
+	</ClCompile>
+	<ClCompile Include="source\TestAltirra_LightPenPortable.cpp">
+	  <PrecompiledHeader>NotUsing</PrecompiledHeader>
+	</ClCompile>
 	<ClCompile Include="source\TestAltirra_MMUPortable.cpp">
 	  <PrecompiledHeader>NotUsing</PrecompiledHeader>
 	</ClCompile>

@@ -24,6 +24,7 @@
 #include <at/atcore/notifylist.h>
 #include <at/atcore/scheduler.h>
 #include "inputdefs.h"
+#include "lightpen.h"
 
 class IATDevicePortManager;
 class IATDeviceControllerPort;
@@ -37,65 +38,6 @@ class ATPortInputController;
 struct ATInputPointerInfo;
 
 ///////////////////////////////////////////////////////////////////////////
-
-enum class ATLightPenNoiseMode : uint8 {
-	None,
-	Low,
-	High
-};
-
-AT_DECLARE_ENUM_TABLE(ATLightPenNoiseMode);
-
-class ATLightPenPort {
-public:
-	static const int kHorizOffset;
-
-	ATLightPenPort();
-
-	void Init(ATAnticEmulator& antic, ATGTIAEmulator& gtia);
-
-	ATGTIAEmulator& GetGTIA() const { return *mpGTIA; }
-
-	void SetAdjust(bool pen, vdint2 offset) {
-		mAdjust[pen] = offset;
-	}
-
-	vdint2 GetAdjust(bool pen) const { return mAdjust[pen]; }
-
-	bool GetImmediateUpdateEnabled() const;
-	void SetImmediateUpdateEnabled(bool enable);
-
-	ATLightPenNoiseMode GetNoiseMode() const;
-	void SetNoiseMode(ATLightPenNoiseMode mode);
-
-	void ApplyCorrection(int dx, int dy);
-	void TriggerCorrection(bool phase, int x, int y);
-
-	void SetIgnorePort34(bool ignore);
-	void SetPosition(bool pen, int x, int y);
-	void SetPortTriggerState(int index, bool state);
-
-	ATNotifyList<const vdfunction<void(bool, int, int)> *>& OnTriggerCorrectionEvent() {
-		return mTriggerCorrectionEvent;
-	}
-
-protected:
-	void SetAnticPenPosition(int x, int y);
-
-	ATAnticEmulator *mpAntic = nullptr;
-	ATGTIAEmulator *mpGTIA = nullptr;
-	uint8 mTriggerState = 0;
-	uint8 mTriggerStateMask = 0x03;
-	vdint2 mAdjust[2] {};
-	bool mbLastWasPen = false;
-	bool mbOddPhase = false;
-	bool mbImmediateUpdate = false;
-	int mPenBeamX = 0;
-	int mPenBeamY = 0;
-	ATLightPenNoiseMode mNoiseMode = ATLightPenNoiseMode::None;
-
-	ATNotifyList<const vdfunction<void(bool, int, int)> *> mTriggerCorrectionEvent;
-};
 
 ///////////////////////////////////////////////////////////////////////////
 

@@ -107,7 +107,8 @@
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\pbidisk.h" />
     <ClInclude Include="h\pokeysavecompat.h" />
     <ClInclude Include="h\pokeytrace.h" />
-    <ClInclude Include="..\platform\Windows_x64\Altirra\h\portmanager.h" />
+    <ClInclude Include="h\portmanager.h" />
+    <ClInclude Include="h\lightpen.h" />
     <ClInclude Include="h\printer.h" />
     <ClInclude Include="h\printer1020.h" />
     <ClInclude Include="h\printer1020font.h" />
@@ -436,7 +437,12 @@
     <ClCompile Include="source\pokeytrace.cpp">
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="..\platform\Windows_x64\Altirra\source\portmanager.cpp" />
+    <ClCompile Include="source\portmanager.cpp">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="source\lightpen.cpp">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+    </ClCompile>
     <ClCompile Include="source\printer.cpp">
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
     </ClCompile>

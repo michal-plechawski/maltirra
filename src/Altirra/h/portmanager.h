@@ -18,11 +18,13 @@
 #define f_PORTMANAGER_H
 
 #include <at/atcore/deviceport.h>
+#include <vd2/system/vdstl.h>
 
 class ATPIAEmulator;
 class ATGTIAEmulator;
 class ATPokeyEmulator;
 class ATLightPenPort;
+class ATAnticEmulator;
 
 class ATPortManager final : public IATDevicePortManager {
 public:
@@ -55,6 +57,7 @@ private:
 
 	void FreeController(ControllerPort& cport);
 	void AdjustTriggerDown(int index, bool down);
+	void UpdateTrigger(unsigned index);
 	void AdjustPotPos(unsigned potIndex, sint32& potInputIndex, uint32 hiPos);
 	void UnsetPotPos(unsigned potIndex, sint32& potInputIndex);
 	void UpdatePot(unsigned potIndex);

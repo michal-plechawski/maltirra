@@ -208,6 +208,8 @@ portable_test_sources=(
 	src/ATTest/source/TestAltirra_SlightSIDDevicePortable.cpp
 	src/ATTest/source/TestAltirra_MMUPortable.cpp
 	src/ATTest/source/TestAltirra_MMUAxlonPortable.cpp
+	src/ATTest/source/TestAltirra_PortManagerPortable.cpp
+	src/ATTest/source/TestAltirra_LightPenPortable.cpp
 	src/ATTest/source/TestAltirra_DisasmOpcodesPortable.cpp
 	src/ATTest/source/TestAltirra_DisasmReferencesPortable.cpp
 	src/ATTest/source/TestAltirra_DisasmContextPortable.cpp
@@ -441,6 +443,8 @@ portable_test_sources=(
 	src/Altirra/source/covox.cpp
 	src/Altirra/source/slightsid.cpp
 	src/Altirra/source/mmu.cpp
+	src/Altirra/source/lightpen.cpp
+	src/Altirra/source/portmanager.cpp
 	src/Altirra/source/cpuheatmapadapter.cpp
 	src/Altirra/source/cpu.cpp
 	src/Altirra/source/cpu6502.cpp

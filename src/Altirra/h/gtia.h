@@ -19,6 +19,7 @@
 #define AT_GTIA_H
 
 #include <vd2/system/function.h>
+#include <vd2/system/VDString.h>
 #include <vd2/system/vdalloc.h>
 #include <vd2/system/linearalloc.h>
 #include <vd2/system/refcount.h>
@@ -181,7 +182,7 @@ public:
 	ATVBXEEmulator *GetVBXE() const { return mpVBXE; }
 	void SetVBXE(ATVBXEEmulator *);
 	void SetUIRenderer(IATUIRenderer *);
-	
+
 	enum AnalysisMode {
 		kAnalyzeNone,
 		kAnalyzeLayers,
@@ -198,7 +199,7 @@ public:
 		kOverscanWidescreen,	// 176cc
 		kOverscanCount
 	};
-	
+
 	enum VerticalOverscanMode {
 		kVerticalOverscan_Default,
 		kVerticalOverscan_OSScreen,		// 192 lines
@@ -360,7 +361,7 @@ public:
 
 	uint8 GetForcedConsoleSwitches() const { return mForcedSwitchInput; }
 	void SetForcedConsoleSwitches(uint8 c);
-	 
+
 	void SetControllerTrigger(int index, bool state) {
 		uint8 v = state ? 0x00 : 0x01;
 
@@ -500,7 +501,7 @@ protected:
 	void ProcessLightSensors();
 
 	// critical variables - sync
-	IATGTIAEmulatorConnections *mpConn; 
+	IATGTIAEmulatorConnections *mpConn;
 	int		mLastSyncX = -2;
 	VBlankMode		mVBlankMode;
 	bool	mbANTICHiresMode = false;

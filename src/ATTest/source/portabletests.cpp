@@ -63,6 +63,12 @@ bool ATTestAltirraMMUConnections(ATPortableTestContext& context);
 bool ATTestAltirraMMUAxlon(ATPortableTestContext& context);
 bool ATTestAltirraMMUHighMemory(ATPortableTestContext& context);
 bool ATTestAltirraMMULifecycle(ATPortableTestContext& context);
+bool ATTestAltirraPortDirections(ATPortableTestContext& context);
+bool ATTestAltirraPortTriggers(ATPortableTestContext& context);
+bool ATTestAltirraPortPots(ATPortableTestContext& context);
+bool ATTestAltirraPortTiming(ATPortableTestContext& context);
+bool ATTestAltirraPortLifecycle(ATPortableTestContext& context);
+bool ATTestAltirraLightPen(ATPortableTestContext& context);
 bool ATTestAltirraMemoryManager(ATPortableTestContext& context);
 bool ATTestAltirraRTime8(ATPortableTestContext& context);
 bool ATTestAltirraRVerter(ATPortableTestContext& context);
@@ -312,6 +318,12 @@ const ATPortableTestCase *ATGetPortableTests(size_t& count) {
 		{ "Altirra_MMUAxlon", ATTestAltirraMMUAxlon },
 		{ "Altirra_MMUHighMemory", ATTestAltirraMMUHighMemory },
 		{ "Altirra_MMULifecycle", ATTestAltirraMMULifecycle },
+		{ "Altirra_PortDirections", ATTestAltirraPortDirections },
+		{ "Altirra_PortTriggers", ATTestAltirraPortTriggers },
+		{ "Altirra_PortPots", ATTestAltirraPortPots },
+		{ "Altirra_PortTiming", ATTestAltirraPortTiming },
+		{ "Altirra_PortLifecycle", ATTestAltirraPortLifecycle },
+		{ "Altirra_LightPen", ATTestAltirraLightPen },
 		{ "Altirra_MemoryManager", ATTestAltirraMemoryManager },
 		{ "Altirra_RTime8", ATTestAltirraRTime8 },
 		{ "Altirra_RVerter", ATTestAltirraRVerter },

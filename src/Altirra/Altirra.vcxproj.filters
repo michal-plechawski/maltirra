@@ -904,7 +904,10 @@
     <ClCompile Include="source\pokeysavecompat.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\platform\Windows_x64\Altirra\source\portmanager.cpp">
+    <ClCompile Include="source\lightpen.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="source\portmanager.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\platform\Windows_x64\Altirra\source\devicemanager.cpp">
@@ -1710,7 +1713,10 @@
     <ClInclude Include="h\pokeysavecompat.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\platform\Windows_x64\Altirra\h\portmanager.h">
+    <ClInclude Include="h\lightpen.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="h\portmanager.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\devicemanager.h">

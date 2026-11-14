@@ -376,3 +376,28 @@ registers to switch two extended banks while ANTIC retains base RAM; actual
 from the production scheduler and the memory paths are the production manager.
 Full machine lifecycle, firmware boot and native application wiring remain
 unfinished.
+
+Controller-port management is shared in `portmanager.cpp`. The original full
+`ATLightPenPort` class and noise-mode enum were extracted from the Windows
+controller implementation into `lightpen.h`/`lightpen.cpp`; the remaining
+Windows controller types include that shared class. No alternate light-pen
+model or controller-port implementation is used. GTIA's header now explicitly
+includes its string member's definition instead of relying on a host PCH.
+
+`Altirra_PortDirections`, `Altirra_PortTriggers`, `Altirra_PortPots`,
+`Altirra_PortTiming`, `Altirra_PortLifecycle`, and `Altirra_LightPen` connect
+the real PIA, GTIA, POKEY, ANTIC and scheduler. They cover merged direction
+inputs, PIA output masks and callbacks, ports 3/4 gating, trigger counts and
+overrides, real POTGO scans and grounded/minimum aggregation, NTSC/PAL beam
+delays including wrapped coordinates, retained interfaces after shutdown,
+callback-owned interface cleanup, and light-pen latching/calibration events.
+POT tests advance the production chips and read POKEY's actual counters.
+
+Trigger updates now apply the same merged state to GTIA and the light-pen
+port, preserving overrides when controllers release. Grounded pots dominate
+all other connections, and integer pot values clamp before conversion to
+fixed point. Beam delays retain whole-line carries and use wide arithmetic.
+Shutdown detaches directions, triggers and pots, releases callback captures,
+and neutralizes outstanding interfaces before the hardware can be destroyed.
+Host input acquisition, the remaining controller types, native configuration
+UI and complete machine/application wiring remain unfinished.

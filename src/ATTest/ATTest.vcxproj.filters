@@ -328,6 +328,15 @@
 	<ClInclude Include="source\mmuportablefixture.h">
 	  <Filter>Header Files</Filter>
 	</ClInclude>
+	<ClInclude Include="source\portmanagerportablefixture.h">
+	  <Filter>Header Files</Filter>
+	</ClInclude>
+	<ClCompile Include="source\TestAltirra_PortManagerPortable.cpp">
+	  <Filter>Source Files</Filter>
+	</ClCompile>
+	<ClCompile Include="source\TestAltirra_LightPenPortable.cpp">
+	  <Filter>Source Files</Filter>
+	</ClCompile>
 	<ClCompile Include="source\TestAltirra_MMUPortable.cpp">
 	  <Filter>Source Files</Filter>
 	</ClCompile>
