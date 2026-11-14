@@ -204,6 +204,8 @@ portable_test_sources=(
 	src/ATTest/source/TestAltirra_CPULiveProfilerPortable.cpp
 	src/ATTest/source/TestAltirra_CovoxPortable.cpp
 	src/ATTest/source/TestAltirra_CovoxDevicePortable.cpp
+	src/ATTest/source/TestAltirra_SlightSIDPortable.cpp
+	src/ATTest/source/TestAltirra_SlightSIDDevicePortable.cpp
 	src/ATTest/source/TestAltirra_DisasmOpcodesPortable.cpp
 	src/ATTest/source/TestAltirra_DisasmReferencesPortable.cpp
 	src/ATTest/source/TestAltirra_DisasmContextPortable.cpp
@@ -435,6 +437,7 @@ portable_test_sources=(
 	src/Altirra/source/profilebuilder.cpp
 	src/Altirra/source/cpuheatmap.cpp
 	src/Altirra/source/covox.cpp
+	src/Altirra/source/slightsid.cpp
 	src/Altirra/source/cpuheatmapadapter.cpp
 	src/Altirra/source/cpu.cpp
 	src/Altirra/source/cpu6502.cpp

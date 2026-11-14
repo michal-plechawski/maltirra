@@ -328,7 +328,7 @@
     <ClCompile Include="..\platform\Windows_x64\Altirra\source\siomanager.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\platform\Windows_x64\Altirra\source\slightsid.cpp">
+    <ClCompile Include="source\slightsid.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\platform\Windows_x64\Altirra\source\soundboard.cpp">
@@ -1386,7 +1386,7 @@
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\siomanager.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\platform\Windows_x64\Altirra\h\slightsid.h">
+    <ClInclude Include="h\slightsid.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\soundboard.h">

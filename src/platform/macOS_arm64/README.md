@@ -326,3 +326,27 @@ Invalid ranges/settings cannot wrap or silently alias the 16-bit bus.
 The existing exclusive high bound reported to the simulator's HLE overlap
 checks is preserved; it differs from the older interface-header comment.
 Native device configuration UI and full machine wiring remain unfinished.
+
+The full SlightSID expansion (`src/Altirra/source/slightsid.cpp`) is shared,
+including its device factory, `$D500-D51F` register mapping, three oscillators,
+ADSR rate tables, pulse/triangle/saw/noise combinations, sync/ring controls,
+5:9 clock divider, box downsampling, and recursive LP/BP/HP filter. This keeps
+the original scalar synthesizer and its documented approximate noise, analog
+filter, and gain behavior. It does not substitute another SID implementation.
+
+`Altirra_SlightSIDTiming`, `Altirra_SlightSIDEnvelopes`,
+`Altirra_SlightSIDWaveforms`, `Altirra_SlightSIDFilters`, and
+`Altirra_SlightSIDDevice` check divider remainders, phase and scheduler wrap,
+elapsed-time writes, TEST reset/hold, attack/sustain/release boundaries, reset
+with pending time, repeatable noise, combined waveforms, voice-three disable,
+filter linearity, volume scaling, additive mixing and guarded sample buffers
+through the original 1536-sample capacity. Factory tests verify actual memory
+reads/writes, reserved register decoding, diagnostics and paired shutdown/reinit.
+A real main 6502 executes STA/LDA through the production memory manager to
+program SID registers and read the board's constant `$33` value.
+
+Regressions fix an always-zero TEST-bit expression and stop phase advancement
+while TEST is set, flush old elapsed time before resetting voice state, and
+retain the logical-AND pulse/noise result when saw is also selected. The TEST
+phase contract follows the [MOS 6581 datasheet](https://myoldcomputer.nl/Files/mos_6581_sid.pdf).
+Complete simulator/audio-output/UI wiring remains unfinished.

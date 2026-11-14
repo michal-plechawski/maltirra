@@ -497,7 +497,9 @@
     <ClCompile Include="..\platform\Windows_x64\Altirra\source\simulator.cpp" />
     <ClCompile Include="..\platform\Windows_x64\Altirra\source\sio2sd.cpp" />
     <ClCompile Include="..\platform\Windows_x64\Altirra\source\siomanager.cpp" />
-    <ClCompile Include="..\platform\Windows_x64\Altirra\source\slightsid.cpp" />
+    <ClCompile Include="source\slightsid.cpp">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+    </ClCompile>
     <ClCompile Include="..\platform\Windows_x64\Altirra\source\soundboard.cpp" />
     <ClCompile Include="..\platform\Windows_x64\Altirra\source\startuplogger.cpp" />
     <ClCompile Include="..\platform\Windows_x64\Altirra\source\sx212.cpp" />
@@ -840,7 +842,7 @@
     <ClInclude Include="h\simeventmanager.h" />
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\simulator.h" />
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\siomanager.h" />
-    <ClInclude Include="..\platform\Windows_x64\Altirra\h\slightsid.h" />
+    <ClInclude Include="h\slightsid.h" />
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\soundboard.h" />
     <ClInclude Include="h\textdom.h" />
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\texteditor.h" />

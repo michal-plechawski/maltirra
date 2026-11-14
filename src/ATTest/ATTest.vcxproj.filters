@@ -322,6 +322,15 @@
 	<ClInclude Include="source\covoxportablefixture.h">
 	  <Filter>Header Files</Filter>
 	</ClInclude>
+	<ClInclude Include="source\slightsidportablefixture.h">
+	  <Filter>Header Files</Filter>
+	</ClInclude>
+	<ClCompile Include="source\TestAltirra_SlightSIDPortable.cpp">
+	  <Filter>Source Files</Filter>
+	</ClCompile>
+	<ClCompile Include="source\TestAltirra_SlightSIDDevicePortable.cpp">
+	  <Filter>Source Files</Filter>
+	</ClCompile>
 	<ClCompile Include="source\TestAltirra_CovoxPortable.cpp">
 	  <Filter>Source Files</Filter>
 	</ClCompile>

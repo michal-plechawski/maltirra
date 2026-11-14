@@ -15,7 +15,10 @@
 //	along with this program; if not, write to the Free Software
 //	Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
-#include <stdafx.h>
+#include <cmath>
+#include <cstddef>
+#include <cstring>
+#include <vd2/system/vdtypes.h>
 #include <vd2/system/binary.h>
 #include <at/atcore/audiomixer.h>
 #include <at/atcore/consoleoutput.h>
@@ -23,7 +26,6 @@
 #include <at/atcore/scheduler.h>
 #include "slightsid.h"
 #include "memorymanager.h"
-#include "console.h"
 
 ATSlightSIDEmulator::ATSlightSIDEmulator()
 	: mpMemLayerControl(NULL)
@@ -90,6 +92,9 @@ void ATSlightSIDEmulator::ColdReset() {
 }
 
 void ATSlightSIDEmulator::WarmReset() {
+	// Account for elapsed time using the old voices, before clearing them.
+	Flush();
+
 	memset(mChannels, 0, sizeof mChannels);
 
 	for(int i=0; i<3; ++i)
@@ -196,7 +201,7 @@ void ATSlightSIDEmulator::WriteControl(uint8 addr, uint8 value) {
 				ch.mbRingMod = (value & 4) != 0;
 
 				if ((prevValue ^ value) & 8) {
-					ch.mbTestOn = (value & 0x08) & 1;
+					ch.mbTestOn = (value & 0x08) != 0;
 
 					if (ch.mbTestOn) {
 						ch.mPhase = 0;
@@ -287,7 +292,7 @@ void ATSlightSIDEmulator::WriteControl(uint8 addr, uint8 value) {
 					mChannels[2].mNonFilteredEnable = ~mChannels[2].mFilteredEnable;
 
 				mVolumeScale = (float)(mRegisters[0x18] & 15);
-				
+
 				mVolumeScale *= 1.0f
 								/ (128.0f*255.0f)	// waveform * envelope scaling
 								/ (28.0f*5.0f)		// because we accumulate 28*5 counts per sample
@@ -319,7 +324,7 @@ void ATSlightSIDEmulator::Run(uint32 cycles) {
 		for(int chidx = 0; chidx < 3; ++chidx) {
 			Channel *__restrict ch = &mChannels[chidx];
 			uint32 prevPhase = ch->mPhase;
-			uint32 nextPhase = prevPhase + ch->mFreq;
+			uint32 nextPhase = ch->mbTestOn ? 0 : prevPhase + ch->mFreq;
 
 			if (ch->mbSync && chprev->mPhase < chprev->mPrevPhase)
 				nextPhase = 0;
@@ -348,7 +353,7 @@ void ATSlightSIDEmulator::Run(uint32 cycles) {
 					v &= (ch->mPhase >= ch->mPulseWidth) ? 0xFF : 0x00;
 
 				if (ch->mWaveform & 2)
-					v = ch->mPhase >> 24;
+					v &= ch->mPhase >> 24;
 
 				if (ch->mWaveform & 1) {
 					if (ch->mbRingMod)

@@ -317,6 +317,13 @@
 	<ClInclude Include="source\anticportablefixture.h" />
 	<ClInclude Include="source\maincpuportablefixture.h" />
 	<ClInclude Include="source\covoxportablefixture.h" />
+	<ClInclude Include="source\slightsidportablefixture.h" />
+	<ClCompile Include="source\TestAltirra_SlightSIDPortable.cpp">
+	  <PrecompiledHeader>NotUsing</PrecompiledHeader>
+	</ClCompile>
+	<ClCompile Include="source\TestAltirra_SlightSIDDevicePortable.cpp">
+	  <PrecompiledHeader>NotUsing</PrecompiledHeader>
+	</ClCompile>
 	<ClCompile Include="source\TestAltirra_CovoxPortable.cpp">
 	  <PrecompiledHeader>NotUsing</PrecompiledHeader>
 	</ClCompile>

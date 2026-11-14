@@ -19,6 +19,7 @@
 #define f_AT_SLIGHTSID_H
 
 #include <vd2/system/memory.h>
+#include <vd2/system/vdtypes.h>
 #include <at/atcore/audiosource.h>
 
 class ATScheduler;

@@ -52,6 +52,11 @@ bool ATTestAltirraCovoxAudio(ATPortableTestContext& context);
 bool ATTestAltirraCovoxSnapshot(ATPortableTestContext& context);
 bool ATTestAltirraCovoxDevice(ATPortableTestContext& context);
 bool ATTestAltirraSimCovox(ATPortableTestContext& context);
+bool ATTestAltirraSlightSIDTiming(ATPortableTestContext& context);
+bool ATTestAltirraSlightSIDEnvelopes(ATPortableTestContext& context);
+bool ATTestAltirraSlightSIDWaveforms(ATPortableTestContext& context);
+bool ATTestAltirraSlightSIDFilters(ATPortableTestContext& context);
+bool ATTestAltirraSlightSIDDevice(ATPortableTestContext& context);
 bool ATTestAltirraMemoryManager(ATPortableTestContext& context);
 bool ATTestAltirraRTime8(ATPortableTestContext& context);
 bool ATTestAltirraRVerter(ATPortableTestContext& context);
@@ -290,6 +295,11 @@ const ATPortableTestCase *ATGetPortableTests(size_t& count) {
 		{ "Altirra_CovoxSnapshot", ATTestAltirraCovoxSnapshot },
 		{ "Altirra_CovoxDevice", ATTestAltirraCovoxDevice },
 		{ "Altirra_SimCovox", ATTestAltirraSimCovox },
+		{ "Altirra_SlightSIDTiming", ATTestAltirraSlightSIDTiming },
+		{ "Altirra_SlightSIDEnvelopes", ATTestAltirraSlightSIDEnvelopes },
+		{ "Altirra_SlightSIDWaveforms", ATTestAltirraSlightSIDWaveforms },
+		{ "Altirra_SlightSIDFilters", ATTestAltirraSlightSIDFilters },
+		{ "Altirra_SlightSIDDevice", ATTestAltirraSlightSIDDevice },
 		{ "Altirra_MemoryManager", ATTestAltirraMemoryManager },
 		{ "Altirra_RTime8", ATTestAltirraRTime8 },
 		{ "Altirra_RVerter", ATTestAltirraRVerter },
