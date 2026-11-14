@@ -554,3 +554,8 @@ void ATCPUVerifier::FailStackUnderflow() {
 	ATConsolePrintf("VERIFIER: Stack underflow during pop/return operation.\n");
 	mpSimEventMgr->NotifyEvent(kATSimEvent_VerifierFailure);
 }
+
+void ATCPUVerifier::VerifyInsn(const ATCPUEmulator& cpu, uint8 opcode, uint16 target) {
+	(void)cpu; // Preserve the original API's observations of the bound CPU.
+	VerifyInsn(opcode, target);
+}

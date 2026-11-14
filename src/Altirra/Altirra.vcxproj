@@ -248,12 +248,25 @@
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="..\platform\Windows_x64\Altirra\source\covox.cpp" />
-    <ClCompile Include="..\platform\Windows_x64\Altirra\source\cpu.cpp" />
-    <ClCompile Include="..\platform\Windows_x64\Altirra\source\cpu6502.cpp" />
-    <ClCompile Include="..\platform\Windows_x64\Altirra\source\cpu6502ill.cpp" />
-    <ClCompile Include="..\platform\Windows_x64\Altirra\source\cpu65c02.cpp" />
-    <ClCompile Include="..\platform\Windows_x64\Altirra\source\cpu65c816.cpp" />
-    <ClCompile Include="..\platform\Windows_x64\Altirra\source\cpuheatmapadapter.cpp" />
+    <ClCompile Include="source\cpu.cpp">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="source\cpu6502.cpp">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="source\cpu6502ill.cpp">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="source\cpu65c02.cpp">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="source\cpu65c816.cpp">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="source\cpuheatmapadapter.cpp">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="..\platform\Windows_x64\Altirra\source\cpudiagnostics.cpp" />
     <ClCompile Include="source\cpuheatmap.cpp">
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
     </ClCompile>
@@ -441,7 +454,9 @@
     <ClCompile Include="source\printerttfencoder.cpp">
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="..\platform\Windows_x64\Altirra\source\profiler.cpp" />
+    <ClCompile Include="source\profiler.cpp">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+    </ClCompile>
     <ClCompile Include="source\profilebuilder.cpp">
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
     </ClCompile>
@@ -700,7 +715,7 @@
     <ClInclude Include="h\common_png.h" />
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\console.h" />
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\covox.h" />
-    <ClInclude Include="..\platform\Windows_x64\Altirra\h\cpu.h" />
+    <ClInclude Include="h\cpu.h" />
     <ClInclude Include="h\cpuheatmap.h" />
     <ClInclude Include="h\cpuhookmanager.h" />
     <ClInclude Include="h\cpumemory.h" />

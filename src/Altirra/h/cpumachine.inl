@@ -78,7 +78,7 @@ int ATCPUEmulator::Advance65816HiSpeed(bool dma) {
 			mSubCyclesLeft = 1;	\
 		}	\
 		readData = (uint8)busResult
-	
+
 	#define AT_CPU_EXT_READ_BYTE_2(addr, bank, slowFlag)	\
 		busResult = mpMemory->ExtReadByteAccel((addr), (bank), mSubCycles == mSubCyclesLeft);	\
 		if (busResult < 0) { \
@@ -2088,7 +2088,7 @@ for(;;) {
 				mAH = (uint8)(highResult >> 8);
 			} else {
 				uint32 acc = ((uint32)mAH << 8) + mA;
-				
+
 				uint32 d16 = (uint32)mData16 ^ 0xffff;
 				uint32 carry15 = (acc & 0x7fff) + (d16 & 0x7fff) + (mP & kFlagC);
 				uint32 result = carry15 + (acc & 0x8000) + (d16 & 0x8000);

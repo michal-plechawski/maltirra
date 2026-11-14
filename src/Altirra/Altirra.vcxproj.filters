@@ -118,19 +118,19 @@
     <ClCompile Include="..\platform\Windows_x64\Altirra\source\covox.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\platform\Windows_x64\Altirra\source\cpu.cpp">
+    <ClCompile Include="source\cpu.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\platform\Windows_x64\Altirra\source\cpu6502.cpp">
+    <ClCompile Include="source\cpu6502.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\platform\Windows_x64\Altirra\source\cpu6502ill.cpp">
+    <ClCompile Include="source\cpu6502ill.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\platform\Windows_x64\Altirra\source\cpu65c02.cpp">
+    <ClCompile Include="source\cpu65c02.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\platform\Windows_x64\Altirra\source\cpu65c816.cpp">
+    <ClCompile Include="source\cpu65c816.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="source\cpuhookmanager.cpp">
@@ -298,7 +298,7 @@
     <ClCompile Include="source\printer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\platform\Windows_x64\Altirra\source\profiler.cpp">
+    <ClCompile Include="source\profiler.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="source\profilebuilder.cpp">
@@ -745,7 +745,10 @@
     <ClCompile Include="..\platform\Windows_x64\Altirra\source\rapidus.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\platform\Windows_x64\Altirra\source\cpuheatmapadapter.cpp">
+    <ClCompile Include="source\cpuheatmapadapter.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\platform\Windows_x64\Altirra\source\cpudiagnostics.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="source\cpuheatmap.cpp">
@@ -1200,7 +1203,7 @@
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\covox.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\platform\Windows_x64\Altirra\h\cpu.h">
+    <ClInclude Include="h\cpu.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="h\cpuheatmap.h">

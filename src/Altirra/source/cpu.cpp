@@ -15,19 +15,28 @@
 //	along with this program; if not, write to the Free Software
 //	Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
-#include <stdafx.h>
+#include <algorithm>
+#include <cmath>
+#include <cstdio>
+#include <cstring>
+#include <iterator>
+#include <vd2/system/vdtypes.h>
+#include <vd2/system/error.h>
+#include <vd2/system/vdalloc.h>
+#include <vd2/system/vdstl.h>
 #include <vd2/system/binary.h>
 #include <at/atcore/enumparseimpl.h>
 #include <at/atcore/serialization.h>
 #include <at/atcore/snapshotimpl.h>
 #include <at/atdebugger/target.h>
 #include "cpu.h"
+#include "cpumemory.h"
 #include "cpustates.h"
-#include "console.h"
+#include "consoletext.h"
 #include "disasm.h"
 #include "profiler.h"
 #include "savestate.h"
-#include "simulator.h"
+#include "simeventmanager.h"
 #include "verifier.h"
 #include "bkptmanager.h"
 #include "cpuhookmanager.h"
@@ -159,6 +168,7 @@ ATCPUEmulator::ATCPUEmulator()
 	mSBrk = 0x100;
 	mbTrace = false;
 	mbStep = false;
+	mbStepOver = false;
 	mDebugFlags = 0;
 	mpNextState = mStates;
 	mStates[0] = kStateReadOpcode;
@@ -171,6 +181,7 @@ ATCPUEmulator::ATCPUEmulator()
 
 	memset(mInsnFlags, 0, sizeof mInsnFlags);
 
+	mbHistoryEnabled = false;
 	mbHistoryActive = false;
 	mHistoryEnableFlags = kHistoryEnableFlag_None;
 	mbPathfindingEnabled = false;
@@ -181,9 +192,9 @@ ATCPUEmulator::ATCPUEmulator()
 	mBreakpointCount = 0;
 
 	RebuildDecodeTables();
-	
+
 	VDASSERTCT(kStateCount < 256);
-	
+
 	VDASSERTCT((int)kATCPUMode_6502 == (int)kATDebugDisasmMode_6502);
 	VDASSERTCT((int)kATCPUMode_65C02 == (int)kATDebugDisasmMode_65C02);
 	VDASSERTCT((int)kATCPUMode_65C816 == (int)kATDebugDisasmMode_65C816);
@@ -376,6 +387,8 @@ void ATCPUEmulator::SetEmulationFlag(bool emu) {
 		return;
 
 	mbEmulationFlag = emu;
+	if (emu)
+		mP |= kFlagM | kFlagX;
 
 	Update65816DecodeTable();
 }
@@ -395,10 +408,13 @@ void ATCPUEmulator::SetP(uint8 p) {
 	if (mP != p) {
 		mP = p;
 
-		if (!(p & AT6502::kFlagX)) {
+		if (p & AT6502::kFlagX) {
 			mXH = 0;
 			mYH = 0;
 		}
+
+		if (mCPUMode == kATCPUMode_65C816)
+			Update65816DecodeTable();
 	}
 }
 
@@ -423,8 +439,10 @@ void ATCPUEmulator::SetSH(uint8 s) {
 }
 
 void ATCPUEmulator::SetD(uint16 dp) {
-	if (mCPUMode == kATCPUMode_65C816)
+	if (mCPUMode == kATCPUMode_65C816 && mDP != dp) {
 		mDP = dp;
+		Update65816DecodeTable();
+	}
 }
 
 void ATCPUEmulator::SetK(uint8 k) {
@@ -662,7 +680,7 @@ void ATCPUEmulator::SetNMIBlockingEnabled(bool enable) {
 }
 
 uint32 ATCPUEmulator::GetBreakpointCount() const {
-	return (mDebugFlags & kDebugFlag_BP) && mBreakpointCount > 0;
+	return mBreakpointCount;
 }
 
 bool ATCPUEmulator::IsBreakpointSet(uint16 addr) const {
@@ -806,7 +824,7 @@ void ATCPUEmulator::DumpStatus(bool extended) {
 			);
 	}
 
-	ATDisassembleInsn(mInsnPC, mK);
+	DumpDisassembly();
 
 	if (extended && mCPUMode == kATCPUMode_65C816)
 		ATConsolePrintf("              B=%02X D=%04X\n", mB, mDP);
@@ -871,6 +889,8 @@ public:
 		rw.Transfer("d", &mDP);
 		rw.Transfer("k", &mK);
 		rw.Transfer("e", &mbEmulationFlag);
+		rw.Transfer("sub_cycles_left", &mSubCyclesLeft);
+		rw.Transfer("force_slow", &mbForceNextCycleSlow);
 	}
 
 	uint8 mAH = 0;
@@ -881,6 +901,8 @@ public:
 	uint8 mB = 0;
 	uint8 mK = 0;
 	bool mbEmulationFlag = false;
+	uint32 mSubCyclesLeft = 1;
+	bool mbForceNextCycleSlow = false;
 };
 
 class ATSaveStateCPU final : public ATSnapExchangeObject<ATSaveStateCPU, "ATSaveStateCPU"> {
@@ -1254,7 +1276,7 @@ void ATCPUEmulator::SaveState(IATObjectState **result) {
 	// overridden with the current PC. Un-overriding happens below.
 	obj->mPC = mPC;
 	obj->mInsnPC = mPC;
-	
+
 	if (mCPUMode == kATCPUMode_65C816) {
 		obj->mp816 = new ATSaveStateCPU816();
 		obj->mp816->mAH = mAH;
@@ -1265,6 +1287,8 @@ void ATCPUEmulator::SaveState(IATObjectState **result) {
 		obj->mp816->mB = mB;
 		obj->mp816->mK = mK;
 		obj->mp816->mbEmulationFlag = mbEmulationFlag;
+		obj->mp816->mSubCyclesLeft = mSubCyclesLeft;
+		obj->mp816->mbForceNextCycleSlow = mbForceNextCycleSlow;
 	}
 
 	obj->mbUnusedCycle = mbUnusedCycle;
@@ -1354,6 +1378,8 @@ void ATCPUEmulator::LoadState(const ATSaveStateCPU& cpustate) {
 		mB = cpustate816.mB;
 		mK = cpustate816.mK;
 		mbEmulationFlag = cpustate816.mbEmulationFlag;
+		mSubCyclesLeft = std::clamp<uint32>(cpustate816.mSubCyclesLeft, 1, mSubCycles);
+		mbForceNextCycleSlow = cpustate816.mbForceNextCycleSlow;
 	} else {
 		mbEmulationFlag = true;
 		mB = 0;
@@ -1369,13 +1395,13 @@ void ATCPUEmulator::LoadState(const ATSaveStateCPU& cpustate) {
 	mpNextState = mStates;
 	mStateRelocOffset = 0;
 
+	if (mCPUMode == kATCPUMode_65C816)
+		Update65816DecodeTable();
+
 	// 0 - read opcode
 	// 1 - first uop of instruction (after 1st cycle)
 	// 2 - first uop of instruction after 2nd cycle
 	if (cpustate.mCurrentExtOpcodePhase) {
-		if (mCPUMode == kATCPUMode_65C816)
-			Update65816DecodeTable();
-
 		const uint8 *insnStates = mDecodeHeap + mDecodePtrs[cpustate.mCurrentExtOpcode];
 
 		for(uint32 i=1; i<cpustate.mCurrentExtOpcodePhase; ++i) {
@@ -1505,7 +1531,7 @@ void ATCPUEmulator::PeriodicCleanup() {
 
 	if (((t - mIRQAssertTime) >> 30) == 2)
 		mIRQAssertTime += 0x40000000;
-	
+
 	if (((t - mIRQAcknowledgeTime) >> 30) == 2)
 		mIRQAcknowledgeTime += 0x40000000;
 }
@@ -1810,7 +1836,7 @@ void ATCPUEmulator::AddHistoryEntry(bool slowFlag) {
 	// he->mX = mX;
 	// he->mY = mY;
 	// he->mS = mS;
-	*(uint32_t *)&he->mA = *(const uint32_t *)&mA;
+	memcpy(&he->mA, &mA, sizeof(uint32));
 
 	he->mOpcode[0] = mOpcode;
 
@@ -1854,7 +1880,7 @@ void ATCPUEmulator::AddHistoryEntry(bool slowFlag) {
 		for(int i=0; i<2; ++i)
 			he->mOpcode[i+1] = mem->DebugReadByte(pc+i);
 
-		he->mGlobalPCBase = mem->mpCPUReadAddressPageMap[(mPC - 1) >> 8];
+		he->mGlobalPCBase = mem->mpCPUReadAddressPageMap[(uint16)(mPC - 1) >> 8];
 	}
 }
 
@@ -2327,7 +2353,7 @@ void ATCPUEmulator::RebuildDecodeTables65816() {
 
 		if (mbStepOver)
 			*mpDstState++ = kStateStepOver;
-		
+
 		*mpDstState++ = kState816_SetI_ClearD;
 
 		*mpDstState++ = kStateReadAddrL;

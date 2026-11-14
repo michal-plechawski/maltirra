@@ -37,9 +37,16 @@ bool ATTestAltirraBreakpointInstructions(ATPortableTestContext& context);
 bool ATTestAltirraBreakpointTargets(ATPortableTestContext& context);
 bool ATTestAltirraBreakpointMemory(ATPortableTestContext& context);
 bool ATTestAltirraBreakpointRanges(ATPortableTestContext& context);
-#ifdef _WIN32
 bool ATTestAltirraMainCPUBreakpoints(ATPortableTestContext& context);
-#endif
+bool ATTestAltirraMainCPU6502(ATPortableTestContext& context);
+bool ATTestAltirraMainCPU65C02(ATPortableTestContext& context);
+bool ATTestAltirraMainCPU816(ATPortableTestContext& context);
+bool ATTestAltirraMainCPUAcceleration(ATPortableTestContext& context);
+bool ATTestAltirraMainCPUHistory(ATPortableTestContext& context);
+bool ATTestAltirraMainCPUSnapshot(ATPortableTestContext& context);
+bool ATTestAltirraMainCPUDebug(ATPortableTestContext& context);
+bool ATTestAltirraMainCPUDiagnostics(ATPortableTestContext& context);
+bool ATTestAltirraCPULiveProfiler(ATPortableTestContext& context);
 bool ATTestAltirraMemoryManager(ATPortableTestContext& context);
 bool ATTestAltirraRTime8(ATPortableTestContext& context);
 bool ATTestAltirraRVerter(ATPortableTestContext& context);
@@ -263,9 +270,16 @@ const ATPortableTestCase *ATGetPortableTests(size_t& count) {
 		{ "Altirra_BreakpointTargets", ATTestAltirraBreakpointTargets },
 		{ "Altirra_BreakpointMemory", ATTestAltirraBreakpointMemory },
 		{ "Altirra_BreakpointRanges", ATTestAltirraBreakpointRanges },
-#ifdef _WIN32
 		{ "Altirra_MainCPUBreakpoints", ATTestAltirraMainCPUBreakpoints },
-#endif
+		{ "Altirra_MainCPU6502", ATTestAltirraMainCPU6502 },
+		{ "Altirra_MainCPU65C02", ATTestAltirraMainCPU65C02 },
+		{ "Altirra_MainCPU816", ATTestAltirraMainCPU816 },
+		{ "Altirra_MainCPUAcceleration", ATTestAltirraMainCPUAcceleration },
+		{ "Altirra_MainCPUHistory", ATTestAltirraMainCPUHistory },
+		{ "Altirra_MainCPUSnapshot", ATTestAltirraMainCPUSnapshot },
+		{ "Altirra_MainCPUDebug", ATTestAltirraMainCPUDebug },
+		{ "Altirra_MainCPUDiagnostics", ATTestAltirraMainCPUDiagnostics },
+		{ "Altirra_CPULiveProfiler", ATTestAltirraCPULiveProfiler },
 		{ "Altirra_MemoryManager", ATTestAltirraMemoryManager },
 		{ "Altirra_RTime8", ATTestAltirraRTime8 },
 		{ "Altirra_RVerter", ATTestAltirraRVerter },

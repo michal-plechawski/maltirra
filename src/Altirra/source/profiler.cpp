@@ -15,12 +15,13 @@
 //	along with this program; if not, write to the Free Software
 //	Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
-#include <stdafx.h>
+#include <algorithm>
+#include <vd2/system/vdtypes.h>
 #include <at/atcore/address.h>
 #include <at/atcore/scheduler.h>
 #include "cpu.h"
 #include "cpumemory.h"
-#include "console.h"
+#include "consoletext.h"
 #include "profiler.h"
 
 ATCPUProfiler::ATCPUProfiler()
@@ -35,6 +36,7 @@ ATCPUProfiler::ATCPUProfiler()
 }
 
 ATCPUProfiler::~ATCPUProfiler() {
+	End();
 }
 
 void ATCPUProfiler::SetBoundaryRule(ATProfileBoundaryRule rule, uint32 param, uint32 param2) {
@@ -55,6 +57,8 @@ void ATCPUProfiler::Init(ATCPUEmulator *cpu, ATCPUEmulatorMemory *mem, ATCPUEmul
 }
 
 void ATCPUProfiler::Start(ATProfileMode mode, ATProfileCounterMode c1, ATProfileCounterMode c2) {
+	End();
+
 	mBuilder.Init(mode, c1, c2);
 	mBuilder.SetS(mpCPU->GetS());
 
@@ -81,6 +85,9 @@ void ATCPUProfiler::EndFrame() {
 }
 
 void ATCPUProfiler::End() {
+	if (!IsRunning())
+		return;
+
 	Update();
 
 	if (mpUpdateEvent) {
@@ -103,7 +110,7 @@ void ATCPUProfiler::OnScheduledEvent(uint32 id) {
 
 		Update();
 	} else if (id == 2) {
-		mpUpdateEvent = mpSlowScheduler->AddEvent(2, this, 1);
+		mpUpdateEvent = mpSlowScheduler->AddEvent(2, this, 2);
 
 		Update();
 	}

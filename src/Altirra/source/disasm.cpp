@@ -2009,6 +2009,10 @@ ATDisasmResult ATDisassembleInsn(VDStringA& line,
 	bool showSymbols,
 	bool showGlobalPC)
 {
+	const auto ReadByte = [&](uint32 address) {
+		return target ? target->DebugReadByte(address) : services.mpDebugReadByte(address);
+	};
+	decodeReferences = decodeReferences && (target || services.mpDebugReadByte);
 	if (disasmMode == kATDebugDisasmMode_8048)
 		return ATDisassembleInsnMCS(line, hent, showCodeBytes, lowercaseOps, kMCS48Insns, false);
 
@@ -2365,7 +2369,7 @@ ATDisasmResult ATDisassembleInsn(VDStringA& line,
 					const uint16 highAddr = disasmMode == kATDebugDisasmMode_6502
 						? static_cast<uint16>((base & 0xFF00) | ((base + 1) & 0xFF))
 						: static_cast<uint16>(base + 1);
-					ea = target->DebugReadByte(base) + 256*target->DebugReadByte(highAddr)
+					ea = ReadByte(base) + 256*ReadByte(highAddr)
 						+ (is816 ? uint32(pbk) << 16 : 0);
 				}
 
@@ -2380,9 +2384,9 @@ ATDisasmResult ATDisassembleInsn(VDStringA& line,
 					ea = hent.mEA;
 				else {
 					// [abs] always reads from bank 0.
-					ea = target->DebugReadByte(base)
-						+ 256 * target->DebugReadByte((base+1) & 0xFFFF)
-						+ 65536 * target->DebugReadByte((base+2) & 0xFFFF);
+					ea = ReadByte(base)
+						+ 256 * ReadByte((base+1) & 0xFFFF)
+						+ 65536 * ReadByte((base+2) & 0xFFFF);
 				}
 
 				addr16 = true;
@@ -2403,8 +2407,8 @@ ATDisasmResult ATDisassembleInsn(VDStringA& line,
 					uint32 firstByteAddr = (d + ((base + x) & dpmask)) & 0xFFFF;
 					uint32 secondByteMask = hent.mbEmulation ? 0xFF : dpmask;
 					uint32 secondByteAddr = (firstByteAddr & ~secondByteMask) + ((firstByteAddr + 1) & secondByteMask);
-					ea	= target->DebugReadByte(firstByteAddr)
-						+ 256*target->DebugReadByte(secondByteAddr)
+					ea	= ReadByte(firstByteAddr)
+						+ 256*ReadByte(secondByteAddr)
 						+ eaBank;
 				}
 
@@ -2420,7 +2424,7 @@ ATDisasmResult ATDisassembleInsn(VDStringA& line,
 				if (decodeRefsHistory)
 					ea = hent.mEA;
 				else
-					ea = (target->DebugReadByte((d + base) & 0xFFFF) + 256*target->DebugReadByte((d + ((base + 1) & dpmask)) & 0xFFFF) + y + eaBank) & eaMask;
+					ea = (ReadByte((d + base) & 0xFFFF) + 256*ReadByte((d + ((base + 1) & dpmask)) & 0xFFFF) + y + eaBank) & eaMask;
 
 				ea16 = true;
 				break;
@@ -2434,7 +2438,7 @@ ATDisasmResult ATDisassembleInsn(VDStringA& line,
 				if (decodeRefsHistory)
 					ea = hent.mEA;
 				else
-					ea = target->DebugReadByte((d + base) & 0xFFFF) + 256*target->DebugReadByte((d + ((base+1) & dpmask)) & 0xFFFF) + eaBank;
+					ea = ReadByte((d + base) & 0xFFFF) + 256*ReadByte((d + ((base+1) & dpmask)) & 0xFFFF) + eaBank;
 
 				ea16 = true;
 				break;
@@ -2446,7 +2450,7 @@ ATDisasmResult ATDisassembleInsn(VDStringA& line,
 					ea = hent.mEA;
 				else {
 					// As (abs, X) references are in PBK, they do not wrap across banks.
-					ea = target->DebugReadByte(eaBank + ((base+x) & 0xFFFF)) + 256*target->DebugReadByte(eaBank + ((base+1+x) & 0xFFFF)) + eaBank;
+					ea = ReadByte(eaBank + ((base+x) & 0xFFFF)) + 256*ReadByte(eaBank + ((base+1+x) & 0xFFFF)) + eaBank;
 				}
 
 				addr16 = true;
@@ -2489,8 +2493,8 @@ ATDisasmResult ATDisassembleInsn(VDStringA& line,
 				else {
 					// (d,S),Y fetches address from bank 0 only and data from
 					// DBK.
-					ea = target->DebugReadByte((base + s16) & 0xFFFF);
-					ea += 256 * target->DebugReadByte((base + s16+1) & 0xFFFF);
+					ea = ReadByte((base + s16) & 0xFFFF);
+					ea += 256 * ReadByte((base + s16+1) & 0xFFFF);
 					ea += y;
 					ea = (ea + eaBank) & eaMask;
 				}
@@ -2508,9 +2512,9 @@ ATDisasmResult ATDisassembleInsn(VDStringA& line,
 				else {
 					uint16 dpaddr = d + byte1;
 
-					ea = (uint32)target->DebugReadByte(dpaddr++);
-					ea += (uint32)target->DebugReadByte(dpaddr++) << 8;
-					ea += (uint32)target->DebugReadByte(dpaddr) << 16;
+					ea = (uint32)ReadByte(dpaddr++);
+					ea += (uint32)ReadByte(dpaddr++) << 8;
+					ea += (uint32)ReadByte(dpaddr) << 16;
 				}
 				break;
 
@@ -2525,9 +2529,9 @@ ATDisasmResult ATDisassembleInsn(VDStringA& line,
 				else {
 					uint16 dpaddr = d + byte1;
 
-					ea = (uint32)target->DebugReadByte(dpaddr++);
-					ea += (uint32)target->DebugReadByte(dpaddr++) << 8;
-					ea += (uint32)target->DebugReadByte(dpaddr) << 16;
+					ea = (uint32)ReadByte(dpaddr++);
+					ea += (uint32)ReadByte(dpaddr++) << 8;
+					ea += (uint32)ReadByte(dpaddr) << 16;
 					ea += y;
 					ea &= 0xFFFFFF;
 				}
@@ -2756,18 +2760,18 @@ ATDisasmResult ATDisassembleInsn(VDStringA& line,
 							case kModeIndA:
 							case kModeStack:
 								line.append_sprintf(" = $%02X%02X",
-									target->DebugReadByte((ea+1) & 0xffff),
-									target->DebugReadByte(ea));
+									ReadByte((ea+1) & 0xffff),
+									ReadByte(ea));
 								break;
 
 							default:
 								line.append_sprintf(" = $%04X"
-									, target->DebugReadByte(ea & 0xffffff) + 256*target->DebugReadByte((ea + 1) & 0xffffff)
+									, ReadByte(ea & 0xffffff) + 256*ReadByte((ea + 1) & 0xffffff)
 									);
 								break;
 						}
 					} else
-						line.append_sprintf(" = $%02X", target->DebugReadByte(ea));
+						line.append_sprintf(" = $%02X", ReadByte(ea));
 				}
 			}
 		}

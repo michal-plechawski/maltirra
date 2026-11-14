@@ -15,7 +15,9 @@
 //	along with this program; if not, write to the Free Software
 //	Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
-#include <stdafx.h>
+#include <algorithm>
+#include <iterator>
+#include <vd2/system/vdtypes.h>
 #include "cpu.h"
 #include "cpustates.h"
 
@@ -604,4 +606,3 @@ bool ATCPUEmulator::Decode65C02(uint8 opcode) {
 
 	return true;
 }
-

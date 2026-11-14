@@ -196,6 +196,12 @@ portable_test_sources=(
 	src/ATTest/source/TestAltirra_CompatDBPortable.cpp
 	src/ATTest/source/TestAltirra_CPUMemoryPortable.cpp
 	src/ATTest/source/TestAltirra_CPUStatesPortable.cpp
+	src/ATTest/source/TestAltirra_MainCPUBreakpoints.cpp
+	src/ATTest/source/TestAltirra_MainCPU6502Portable.cpp
+	src/ATTest/source/TestAltirra_MainCPU816Portable.cpp
+	src/ATTest/source/TestAltirra_MainCPUStatePortable.cpp
+	src/ATTest/source/TestAltirra_MainCPUDiagnosticsPortable.cpp
+	src/ATTest/source/TestAltirra_CPULiveProfilerPortable.cpp
 	src/ATTest/source/TestAltirra_DisasmOpcodesPortable.cpp
 	src/ATTest/source/TestAltirra_DisasmReferencesPortable.cpp
 	src/ATTest/source/TestAltirra_DisasmContextPortable.cpp
@@ -426,6 +432,14 @@ portable_test_sources=(
 	src/Altirra/source/pia.cpp
 	src/Altirra/source/profilebuilder.cpp
 	src/Altirra/source/cpuheatmap.cpp
+	src/Altirra/source/cpuheatmapadapter.cpp
+	src/Altirra/source/cpu.cpp
+	src/Altirra/source/cpu6502.cpp
+	src/Altirra/source/cpu6502ill.cpp
+	src/Altirra/source/cpu65c02.cpp
+	src/Altirra/source/cpu65c816.cpp
+	src/Altirra/source/profiler.cpp
+	src/platform/macOS_arm64/Altirra/source/cpudiagnostics.cpp
 	src/Altirra/source/verifier.cpp
 	src/Altirra/source/disasm.cpp
 	src/ATCore/source/address.cpp

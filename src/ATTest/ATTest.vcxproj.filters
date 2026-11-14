@@ -76,7 +76,22 @@
 	<ClCompile Include="source\TestAltirra_BreakpointPCPortable.cpp">
 	  <Filter>Source Files</Filter>
 	</ClCompile>
-	<ClCompile Include="..\platform\Windows_x64\ATTest\source\TestAltirra_MainCPUBreakpoints.cpp">
+	<ClCompile Include="source\TestAltirra_MainCPUBreakpoints.cpp">
+	  <Filter>Source Files</Filter>
+	</ClCompile>
+	<ClCompile Include="source\TestAltirra_MainCPU6502Portable.cpp">
+	  <Filter>Source Files</Filter>
+	</ClCompile>
+	<ClCompile Include="source\TestAltirra_MainCPU816Portable.cpp">
+	  <Filter>Source Files</Filter>
+	</ClCompile>
+	<ClCompile Include="source\TestAltirra_MainCPUStatePortable.cpp">
+	  <Filter>Source Files</Filter>
+	</ClCompile>
+	<ClCompile Include="source\TestAltirra_MainCPUDiagnosticsPortable.cpp">
+	  <Filter>Source Files</Filter>
+	</ClCompile>
+	<ClCompile Include="source\TestAltirra_CPULiveProfilerPortable.cpp">
 	  <Filter>Source Files</Filter>
 	</ClCompile>
 	<ClCompile Include="source\TestAltirra_BreakpointMemoryPortable.cpp">
@@ -299,6 +314,9 @@
 	  <Filter>Source Files</Filter>
 	</ClCompile>
 	<ClInclude Include="source\anticportablefixture.h">
+	  <Filter>Header Files</Filter>
+	</ClInclude>
+	<ClInclude Include="source\maincpuportablefixture.h">
 	  <Filter>Header Files</Filter>
 	</ClInclude>
 	<ClCompile Include="source\TestAltirra_PIAPortable.cpp">

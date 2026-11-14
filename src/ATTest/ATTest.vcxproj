@@ -77,7 +77,22 @@
 	<ClCompile Include="source\TestAltirra_BreakpointPCPortable.cpp">
 	  <PrecompiledHeader>NotUsing</PrecompiledHeader>
 	</ClCompile>
-	<ClCompile Include="..\platform\Windows_x64\ATTest\source\TestAltirra_MainCPUBreakpoints.cpp">
+	<ClCompile Include="source\TestAltirra_MainCPUBreakpoints.cpp">
+	  <PrecompiledHeader>NotUsing</PrecompiledHeader>
+	</ClCompile>
+	<ClCompile Include="source\TestAltirra_MainCPU6502Portable.cpp">
+	  <PrecompiledHeader>NotUsing</PrecompiledHeader>
+	</ClCompile>
+	<ClCompile Include="source\TestAltirra_MainCPU816Portable.cpp">
+	  <PrecompiledHeader>NotUsing</PrecompiledHeader>
+	</ClCompile>
+	<ClCompile Include="source\TestAltirra_MainCPUStatePortable.cpp">
+	  <PrecompiledHeader>NotUsing</PrecompiledHeader>
+	</ClCompile>
+	<ClCompile Include="source\TestAltirra_MainCPUDiagnosticsPortable.cpp">
+	  <PrecompiledHeader>NotUsing</PrecompiledHeader>
+	</ClCompile>
+	<ClCompile Include="source\TestAltirra_CPULiveProfilerPortable.cpp">
 	  <PrecompiledHeader>NotUsing</PrecompiledHeader>
 	</ClCompile>
 	<ClCompile Include="source\TestAltirra_BreakpointMemoryPortable.cpp">
@@ -300,6 +315,7 @@
 	  <PrecompiledHeader>NotUsing</PrecompiledHeader>
 	</ClCompile>
 	<ClInclude Include="source\anticportablefixture.h" />
+	<ClInclude Include="source\maincpuportablefixture.h" />
 	<ClCompile Include="source\TestAltirra_PIAPortable.cpp">
 	  <PrecompiledHeader>NotUsing</PrecompiledHeader>
 	</ClCompile>

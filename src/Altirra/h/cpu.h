@@ -23,6 +23,7 @@
 #endif
 
 #include <vd2/system/vdtypes.h>
+#include <vd2/system/vdstl_block.h>
 #include <at/atcore/enumparse.h>
 #include <at/atcpu/history.h>
 #include "cpumode.h"
@@ -297,6 +298,7 @@ public:
 protected:
 	friend class ATSaveStateCPU;
 
+	void DumpDisassembly();
 	VDNOINLINE uint8 ProcessDebugging();
 	VDNOINLINE void ProcessStepOver();
 	VDNOINLINE uint8 ProcessHook();

@@ -34,6 +34,8 @@ struct ATSymbol;
 struct ATDisasmServices {
 	vdfunction<bool(uint32, uint32, ATSymbol&)> mpLookupSymbol;
 	vdfunction<bool(uint16)> mpIsPathStart;
+	// Used only when no debug target is supplied (e.g. CPU diagnostics).
+	vdfunction<uint8(uint32)> mpDebugReadByte;
 };
 
 enum ATCPUMode : uint8;

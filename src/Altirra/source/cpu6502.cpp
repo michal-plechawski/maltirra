@@ -15,7 +15,9 @@
 //	along with this program; if not, write to the Free Software
 //	Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
-#include <stdafx.h>
+#include <algorithm>
+#include <iterator>
+#include <vd2/system/vdtypes.h>
 #include "cpu.h"
 #include "cpustates.h"
 
@@ -328,7 +330,7 @@ bool ATCPUEmulator::Decode6502(uint8 opcode) {
 		case 0x48:	// PHA
 			if (mpVerifier)
 				*mpDstState++ = kStateVerifyInsn;
-			
+
 			*mpDstState++ = kStateAtoD;
 			*mpDstState++ = kStateWait;
 			*mpDstState++ = kStatePush;
@@ -562,20 +564,20 @@ bool ATCPUEmulator::Decode6502(uint8 opcode) {
 			break;
 
 		case 0x84:	// STY zp
-			*mpDstState++ = kStateReadAddrL;		
+			*mpDstState++ = kStateReadAddrL;
 			*mpDstState++ = kStateYtoD;
 			*mpDstState++ = kStateWrite;
 			break;
 
 		case 0x85:	// STA zp
-			*mpDstState++ = kStateReadAddrL;		
-			*mpDstState++ = kStateWriteA;	
+			*mpDstState++ = kStateReadAddrL;
+			*mpDstState++ = kStateWriteA;
 			break;
 
 		case 0x86:	// STX zp
-			*mpDstState++ = kStateReadAddrL;		
+			*mpDstState++ = kStateReadAddrL;
 			*mpDstState++ = kStateXtoD;
-			*mpDstState++ = kStateWrite;	
+			*mpDstState++ = kStateWrite;
 			break;
 
 		case 0x88:	// DEY
@@ -592,7 +594,7 @@ bool ATCPUEmulator::Decode6502(uint8 opcode) {
 			break;
 
 		case 0x8C:	// STY abs
-			*mpDstState++ = kStateReadAddrL;		
+			*mpDstState++ = kStateReadAddrL;
 			*mpDstState++ = kStateReadAddrH;
 
 			if (mpVerifier)
@@ -603,17 +605,17 @@ bool ATCPUEmulator::Decode6502(uint8 opcode) {
 			break;
 
 		case 0x8D:	// STA abs
-			*mpDstState++ = kStateReadAddrL;		
+			*mpDstState++ = kStateReadAddrL;
 			*mpDstState++ = kStateReadAddrH;
 
 			if (mpVerifier)
 				*mpDstState++ = kStateVerifyInsn;
 
-			*mpDstState++ = kStateWriteA;	
+			*mpDstState++ = kStateWriteA;
 			break;
 
 		case 0x8E:	// STX abs
-			*mpDstState++ = kStateReadAddrL;		
+			*mpDstState++ = kStateReadAddrL;
 			*mpDstState++ = kStateReadAddrH;
 
 			if (mpVerifier)
@@ -652,7 +654,7 @@ bool ATCPUEmulator::Decode6502(uint8 opcode) {
 		case 0x95:	// STA zp,X
 			*mpDstState++ = kStateReadAddrL;
 			*mpDstState++ = kStateReadAddX;
-			*mpDstState++ = kStateWriteA;	
+			*mpDstState++ = kStateWriteA;
 			break;
 
 		case 0x96:	// STX zp,Y

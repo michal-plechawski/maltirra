@@ -15,7 +15,9 @@
 //	along with this program; if not, write to the Free Software
 //	Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
-#include <stdafx.h>
+#include <algorithm>
+#include <iterator>
+#include <vd2/system/vdtypes.h>
 #include "cpu.h"
 #include "cpustates.h"
 
@@ -232,7 +234,7 @@ bool ATCPUEmulator::Decode65C816(uint8 opcode, bool unalignedDP, bool emu, bool 
 			*mpDstState++ = emu ? kStatePushPCHM1 : kStatePushPCHM1Native;	// 3
 			*mpDstState++ = emu ? kStatePushPCLM1 : kStatePushPCLM1Native;	// 4
 
-			if (emu) 
+			if (emu)
 				*mpDstState++ = kStatePtoD_B1;
 			else
 				*mpDstState++ = kStatePtoD;
@@ -1245,7 +1247,7 @@ bool ATCPUEmulator::Decode65C816(uint8 opcode, bool unalignedDP, bool emu, bool 
 				*mpDstState++ = kStateWriteH16;
 			} else {
 				*mpDstState++ = kStateXtoD;
-				*mpDstState++ = kState816WriteByte;	
+				*mpDstState++ = kState816WriteByte;
 			}
 			break;
 
@@ -2105,11 +2107,11 @@ void ATCPUEmulator::Decode65816AddrDpY(bool unalignedDP, bool emu) {
 
 void ATCPUEmulator::Decode65816AddrDpInd(bool unalignedDP, bool emu) {
 	*mpDstState++ = kStateReadAddrDp;
-	
+
 	if (unalignedDP)
 		*mpDstState++ = kStateWait;
 
-	*mpDstState++ = kState816ReadByte;	
+	*mpDstState++ = kState816ReadByte;
 	*mpDstState++ = unalignedDP || !emu ? kStateReadIndAddrDp : kState816ReadIndAddrDpInPage;
 
 	if (mbHistoryEnabled)
@@ -2118,12 +2120,12 @@ void ATCPUEmulator::Decode65816AddrDpInd(bool unalignedDP, bool emu) {
 
 void ATCPUEmulator::Decode65816AddrDpIndX(bool unalignedDP, bool emu) {
 	*mpDstState++ = unalignedDP || !emu ? kStateReadAddrDpX : kStateReadAddrDpXInPage;
-	
+
 	if (unalignedDP)
 		*mpDstState++ = kStateWait;
 
 	*mpDstState++ = kStateWait;
-	*mpDstState++ = kState816ReadByte;	
+	*mpDstState++ = kState816ReadByte;
 
 	// In emulation mode, (dp,X) wraps when reading its second byte even if DP is
 	// unaligned.
@@ -2135,11 +2137,11 @@ void ATCPUEmulator::Decode65816AddrDpIndX(bool unalignedDP, bool emu) {
 
 void ATCPUEmulator::Decode65816AddrDpIndY(bool unalignedDP, bool emu, bool forceCycle) {
 	*mpDstState++ = kStateReadAddrDp;
-	
+
 	if (unalignedDP)
 		*mpDstState++ = kStateWait;
 
-	*mpDstState++ = kState816ReadByte;	
+	*mpDstState++ = kState816ReadByte;
 	*mpDstState++ = unalignedDP || !emu ? kStateReadIndAddrDp : kState816ReadIndAddrDpInPage;
 	*mpDstState++ = forceCycle ? kState816ReadAddrAbsYAlways : kState816ReadAddrAbsYSpec;
 
@@ -2153,9 +2155,9 @@ void ATCPUEmulator::Decode65816AddrDpLongInd(bool unalignedDP) {
 	if (unalignedDP)
 		*mpDstState++ = kStateWait;
 
-	*mpDstState++ = kState816ReadByte;	
-	*mpDstState++ = kStateReadIndAddrDpLongH;	
-	*mpDstState++ = kStateReadIndAddrDpLongB;	
+	*mpDstState++ = kState816ReadByte;
+	*mpDstState++ = kStateReadIndAddrDpLongH;
+	*mpDstState++ = kStateReadIndAddrDpLongB;
 
 	if (mbHistoryEnabled)
 		*mpDstState++ = kStateAddEAToHistory;
@@ -2167,7 +2169,7 @@ void ATCPUEmulator::Decode65816AddrDpLongIndY(bool unalignedDP) {
 	if (unalignedDP)
 		*mpDstState++ = kStateWait;
 
-	*mpDstState++ = kState816ReadByte;	
+	*mpDstState++ = kState816ReadByte;
 	*mpDstState++ = kStateReadIndAddrDpLongH;
 	*mpDstState++ = kStateReadIndAddrDpLongB;
 	*mpDstState++ = kStateReadAddrAddY;

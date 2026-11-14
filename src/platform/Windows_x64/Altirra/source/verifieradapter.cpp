@@ -46,8 +46,3 @@ void ATCPUVerifier::Init(ATCPUEmulator *cpu, ATCPUEmulatorMemory *mem, ATSimulat
 	connections.mpIsDisplayListEnabled = [sim] { return sim->GetAntic().IsDisplayListEnabled(); };
 	Init(std::move(connections), simevmgr);
 }
-
-void ATCPUVerifier::VerifyInsn(const ATCPUEmulator& cpu, uint8 opcode, uint16 target) {
-	(void)cpu; // Preserve the original API's observations of the bound CPU.
-	VerifyInsn(opcode, target);
-}

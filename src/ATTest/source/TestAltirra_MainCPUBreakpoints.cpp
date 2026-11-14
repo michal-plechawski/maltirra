@@ -1,5 +1,4 @@
 // Regression for the actual main CPU's instruction-flag bitmap and bindings.
-// This stays Windows-only until the main CPU itself is ported.
 
 #include <memory>
 #include <vd2/system/vdtypes.h>
@@ -7,23 +6,27 @@
 #include <at/attest/portabletest.h>
 #include <cpuflags.h>
 #include <bkptmanager.h>
-#include "../../Altirra/h/cpu.h"
+#include <cpu.h>
 
 bool ATTestAltirraMainCPUBreakpoints(ATPortableTestContext& context) {
 	auto cpu = std::make_unique<ATCPUEmulator>();
 	cpu->SetBreakpoint(0x1234);
 	cpu->SetBreakpoint(0x1234);
+	AT_PORTABLE_TEST_ASSERT(context, cpu->GetBreakpointCount() == 1);
+	cpu->SetBreakpoint(0x5678);
+	AT_PORTABLE_TEST_ASSERT(context, cpu->GetBreakpointCount() == 2);
+	cpu->ClearBreakpoint(0x5678);
 	AT_PORTABLE_TEST_ASSERT(context, cpu->IsBreakpointSet(0x1234));
 	cpu->ClearBreakpoint(0x1234);
 	AT_PORTABLE_TEST_ASSERT(context, !cpu->GetBreakpointCount());
 
 	cpu->SetAllBreakpoints();
-	AT_PORTABLE_TEST_ASSERT(context, cpu->GetBreakpointCount() > 0);
+	AT_PORTABLE_TEST_ASSERT(context, cpu->GetBreakpointCount() == 65536);
 	for (uint32 pc = 0; pc < 0x10000; ++pc)
 		AT_PORTABLE_TEST_ASSERT(context, cpu->IsBreakpointSet(static_cast<uint16>(pc)));
 	cpu->ClearBreakpoint(0x1234);
 	AT_PORTABLE_TEST_ASSERT(context, !cpu->IsBreakpointSet(0x1234));
-	AT_PORTABLE_TEST_ASSERT(context, cpu->GetBreakpointCount() > 0);
+	AT_PORTABLE_TEST_ASSERT(context, cpu->GetBreakpointCount() == 65535);
 	cpu->ClearAllBreakpoints();
 	AT_PORTABLE_TEST_ASSERT(context, !cpu->GetBreakpointCount());
 	for (uint32 pc = 0; pc < 0x10000; ++pc)

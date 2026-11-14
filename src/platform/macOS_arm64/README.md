@@ -139,16 +139,15 @@ POKEY core with its real scheduler and renderer tables. Timer tests check the
 cycle immediately before and at IRQ assertion for fast timer 1 and slow timers
 2/4 at both 64 kHz and 15 kHz, retaining the divider phase after SKCTL reset and
 STIMER reload. They also verify active-low status and IRQEN acknowledgement.
-These remain component tests: main CPU execution and simulator/application
-wiring still need to be ported before a machine can boot on macOS.
+These remain component tests: complete simulator/application wiring is still
+needed before a machine can boot on macOS.
 
 CPU profiling's complete history-analysis layer is shared in
 `src/Altirra/source/profilebuilder.cpp`: sessions and ownership, instruction,
 function, call-graph, basic-block and BASIC-line profiling, auxiliary counters,
 automatic frame boundaries, frame merging, and inclusive call-graph statistics.
-The original live `ATCPUProfiler` collector remains in the Windows subtree
-until the main CPU is ported; the shared builder processes actual history-entry
-formats without a fabricated CPU or simulator. CPU status flags now live in
+The original live `ATCPUProfiler` collector is also shared and now receives
+history from the real main CPU. CPU status flags live in
 the shared `cpuflags.h`, with their original values retained.
 
 `Altirra_ProfileBuilder`, `Altirra_ProfileCounters`, `Altirra_ProfileFrames`,
@@ -159,8 +158,8 @@ boundaries, discarded intervals, and exact exclusive/inclusive cycle totals.
 Session reuse and self-move retain correct ownership. Merging now preserves
 separate main/interrupt rows at the same PC; BASIC-line and call-graph address
 records explicitly initialize their context instead of exposing allocator bits.
-These are deterministic history-analysis tests, not CPU execution tests; main
-instruction execution and its debugger/simulator integration remain unfinished.
+These are deterministic history-analysis tests. Separate main-CPU tests below
+exercise execution and live collection; full simulator wiring remains unfinished.
 
 The CPU heat-map analysis (`src/Altirra/source/cpuheatmap.cpp`) is now shared:
 64K memory provenance/access/bit-validity tracking, register and stack
@@ -181,8 +180,8 @@ using X instead of A, hardware-store trap selection, hardware RMW classification
 and preservation, INC/DEC RAM provenance, and the diagnostic V-bit mask.
 Immediate arithmetic keeps the original heat-map lineage behavior.
 This layer analyzes completed instructions; it does not itself execute a CPU.
-Main CPU execution, its remaining debugger dependencies, and the complete
-simulator/application integration still remain to be ported.
+The main CPU and its heat-map adapter are now shared too; complete
+simulator/application integration remains to be ported.
 
 The complete CPU verifier (`src/Altirra/source/verifier.cpp`) is shared,
 including address-zero, non-canonical hardware, indexed 64K wrap, stack,
@@ -210,9 +209,8 @@ instruction's remaining checks before accessing released machine connections;
 later observer entry points are harmless after shutdown. A per-initialization
 lifetime token also permits synchronous deletion by the failure callback
 (the real simulator's disable path) without reading the destroyed observer.
-These verify the original observer, not an executing substitute CPU. Main CPU
-execution, remaining debugger dependencies, and full machine/application
-wiring are still unfinished.
+These verify the original observer. Main CPU execution is now shared too;
+remaining debugger dependencies and full machine/application wiring are unfinished.
 
 The complete breakpoint manager (`src/Altirra/source/bkptmanager.cpp`) is shared:
 per-target PC and instruction breakpoints, primary-CPU global XPC matching,
@@ -230,16 +228,16 @@ and instruction traps, detach/reattach, synchronous one-shot removal and
 pending-ID reuse, shutdown, overlapping ranges, bank isolation, and overflow-
 safe range clipping. A real `ATCoProc6502` executes an LDA before stopping at
 the next PC through the production target breakpoint implementation; its
-scheduler has a bounded deadline. This is a coprocessor integration test, not
-evidence that the still-unported main CPU can execute on macOS.
+scheduler has a bounded deadline. Separate main-CPU execution tests are
+described below.
 
 Clearing the final instruction breakpoint now restores the correct addresses
 on its own target. Reattachment restores retained breakpoint metadata; clearing
 a range preserves the attribute-gate union of all banks. Dispatch snapshots
 and generations make one-shot mutation and immediate ID reuse safe. Shutdown
 invalidates the dispatch lifetime and releases target handlers and memory
-layers, including repeated shutdown/reinitialization. Windows additionally
-runs `Altirra_MainCPUBreakpoints` against the actual main CPU: setting every
+layers, including repeated shutdown/reinitialization. Both platforms run
+`Altirra_MainCPUBreakpoints` against the actual main CPU: setting every
 breakpoint retains the correct internal count, and clearing all removes only
 the breakpoint bits before ordinary PC breakpoints are restored.
 
@@ -266,5 +264,39 @@ depend on the compiler's evaluation order for independent debug reads.
 Regressions fix NMOS indirect JMP's page wrap, 65C816 indirect JMP's PBK,
 8051 context selection and AJMP's post-instruction 2K page, wrapped branch
 symbol requests, disabled bit-branch symbols, and long `cart:` PC prefixes.
-These are debugger-component tests, not a booted machine: the main CPU and
-complete simulator/application integration still remain to be ported.
+These are debugger-component tests. Complete simulator/application integration
+still remains to be ported before an Atari can boot.
+
+The complete main CPU is shared in `cpu.cpp`, `cpumachine.inl`, `cpu6502.cpp`,
+`cpu6502ill.cpp`, `cpu65c02.cpp`, and `cpu65c816.cpp`. This retains the original
+cycle engine, all decoder tables including undocumented 6502 instructions,
+65C816 emulation/native widths, accelerated execution, slow-bus retries,
+interrupts, hooks, debugger steps, execution history, and snapshots. The CPU's
+heat-map binding and live profiler collector are shared as well. Windows keeps
+its legacy simulator-bound disassembly console adapter; the macOS adapter reads
+the attached CPU memory bus through explicit disassembler services.
+
+`Altirra_MainCPU6502`, `Altirra_MainCPU65C02`, `Altirra_MainCPU816`, and
+`Altirra_MainCPUAcceleration` execute real programs through the production CPU,
+memory manager, and schedulers. They check addressing and bank/page crossings,
+cycle counts, decimal arithmetic, stack/control flow, read-modify-write bus
+transactions, undocumented instructions, native widths, DMA, and slow handlers.
+`Altirra_MainCPUHistory`, `Altirra_MainCPUSnapshot`, and `Altirra_MainCPUDebug`
+check wraparound at `$FFFF`, 24 snapshot cut points with continued bus timing
+and memory comparisons, actual breakpoint/hook dispatch, and IRQ/NMI entry/RTI.
+`Altirra_MainCPUDiagnostics` verifies bus-backed reference formatting and native
+macOS diagnostic output without generating CPU accesses or inventing a clock.
+Large fixtures are heap-owned for Windows' default stack limit.
+
+`Altirra_CPULiveProfiler` collects real executing CPU history in all five modes,
+checks frame lengths and BASIC line memory, the two-scanline sampling cadence,
+restart/end, and destruction with pending scheduler callbacks. Regressions fix
+debugger P/E/D setters' decode selection and index truncation, history-map
+indexing at `$FFFF`, the reported breakpoint count, and accelerated snapshot
+phase restoration. History register copies use `memcpy` to avoid aliasing byte
+storage as a DWORD. Profiler restart/destruction cancels pending events and
+BASIC sampling keeps its original two-scanline interval on every update.
+
+This is real main-CPU execution on macOS, still within component tests. The
+complete simulator, device/application lifecycle, debugger command handling,
+and booted-machine connection to the native AppKit UI remain unfinished.

@@ -15,7 +15,7 @@
 //	along with this program; if not, write to the Free Software
 //	Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
-#include <stdafx.h>
+#include <vd2/system/vdtypes.h>
 #include "cpu.h"
 #include "cpustates.h"
 
@@ -393,7 +393,7 @@ bool ATCPUEmulator::Decode6502Ill(uint8 opcode) {
 			break;
 
 		case 0x8F:	// SAX abs
-			*mpDstState++ = kStateReadAddrL;		
+			*mpDstState++ = kStateReadAddrL;
 			*mpDstState++ = kStateReadAddrH;
 			*mpDstState++ = kStateXtoD;
 			*mpDstState++ = kStateAnd_SAX;
