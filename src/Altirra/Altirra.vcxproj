@@ -383,7 +383,10 @@
     <ClCompile Include="source\inputdefs.cpp">
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="..\platform\Windows_x64\Altirra\source\inputmanager.cpp" />
+    <ClCompile Include="source\inputmanager.cpp">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="..\platform\Windows_x64\Altirra\source\inputkeyname.cpp" />
     <ClCompile Include="source\inputmap.cpp">
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
     </ClCompile>
@@ -766,7 +769,8 @@
     <ClInclude Include="h\idevhdimage.h" />
     <ClInclude Include="h\inputcontroller.h" />
     <ClInclude Include="h\inputpointer.h" />
-    <ClInclude Include="..\platform\Windows_x64\Altirra\h\inputmanager.h" />
+    <ClInclude Include="h\inputmanager.h" />
+    <ClInclude Include="h\inputkeyname.h" />
     <ClInclude Include="h\irqcontroller.h" />
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\joystick.h" />
     <ClInclude Include="h\kerneldb.h" />

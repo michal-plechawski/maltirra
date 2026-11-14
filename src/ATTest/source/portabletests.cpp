@@ -82,6 +82,16 @@ bool ATTestAltirraInputTablet(ATPortableTestContext& context);
 bool ATTestAltirraInputKeypad(ATPortableTestContext& context);
 bool ATTestAltirraInputKeyboard(ATPortableTestContext& context);
 bool ATTestAltirraInputPowerPad(ATPortableTestContext& context);
+bool ATTestAltirraInputManagerButtons(ATPortableTestContext& context);
+bool ATTestAltirraInputManagerModes(ATPortableTestContext& context);
+bool ATTestAltirraInputManagerFlags(ATPortableTestContext& context);
+bool ATTestAltirraInputManagerMaps(ATPortableTestContext& context);
+bool ATTestAltirraInputManagerUnits(ATPortableTestContext& context);
+bool ATTestAltirraInputManagerPersistence(ATPortableTestContext& context);
+bool ATTestAltirraInputManagerAnalog(ATPortableTestContext& context);
+bool ATTestAltirraInputManagerPointers(ATPortableTestContext& context);
+bool ATTestAltirraInputManagerWheel(ATPortableTestContext& context);
+bool ATTestAltirraInputKeyNames(ATPortableTestContext& context);
 bool ATTestAltirraMemoryManager(ATPortableTestContext& context);
 bool ATTestAltirraRTime8(ATPortableTestContext& context);
 bool ATTestAltirraRVerter(ATPortableTestContext& context);
@@ -350,6 +360,16 @@ const ATPortableTestCase *ATGetPortableTests(size_t& count) {
 		{ "Altirra_InputKeypad", ATTestAltirraInputKeypad },
 		{ "Altirra_InputKeyboard", ATTestAltirraInputKeyboard },
 		{ "Altirra_InputPowerPad", ATTestAltirraInputPowerPad },
+		{ "Altirra_InputManagerButtons", ATTestAltirraInputManagerButtons },
+		{ "Altirra_InputManagerModes", ATTestAltirraInputManagerModes },
+		{ "Altirra_InputManagerFlags", ATTestAltirraInputManagerFlags },
+		{ "Altirra_InputManagerMaps", ATTestAltirraInputManagerMaps },
+		{ "Altirra_InputManagerUnits", ATTestAltirraInputManagerUnits },
+		{ "Altirra_InputManagerPersistence", ATTestAltirraInputManagerPersistence },
+		{ "Altirra_InputManagerAnalog", ATTestAltirraInputManagerAnalog },
+		{ "Altirra_InputManagerPointers", ATTestAltirraInputManagerPointers },
+		{ "Altirra_InputManagerWheel", ATTestAltirraInputManagerWheel },
+		{ "Altirra_InputKeyNames", ATTestAltirraInputKeyNames },
 		{ "Altirra_MemoryManager", ATTestAltirraMemoryManager },
 		{ "Altirra_RTime8", ATTestAltirraRTime8 },
 		{ "Altirra_RVerter", ATTestAltirraRVerter },

@@ -15,18 +15,22 @@
 //	along with this program; if not, write to the Free Software
 //	Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
-#include <stdafx.h>
+#include <algorithm>
+#include <cmath>
+#include <cstring>
+#include <iterator>
+#include <utility>
+#include <vector>
 #include <vd2/system/bitmath.h>
 #include <vd2/system/hash.h>
 #include <vd2/system/math.h>
 #include <vd2/system/registry.h>
 #include <vd2/system/strutil.h>
-#include <vd2/Dita/accel.h>
+#include "inputkeyname.h"
 #include "inputdefs.h"
 #include "inputmanager.h"
 #include "inputmap.h"
 #include "inputcontroller.h"
-#include "joystick.h"
 
 namespace {
 	// digital - controls acceleration
@@ -80,6 +84,7 @@ ATInputManager::ATInputManager()
 	, m5200ControllerIndex(0)
 	, mb5200PotsEnabled(true)
 	, mb5200Mode(false)
+	, mbRestrictedMode(false)
 	, mbMouseMapped(false)
 	, mbMouseAbsMode(false)
 	, mbMouseActiveTarget(false)
@@ -90,6 +95,7 @@ ATInputManager::ATInputManager()
 }
 
 ATInputManager::~ATInputManager() {
+	Shutdown();
 }
 
 void ATInputManager::Init(ATScheduler *fastSched, ATScheduler *slowSched, ATPokeyEmulator& pokey, IATDevicePortManager& portMgr, ATLightPenPort *lightPen) {
@@ -102,6 +108,9 @@ void ATInputManager::Init(ATScheduler *fastSched, ATScheduler *slowSched, ATPoke
 
 void ATInputManager::Shutdown() {
 	RemoveAllInputMaps();
+	mButtons.clear();
+	mMouseWheelAccum = 0;
+	mMouseHWheelAccum = 0;
 }
 
 void ATInputManager::Set5200Mode(bool is5200) {
@@ -150,7 +159,7 @@ void ATInputManager::Select5200Controller(int index, bool potsEnabled) {
 
 void ATInputManager::SelectMultiJoy(int multiIndex) {
 	const uint8 mask = multiIndex < 0 ? 0xFF : 1 << multiIndex;
-	
+
 	if (mMultiMask != mask) {
 		mMultiMask = mask;
 
@@ -325,7 +334,7 @@ int ATInputManager::RegisterInputUnit(const ATInputUnitIdentifier& id, const wch
 
 	int unit = VDFindLowestSetBitFast(~mAllocatedUnits);
 
-	mAllocatedUnits |= (1 << unit);
+	mAllocatedUnits |= (uint32(1) << unit);
 	mUnitIds[unit] = id;
 	mUnitNames[unit] = name;
 	mpUnitNameSources[unit] = nameSource;
@@ -334,25 +343,60 @@ int ATInputManager::RegisterInputUnit(const ATInputUnitIdentifier& id, const wch
 }
 
 void ATInputManager::UnregisterInputUnit(int unit) {
-	if (unit < 0)
+	if (static_cast<unsigned>(unit) >= 32)
 		return;
 
-	VDASSERT(unit < 32);
-	uint32 bit = (1 << unit);
+	uint32 bit = (uint32(1) << unit);
 
-	VDASSERT(mAllocatedUnits & bit);
+	if (!(mAllocatedUnits & bit))
+		return;
+
+	// An unplugged device may not send button-up events. Release only its
+	// contribution so that buttons held by other devices remain asserted.
+	vdfastvector<uint32> ids;
+	mButtons.get_keys(ids);
+	for (uint32 id : ids)
+		OnButtonUp(unit, id);
 
 	mAllocatedUnits &= ~bit;
 	mpUnitNameSources[unit] = NULL;
 }
 
 void ATInputManager::SetRestrictedMode(bool restricted) {
+	if (mbRestrictedMode == restricted)
+		return;
+
 	mbRestrictedMode = restricted;
+	if (restricted) {
+		for (auto& entry : mMappings) {
+			Mapping& mapping = entry.second;
+			if (!IsTriggerRestricted(mTriggers[mapping.mTriggerIdx]))
+				continue;
+
+			SetTrigger(mapping, false);
+			mapping.mbMotionActive = false;
+			mapping.mAutoCounter = 0;
+			mapping.mAutoValue = 0;
+			mapping.mMotionSpeed = 0;
+			mapping.mMotionAccel = 0;
+			mapping.mMotionDrag = 0;
+		}
+	}
+
+	// Inverted controls are asserted at rest. Suppress that idle state while
+	// restricted, and restore it when normal input is enabled again.
+	for (const Trigger& trigger : mTriggers) {
+		if ((trigger.mId & 0xff00) == kATInputTrigger_UILeft)
+			continue;
+
+		if (restricted || (trigger.mId & kATInputTriggerMode_Mask) == kATInputTriggerMode_Inverted)
+			trigger.mpController->SetDigitalTrigger(trigger.mId & kATInputTrigger_Mask, !restricted);
+	}
 }
 
 bool ATInputManager::IsInputMapped(int unit, uint32 inputCode) const {
 	return mMappings.find(inputCode) != mMappings.end()
-		|| mMappings.find(inputCode | kATInputCode_SpecificUnit | (unit << kATInputCode_UnitShift)) != mMappings.end();
+		|| mMappings.find(inputCode | kATInputCode_SpecificUnit | (static_cast<uint32>(unit) << kATInputCode_UnitShift)) != mMappings.end();
 }
 
 void ATInputManager::OnButtonChanged(int unit, int id, bool down) {
@@ -365,13 +409,13 @@ void ATInputManager::OnButtonChanged(int unit, int id, bool down) {
 void ATInputManager::OnButtonDown(int unit, int id) {
 	Buttons::iterator it(mButtons.insert(Buttons::value_type(id, 0)).first);
 	uint32 oldVal = it->second;
-	
-	const uint32 bit = (1 << unit);
+
+	const uint32 bit = (uint32(1) << unit);
 
 	if (!(it->second & bit)) {
 		it->second |= bit;
 
-		ActivateMappings(id | kATInputCode_SpecificUnit | (unit << kATInputCode_UnitShift), true);
+		ActivateMappings(id | kATInputCode_SpecificUnit | (static_cast<uint32>(unit) << kATInputCode_UnitShift), true);
 
 		if (!oldVal)
 			ActivateMappings(id, true);
@@ -383,14 +427,14 @@ void ATInputManager::OnButtonUp(int unit, int id) {
 	if (it == mButtons.end())
 		return;
 
-	const uint32 bit = (1 << unit);
+	const uint32 bit = (uint32(1) << unit);
 
 	if (it->second & bit) {
 		it->second &= ~bit;
 
-		ActivateMappings(id | kATInputCode_SpecificUnit | (unit << kATInputCode_UnitShift), false);
+		ActivateMappings(id | kATInputCode_SpecificUnit | (static_cast<uint32>(unit) << kATInputCode_UnitShift), false);
 
-		if (!it->second) 
+		if (!it->second)
 			ActivateMappings(id, false);
 	}
 }
@@ -411,9 +455,9 @@ void ATInputManager::ReleaseButtons(uint32 idmin, uint32 idmax) {
 
 			while(unitMask) {
 				uint32 unit = VDFindLowestSetBit(unitMask);
-				unitMask &= ~(1 << unit);
+				unitMask &= ~(uint32(1) << unit);
 
-				ActivateMappings(id | kATInputCode_SpecificUnit | (unit << kATInputCode_UnitShift), false);
+				ActivateMappings(id | kATInputCode_SpecificUnit | (static_cast<uint32>(unit) << kATInputCode_UnitShift), false);
 			}
 
 			ActivateMappings(id, false);
@@ -425,20 +469,20 @@ void ATInputManager::ReleaseButtons(uint32 idmin, uint32 idmax) {
 
 void ATInputManager::OnAxisInput(int unit, int axis, sint32 value, sint32 deadifiedValue) {
 	ActivateAnalogMappings(axis, value, deadifiedValue);
-	ActivateAnalogMappings(axis | kATInputCode_SpecificUnit | (unit << kATInputCode_UnitShift), value, deadifiedValue);
+	ActivateAnalogMappings(axis | kATInputCode_SpecificUnit | (static_cast<uint32>(unit) << kATInputCode_UnitShift), value, deadifiedValue);
 }
 
 void ATInputManager::OnMouseMove(int unit, int dx, int dy) {
-	mMouseAvgQueue[mMouseAvgIndex & 3] += (uint32)(dx + (dy << 16));
+	mMouseAvgQueue[mMouseAvgIndex & 3] += static_cast<uint32>(dx) + (static_cast<uint32>(dy) << 16);
 
 	// Scale dx/dy to something reasonable in the +-1 range.
 	dx *= 0x80;
 	dy *= 0x80;
 
 	ActivateImpulseMappings(kATInputCode_MouseHoriz, dx);
-	ActivateImpulseMappings(kATInputCode_MouseHoriz | kATInputCode_SpecificUnit | (unit << kATInputCode_UnitShift), dx);
+	ActivateImpulseMappings(kATInputCode_MouseHoriz | kATInputCode_SpecificUnit | (static_cast<uint32>(unit) << kATInputCode_UnitShift), dx);
 	ActivateImpulseMappings(kATInputCode_MouseVert, dy);
-	ActivateImpulseMappings(kATInputCode_MouseVert | kATInputCode_SpecificUnit | (unit << kATInputCode_UnitShift), dy);
+	ActivateImpulseMappings(kATInputCode_MouseVert | kATInputCode_SpecificUnit | (static_cast<uint32>(unit) << kATInputCode_UnitShift), dy);
 }
 
 bool ATInputManager::OnMouseWheel(int unit, float delta) {
@@ -448,9 +492,9 @@ bool ATInputManager::OnMouseWheel(int unit, float delta) {
 
 	// activate analog directional up/down mappings
 	handled |= ActivateImpulseMappings(dirInputCode, abs(xdelta));
-	handled |= ActivateImpulseMappings(dirInputCode | kATInputCode_SpecificUnit | (unit << kATInputCode_UnitShift), abs(xdelta));
+	handled |= ActivateImpulseMappings(dirInputCode | kATInputCode_SpecificUnit | (static_cast<uint32>(unit) << kATInputCode_UnitShift), abs(xdelta));
 	handled |= ActivateImpulseMappings(kATInputCode_MouseWheel, xdelta);
-	handled |= ActivateImpulseMappings(kATInputCode_MouseWheel | kATInputCode_SpecificUnit | (unit << kATInputCode_UnitShift), xdelta);
+	handled |= ActivateImpulseMappings(kATInputCode_MouseWheel | kATInputCode_SpecificUnit | (static_cast<uint32>(unit) << kATInputCode_UnitShift), xdelta);
 
 	// accumulate digital mappings for activation in Poll()
 	mMouseWheelAccum += delta;
@@ -465,12 +509,12 @@ bool ATInputManager::OnMouseHWheel(int unit, float delta) {
 
 	// activate analog directional up/down mappings
 	handled |= ActivateImpulseMappings(dirInputCode, abs(xdelta));
-	handled |= ActivateImpulseMappings(dirInputCode | kATInputCode_SpecificUnit | (unit << kATInputCode_UnitShift), abs(xdelta));
+	handled |= ActivateImpulseMappings(dirInputCode | kATInputCode_SpecificUnit | (static_cast<uint32>(unit) << kATInputCode_UnitShift), abs(xdelta));
 	handled |= ActivateImpulseMappings(kATInputCode_MouseHWheel, xdelta);
-	handled |= ActivateImpulseMappings(kATInputCode_MouseHWheel | kATInputCode_SpecificUnit | (unit << kATInputCode_UnitShift), xdelta);
+	handled |= ActivateImpulseMappings(kATInputCode_MouseHWheel | kATInputCode_SpecificUnit | (static_cast<uint32>(unit) << kATInputCode_UnitShift), xdelta);
 
 	// accumulate digital mappings for activation in Poll()
-	mMouseWheelAccum += delta;
+	mMouseHWheelAccum += delta;
 
 	return handled || IsInputMapped(0, kATInputCode_MouseHWheel) || IsInputMapped(0, kATInputCode_MouseHWheelLeft) || IsInputMapped(0, kATInputCode_MouseHWheelRight);
 }
@@ -679,30 +723,7 @@ void ATInputManager::GetNameForInputCode(uint32 code, VDStringW& name) const {
 
 		default:
 			if (code < 0x200) {
-				VDUIAccelerator accel;
-				accel.mModifiers = 0;
-
-				switch(code) {
-					case kATInputCode_KeyNumpadEnter:
-						code = kATInputCode_KeyReturn;
-						accel.mModifiers |= VDUIAccelerator::kModExtended;
-						break;
-					case kATInputCode_KeyInsert:
-					case kATInputCode_KeyDelete:
-					case kATInputCode_KeyHome:
-					case kATInputCode_KeyEnd:
-					case kATInputCode_KeyNext:
-					case kATInputCode_KeyPrior:
-					case kATInputCode_KeyLeft:
-					case kATInputCode_KeyRight:
-					case kATInputCode_KeyUp:
-					case kATInputCode_KeyDown:
-						accel.mModifiers |= VDUIAccelerator::kModExtended;
-						break;
-				}
-
-				accel.mVirtKey = code & 0xff;
-				VDUIGetAcceleratorString(accel, name);
+				ATInputGetKeyName(code, name);
 				name = VDStringW(L"Key: ") + name;
 			} else if ((code & ~0xff) == kATInputCode_JoyButton0)
 				name.sprintf(L"Joy Button %d", (code & 0xff) + 1);
@@ -1291,7 +1312,7 @@ void ATInputManager::LoadSelections(VDRegistryKey& key, ATInputControllerType de
 }
 
 void ATInputManager::SaveMaps(VDRegistryKey& key) {
-	vdfastvector<std::pair<ATInputMap *, bool> > sortedMaps;
+	std::vector<std::pair<ATInputMap *, bool>> sortedMaps;
 
 	for(InputMaps::iterator it(mInputMaps.begin()), itEnd(mInputMaps.end()); it != itEnd; ++it)
 		sortedMaps.push_back(*it);
@@ -1317,7 +1338,7 @@ void ATInputManager::SaveMaps(VDRegistryKey& key) {
 }
 
 void ATInputManager::SaveSelections(VDRegistryKey& key) {
-	vdfastvector<std::pair<ATInputMap *, bool> > sortedMaps;
+	std::vector<std::pair<ATInputMap *, bool>> sortedMaps;
 
 	for(InputMaps::iterator it(mInputMaps.begin()), itEnd(mInputMaps.end()); it != itEnd; ++it)
 		sortedMaps.push_back(*it);
@@ -1344,7 +1365,7 @@ void ATInputManager::SaveSelections(VDRegistryKey& key) {
 			quickMapNames.append(imap->GetName());
 		}
 	}
-	
+
 	key.setString("Input: Active map names", activeMapNames.c_str());
 	key.setString("Input: Quick map names", quickMapNames.c_str());
 }
@@ -1367,7 +1388,7 @@ void ATInputManager::RebuildMappings() {
 	mbMouseMapped = false;
 	mbMouseActiveTarget = false;
 	mbControllerHasNonBeamPointer = false;
-	
+
 	uint32 triggerCount = 0;
 
 	vdfastvector<int> controllerTable;
@@ -1444,7 +1465,9 @@ void ATInputManager::RebuildMappings() {
 
 					case kATInputControllerType_Console:
 						{
-							ATConsoleController *console = new ATConsoleController(this);
+							ATConsoleController *console = new ATConsoleController([this](uint32 trigger, bool state) {
+								if (mpCB) mpCB->SetConsoleTrigger(trigger, state);
+							});
 							console->Attach(*mpPortMgr, 0);
 							pic = console;
 						}
@@ -1461,7 +1484,7 @@ void ATInputManager::RebuildMappings() {
 
 					case kATInputControllerType_InputState:
 						{
-							ATInputStateController *ctrl = new ATInputStateController(this, flagIndex);
+							ATInputStateController *ctrl = new ATInputStateController([this](uint32 flag, bool state) { ActivateFlag(flag, state); }, flagIndex);
 							pic = ctrl;
 						}
 						break;
@@ -1626,7 +1649,7 @@ void ATInputManager::RebuildMappings() {
 				case kATInputCode_JoyClass:
 					if (specificUnit >= 0) {
 						inputCode |= kATInputCode_SpecificUnit;
-						inputCode |= specificUnit << kATInputCode_UnitShift;
+						inputCode |= static_cast<uint32>(specificUnit) << kATInputCode_UnitShift;
 					}
 					break;
 
@@ -1694,7 +1717,8 @@ void ATInputManager::RebuildMappings() {
 
 		const uint32 id = trigger.mId & kATInputTrigger_Mask;
 
-		trigger.mpController->SetDigitalTrigger(id, true);
+		if (!IsTriggerRestricted(trigger))
+			trigger.mpController->SetDigitalTrigger(id, true);
 	}
 }
 
@@ -1790,7 +1814,7 @@ void ATInputManager::ActivateAnalogMappings(uint32 id, int ds, int dsdead) {
 		Trigger& trigger = mTriggers[mapping.mTriggerIdx];
 		if (IsTriggerRestricted(trigger))
 			continue;
-		
+
 		const uint32 id = trigger.mId & kATInputTrigger_Mask;
 		int dstemp = ds;
 
@@ -1846,7 +1870,7 @@ bool ATInputManager::ActivateImpulseMappings(uint32 id, int ds) {
 
 		if (IsTriggerRestricted(trigger))
 			continue;
-		
+
 		const uint32 id = trigger.mId & kATInputTrigger_Mask;
 
 		switch(trigger.mId & kATInputTriggerMode_Mask) {

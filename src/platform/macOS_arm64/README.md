@@ -419,3 +419,18 @@ tablet stylus-down restores the stored coordinates.
 
 Host input acquisition, native configuration UI and complete machine/application
 wiring remain unfinished. These component tests do not boot Atari firmware.
+
+The complete input-manager implementation is shared. Its mapping engine, presets, unit
+registration, condition flags and registry persistence now live in shared
+`inputmanager.cpp`/`inputmanager.h`. Only keyboard display labels use host
+implementations of `ATInputGetKeyName`: Windows retains the original accelerator
+formatter and macOS labels the semantic codes directly. This does not yet
+acquire physical keyboard, mouse or game-controller events from AppKit/IOHID.
+Ten additional test groups cover map/unit lifecycle, persistence, digital
+modes, relative/absolute analog motion, pointer routing, wheel separation and
+key labels. The manager initializes restricted mode deterministically and
+releases active non-UI controls when entering that mode. Horizontal wheel
+events accumulate independently of vertical events. Device removal releases
+only that unit's held buttons, including unit 31, and manager destruction
+cleans up controllers and pending scheduled work. Persistence uses standard
+containers for non-trivial pairs so it works with both MSVC and libc++.

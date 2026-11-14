@@ -241,7 +241,10 @@
     <ClCompile Include="source\inputcontroller.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\platform\Windows_x64\Altirra\source\inputmanager.cpp">
+    <ClCompile Include="..\platform\Windows_x64\Altirra\source\inputkeyname.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="source\inputmanager.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="source\irqcontroller.cpp">
@@ -1314,7 +1317,10 @@
     <ClInclude Include="h\inputcontroller.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\platform\Windows_x64\Altirra\h\inputmanager.h">
+    <ClInclude Include="h\inputkeyname.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="h\inputmanager.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="h\irqcontroller.h">

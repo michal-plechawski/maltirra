@@ -18,7 +18,9 @@
 #ifndef f_AT_INPUTMANAGER_H
 #define f_AT_INPUTMANAGER_H
 
+#include <cstring>
 #include <map>
+#include <utility>
 #include <set>
 #include <vd2/system/VDString.h>
 #include <vd2/system/vdstl.h>
