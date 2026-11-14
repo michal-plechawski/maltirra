@@ -693,6 +693,15 @@
     <ClCompile Include="..\platform\Windows_x64\ATTest\source\TestTrace_IO.cpp" />
     <ClCompile Include="..\platform\Windows_x64\ATTest\source\TestUI_TextDOM.cpp" />
     <ClCompile Include="..\platform\Windows_x64\ATTest\source\utils.cpp" />
+    <ClCompile Include="source\TestAltirra_InputControllerPortable.cpp">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="source\TestAltirra_InputMotionPortable.cpp">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="source\TestAltirra_InputPeripheralPortable.cpp">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
 	<ClInclude Include="..\h\at\attest\portabletest.h" />

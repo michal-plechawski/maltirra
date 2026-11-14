@@ -235,7 +235,10 @@
     <ClCompile Include="source\idevhdimage.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\platform\Windows_x64\Altirra\source\inputcontroller.cpp">
+    <ClCompile Include="..\platform\Windows_x64\Altirra\source\inputcontrolleradapter.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="source\inputcontroller.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\platform\Windows_x64\Altirra\source\inputmanager.cpp">
@@ -1305,7 +1308,10 @@
     <ClInclude Include="h\idevhdimage.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\platform\Windows_x64\Altirra\h\inputcontroller.h">
+    <ClInclude Include="h\inputpointer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="h\inputcontroller.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\inputmanager.h">

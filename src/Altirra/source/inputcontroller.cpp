@@ -15,7 +15,10 @@
 //	along with this program; if not, write to the Free Software
 //	Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
-#include <stdafx.h>
+#include <algorithm>
+#include <cmath>
+#include <cstring>
+#include <utility>
 #include <vd2/system/bitmath.h>
 #include <vd2/system/constexpr.h>
 #include <vd2/system/math.h>
@@ -25,7 +28,7 @@
 #include <at/atcore/scheduler.h>
 #include "inputcontroller.h"
 #include "inputdefs.h"
-#include "inputmanager.h"
+#include "inputpointer.h"
 #include <at/ataudio/pokey.h>
 #include "antic.h"
 #include "gtia.h"
@@ -45,6 +48,7 @@ ATPortInputController::~ATPortInputController() {
 }
 
 void ATPortInputController::Attach(IATDevicePortManager& portMgr, int portIndex, int multiIndex) {
+	Detach();
 	portMgr.AllocControllerPort(portIndex, ~mpControllerPort);
 
 	mMultiMask = multiIndex < 0 ? 0 : 1 << multiIndex;
@@ -111,6 +115,7 @@ ATMouseController::ATMouseController(bool amigaMode)
 }
 
 ATMouseController::~ATMouseController() {
+	Detach();
 }
 
 void ATMouseController::Init(ATScheduler *scheduler) {
@@ -156,28 +161,28 @@ void ATMouseController::SetDigitalTrigger(uint32 trigger, bool state) {
 }
 
 void ATMouseController::ApplyImpulse(uint32 trigger, int ds) {
-	ds <<= 5;
+	const uint32 delta = static_cast<uint32>(ds) << 5;
 
 	switch(trigger) {
 		case kATInputTrigger_Left:
-			mTargetX -= ds;
+			mTargetX -= delta;
 			EnableUpdate();
 			break;
 
 		case kATInputTrigger_Axis0:
 		case kATInputTrigger_Right:
-			mTargetX += ds;
+			mTargetX += delta;
 			EnableUpdate();
 			break;
 
 		case kATInputTrigger_Up:
-			mTargetY -= ds;
+			mTargetY -= delta;
 			EnableUpdate();
 			break;
 
 		case kATInputTrigger_Axis0+1:
 		case kATInputTrigger_Down:
-			mTargetY += ds;
+			mTargetY += delta;
 			EnableUpdate();
 			break;
 	}
@@ -300,6 +305,7 @@ ATTrackballController::ATTrackballController()
 }
 
 ATTrackballController::~ATTrackballController() {
+	Detach();
 }
 
 void ATTrackballController::Init(ATScheduler *scheduler) {
@@ -338,25 +344,25 @@ void ATTrackballController::SetDigitalTrigger(uint32 trigger, bool state) {
 }
 
 void ATTrackballController::ApplyImpulse(uint32 trigger, int ds) {
-	ds <<= 5;
+	const uint32 delta = static_cast<uint32>(ds) << 5;
 
 	switch(trigger) {
 		case kATInputTrigger_Left:
-			mTargetX -= ds;
+			mTargetX -= delta;
 			break;
 
 		case kATInputTrigger_Axis0:
 		case kATInputTrigger_Right:
-			mTargetX += ds;
+			mTargetX += delta;
 			break;
 
 		case kATInputTrigger_Up:
-			mTargetY -= ds;
+			mTargetY -= delta;
 			break;
 
 		case kATInputTrigger_Axis0+1:
 		case kATInputTrigger_Down:
-			mTargetY += ds;
+			mTargetY += delta;
 			break;
 	}
 }
@@ -417,7 +423,6 @@ void ATTrackballController::OnDetach() {
 	if (mpUpdateEvent) {
 		mpScheduler->RemoveEvent(mpUpdateEvent);
 		mpUpdateEvent = NULL;
-		mpScheduler = NULL;
 	}
 }
 
@@ -679,13 +684,12 @@ void ATTabletController::SetPos(int axis, int pos) {
 	if (pos > 0x10000)
 		pos = 0x10000;
 
-	int oldPos = (mRawPos[axis] * 114 + 0x728000) >> 16;
 	int newPos = mbStylusUp ? mStylusUpPos : (pos * 114 + 0x728000) >> 16;
 
 	mRawPos[axis] = pos;
 
-	if (newPos != oldPos)
-		SetPotPosition(axis != 0, newPos);
+	// Stylus-up changes the effective position without changing mRawPos.
+	SetPotPosition(axis != 0, newPos);
 }
 
 ///////////////////////////////////////////////////////////////////////////
@@ -784,7 +788,7 @@ void ATDrivingController::ApplyImpulse(uint32 trigger, int ds) {
 void ATDrivingController::AddDelta(int delta) {
 	// The driving controller does 16 clicks per rotation. We set this to
 	// achieve about the same rotational speed as the paddle.
-	mRawPos -= delta * 0x20000;
+	mRawPos -= static_cast<uint32>(delta) * 0x20000U;
 
 	static const uint8 kRotaryEncode[4] = { 0, 1, 3, 2 };
 
@@ -798,8 +802,8 @@ void ATDrivingController::AddDelta(int delta) {
 
 ///////////////////////////////////////////////////////////////////////////
 
-ATConsoleController::ATConsoleController(ATInputManager *im)
-	: mpParent(im)
+ATConsoleController::ATConsoleController(vdfunction<void(uint32, bool)> callback)
+	: mCallback(std::move(callback))
 {
 }
 
@@ -807,16 +811,14 @@ ATConsoleController::~ATConsoleController() {
 }
 
 void ATConsoleController::SetDigitalTrigger(uint32 trigger, bool state) {
-	IATInputConsoleCallback *cb = mpParent->GetConsoleCallback();
-
-	if (cb)
-		cb->SetConsoleTrigger(trigger, state);
+	if (mCallback)
+		mCallback(trigger, state);
 }
 
 ///////////////////////////////////////////////////////////////////////////
 
-ATInputStateController::ATInputStateController(ATInputManager *im, uint32 flagBase)
-	: mpParent(im)
+ATInputStateController::ATInputStateController(vdfunction<void(uint32, bool)> callback, uint32 flagBase)
+	: mCallback(std::move(callback))
 	, mFlagBase(flagBase)
 {
 }
@@ -825,13 +827,16 @@ ATInputStateController::~ATInputStateController() {
 }
 
 void ATInputStateController::SetDigitalTrigger(uint32 trigger, bool state) {
+	if (!mCallback)
+		return;
+
 	switch(trigger) {
 		case kATInputTrigger_Flag0:
-			mpParent->ActivateFlag(mFlagBase + 0, state);
+			mCallback(mFlagBase + 0, state);
 			break;
 
 		case kATInputTrigger_Flag0+1:
-			mpParent->ActivateFlag(mFlagBase + 1, state);
+			mCallback(mFlagBase + 1, state);
 			break;
 	}
 }
@@ -856,6 +861,7 @@ AT5200ControllerController::AT5200ControllerController(int index, bool trackball
 }
 
 AT5200ControllerController::~AT5200ControllerController() {
+	Detach();
 }
 
 bool AT5200ControllerController::Select5200Controller(int index, bool potsEnabled) {
@@ -1111,6 +1117,7 @@ void AT5200ControllerController::OnAttach() {
 }
 
 void AT5200ControllerController::OnDetach() {
+	Select5200Controller(-1, false);
 	ResetPotPositions();
 }
 
@@ -1197,6 +1204,7 @@ ATLightPenController::ATLightPenController(Type type)
 }
 
 ATLightPenController::~ATLightPenController() {
+	Detach();
 }
 
 void ATLightPenController::Init(ATScheduler *fastScheduler, ATLightPenPort *lpp) {
@@ -1423,11 +1431,12 @@ void ATLightPenController::OnScheduledEvent(uint32 id) {
 
 void ATLightPenController::OnAttach() {
 	UpdatePortState();
+	SetLightSensingEnabled(mbPenDown && !mpLightPen->GetImmediateUpdateEnabled());
 }
 
 void ATLightPenController::OnDetach() {
 	if (mpScheduler) {
-		mpScheduler->UnsetEvent(mpLPDeassertEvent);
+		DeassertLPInput();
 	}
 
 	SetLightSensingEnabled(false);

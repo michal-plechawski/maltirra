@@ -379,8 +379,8 @@ unfinished.
 
 Controller-port management is shared in `portmanager.cpp`. The original full
 `ATLightPenPort` class and noise-mode enum were extracted from the Windows
-controller implementation into `lightpen.h`/`lightpen.cpp`; the remaining
-Windows controller types include that shared class. No alternate light-pen
+controller implementation into `lightpen.h`/`lightpen.cpp`; the shared
+controller types include that class. No alternate light-pen
 model or controller-port implementation is used. GTIA's header now explicitly
 includes its string member's definition instead of relying on a host PCH.
 
@@ -399,5 +399,23 @@ all other connections, and integer pot values clamp before conversion to
 fixed point. Beam delays retain whole-line carries and use wide arithmetic.
 Shutdown detaches directions, triggers and pots, releases callback captures,
 and neutralizes outstanding interfaces before the hardware can be destroyed.
-Host input acquisition, the remaining controller types, native configuration
-UI and complete machine/application wiring remain unfinished.
+The complete `inputcontroller.cpp` implementation is now shared: joystick,
+ST/Amiga mouse, CX80 trackball, paddles, tablet, driving controller, console
+and flag routing, 5200 joystick/trackball and keypad, light pen/gun, keypad,
+keyboard controller, and PowerPad. `inputpointer.h` supplies the common pointer
+description. Windows retains only two constructors in `inputcontrolleradapter.cpp`
+that bind console/flag callbacks to the Windows input manager; native hosts can
+supply those callbacks directly.
+
+Thirteen `Altirra_Input*` test groups exercise direction/trigger signals,
+scheduled quadrature, both paddle halves, tablet stylus transitions, 5200
+keypad scanning and IRQs, analog calibration jitter, light-pen pulse timing,
+keyboard matrix selection and phantom keys, and the PowerPad's complete serial
+packets and touch raster. These tests use actual PIA/GTIA/POKEY/ANTIC cores.
+Mouse, trackball, 5200 and light-pen destructors detach while derived cleanup
+is still available; pending events, sensor callbacks and selected POKEY keys
+are released. Quadrature arithmetic uses explicit unsigned wraparound, and
+tablet stylus-down restores the stored coordinates.
+
+Host input acquisition, native configuration UI and complete machine/application
+wiring remain unfinished. These component tests do not boot Atari firmware.

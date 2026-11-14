@@ -19,12 +19,15 @@
 #define f_AT_INPUTCONTROLLER_H
 
 #include <optional>
+#include <vd2/system/function.h>
+#include <vd2/system/refcount.h>
 #include <vd2/system/vdstl.h>
 #include <vd2/system/vectors.h>
 #include <at/atcore/notifylist.h>
 #include <at/atcore/scheduler.h>
 #include "inputdefs.h"
 #include "lightpen.h"
+#include "inputpointer.h"
 
 class IATDevicePortManager;
 class IATDeviceControllerPort;
@@ -35,7 +38,6 @@ class ATGTIAEmulator;
 class ATGTIALightSensor;
 class ATPIAEmulator;
 class ATPortInputController;
-struct ATInputPointerInfo;
 
 ///////////////////////////////////////////////////////////////////////////
 
@@ -273,13 +275,15 @@ class ATConsoleController final : public ATPortInputController {
 	ATConsoleController(const ATConsoleController&) = delete;
 	ATConsoleController& operator=(const ATConsoleController&) = delete;
 public:
+	// The host adapter supplies console routing; emulated behavior is shared.
+	explicit ATConsoleController(vdfunction<void(uint32, bool)> callback);
 	ATConsoleController(ATInputManager *im);
 	~ATConsoleController();
 
 	virtual void SetDigitalTrigger(uint32 trigger, bool state);
 
 protected:
-	ATInputManager *const mpParent;
+	vdfunction<void(uint32, bool)> mCallback;
 };
 
 ///////////////////////////////////////////////////////////////////////////
@@ -288,13 +292,14 @@ class ATInputStateController final : public ATPortInputController {
 	ATInputStateController(const ATInputStateController&) = delete;
 	ATInputStateController& operator=(const ATInputStateController&) = delete;
 public:
+	ATInputStateController(vdfunction<void(uint32, bool)> callback, uint32 flagBase);
 	ATInputStateController(ATInputManager *im, uint32 flagBase);
 	~ATInputStateController();
 
 	virtual void SetDigitalTrigger(uint32 trigger, bool state);
 
 protected:
-	ATInputManager *const mpParent;
+	vdfunction<void(uint32, bool)> mCallback;
 	const uint32 mFlagBase;
 };
 

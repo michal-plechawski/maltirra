@@ -25,6 +25,7 @@
 #include <vd2/system/vectors.h>
 #include <vd2/system/refcount.h>
 #include "inputdefs.h"
+#include "inputpointer.h"
 
 class ATInputMap;
 class ATPokeyEmulator;
@@ -166,7 +167,7 @@ typename atfixedhash<K,V,N>::iterator atfixedhash<K,V,N>::find(const key_type& k
 template<typename K, typename V, size_t N>
 std::pair<typename atfixedhash<K,V,N>::iterator, bool> atfixedhash<K,V,N>::insert(const value_type& v) {
 	size_t bucketIdx = m(v.first) % N;
-	
+
 	atfixedhash_basenode *bucket = &m.table[bucketIdx];
 
 	for(atfixedhash_basenode *p = bucket->mpNext; p != bucket; p = p->mpNext) {
@@ -204,14 +205,6 @@ struct ATInputUnitIdentifier {
 	bool operator==(const ATInputUnitIdentifier& x) const {
 		return !memcmp(buf, x.buf, 16);
 	}
-};
-
-struct ATInputPointerInfo {
-	vdfloat2 mPos {};		// center of touch in [-1,+1]
-	float mRadius {};		// radius of touch, or <0 if point because device doesn't do area touches
-	bool mbPrimary {};		// true if this is the primary touch driven by main position inputs
-	bool mbPressed {};		// true if an active touch, false for hover position
-	ATInputPointerCoordinateSpace mCoordSpace {};
 };
 
 class ATInputManager {

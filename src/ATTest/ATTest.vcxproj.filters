@@ -798,6 +798,15 @@
     <ClCompile Include="..\platform\Windows_x64\ATTest\source\TestSystem_VecMath.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="source\TestAltirra_InputControllerPortable.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="source\TestAltirra_InputMotionPortable.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="source\TestAltirra_InputPeripheralPortable.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
 	<ClInclude Include="..\h\at\attest\portabletest.h">

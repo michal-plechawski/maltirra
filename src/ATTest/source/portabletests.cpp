@@ -69,6 +69,19 @@ bool ATTestAltirraPortPots(ATPortableTestContext& context);
 bool ATTestAltirraPortTiming(ATPortableTestContext& context);
 bool ATTestAltirraPortLifecycle(ATPortableTestContext& context);
 bool ATTestAltirraLightPen(ATPortableTestContext& context);
+bool ATTestAltirraInputRouting(ATPortableTestContext& context);
+bool ATTestAltirraInput5200(ATPortableTestContext& context);
+bool ATTestAltirraInputLightPen(ATPortableTestContext& context);
+bool ATTestAltirraInputLifecycle(ATPortableTestContext& context);
+bool ATTestAltirraInputMouse(ATPortableTestContext& context);
+bool ATTestAltirraInputTrackball(ATPortableTestContext& context);
+bool ATTestAltirraInputDriving(ATPortableTestContext& context);
+bool ATTestAltirraInputPaddle(ATPortableTestContext& context);
+bool ATTestAltirraInputJoystick(ATPortableTestContext& context);
+bool ATTestAltirraInputTablet(ATPortableTestContext& context);
+bool ATTestAltirraInputKeypad(ATPortableTestContext& context);
+bool ATTestAltirraInputKeyboard(ATPortableTestContext& context);
+bool ATTestAltirraInputPowerPad(ATPortableTestContext& context);
 bool ATTestAltirraMemoryManager(ATPortableTestContext& context);
 bool ATTestAltirraRTime8(ATPortableTestContext& context);
 bool ATTestAltirraRVerter(ATPortableTestContext& context);
@@ -324,6 +337,19 @@ const ATPortableTestCase *ATGetPortableTests(size_t& count) {
 		{ "Altirra_PortTiming", ATTestAltirraPortTiming },
 		{ "Altirra_PortLifecycle", ATTestAltirraPortLifecycle },
 		{ "Altirra_LightPen", ATTestAltirraLightPen },
+		{ "Altirra_InputRouting", ATTestAltirraInputRouting },
+		{ "Altirra_Input5200", ATTestAltirraInput5200 },
+		{ "Altirra_InputLightPen", ATTestAltirraInputLightPen },
+		{ "Altirra_InputLifecycle", ATTestAltirraInputLifecycle },
+		{ "Altirra_InputMouse", ATTestAltirraInputMouse },
+		{ "Altirra_InputTrackball", ATTestAltirraInputTrackball },
+		{ "Altirra_InputDriving", ATTestAltirraInputDriving },
+		{ "Altirra_InputPaddle", ATTestAltirraInputPaddle },
+		{ "Altirra_InputJoystick", ATTestAltirraInputJoystick },
+		{ "Altirra_InputTablet", ATTestAltirraInputTablet },
+		{ "Altirra_InputKeypad", ATTestAltirraInputKeypad },
+		{ "Altirra_InputKeyboard", ATTestAltirraInputKeyboard },
+		{ "Altirra_InputPowerPad", ATTestAltirraInputPowerPad },
 		{ "Altirra_MemoryManager", ATTestAltirraMemoryManager },
 		{ "Altirra_RTime8", ATTestAltirraRTime8 },
 		{ "Altirra_RVerter", ATTestAltirraRVerter },
