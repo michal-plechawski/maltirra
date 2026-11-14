@@ -15,11 +15,11 @@
 //	along with this program; if not, write to the Free Software
 //	Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
-#include <stdafx.h>
+#include <vd2/system/vdtypes.h>
 #include <at/atcore/address.h>
 #include "mmu.h"
 #include "memorymanager.h"
-#include "simulator.h"
+#include "constants.h"
 
 ATMMUEmulator::ATMMUEmulator()
 	: mHardwareMode(0)
@@ -410,7 +410,6 @@ void ATMMUEmulator::SetBankRegister(uint8 bank) {
 	mCurrentBankInfo = bankInfo;
 
 	const uint32 bankOffset = ((bankInfo & kMapInfo_BankMask) << 14);
-	uint8 *bankbase = mpMemory + bankOffset;
 
 	if (bankInfo & (kMapInfo_ExtendedCPU | kMapInfo_ExtendedANTIC)) {
 		// If settings are in flux, we may temporarily have the mapping mode set to
@@ -419,7 +418,7 @@ void ATMMUEmulator::SetBankRegister(uint8 bank) {
 			uint32 addressSpace = bankOffset < 0x10000
 				? kATAddressSpace_RAM + bankOffset
 				: kATAddressSpace_PORTB + 0x4000 + ((uint32)(bank | (mCPUBankMask ^ 0xFF)) << 16);
-			mpMemMan->SetLayerMemoryAndAddressSpace(mpLayerExtRAM, bankbase, 0x40, 0x40, addressSpace);
+			mpMemMan->SetLayerMemoryAndAddressSpace(mpLayerExtRAM, mpMemory + bankOffset, 0x40, 0x40, addressSpace);
 		}
 	} else
 		UpdateAxlonBank();

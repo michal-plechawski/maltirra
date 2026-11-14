@@ -259,7 +259,7 @@
     <ClCompile Include="source\memorymanager.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\platform\Windows_x64\Altirra\source\mmu.cpp">
+    <ClCompile Include="source\mmu.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\platform\Windows_x64\Altirra\source\modem.cpp">
@@ -1323,7 +1323,7 @@
     <ClInclude Include="h\memorymanager.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\platform\Windows_x64\Altirra\h\mmu.h">
+    <ClInclude Include="h\mmu.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\modem.h">

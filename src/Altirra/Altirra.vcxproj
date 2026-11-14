@@ -396,7 +396,9 @@
     <ClCompile Include="..\platform\Windows_x64\Altirra\source\midimate.cpp" />
     <ClCompile Include="..\platform\Windows_x64\Altirra\source\mio.cpp" />
     <ClCompile Include="..\platform\Windows_x64\Altirra\source\misccvars.cpp" />
-    <ClCompile Include="..\platform\Windows_x64\Altirra\source\mmu.cpp" />
+    <ClCompile Include="source\mmu.cpp">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+    </ClCompile>
     <ClCompile Include="..\platform\Windows_x64\Altirra\source\modem.cpp" />
     <ClCompile Include="..\platform\Windows_x64\Altirra\source\modemtcp.cpp" />
     <ClCompile Include="..\platform\Windows_x64\Altirra\source\mpp1000e.cpp" />
@@ -761,7 +763,7 @@
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\kmkjzide.h" />
     <ClInclude Include="h\memorymanager.h" />
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\mio.h" />
-    <ClInclude Include="..\platform\Windows_x64\Altirra\h\mmu.h" />
+    <ClInclude Include="h\mmu.h" />
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\modem.h" />
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\modemtcp.h" />
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\myide.h" />

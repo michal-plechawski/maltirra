@@ -318,6 +318,13 @@
 	<ClInclude Include="source\maincpuportablefixture.h" />
 	<ClInclude Include="source\covoxportablefixture.h" />
 	<ClInclude Include="source\slightsidportablefixture.h" />
+	<ClInclude Include="source\mmuportablefixture.h" />
+	<ClCompile Include="source\TestAltirra_MMUPortable.cpp">
+	  <PrecompiledHeader>NotUsing</PrecompiledHeader>
+	</ClCompile>
+	<ClCompile Include="source\TestAltirra_MMUAxlonPortable.cpp">
+	  <PrecompiledHeader>NotUsing</PrecompiledHeader>
+	</ClCompile>
 	<ClCompile Include="source\TestAltirra_SlightSIDPortable.cpp">
 	  <PrecompiledHeader>NotUsing</PrecompiledHeader>
 	</ClCompile>

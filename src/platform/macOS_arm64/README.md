@@ -350,3 +350,29 @@ while TEST is set, flush old elapsed time before resetting voice state, and
 retain the logical-AND pulse/noise result when saw is also selected. The TEST
 phase contract follows the [MOS 6581 datasheet](https://myoldcomputer.nl/Files/mos_6581_sid.pdf).
 Complete simulator/audio-output/UI wiring remains unfinished.
+
+The complete MMU (`src/Altirra/source/mmu.cpp`) is shared. Its ROM control,
+PORTB bank tables, separate CPU/ANTIC banking, 256K main-RAM aliases, RAMBO and
+Compy layouts, XEGS game ROM, hidden RAM, Axlon selectors/mirrors, linear 65C816
+RAM, mode overrides and ROM-mapping observers retain the original algorithms.
+The dependency on `simulator.h` was only for constants; the shared core now
+includes `constants.h` directly. Configuring banked memory while mapping is
+detached no longer forms a pointer into a null backing allocation.
+
+`Altirra_MMUROM` checks all 256 PORTB values for every hardware trait set,
+using actual layered ROM/RAM reads. `Altirra_MMUBanking` checks every PORTB
+value in all seven extended-memory layouts, independent CPU/ANTIC reads,
+writes to the correct backing bank, physical offsets, BASIC/self-test gating,
+and 256K main-RAM aliases. These fixtures supply explicit ROM contents and
+memory layers; they do not emulate the still-unported complete simulator.
+
+`Altirra_MMUAxlon`, `Altirra_MMUHighMemory`, `Altirra_MMULifecycle`, and
+`Altirra_MMUConnections` check all supported Axlon bank widths, low/high control
+decoding and gating, full 24-bit linear RAM bounds, replacement/removal,
+overrides across detached mappings, reinitialization, immediate/coherent ROM
+notifications and self-removal. Actual 6502 code programs real PIA DDRB/PORTB
+registers to switch two extended banks while ANTIC retains base RAM; actual
+65C816 long instructions access the MMU's bank-one mapping. CPU timing comes
+from the production scheduler and the memory paths are the production manager.
+Full machine lifecycle, firmware boot and native application wiring remain
+unfinished.

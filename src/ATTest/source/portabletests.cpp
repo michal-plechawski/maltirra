@@ -57,6 +57,12 @@ bool ATTestAltirraSlightSIDEnvelopes(ATPortableTestContext& context);
 bool ATTestAltirraSlightSIDWaveforms(ATPortableTestContext& context);
 bool ATTestAltirraSlightSIDFilters(ATPortableTestContext& context);
 bool ATTestAltirraSlightSIDDevice(ATPortableTestContext& context);
+bool ATTestAltirraMMUROM(ATPortableTestContext& context);
+bool ATTestAltirraMMUBanking(ATPortableTestContext& context);
+bool ATTestAltirraMMUConnections(ATPortableTestContext& context);
+bool ATTestAltirraMMUAxlon(ATPortableTestContext& context);
+bool ATTestAltirraMMUHighMemory(ATPortableTestContext& context);
+bool ATTestAltirraMMULifecycle(ATPortableTestContext& context);
 bool ATTestAltirraMemoryManager(ATPortableTestContext& context);
 bool ATTestAltirraRTime8(ATPortableTestContext& context);
 bool ATTestAltirraRVerter(ATPortableTestContext& context);
@@ -300,6 +306,12 @@ const ATPortableTestCase *ATGetPortableTests(size_t& count) {
 		{ "Altirra_SlightSIDWaveforms", ATTestAltirraSlightSIDWaveforms },
 		{ "Altirra_SlightSIDFilters", ATTestAltirraSlightSIDFilters },
 		{ "Altirra_SlightSIDDevice", ATTestAltirraSlightSIDDevice },
+		{ "Altirra_MMUROM", ATTestAltirraMMUROM },
+		{ "Altirra_MMUBanking", ATTestAltirraMMUBanking },
+		{ "Altirra_MMUConnections", ATTestAltirraMMUConnections },
+		{ "Altirra_MMUAxlon", ATTestAltirraMMUAxlon },
+		{ "Altirra_MMUHighMemory", ATTestAltirraMMUHighMemory },
+		{ "Altirra_MMULifecycle", ATTestAltirraMMULifecycle },
 		{ "Altirra_MemoryManager", ATTestAltirraMemoryManager },
 		{ "Altirra_RTime8", ATTestAltirraRTime8 },
 		{ "Altirra_RVerter", ATTestAltirraRVerter },

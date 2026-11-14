@@ -19,6 +19,7 @@
 #define f_AT_MMU_H
 
 #include <vd2/system/function.h>
+#include <vd2/system/vdtypes.h>
 #include <vd2/system/unknown.h>
 #include <at/atcore/notifylist.h>
 

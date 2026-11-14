@@ -325,6 +325,15 @@
 	<ClInclude Include="source\slightsidportablefixture.h">
 	  <Filter>Header Files</Filter>
 	</ClInclude>
+	<ClInclude Include="source\mmuportablefixture.h">
+	  <Filter>Header Files</Filter>
+	</ClInclude>
+	<ClCompile Include="source\TestAltirra_MMUPortable.cpp">
+	  <Filter>Source Files</Filter>
+	</ClCompile>
+	<ClCompile Include="source\TestAltirra_MMUAxlonPortable.cpp">
+	  <Filter>Source Files</Filter>
+	</ClCompile>
 	<ClCompile Include="source\TestAltirra_SlightSIDPortable.cpp">
 	  <Filter>Source Files</Filter>
 	</ClCompile>
