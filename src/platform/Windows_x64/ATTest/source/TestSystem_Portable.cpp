@@ -22,7 +22,12 @@ DEFINE_TEST(System_Portable) {
 		ATPortableTestContext context;
 		printf("Running portable test: %s\n", tests[i].mpName);
 		fflush(stdout);
-		const bool succeeded = tests[i].mpTestFn(context);
+		bool succeeded = false;
+		try {
+			succeeded = tests[i].mpTestFn(context);
+		} catch (const VDException& e) {
+			TEST_ASSERTF(false, "Portable test %s threw an exception: %ls", tests[i].mpName, e.wc_str());
+		}
 
 		TEST_ASSERTF(succeeded,
 			"Portable test %s failed at %s:%d: %s",
