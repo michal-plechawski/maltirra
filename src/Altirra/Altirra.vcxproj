@@ -306,7 +306,9 @@
     <ClCompile Include="source\disasm.cpp">
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="..\platform\Windows_x64\Altirra\source\disk.cpp" />
+    <ClCompile Include="source\disk.cpp">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+    </ClCompile>
     <ClCompile Include="..\platform\Windows_x64\Altirra\source\diskdrive815.cpp" />
     <ClCompile Include="..\platform\Windows_x64\Altirra\source\diskdriveamdc.cpp" />
     <ClCompile Include="..\platform\Windows_x64\Altirra\source\diskdriveatr8000.cpp" />
@@ -757,7 +759,7 @@
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\decmath.h" />
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\directorywatcher.h" />
     <ClInclude Include="h\disasm.h" />
-    <ClInclude Include="..\platform\Windows_x64\Altirra\h\disk.h" />
+    <ClInclude Include="h\disk.h" />
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\dragoncart.h" />
     <ClInclude Include="h\encode_png.h" />
     <ClInclude Include="h\firmwaredetect.h" />

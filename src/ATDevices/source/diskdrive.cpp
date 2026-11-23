@@ -25,9 +25,9 @@
 #include <at/atcore/scheduler.h>
 #include "diskdrive.h"
 
-ATLogChannel g_ATLCDisk(false, false, "DISK", "Disk activity");
-ATLogChannel g_ATLCDiskCmd(false, false, "DISKCMD", "Disk commands");
-ATLogChannel g_ATLCDiskData(false, false, "DISKXFR", "Disk data transfer");
+extern ATLogChannel g_ATLCDisk;
+extern ATLogChannel g_ATLCDiskCmd;
+extern ATLogChannel g_ATLCDiskData;
 
 namespace {
 	const int kCyclesPerDiskRotation_288RPM = 372869;

@@ -15,7 +15,13 @@
 //	along with this program; if not, write to the Free Software
 //	Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
-#include <stdafx.h>
+#include <algorithm>
+#include <cmath>
+#include <cstdlib>
+#include <cstring>
+#include <iterator>
+#include <at/atcore/audiomixer.h>
+#include <at/atcore/logging.h>
 #include <vd2/system/error.h>
 #include <vd2/system/file.h>
 #include <vd2/system/filesys.h>
@@ -34,14 +40,8 @@
 #include "disk.h"
 #include "diskprofile.h"
 #include "disktrace.h"
-#include "console.h"
-#include "cpu.h"
 #include "savestate.h"
-#include "simulator.h"
-#include "debuggerlog.h"
-#include "audiosampleplayer.h"
 #include "trace.h"
-#include "uirender.h"
 
 extern ATLogChannel g_ATLCDisk;
 extern ATLogChannel g_ATLCDiskCmd;
@@ -147,6 +147,13 @@ void ATDiskEmulator::Init(int unit, ATDiskInterface *dif, ATScheduler *sched, AT
 }
 
 void ATDiskEmulator::Shutdown() {
+	if (mpSlowScheduler)
+		mpSlowScheduler->UnsetEvent(mpMotorOffEvent);
+	SetTraceContext(nullptr);
+	if (mpDiskInterface && mbEnabled) {
+		mpDiskInterface->SetShowMotorActive(false);
+		mpDiskInterface->SetShowActivity(false, 0);
+	}
 	mpSIOInterface = nullptr;
 	mpSIOMgr = nullptr;
 
@@ -158,6 +165,8 @@ void ATDiskEmulator::Shutdown() {
 	mpRotationSoundGroup = nullptr;
 	mpStepSoundGroup = nullptr;
 	mpAudioSyncMixer = nullptr;
+	mpScheduler = nullptr;
+	mpSlowScheduler = nullptr;
 }
 
 void ATDiskEmulator::Rename(int unit) {
@@ -263,7 +272,7 @@ namespace {
 }
 
 void ATDiskEmulator::SetForcedPhantomSector(uint16 sector, uint8 index, int order) {
-	if (!sector || sector >= mExtVirtSectors.size())
+	if (!sector || sector > mExtVirtSectors.size())
 		return;
 
 	IATDiskImage *image = mpDiskInterface->GetDiskImage();
@@ -272,12 +281,14 @@ void ATDiskEmulator::SetForcedPhantomSector(uint16 sector, uint8 index, int orde
 
 	ATDiskVirtualSectorInfo vsi;
 	image->GetVirtualSectorInfo(sector - 1, vsi);
+	if (index >= vsi.mNumPhysSectors)
+		return;
 
 	mExtPhysSectors[vsi.mStartPhysSector + index].mForcedOrder = (sint8)order;
 }
 
 int ATDiskEmulator::GetForcedPhantomSector(uint16 sector, uint8 index) {
-	if (!sector || sector >= mExtVirtSectors.size())
+	if (!sector || sector > mExtVirtSectors.size())
 		return -1;
 
 	IATDiskImage *image = mpDiskInterface->GetDiskImage();
@@ -332,7 +343,7 @@ public:
 		rw.Transfer("active_command_sector", &mActiveCommandSector);
 		rw.Transfer("active_command_phys_sector", &mActiveCommandPhysSectorPlus1);
 		rw.Transfer("active_command_timer", &mActiveCommandTimer);
-		rw.Transfer("active_command_buffered", &mActiveCommandTimer);
+		rw.Transfer("active_command_buffered", &mbActiveCommandBuffered);
 		rw.Transfer("active_command_buffered_read_track", &mbActiveCommandReadTrack);
 		rw.Transfer("active_command_buffered_read_error", &mbActiveCommandReadError);
 		rw.Transfer("active_command_buffered_write_track", &mbActiveCommandWriteTrack);
@@ -342,7 +353,7 @@ public:
 		rw.Transfer("last_read_sector", &mLastReadSector);
 		rw.Transfer("active_command", &mpActiveCommand);
 
-		if constexpr (rw.IsReader) {
+		if constexpr (T::IsReader) {
 			// Allow for up to a ~10 minute idle time -- beyond that consider it broken.
 			if (mIdleTimer >= 0x40000000)
 				throw ATInvalidSaveStateException();
@@ -373,7 +384,7 @@ public:
 };
 
 void ATDiskEmulator::SaveState(IATObjectState **pp) const {
-	const uint32 t = mMotorOffTime - mpScheduler->GetTick();
+	const uint32 t = mpScheduler->GetTick();
 	vdrefptr<ATSaveStateDisk> state(new ATSaveStateDisk);
 
 	if (mpMotorOffEvent)
@@ -446,6 +457,7 @@ void ATDiskEmulator::LoadState(const IATObjectState& state0) {
 
 void ATDiskEmulator::OnScheduledEvent(uint32 id) {
 	if (id == kATDiskEventMotorOff) {
+		UpdateRotationalCounter();
 		mpMotorOffEvent = nullptr;
 
 		// Motor idling is driven by the main loop of the drive, and as such can't
@@ -713,7 +725,7 @@ void ATDiskEmulator::OnDiskChanged(bool mediaRemoved) {
 
 	InitSectorInfoArrays();
 	DetectDensity();
-	mCurrentTrack = mTrackCount - 1;
+	mCurrentTrack = mTrackCount ? mTrackCount - 1 : 0;
 
 	// invalidate a read/write operation if it's currently happening
 	mActiveCommandPhysSector = -1;
@@ -947,7 +959,7 @@ void ATDiskEmulator::AbortCommand() {
 
 uint32 ATDiskEmulator::GetUpdatedRotationalCounter() const {
 	uint32 t = ATSCHEDULER_GETTIME(mpScheduler);
-	uint32 dt = t - mLastRotationUpdateCycle;
+	uint32 dt = mpMotorOffEvent ? t - mLastRotationUpdateCycle : 0;
 
 	return (mRotationalCounter + dt) % mpProfile->mCyclesPerDiskRotation;
 }
@@ -1292,6 +1304,7 @@ bool ATDiskEmulator::ProcessCommandReadWriteCommon(bool isWrite) {
 
 						if (eps.mForcedOrder == evs.mPhantomSectorCounter) {
 							physSector = vsi.mStartPhysSector + i;
+							foundSector = true;
 							mPhantomSectorCounter = i;
 
 							if (++evs.mPhantomSectorCounter >= vsi.mNumPhysSectors)
@@ -2793,9 +2806,8 @@ bool ATDiskEmulator::SetPERCOMData(const uint8 *data) {
 
 void ATDiskEmulator::TurnOffMotor() {
 	if (mpMotorOffEvent) {
-		mpScheduler->UnsetEvent(mpMotorOffEvent);
-
 		UpdateRotationalCounter();
+		mpSlowScheduler->UnsetEvent(mpMotorOffEvent);
 	}
 
 	mpDiskInterface->SetShowMotorActive(false);

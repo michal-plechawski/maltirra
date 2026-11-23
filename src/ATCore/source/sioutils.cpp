@@ -19,7 +19,13 @@
 //	archive for details.
 
 #include <stdafx.h>
+#include <at/atcore/logging.h>
 #include <at/atcore/sioutils.h>
+
+// Shared by the built-in disk emulator and device-library disk drives.
+ATLogChannel g_ATLCDisk(false, false, "DISK", "Disk activity");
+ATLogChannel g_ATLCDiskCmd(false, false, "DISKCMD", "Disk commands");
+ATLogChannel g_ATLCDiskData(false, false, "DISKXFR", "Disk data transfer");
 
 uint8 ATComputeSIOChecksum(const uint8 *p, size_t len) {
 	uint32 checksum = 0;

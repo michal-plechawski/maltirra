@@ -509,3 +509,26 @@ The image loader compares the VFS leaf name with the host-file leaf name,
 allowing full-path ATR/XFD loads to remain updatable while ZIP views stay
 virtual. The full disk-drive emulator and simulator/application assembly are
 still platform-specific work.
+
+The complete standard disk-drive emulator is shared in `disk.cpp`/`disk.h`.
+It retains all twelve profiles, command handling, timing, protection and
+formatting behavior, Happy/Indus extensions, drive RAM, phantom/weak sectors,
+stock-sample drive sounds, tracing and save states. Disk log channels now live
+with the common SIO utilities and are reused by the device-library drives.
+
+Fourteen portable groups exercise actual SIO acceleration and timed POKEY
+SEROUT/SERIN transactions against real images and the real sample player.
+Coverage includes all profiles, 128/256/512/8192-byte sectors, boot-sector
+transfers, write/format protection, PERCOM and formatting, high-speed indices,
+bad write checksums, Happy RAM/quiet commands, weak sectors and forced phantom
+order with accurate timing, audio/command trace output, state validation and
+resuming an in-flight buffered read in a fresh drive, and shutdown with a
+pending motor event.
+
+Motor callbacks are cancelled on shutdown and consistently owned by the slow
+scheduler. Stopped rotation no longer advances in saved state. Snapshot timers
+use the current clock, the buffered-command flag is serialized as a bool, and
+an empty drive has a valid head position. Forced phantom selection accepts the
+last sector, rejects invalid indices and marks a forced rotational match as
+found. Full CPU-based drive devices, the complete simulator and native
+application assembly remain to be ported/connected.

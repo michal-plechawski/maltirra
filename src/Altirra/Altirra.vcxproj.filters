@@ -163,7 +163,7 @@
     <ClCompile Include="source\disasm.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\platform\Windows_x64\Altirra\source\disk.cpp">
+    <ClCompile Include="source\disk.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="source\diskvirtimage.cpp">
@@ -1257,7 +1257,7 @@
     <ClInclude Include="h\disasm.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\platform\Windows_x64\Altirra\h\disk.h">
+    <ClInclude Include="h\disk.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\dragoncart.h">

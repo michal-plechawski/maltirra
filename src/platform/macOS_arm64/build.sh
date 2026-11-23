@@ -223,6 +223,9 @@ portable_test_sources=(
 	src/ATTest/source/TestAltirra_SIOAccelPortable.cpp
 	src/ATTest/source/TestAltirra_DiskInterfacePortable.cpp
 	src/ATTest/source/TestAltirra_DiskInterfaceFilesPortable.cpp
+	src/ATTest/source/TestAltirra_DiskEmulatorPortable.cpp
+	src/ATTest/source/TestAltirra_DiskProtocolPortable.cpp
+	src/ATTest/source/TestAltirra_DiskStatePortable.cpp
 	src/ATTest/source/TestAltirra_DisasmOpcodesPortable.cpp
 	src/ATTest/source/TestAltirra_DisasmReferencesPortable.cpp
 	src/ATTest/source/TestAltirra_DisasmContextPortable.cpp
@@ -464,6 +467,7 @@ portable_test_sources=(
 	src/Altirra/source/cassette.cpp
 	src/Altirra/source/siomanager.cpp
 	src/Altirra/source/diskinterface.cpp
+	src/Altirra/source/disk.cpp
 	src/ATCore/source/deferredevent.cpp
 	src/ATCore/source/randomization.cpp
 	src/ATIO/source/cassetteimage.cpp

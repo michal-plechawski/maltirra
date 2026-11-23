@@ -25,6 +25,7 @@
 #include <vd2/system/time.h>
 #include <vd2/system/VDString.h>
 #include <vd2/system/vdstl.h>
+#include <at/atcore/audiomixer.h>
 #include <at/atcore/devicesio.h>
 #include <at/atcore/enumparse.h>
 #include <at/atcore/scheduler.h>

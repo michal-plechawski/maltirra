@@ -128,6 +128,20 @@ bool ATTestAltirraDiskInterfaceFolders(ATPortableTestContext& context);
 bool ATTestAltirraDiskInterfaceAutoFlush(ATPortableTestContext& context);
 bool ATTestAltirraDiskInterfaceErrors(ATPortableTestContext& context);
 bool ATTestAltirraDiskInterfaceLifecycle(ATPortableTestContext& context);
+bool ATTestAltirraDiskStatus(ATPortableTestContext& context);
+bool ATTestAltirraDiskReadWrite(ATPortableTestContext& context);
+bool ATTestAltirraDiskProtection(ATPortableTestContext& context);
+bool ATTestAltirraDiskPERCOM(ATPortableTestContext& context);
+bool ATTestAltirraDiskFormat(ATPortableTestContext& context);
+bool ATTestAltirraDiskHighSpeed(ATPortableTestContext& context);
+bool ATTestAltirraDiskWireRead(ATPortableTestContext& context);
+bool ATTestAltirraDiskWireWrite(ATPortableTestContext& context);
+bool ATTestAltirraDiskPhantoms(ATPortableTestContext& context);
+bool ATTestAltirraDiskWeakSectors(ATPortableTestContext& context);
+bool ATTestAltirraDiskHappyRAM(ATPortableTestContext& context);
+bool ATTestAltirraDiskSnapshot(ATPortableTestContext& context);
+bool ATTestAltirraDiskAudioTrace(ATPortableTestContext& context);
+bool ATTestAltirraDiskLifecycle(ATPortableTestContext& context);
 bool ATTestAltirraMemoryManager(ATPortableTestContext& context);
 bool ATTestAltirraRTime8(ATPortableTestContext& context);
 bool ATTestAltirraRVerter(ATPortableTestContext& context);
@@ -442,6 +456,20 @@ const ATPortableTestCase *ATGetPortableTests(size_t& count) {
 		{ "Altirra_DiskInterfaceAutoFlush", ATTestAltirraDiskInterfaceAutoFlush },
 		{ "Altirra_DiskInterfaceErrors", ATTestAltirraDiskInterfaceErrors },
 		{ "Altirra_DiskInterfaceLifecycle", ATTestAltirraDiskInterfaceLifecycle },
+		{ "Altirra_DiskStatus", ATTestAltirraDiskStatus },
+		{ "Altirra_DiskReadWrite", ATTestAltirraDiskReadWrite },
+		{ "Altirra_DiskProtection", ATTestAltirraDiskProtection },
+		{ "Altirra_DiskPERCOM", ATTestAltirraDiskPERCOM },
+		{ "Altirra_DiskFormat", ATTestAltirraDiskFormat },
+		{ "Altirra_DiskHighSpeed", ATTestAltirraDiskHighSpeed },
+		{ "Altirra_DiskWireRead", ATTestAltirraDiskWireRead },
+		{ "Altirra_DiskWireWrite", ATTestAltirraDiskWireWrite },
+		{ "Altirra_DiskPhantoms", ATTestAltirraDiskPhantoms },
+		{ "Altirra_DiskWeakSectors", ATTestAltirraDiskWeakSectors },
+		{ "Altirra_DiskHappyRAM", ATTestAltirraDiskHappyRAM },
+		{ "Altirra_DiskSnapshot", ATTestAltirraDiskSnapshot },
+		{ "Altirra_DiskAudioTrace", ATTestAltirraDiskAudioTrace },
+		{ "Altirra_DiskLifecycle", ATTestAltirraDiskLifecycle },
 		{ "Altirra_MemoryManager", ATTestAltirraMemoryManager },
 		{ "Altirra_RTime8", ATTestAltirraRTime8 },
 		{ "Altirra_RVerter", ATTestAltirraRVerter },
