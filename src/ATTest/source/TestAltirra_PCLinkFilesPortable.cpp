@@ -19,7 +19,9 @@ bool ATTestAltirraPCLinkProtocol(ATPortableTestContext& context) {
 
 bool ATTestAltirraPCLinkTransfer(ATPortableTestContext& context) {
 	auto f=std::make_unique<Machine>(); Bytes expected(1001); for (size_t i=0; i<expected.size(); ++i) expected[i]=uint8(i*17);
-	const uint8 w=f->Open("DATA.BIN",8); AT_PORTABLE_TEST_ASSERT(context, w==1 && f->Write(w,expected)==1 && f->Value(3,w)==1001 && f->Value(4,w)==1001 && f->Close(w)==1);
+	const uint8 w=f->Open("DATA.BIN",8);
+	AT_PORTABLE_TEST_ASSERT(context, w==1 && (f->output[1] & ATPCLinkDirEnt::kFlag_InUse) && !memcmp(f->output.data()+7,"DATA    BIN",11) && !f->output[4] && !f->output[5] && !f->output[6]);
+	AT_PORTABLE_TEST_ASSERT(context, f->Write(w,expected)==1 && f->Value(3,w)==1001 && f->Value(4,w)==1001 && f->Close(w)==1);
 	AT_PORTABLE_TEST_ASSERT(context, f->files.Read(L"DATA.BIN")==expected);
 	const uint8 h=f->Open("DATA.BIN"); Bytes a,b;
 	AT_PORTABLE_TEST_ASSERT(context, h==1 && f->Read(h,257,a)==1 && a==Bytes(expected.begin(),expected.begin()+257));
@@ -28,6 +30,8 @@ bool ATTestAltirraPCLinkTransfer(ATPortableTestContext& context) {
 	const uint8 u=f->Open("DATA.BIN",12); auto p=Params(2,u); Number(p,256);
 	AT_PORTABLE_TEST_ASSERT(context, f->Function(p)==1 && f->Write(u,Bytes{'X','Y'})==1 && f->Close(u)==1);
 	expected[256]='X'; expected[257]='Y'; AT_PORTABLE_TEST_ASSERT(context, f->files.Read(L"DATA.BIN")==expected);
+	const uint8 truncated=f->Open("DATA.BIN",8);
+	AT_PORTABLE_TEST_ASSERT(context, truncated==1 && !f->output[4] && !f->output[5] && !f->output[6] && f->Value(4,truncated)==0 && f->Close(truncated)==1 && f->files.Read(L"DATA.BIN").empty());
 	return true;
 }
 

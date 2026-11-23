@@ -729,5 +729,6 @@ mixed-case paths, reserved directories, file/directory mutations, settings and
 shutdown/reset. Raw POKEY/SIO tests wait for ACK before sending packets and check
 good/bad checksums. A 6502 program calls SIOV to read a real host file. All eighteen
 groups pass AddressSanitizer and UBSan. Fixes include append's logical position,
-stale timestamps/parameters, closed-handle replies, directory-name buffer bounds,
-native error preservation, and accelerated request mode/length validation.
+stale timestamps/parameters, closed-handle replies, new/truncated-file OPEN
+metadata, directory-name buffer bounds, native error preservation, and accelerated
+request mode/length validation.

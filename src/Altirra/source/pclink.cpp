@@ -1323,7 +1323,19 @@ bool ATPCLinkDevice::OnPut() try {
 						}
 					}
 
-					fh.SetDirEnt(dirEnt);
+					if (fh.IsOpen()) {
+						if (!matched) {
+							dirEnt.SetFlagsFromAttributes(VDFileGetAttributes(nativeFilePath.c_str()));
+							memcpy(dirEnt.mName, pattern.mName, 11);
+							dirEnt.SetDate(VDDate { VDFileGetLastWriteTime(nativeFilePath.c_str()) });
+						}
+						// CreateAlways may have truncated a previously matched file.
+						const uint32 length = fh.GetLength();
+						dirEnt.mLengthLo = (uint8)length;
+						dirEnt.mLengthMid = (uint8)(length >> 8);
+						dirEnt.mLengthHi = (uint8)(length >> 16);
+						fh.SetDirEnt(dirEnt);
+					}
 				}
 			}
 			return true;
