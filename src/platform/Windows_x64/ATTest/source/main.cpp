@@ -470,10 +470,10 @@ next:
 								if (selTest.testInfo->mpTestFn())
 									throw ATTestAssertionException("Test returned non-zero code");
 							} catch(const ATTestAssertionException& e) {
-								wprintf(L"    TEST FAILED: %ls\n", e.wc_str());
+								wprintf(L"    TEST FAILED: %hs: %ls\n", selTest.testInfo->mpName, e.wc_str());
 								++failedTests;
 							} catch(const VDException& e) {
-								wprintf(L"    TEST FAILED: Uncaught exception: %ls\n", e.wc_str());
+								wprintf(L"    TEST FAILED: %hs: Uncaught exception: %ls\n", selTest.testInfo->mpName, e.wc_str());
 								++failedTests;
 							}
 						}();

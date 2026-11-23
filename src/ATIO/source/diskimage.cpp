@@ -485,10 +485,12 @@ void ATDiskImage::Load(const wchar_t *origPath, const wchar_t *imagePath, IVDRan
 
 	// VFS views expose the leaf name even for ordinary host files. Comparing
 	// that name with the complete path incorrectly made images loaded by full
-	// path non-updatable. Archives and decompressed views cannot be flushed.
+	// path non-updatable. Preserve providers with matching full names (e.g.
+	// writable blob views); differing archive/decompression names stay virtual.
 	VDStringW basePath, subPath;
-	if (!origPath || ATParseVFSPath(origPath, basePath, subPath) != kATVFSProtocol_File
-		|| (imagePath && wcscmp(VDFileSplitPath(basePath.c_str()), VDFileSplitPath(imagePath))))
+	if (!origPath || (imagePath && wcscmp(origPath, imagePath)
+		&& (ATParseVFSPath(origPath, basePath, subPath) != kATVFSProtocol_File
+			|| wcscmp(VDFileSplitPath(basePath.c_str()), VDFileSplitPath(imagePath)))))
 		mImageFormat = kATDiskImageFormat_None;
 }
 

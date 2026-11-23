@@ -42,6 +42,12 @@ bool ATTestAltirraDiskInterfaceFiles(ATPortableTestContext& context) {
 	archived.mDisk.SaveDiskAs(sourcePath.c_str(), kATDiskImageFormat_ATR);
 	AT_PORTABLE_TEST_ASSERT(context, archived.mDisk.GetDiskImage()->IsUpdatable());
 	archived.mDisk.LoadDisk(virtualPath.c_str()); AT_PORTABLE_TEST_ASSERT(context, archived.Read() == 0x44);
+	// Matching provider names retain the original update contract, used by
+	// writable blob views in the native Windows disk-format tests.
+	VDFileStream source(sourcePath.c_str(), nsVDFile::kRead | nsVDFile::kOpenExisting);
+	vdrefptr<IATDiskImage> providerImage;
+	ATLoadDiskImage(L"blob://disk.atr", L"blob://disk.atr", source, ~providerImage);
+	AT_PORTABLE_TEST_ASSERT(context, providerImage->IsUpdatable());
 	return true;
 }
 
