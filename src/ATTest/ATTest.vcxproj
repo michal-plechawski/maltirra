@@ -732,6 +732,12 @@
     <ClCompile Include="source\TestAltirra_DiskInterfaceFilesPortable.cpp">
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="source\TestAltirra_CPUTraceProcessorPortable.cpp">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="source\TestAltirra_CPUTracerPortable.cpp">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+    </ClCompile>
     <ClCompile Include="source\TestAltirra_CartridgeEmulatorPortable.cpp">
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
     </ClCompile>

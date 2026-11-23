@@ -16,6 +16,14 @@ bool ATTestAltirraAudioStockSamples(ATPortableTestContext& context);
 bool ATTestAltirraBlockDevDiskAdapter(ATPortableTestContext& context);
 bool ATTestAltirraCallback(ATPortableTestContext& context);
 bool ATTestAltirraCartridgePort(ATPortableTestContext& context);
+bool ATTestAltirraCPUTraceHistory(ATPortableTestContext& context);
+bool ATTestAltirraCPUTraceModes(ATPortableTestContext& context);
+bool ATTestAltirraCPUTraceContexts(ATPortableTestContext& context);
+bool ATTestAltirraCPUTraceIdle(ATPortableTestContext& context);
+bool ATTestAltirraCPUTraceBASIC(ATPortableTestContext& context);
+bool ATTestAltirraCPUTraceLive(ATPortableTestContext& context);
+bool ATTestAltirraCPUTraceOverflow(ATPortableTestContext& context);
+bool ATTestAltirraCPUTraceLifecycle(ATPortableTestContext& context);
 bool ATTestAltirraMathPackIntegers(ATPortableTestContext& context);
 bool ATTestAltirraMathPackStrings(ATPortableTestContext& context);
 bool ATTestAltirraMathPackArithmetic(ATPortableTestContext& context);
@@ -370,6 +378,14 @@ const ATPortableTestCase *ATGetPortableTests(size_t& count) {
 		{ "Altirra_BlockDevDiskAdapter", ATTestAltirraBlockDevDiskAdapter },
 		{ "Altirra_Callback", ATTestAltirraCallback },
 		{ "Altirra_CartridgePort", ATTestAltirraCartridgePort },
+		{ "Altirra_CPUTraceHistory", ATTestAltirraCPUTraceHistory },
+		{ "Altirra_CPUTraceModes", ATTestAltirraCPUTraceModes },
+		{ "Altirra_CPUTraceContexts", ATTestAltirraCPUTraceContexts },
+		{ "Altirra_CPUTraceIdle", ATTestAltirraCPUTraceIdle },
+		{ "Altirra_CPUTraceBASIC", ATTestAltirraCPUTraceBASIC },
+		{ "Altirra_CPUTraceLive", ATTestAltirraCPUTraceLive },
+		{ "Altirra_CPUTraceOverflow", ATTestAltirraCPUTraceOverflow },
+		{ "Altirra_CPUTraceLifecycle", ATTestAltirraCPUTraceLifecycle },
 		{ "Altirra_MathPackIntegers", ATTestAltirraMathPackIntegers },
 		{ "Altirra_MathPackStrings", ATTestAltirraMathPackStrings },
 		{ "Altirra_MathPackArithmetic", ATTestAltirraMathPackArithmetic },

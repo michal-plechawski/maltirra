@@ -15,7 +15,9 @@
 //	along with this program; if not, write to the Free Software
 //	Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
-#include <stdafx.h>
+#include <algorithm>
+#include <initializer_list>
+#include <iterator>
 #include <at/atcore/scheduler.h>
 #include "cpu.h"
 #include "cpumemory.h"
@@ -97,9 +99,11 @@ ATCPUTraceProcessor::ATCPUTraceProcessor() {
 }
 
 ATCPUTraceProcessor::~ATCPUTraceProcessor() {
+	Shutdown();
 }
 
 void ATCPUTraceProcessor::Init(uint8 lastS, ATDebugDisasmMode disasmMode, uint8 subCycles, ATTraceContext *traceContext, bool traceInsns, bool traceBasic, ATCPUEmulatorMemory *cpuMemory, const ATCPUTimestampDecoder& dec, bool enableAsync) {
+	Shutdown();
 	mbTraceBasic = traceBasic;
 	mpCPUMemory = cpuMemory;
 
@@ -125,13 +129,24 @@ void ATCPUTraceProcessor::Init(uint8 lastS, ATDebugDisasmMode disasmMode, uint8 
 	mThreadContext = kThreadContext_Main;
 	mThreadContextStartTime = traceContext->mBaseTime;
 	mIdleCounter = 0;
+	mIdleStartTime = 0;
+	mBasicLineNo = -1;
+	mBasicLineStartTime = 0;
+	mLastTime64 = traceContext->mBaseTime;
+	mbHasInsns = false;
 
 	std::fill(std::begin(mStackTable), std::end(mStackTable), StackEntry { -1, 0 } );
 
-	mpTraceChannelHistory->BeginEvents();
+	if (mpTraceChannelHistory)
+		mpTraceChannelHistory->BeginEvents();
 }
 
-void ATCPUTraceProcessor::Shutdown() {	
+void ATCPUTraceProcessor::Shutdown(uint64 endTick64) {
+	if (mbHasInsns) {
+		const uint64 end = std::max(mLastTime64, endTick64);
+		CloseContext(end);
+		CloseBasicLine(end);
+	}
 	if (mpTraceChannelHistory) {
 		mpTraceChannelHistory->EndEvents();
 		mpTraceChannelHistory = nullptr;
@@ -139,9 +154,73 @@ void ATCPUTraceProcessor::Shutdown() {
 
 	for(ATTraceChannelSimple *&ch : mpTraceChannels)
 		ch = nullptr;
+	mpTraceChannelBasic = nullptr;
+	mpCPUMemory = nullptr;
+	mThreadContext = -1;
+	mBasicLineNo = -1;
+	mbHasInsns = false;
+}
+
+void ATCPUTraceProcessor::CloseContext(uint64 endTime) {
+	if (mThreadContext >= 0 && mpTraceChannels[0] && endTime > mThreadContextStartTime) {
+		static constexpr uint32 kThreadContextColors[] = {
+			kATTraceColor_CPUThread_Idle,
+			kATTraceColor_CPUThread_Main,
+			kATTraceColor_CPUThread_Idle,
+			kATTraceColor_CPUThread_Main,
+			kATTraceColor_CPUThread_Idle,
+			kATTraceColor_CPUThread_Main,
+			kATTraceColor_CPUThread_IRQ,
+			kATTraceColor_CPUThread_VBI,
+			kATTraceColor_CPUThread_VBIDeferred,
+			kATTraceColor_CPUThread_DLI,
+		};
+
+		static constexpr uint32 kThreadContextToChannel[] = {
+			0, 1, 2, 2, 3, 3, 4, 5, 5, 6
+		};
+
+		static constexpr const wchar_t *kThreadContextNames[] = {
+			L"Idle",
+			L"Main",
+			L"Idle",
+			L"CIO",
+			L"Idle",
+			L"SIO",
+			L"IRQ",
+			L"Imm", L"Def",
+			L"DLI",
+		};
+
+		static_assert(vdcountof(kThreadContextColors) == vdcountof(kThreadContextToChannel), "Trace channel mismatch");
+
+		mpTraceChannels[kThreadContextToChannel[mThreadContext]]->AddTickEvent(mThreadContextStartTime, endTime, kThreadContextNames[mThreadContext], kThreadContextColors[mThreadContext]);
+	}
+}
+
+void ATCPUTraceProcessor::CloseBasicLine(uint64 endTime) {
+	if (mpTraceChannelBasic && mBasicLineNo >= 0 && endTime > mBasicLineStartTime) {
+		mpTraceChannelBasic->AddTickEvent(mBasicLineStartTime, endTime,
+			[line = (uint16)mBasicLineNo](VDStringW& ev) { ev.sprintf(L"%u", line); }, kATTraceColor_Default);
+		mBasicLineStartTime = endTime;
+	}
+}
+
+void ATCPUTraceProcessor::OnHistoryGap() {
+	CloseContext(mLastTime64);
+	CloseBasicLine(mLastTime64);
+	mThreadContext = -1;
+	mBasicLineNo = -1;
+	mIdleCounter = 0;
+	mIdleStartTime = 0;
+	mbAdjustStackNext = false;
+	mbHasInsns = false;
+	std::fill(std::begin(mStackTable), std::end(mStackTable), StackEntry { -1, 0 });
 }
 
 void ATCPUTraceProcessor::ProcessInsns(uint64 endTick64, const ATCPUHistoryEntry *const *heptrs, size_t n, const ATCPUTimestampDecoder& tsdecoder) {
+	if (!n || !mpTraceChannels[0])
+		return;
 	const auto extendTime64 = [threshold = (uint32)(endTick64 + 0x10000), tb0 = endTick64 - (uint32)endTick64](uint32 t32) {
 		return (uint32)(t32 - threshold) < UINT32_C(0x80000000) ? tb0 + t32 - UINT64_C(0x100000000) : tb0 + t32;
 	};
@@ -151,6 +230,7 @@ void ATCPUTraceProcessor::ProcessInsns(uint64 endTick64, const ATCPUHistoryEntry
 	if (mThreadContext < 0) {
 		mThreadContext = kThreadContext_Main;
 		mThreadContextStartTime = extendTime64(hentp->mCycle);
+		mLastS = hentp->mS;
 	}
 
 	if (mIdleCounter > 0x800000)
@@ -177,37 +257,16 @@ void ATCPUTraceProcessor::ProcessInsns(uint64 endTick64, const ATCPUHistoryEntry
 				break;
 		}
 
-		if (mbTraceBasic) {
-			switch(opcode) {
-				case 0xB1:	// LDA (zp),Y
-					if (hentp->mOpcode[1] == 0x8A) {	// STMCUR
-						uint16 addr = (uint16)(hentp->mEA - hentp->mY);
-
-						if (mBasicLineAddr != addr) {
-							mBasicLineAddr = addr;
-
-							const uint8 lo = mpCPUMemory->DebugReadByte(addr);
-							const uint8 hi = mpCPUMemory->DebugReadByte(addr+1);
-
-							sint32 line = lo + ((sint32)hi << 8);
-
-							if (mBasicLineNo != line) {
-								const uint64 t = extendTime64(hentp->mCycle);
-
-								if (mBasicLineStartTime) {
-									mpTraceChannelBasic->AddTickEvent(mBasicLineStartTime, t,
-										[line16 = (uint16)line](VDStringW& ev) {
-											ev.sprintf(L"%u", line16);
-										}, kATTraceColor_Default);
-								}
-
-								mBasicLineNo = line;
-								mBasicLineStartTime = t;
-							}
-						}
-					}
-
-					break;
+		if (mbTraceBasic && opcode == 0xB1 && hentp->mOpcode[1] == 0x8A) {
+			const uint16 addr = (uint16)(hentp->mEA - hentp->mY);
+			const uint8 lo = mpCPUMemory->DebugReadByte(addr);
+			const uint8 hi = mpCPUMemory->DebugReadByte((uint16)(addr + 1));
+			const sint32 line = lo + ((sint32)hi << 8);
+			if (mBasicLineNo != line) {
+				const uint64 time = extendTime64(hentp->mCycle);
+				CloseBasicLine(time);
+				mBasicLineNo = line;
+				mBasicLineStartTime = time;
 			}
 		}
 
@@ -343,40 +402,7 @@ void ATCPUTraceProcessor::ProcessInsns(uint64 endTick64, const ATCPUHistoryEntry
 					break;
 			}
 
-			if (t > mThreadContextStartTime) {
-				static constexpr uint32 kThreadContextColors[] = {
-					kATTraceColor_CPUThread_Idle,
-					kATTraceColor_CPUThread_Main,
-					kATTraceColor_CPUThread_Idle,
-					kATTraceColor_CPUThread_Main,
-					kATTraceColor_CPUThread_Idle,
-					kATTraceColor_CPUThread_Main,
-					kATTraceColor_CPUThread_IRQ,
-					kATTraceColor_CPUThread_VBI,
-					kATTraceColor_CPUThread_VBIDeferred,
-					kATTraceColor_CPUThread_DLI,
-				};
-
-				static constexpr uint32 kThreadContextToChannel[] = {
-					0, 1, 2, 2, 3, 3, 4, 5, 5, 6
-				};
-
-				static constexpr const wchar_t *kThreadContextNames[] = {
-					L"Idle",
-					L"Main",
-					L"Idle",
-					L"CIO",
-					L"Idle",
-					L"SIO",
-					L"IRQ",
-					L"Imm", L"Def",
-					L"DLI",
-				};
-
-				static_assert(vdcountof(kThreadContextColors) == vdcountof(kThreadContextToChannel), "Trace channel mismatch");
-
-				mpTraceChannels[kThreadContextToChannel[mThreadContext]]->AddTickEvent(mThreadContextStartTime, t, kThreadContextNames[mThreadContext], kThreadContextColors[mThreadContext]);
-			}
+			CloseContext(t);
 
 			mThreadContext = newContext;
 			mThreadContextStartTime = t;
@@ -387,6 +413,8 @@ void ATCPUTraceProcessor::ProcessInsns(uint64 endTick64, const ATCPUHistoryEntry
 
 		hentp = hentn;
 	}
+	mLastTime64 = extendTime64(hentp->mCycle);
+	mbHasInsns = true;
 }
 
 ///////////////////////////////////////////////////////////////////////////
@@ -395,9 +423,11 @@ ATCPUTracer::ATCPUTracer() {
 }
 
 ATCPUTracer::~ATCPUTracer() {
+	Shutdown();
 }
 
 void ATCPUTracer::Init(ATCPUEmulator *cpu, ATScheduler *scheduler, ATScheduler *slowScheduler, IATCPUTimestampDecoderProvider *tsdprovider, ATTraceContext *traceContext, bool traceInsns, bool traceBasic) {
+	Shutdown();
 	mpCPU = cpu;
 	mpCPU->SetTracingEnabled(true);
 	mpScheduler = scheduler;
@@ -424,10 +454,13 @@ void ATCPUTracer::Shutdown() {
 		mpSlowScheduler = nullptr;
 	}
 	
-	mTraceProcessor.Shutdown();
+	mTraceProcessor.Shutdown(mpScheduler ? mpScheduler->GetTick64() : 0);
+	mpScheduler = nullptr;
+	mpTSDProvider = nullptr;
 }
 
 void ATCPUTracer::OnScheduledEvent(uint32 id) {
+	mpUpdateEvent = nullptr;
 	Reschedule();
 
 	Update();
@@ -444,7 +477,12 @@ void ATCPUTracer::Update() {
 	if (hcDelta >= UINT32_C(0x80000000))
 		return;
 
-	uint32 count = hcDelta & (mpCPU->GetHistoryLength() - 1);
+	// Keep all complete entries still in the ring, with the newest entry
+	// reserved as lookahead. A modulo would discard data on exact overruns.
+	const uint32 capacity = mpCPU->GetHistoryLength() - 1;
+	if (hcDelta > capacity)
+		mTraceProcessor.OnHistoryGap();
+	uint32 count = std::min(hcDelta, capacity);
 	mLastHistoryCounter = nextHistoryCounter;
 
 	if (!count)

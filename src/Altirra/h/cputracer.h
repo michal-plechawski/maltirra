@@ -18,6 +18,7 @@
 #ifndef f_AT_CPUTRACER_H
 #define f_AT_CPUTRACER_H
 
+#include <vd2/system/vdtypes.h>
 #include <vd2/system/linearalloc.h>
 #include <at/atcore/scheduler.h>
 
@@ -40,11 +41,17 @@ public:
 	~ATCPUTraceProcessor();
 
 	void Init(uint8 lastS, ATDebugDisasmMode disasmMode, uint8 subCycles, ATTraceContext *traceContext, bool traceInsns, bool traceBasic, ATCPUEmulatorMemory *cpuMemory, const ATCPUTimestampDecoder& dec, bool enableAsync);
-	void Shutdown();
+	void Shutdown(uint64 endTick64 = 0);
+	void OnHistoryGap();
 
+	// n complete entries followed by one valid lookahead entry.
 	void ProcessInsns(uint64 endTick64, const ATCPUHistoryEntry *const *heptrs, size_t n, const ATCPUTimestampDecoder& tsdecoder);
 
 private:
+	void CloseContext(uint64 endTime);
+	void CloseBasicLine(uint64 endTime);
+	uint64 mLastTime64 = 0;
+	bool mbHasInsns = false;
 	bool	mbAdjustStackNext = false;
 	uint8	mLastS = 0;
 
@@ -68,7 +75,6 @@ private:
 
 	bool	mbTraceBasic = false;
 	sint32	mBasicLineNo = -1;
-	sint32	mBasicLineAddr = -1;
 	uint64	mBasicLineStartTime = 0;
 
 	ATCPUEmulatorMemory *mpCPUMemory = nullptr;

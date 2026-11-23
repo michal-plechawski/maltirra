@@ -736,7 +736,7 @@
     <ClCompile Include="source\trace.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\platform\Windows_x64\Altirra\source\cputracer.cpp">
+    <ClCompile Include="source\cputracer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="source\tracevideo.cpp">
@@ -1608,7 +1608,7 @@
     <ClInclude Include="h\trace.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\platform\Windows_x64\Altirra\h\cputracer.h">
+    <ClInclude Include="h\cputracer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="h\tracevideo.h">

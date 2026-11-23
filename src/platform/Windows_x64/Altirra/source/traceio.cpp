@@ -930,7 +930,7 @@ void ATLoadTraceCPUChannel(const ATSavedTraceCPUChannelDetail& cpuDetail, ATTrac
 	memset(&hebuf[0], 0, sizeof(ATCPUHistoryEntry) * 1025);
 
 	vdautoarrayptr<const ATCPUHistoryEntry *> hebufptrs(new const ATCPUHistoryEntry *[1025]);
-	for(uint32 i = 0; i < 1024; ++i)
+	for(uint32 i = 0; i < 1025; ++i)
 		hebufptrs[i] = &hebuf[i];
 
 	IATTraceFmtCodec *codec = vdpoly_cast<IATTraceFmtCodec *>(cpuDetail.mpCodec);

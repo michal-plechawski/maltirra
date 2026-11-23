@@ -74,7 +74,7 @@
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\compatedb.h" />
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\compatengine.h" />
     <ClInclude Include="h\constants.h" />
-    <ClInclude Include="..\platform\Windows_x64\Altirra\h\cputracer.h" />
+    <ClInclude Include="h\cputracer.h" />
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\customdevice.h" />
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\customdevicevmtypes.h" />
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\customdevice_win32.h" />
@@ -281,7 +281,9 @@
     <ClCompile Include="source\cpuhookmanager.cpp">
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="..\platform\Windows_x64\Altirra\source\cputracer.cpp" />
+    <ClCompile Include="source\cputracer.cpp">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+    </ClCompile>
     <ClCompile Include="..\platform\Windows_x64\Altirra\source\cs8900a.cpp" />
     <ClCompile Include="..\platform\Windows_x64\Altirra\source\customdevice.cpp" />
     <ClCompile Include="..\platform\Windows_x64\Altirra\source\customdevicevmtypes.cpp" />

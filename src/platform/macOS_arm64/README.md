@@ -580,3 +580,24 @@ accesses now wrap at 16 bits, and decimal conversion rejects NaN and infinity
 before floating-to-integer conversion. The native build has 629 translation
 units and 349 portable groups. Full simulator/application assembly and a
 verified complete machine boot remain outstanding.
+
+The CPU tracer and trace processor are shared in `cputracer.cpp`/`cputracer.h`.
+They use the production CPU history ring, fast/slow schedulers, compressed
+history channels, interrupt timestamp decoder and BASIC statement memory.
+Eight portable groups cover synchronous/asynchronous history across 32-bit
+clock wrapping, all instruction/BASIC recording combinations, IRQ/CIO/SIO
+stack transitions, immediate/deferred VBI and DLI, idle/WSYNC classification,
+BASIC line changes including edits and 16-bit wrapping, and actual scheduled
+6502 and accelerated native 65C816 execution. Every retained entry after an
+exact full-ring overflow is compared with the CPU's history buffer.
+
+Instruction recording is now optional without a null dereference. Empty
+batches are harmless, and stopping/reinitializing/destroying a tracer flushes
+open context/BASIC spans, finishes asynchronous history work and cancels its
+scheduled event. A separately enabled debugger history recorder stays active.
+Full-ring overruns retain all available complete instructions and reset
+analysis at the gap. BASIC spans carry the previous line number and support
+time zero, in-place edits and final-span flushing. Windows trace loading now
+initializes its final lookahead pointer as required by the processor contract.
+The native build has 632 translation units and 357 portable groups. Complete
+simulator/native application assembly and end-to-end boot validation remain.
