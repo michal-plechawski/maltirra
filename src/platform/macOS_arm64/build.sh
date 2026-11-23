@@ -191,6 +191,8 @@ portable_test_sources=(
 	src/ATTest/source/TestAltirra_BlockDevDiskAdapterPortable.cpp
 	src/ATTest/source/TestAltirra_CallbackPortable.cpp
 	src/ATTest/source/TestAltirra_CartridgePortPortable.cpp
+	src/ATTest/source/TestAltirra_BasicLoaderPortable.cpp
+	src/ATTest/source/TestAltirra_ProgramLoaderPortable.cpp
 	src/ATTest/source/TestAltirra_DeviceManagerPortable.cpp
 	src/ATTest/source/TestAltirra_DeviceManagerStatePortable.cpp
 	src/ATTest/source/TestAltirra_CPUTraceProcessorPortable.cpp
@@ -478,6 +480,7 @@ portable_test_sources=(
 	src/Altirra/source/disk.cpp
 	src/ATCore/source/deferredevent.cpp
 	src/ATCore/source/randomization.cpp
+	src/ATCore/source/memoryutils.cpp
 	src/ATIO/source/cassetteimage.cpp
 	src/ATIO/source/cassetteblock.cpp
 	src/ATIO/source/tapepiecetable.cpp
@@ -520,6 +523,8 @@ portable_test_sources=(
 	src/Altirra/source/decmath.cpp
 	src/ATCore/source/decmath.cpp
 	src/Altirra/source/hlefpaccelerator.cpp
+	src/Altirra/source/hlebasicloader.cpp
+	src/Altirra/source/hleprogramloader.cpp
 	src/Altirra/source/hlefastboothook.cpp
 	src/platform/macOS_arm64/Altirra/source/cartridgeoptions.cpp
 	src/ATEmulation/source/flash.cpp

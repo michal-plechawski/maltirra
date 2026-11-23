@@ -620,6 +620,25 @@ destruction. Observer removal during dispatch and device removal during a status
 callback are safe. Indexed and nested paths parse correctly, including repeated
 bus tags, and malformed/overflowing path indices are rejected. Deserialization
 honors the requested bus and removes rejected attachments. Empty NVRAM blobs
-survive registry save/load. The native build has 635 translation units and
-369 portable groups. Full simulator/application assembly and boot validation
-remain outstanding.
+survive registry save/load.
+
+The BASIC and XEX loaders (`hlebasicloader.cpp`, `hleprogramloader.cpp`) are
+shared. BASIC tests cover command injection, CIO channels 0/1/7, read-only
+transfers, truncated reads, EOF, and replacement/reinitialization. The tape
+loader's short-IRG shim executes on the production 6502 and restores the original
+cassette handler table. XEX tests execute multiple INIT segments and RUN code
+on the production CPU, checking memory, registers, events, and stack state.
+They also cover partial/malformed segments, executable-format rejection,
+symbol/directive/script callbacks, heat-map updates, randomized RAM and delayed
+launch. Production SIO tests read boot-disk sectors and perform Type 3 polling,
+poll reset, and handler transfer. Windows binds the same loader to its simulator
+and debugger through a small platform adapter.
+
+Reloading an image retains it before releasing the previous reference; rejected
+input preserves a pending load. BASIC resets its open channel when replacing a
+program with another program or tape, supports IOCB 0, and reports zero bytes
+at EOF. XEX replacement removes its previous continuation hook, and randomized
+RAM stops before MEMTOP. The 12 new groups also pass AddressSanitizer and UBSan.
+The native build has 639 translation units and 381 portable groups. Full
+simulator/application assembly, BASIC interpreter boot, and complete boot
+validation remain outstanding.

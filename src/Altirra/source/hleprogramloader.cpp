@@ -15,25 +15,25 @@
 //	along with this program; if not, write to the Free Software
 //	Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
-#include <stdafx.h>
+#include <algorithm>
+#include <cstring>
+#include <iterator>
+#include <utility>
 #include <vd2/system/binary.h>
 #include <vd2/system/error.h>
-#include <vd2/system/file.h>
 #include <vd2/system/filesys.h>
+#include <vd2/system/VDString.h>
 #include <at/atcore/memoryutils.h>
 #include <at/atcore/randomization.h>
-#include <at/atcore/vfs.h>
 #include <at/atio/blobimage.h>
 #include "hleprogramloader.h"
 #include "hleutils.h"
 #include "kerneldb.h"
-#include "console.h"
+#include "consoletext.h"
 #include "cpu.h"
-#include "cpuheatmap.h"
+#include "cpumemory.h"
 #include "cpuhookmanager.h"
-#include "debugger.h"
 #include "simeventmanager.h"
-#include "simulator.h"
 
 namespace {
 	bool IsDOSExecutable(const uint8 *buf, uint32 len) {
@@ -235,11 +235,12 @@ ATHLEProgramLoader::~ATHLEProgramLoader() {
 	Shutdown();
 }
 
-void ATHLEProgramLoader::Init(ATCPUEmulator *cpu, ATSimulatorEventManager *simEventMgr, ATSimulator *sim, IATDeviceSIOManager *sioMgr) {
+void ATHLEProgramLoader::Init(ATCPUEmulator *cpu, ATSimulatorEventManager *simEventMgr, ATHLEProgramLoaderConnections connections, IATDeviceSIOManager *sioMgr) {
+	Shutdown();
 	mpCPU = cpu;
 	mpCPUHookMgr = cpu->GetHookManager();
 	mpSimEventMgr = simEventMgr;
-	mpSim = sim;
+	mConnections = std::move(connections);
 	mpSIOMgr = sioMgr;
 }
 
@@ -255,23 +256,28 @@ void ATHLEProgramLoader::Shutdown() {
 		mpCPUHookMgr = NULL;
 	}
 
-	mpSim = nullptr;
+	mConnections = {};
 	mpSimEventMgr = nullptr;
 	mpCPU = nullptr;
 
 	mbLaunchPending = false;
+	mbType3PollEnabled = mbType3PollActive = mbDiskBootEnabled = false;
+	mProgramLoadIndex = 0;
+	mLaunchTime = 0;
 
 	vdsaferelease <<= mpImage;
 }
 
 void ATHLEProgramLoader::LoadProgram(const wchar_t *symbolHintPath, IATBlobImage *image, ATHLEProgramLoadMode launchMode, bool randomizeLaunchDelay) {
-	vdsaferelease <<= mpImage;
-
-	mbRandomizeLaunchDelay = randomizeLaunchDelay;
+	if (!image || !image->GetSize())
+		throw MyError("Program load failed: empty executable.");
+	if (launchMode != kATHLEProgramLoadMode_Default && !mpSIOMgr)
+		throw MyError("Program load failed: this launch mode requires SIO.");
+	if (randomizeLaunchDelay && !mConnections.mpGetTick)
+		throw MyError("Program load failed: launch delay requires a machine clock.");
 
 	uint32 len = image->GetSize();
 	const uint8 *const buf = (const uint8 *)image->GetBuffer();
-	mProgramLoadIndex = 0;
 
 	// check if this is a SpartaDOS executable by looking for a reloc block
 	if (len >= 4 && (buf[0] == 0xfe || buf[0] == 0xfa) && buf[1] == 0xff)
@@ -286,6 +292,12 @@ void ATHLEProgramLoader::LoadProgram(const wchar_t *symbolHintPath, IATBlobImage
 			throw MyError("Program load failed: this program is written for MS-DOS.");
 	}
 
+	image->AddRef();
+	vdsaferelease <<= mpImage;
+	mpImage = image;
+	mProgramLoadIndex = 0;
+	mbRandomizeLaunchDelay = randomizeLaunchDelay;
+	mpCPUHookMgr->UnsetHook(mpLoadContinueHook);
 	mpSIOInterface = nullptr;
 	mbType3PollActive = false;
 	mbType3PollEnabled = false;
@@ -308,9 +320,7 @@ void ATHLEProgramLoader::LoadProgram(const wchar_t *symbolHintPath, IATBlobImage
 	// try to load symbols
 	UnloadProgramSymbols();
 
-	IATDebugger *d = ATGetDebugger();
-
-	if (d && d->IsSymbolLoadingEnabled() && symbolHintPath) {
+	if (mConnections.mpIsSymbolLoadingEnabled && mConnections.mpIsSymbolLoadingEnabled() && mConnections.mpLoadSymbols && symbolHintPath) {
 		static const wchar_t *const kSymExts[]={
 			L".lst", L".lab", L".lbl", L".dbg", L".elf"
 		};
@@ -330,8 +340,7 @@ void ATHLEProgramLoader::LoadProgram(const wchar_t *symbolHintPath, IATBlobImage
 			sympath += kSymExts[i];
 
 			try {
-				const uint32 target0 = 0;
-				uint32 moduleId = d->LoadSymbols(sympath.c_str(), false, &target0);
+				uint32 moduleId = mConnections.mpLoadSymbols(sympath.c_str());
 
 				if (moduleId) {
 					mProgramModuleIds[i] = moduleId;
@@ -345,28 +354,27 @@ void ATHLEProgramLoader::LoadProgram(const wchar_t *symbolHintPath, IATBlobImage
 
 		// process directives AFTER all symbols have been loaded
 		for(const auto& moduleId : mProgramModuleIds) {
-			if (moduleId)
-				d->ProcessSymbolDirectives(moduleId);
+			if (moduleId && mConnections.mpProcessSymbolDirectives)
+				mConnections.mpProcessSymbolDirectives(moduleId);
 		}
 
 		// load debugger script
 		sympath.assign(symbolHintPath, symbolHintPathExt);
 		sympath += L".atdbg";
 
-		d->QueueAutoLoadBatchFile(sympath.c_str());
+		if (mConnections.mpQueueAutoLoadBatchFile)
+			mConnections.mpQueueAutoLoadBatchFile(sympath.c_str());
 	}
 
 	mbLaunchPending = true;
 
-	image->AddRef();
-	mpImage = image;
 }
 
 void ATHLEProgramLoader::InitSIO(IATDeviceSIOManager *mgr) {
 }
 
 ATHLEProgramLoader::CmdResponse ATHLEProgramLoader::OnSerialBeginCommand(const ATDeviceSIOCommand& cmd) {
-	if (!cmd.mbStandardRate)
+	if (!cmd.mbStandardRate || !mpSIOInterface)
 		return kCmdResponse_NotHandled;
 
 	// check for type 3 poll
@@ -491,15 +499,15 @@ uint8 ATHLEProgramLoader::StartLoad() {
 
 	mbLaunchPending = false;
 
-	if (mbRandomizeMemoryOnLoad) {
+	if (mbRandomizeMemoryOnLoad && mConnections.mpRandomizeRawMemory) {
 		const uint16 memlo = kdb.MEMLO;
 		const uint16 memtop = kdb.MEMTOP;
 
 		ATConsolePrintf("EXE: Randomizing $80-FF and %04X-%04X as the randomize-on-load option is enabled\n", memlo, (memtop - 1) & 0xFFFF);
 
-		uint32 seed = mpSim->RandomizeRawMemory(0x80, 0x80, ATRandomizeAdvanceFast(g_ATRandomizationSeeds.mProgramMemory));
+		uint32 seed = mConnections.mpRandomizeRawMemory(0x80, 0x80, ATRandomizeAdvanceFast(g_ATRandomizationSeeds.mProgramMemory));
 		if (memlo < memtop)
-			mpSim->RandomizeRawMemory(memlo, (uint32)(memtop - memlo) + 1, seed);
+			mConnections.mpRandomizeRawMemory(memlo, (uint32)(memtop - memlo), seed);
 	}
 
 	// reset run/init addresses to hook location near top of stack
@@ -529,12 +537,12 @@ uint8 ATHLEProgramLoader::StartLoad() {
 
 	kdb.BOOT_ |= 0x01;
 
-	mpSimEventMgr->NotifyEvent(kATSimEvent_EXELoad);
+	if (mpSimEventMgr) mpSimEventMgr->NotifyEvent(kATSimEvent_EXELoad);
 
 	if (mbRandomizeLaunchDelay) {
 		// A delay of 28-35K cycles is necessary for VCOUNT to be randomized, and 131K for
 		// the 17-bit PRNG. The latter is 4.3 frames.
-		mLaunchTime = mpSim->GetScheduler()->GetTick64() + (g_ATRandomizationSeeds.mProgramLaunchDelay % 131071);
+		mLaunchTime = mConnections.mpGetTick() + (g_ATRandomizationSeeds.mProgramLaunchDelay % 131071);
 	}
 
 	// load next segment
@@ -543,7 +551,7 @@ uint8 ATHLEProgramLoader::StartLoad() {
 
 uint8 ATHLEProgramLoader::OnLoadContinue(uint16 pc) {
 	if (mbRandomizeLaunchDelay) {
-		if (mLaunchTime > mpSim->GetScheduler()->GetTick64()) {
+		if (mLaunchTime > mConnections.mpGetTick()) {
 			mpCPU->PushWord(0x01FE - 1);
 			return 0x60;
 		}
@@ -555,7 +563,7 @@ uint8 ATHLEProgramLoader::OnLoadContinue(uint16 pc) {
 	ATKernelDatabase kdb(mem);
 
 	// check for bad init segments
-	bool kernelEnabled = mpSim->IsKernelROMLocation(0xFFFF);
+	bool kernelEnabled = mConnections.mpIsKernelROMLocation && mConnections.mpIsKernelROMLocation(0xFFFF);
 
 	if (pc) {
 		if (mpCPU->GetP() & AT6502::kFlagI)
@@ -598,9 +606,8 @@ launch:
 			mpCPU->Jump(runAddr);
 			ATConsolePrintf("EXE: Launching at %04X\n", runAddr);
 
-			mpSimEventMgr->NotifyEvent(kATSimEvent_EXERunSegment);
-
 			vdsaferelease <<= mpImage;
+			if (mpSimEventMgr) mpSimEventMgr->NotifyEvent(kATSimEvent_EXERunSegment);
 			return 0x4C;
 		}
 
@@ -635,8 +642,8 @@ launch:
 		for(uint32 i=0; i<len; ++i)
 			mem->WriteByte(start + i, *src++);
 
-		if (auto *hm = mpSim->GetHeatMap())
-			hm->PresetMemoryRange(start, len);
+		if (mConnections.mpPresetMemoryRange)
+			mConnections.mpPresetMemoryRange(start, len);
 
 		// fake SIO read
 		kdb.PBCTL = 0x3C;
@@ -665,21 +672,17 @@ launch:
 	mpCPU->PushWord(0x01FD);
 	mpCPU->PushWord(kdb.INITAD - 1);
 
-	mpSimEventMgr->NotifyEvent(kATSimEvent_EXEInitSegment);
+	if (mpSimEventMgr) mpSimEventMgr->NotifyEvent(kATSimEvent_EXEInitSegment);
 	return 0x60;
 }
 
 void ATHLEProgramLoader::UnloadProgramSymbols() {
-	IATDebugger *d = ATGetDebugger();
-
-	if (!d)
-		return;
-
 	for(uint32& moduleId : mProgramModuleIds) {
 		if (!moduleId)
 			continue;
 
-		d->UnloadSymbols(moduleId);	
+		if (mConnections.mpUnloadSymbols)
+			mConnections.mpUnloadSymbols(moduleId);
 		moduleId = 0;
 	}
 }

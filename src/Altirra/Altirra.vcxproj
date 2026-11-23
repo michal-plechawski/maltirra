@@ -373,7 +373,9 @@
     <ClCompile Include="source\gtiatables.cpp">
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="..\platform\Windows_x64\Altirra\source\hlebasicloader.cpp" />
+    <ClCompile Include="source\hlebasicloader.cpp">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+    </ClCompile>
     <ClCompile Include="..\platform\Windows_x64\Altirra\source\hleciohook.cpp" />
     <ClCompile Include="source\hlefastboothook.cpp">
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
@@ -381,7 +383,10 @@
     <ClCompile Include="source\hlefpaccelerator.cpp">
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="..\platform\Windows_x64\Altirra\source\hleprogramloader.cpp" />
+    <ClCompile Include="..\platform\Windows_x64\Altirra\source\hleprogramloaderbindings.cpp" />
+    <ClCompile Include="source\hleprogramloader.cpp">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+    </ClCompile>
     <ClCompile Include="source\hleutils.cpp">
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
     </ClCompile>
@@ -780,11 +785,11 @@
     <ClInclude Include="h\gtia.h" />
     <ClInclude Include="h\gtiarenderer.h" />
     <ClInclude Include="h\gtiatables.h" />
-    <ClInclude Include="..\platform\Windows_x64\Altirra\h\hlebasicloader.h" />
+    <ClInclude Include="h\hlebasicloader.h" />
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\hleciohook.h" />
     <ClInclude Include="h\hlefastboothook.h" />
     <ClInclude Include="h\hlefpaccelerator.h" />
-    <ClInclude Include="..\platform\Windows_x64\Altirra\h\hleprogramloader.h" />
+    <ClInclude Include="h\hleprogramloader.h" />
     <ClInclude Include="h\hleutils.h" />
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\hostdevice.h" />
     <ClInclude Include="h\hostdeviceutils.h" />

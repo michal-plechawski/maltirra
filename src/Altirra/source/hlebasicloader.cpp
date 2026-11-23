@@ -15,23 +15,15 @@
 //	along with this program; if not, write to the Free Software
 //	Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
-#include <stdafx.h>
-#include <vd2/system/binary.h>
 #include <vd2/system/error.h>
-#include <vd2/system/file.h>
-#include <vd2/system/filesys.h>
 #include <vd2/system/vdstl_vectorview.h>
 #include <at/atcore/cio.h>
 #include <at/atio/blobimage.h>
 #include "hlebasicloader.h"
-#include "hleutils.h"
 #include "kerneldb.h"
-#include "console.h"
 #include "cpu.h"
+#include "cpumemory.h"
 #include "cpuhookmanager.h"
-#include "debugger.h"
-#include "simeventmanager.h"
-#include "simulator.h"
 
 ATHLEBasicLoader::ATHLEBasicLoader() {
 }
@@ -40,12 +32,10 @@ ATHLEBasicLoader::~ATHLEBasicLoader() {
 	Shutdown();
 }
 
-void ATHLEBasicLoader::Init(ATCPUEmulator *cpu, ATSimulatorEventManager *simEventMgr, ATSimulator *sim) {
+void ATHLEBasicLoader::Init(ATCPUEmulator *cpu, ATSimulatorEventManager *, ATSimulator *) {
+	Shutdown();
 	mpCPU = cpu;
 	mpCPUHookMgr = cpu->GetHookManager();
-	mpSimEventMgr = simEventMgr;
-	mpSim = sim;
-	mProgramIOCB = 0;
 }
 
 void ATHLEBasicLoader::Shutdown() {
@@ -56,23 +46,24 @@ void ATHLEBasicLoader::Shutdown() {
 		mpCPUHookMgr = NULL;
 	}
 
-	mpSim = NULL;
-	mpSimEventMgr = NULL;
 	mpCPU = NULL;
 
 	mbLaunchPending = false;
+	mState = State::None;
+	mProgramIOCB = 0xFF;
+	mProgramIndex = 0;
 }
 
 void ATHLEBasicLoader::LoadProgram(IATBlobImage *image) {
-	vdsaferelease <<= mpImage;
+	if (!image || image->GetSize() < 14)
+		throw MyError("Invalid BASIC program: must be at least 14 bytes.");
 
-	mpImage = image;
+	// Retain first: the caller may be reloading our only reference.
 	image->AddRef();
-
-	uint32 len = image->GetSize();
-
-	if (len < 14)
-		throw MyError("Invalid BASIC program: must be at least 12 bytes.");
+	vdsaferelease <<= mpImage;
+	mpImage = image;
+	mProgramIOCB = 0xFF;
+	mProgramIndex = 0;
 
 	mpCPUHookMgr->SetHookMethod(mpLaunchHook, kATCPUHookMode_KernelROMOnly, ATKernelSymbols::CIOV, 10, this, &ATHLEBasicLoader::OnCIOV);
 
@@ -82,6 +73,8 @@ void ATHLEBasicLoader::LoadProgram(IATBlobImage *image) {
 
 void ATHLEBasicLoader::LoadTape(bool pushKeyToLoadTape) {
 	vdsaferelease <<= mpImage;
+	mProgramIOCB = 0xFF;
+	mProgramIndex = 0;
 
 	mpCPUHookMgr->SetHookMethod(mpLaunchHook, kATCPUHookMode_KernelROMOnly, ATKernelSymbols::CIOV, 10, this, &ATHLEBasicLoader::OnCIOV);
 
@@ -98,22 +91,20 @@ uint8 ATHLEBasicLoader::OnCIOV(uint16) {
 	ATCPUEmulatorMemory *mem = mpCPU->GetMemory();
 	ATKernelDatabase kdb(mem);
 
-	mbLaunchPending = false;
-
 	// check for invalid IOCB
 	const uint8 iocb = mpCPU->GetX();
 	if (iocb & 0x8f)
 		return 0;
 
 	const uint8 cmd = mem->ReadByte(ATKernelSymbols::ICCMD + iocb);
-	if (mProgramIOCB && iocb == mProgramIOCB) {
+	if (iocb == mProgramIOCB) {
 		switch(cmd) {
 			case kATCIOCmd_Open:
 				mpCPU->Ldy(kATCIOStat_IOCBInUse);
 				return 0x60;
 
 			case kATCIOCmd_Close:
-				mProgramIOCB = 0;
+				mProgramIOCB = 0xFF;
 				mem->WriteByte(ATKernelSymbols::ICHID + iocb, 0xFF);
 				mpCPU->Ldy(kATCIOStat_Success);
 				mpCPUHookMgr->UnsetHook(mpLaunchHook);
@@ -121,6 +112,8 @@ uint8 ATHLEBasicLoader::OnCIOV(uint16) {
 
 			case kATCIOCmd_GetChars:
 				if (mProgramIndex >= mpImage->GetSize()) {
+					mem->WriteByte(ATKernelSymbols::ICBLL + iocb, 0);
+					mem->WriteByte(ATKernelSymbols::ICBLH + iocb, 0);
 					mpCPU->Ldy(kATCIOStat_EndOfFile);
 				} else {
 					uint32 maxRead = (uint32)(mpImage->GetSize() - mProgramIndex);
@@ -254,7 +247,7 @@ uint8 ATHLEBasicLoader::OnCIOV(uint16) {
 					fastTapeShim[0x18] = (uint8)(centry + 2);
 
 					// patch the JMP exit from the shim
-					const uint16 copen = mem->DebugReadByte(ctab) + 256*mem->DebugReadByte(ctab+1) + 1;
+					const uint16 copen = mem->DebugReadByte(ctab) + 256*mem->DebugReadByte((uint16)(ctab+1)) + 1;
 					fastTapeShim[0x1B] = (uint8)copen;
 					fastTapeShim[0x1C] = (uint8)(copen >> 8);
 
@@ -269,6 +262,7 @@ uint8 ATHLEBasicLoader::OnCIOV(uint16) {
 	}
 
 	uint32 cmdlineLen = cmdline.size();
+	mbLaunchPending = false;
 	if (lineLen > cmdlineLen)
 		lineLen = cmdlineLen;
 

@@ -16,6 +16,18 @@ bool ATTestAltirraAudioStockSamples(ATPortableTestContext& context);
 bool ATTestAltirraBlockDevDiskAdapter(ATPortableTestContext& context);
 bool ATTestAltirraCallback(ATPortableTestContext& context);
 bool ATTestAltirraCartridgePort(ATPortableTestContext& context);
+bool ATTestAltirraBasicLoaderCommand(ATPortableTestContext& context);
+bool ATTestAltirraBasicLoaderIO(ATPortableTestContext& context);
+bool ATTestAltirraBasicLoaderTape(ATPortableTestContext& context);
+bool ATTestAltirraBasicLoaderLifecycle(ATPortableTestContext& context);
+bool ATTestAltirraProgramLoaderSegments(ATPortableTestContext& context);
+bool ATTestAltirraProgramLoaderCPU(ATPortableTestContext& context);
+bool ATTestAltirraProgramLoaderValidation(ATPortableTestContext& context);
+bool ATTestAltirraProgramLoaderLifecycle(ATPortableTestContext& context);
+bool ATTestAltirraProgramLoaderRandomization(ATPortableTestContext& context);
+bool ATTestAltirraProgramLoaderSymbols(ATPortableTestContext& context);
+bool ATTestAltirraProgramLoaderDisk(ATPortableTestContext& context);
+bool ATTestAltirraProgramLoaderType3(ATPortableTestContext& context);
 bool ATTestAltirraDeviceRegistration(ATPortableTestContext& context);
 bool ATTestAltirraDeviceRollback(ATPortableTestContext& context);
 bool ATTestAltirraDeviceCallbacks(ATPortableTestContext& context);
@@ -390,6 +402,18 @@ const ATPortableTestCase *ATGetPortableTests(size_t& count) {
 		{ "Altirra_BlockDevDiskAdapter", ATTestAltirraBlockDevDiskAdapter },
 		{ "Altirra_Callback", ATTestAltirraCallback },
 		{ "Altirra_CartridgePort", ATTestAltirraCartridgePort },
+		{ "Altirra_BasicLoaderCommand", ATTestAltirraBasicLoaderCommand },
+		{ "Altirra_BasicLoaderIO", ATTestAltirraBasicLoaderIO },
+		{ "Altirra_BasicLoaderTape", ATTestAltirraBasicLoaderTape },
+		{ "Altirra_BasicLoaderLifecycle", ATTestAltirraBasicLoaderLifecycle },
+		{ "Altirra_ProgramLoaderSegments", ATTestAltirraProgramLoaderSegments },
+		{ "Altirra_ProgramLoaderCPU", ATTestAltirraProgramLoaderCPU },
+		{ "Altirra_ProgramLoaderValidation", ATTestAltirraProgramLoaderValidation },
+		{ "Altirra_ProgramLoaderLifecycle", ATTestAltirraProgramLoaderLifecycle },
+		{ "Altirra_ProgramLoaderRandomization", ATTestAltirraProgramLoaderRandomization },
+		{ "Altirra_ProgramLoaderSymbols", ATTestAltirraProgramLoaderSymbols },
+		{ "Altirra_ProgramLoaderDisk", ATTestAltirraProgramLoaderDisk },
+		{ "Altirra_ProgramLoaderType3", ATTestAltirraProgramLoaderType3 },
 		{ "Altirra_DeviceRegistration", ATTestAltirraDeviceRegistration },
 		{ "Altirra_DeviceRollback", ATTestAltirraDeviceRollback },
 		{ "Altirra_DeviceCallbacks", ATTestAltirraDeviceCallbacks },

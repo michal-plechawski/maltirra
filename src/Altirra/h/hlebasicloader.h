@@ -18,6 +18,8 @@
 #ifndef f_AT_HLEBASICLOADER_H
 #define f_AT_HLEBASICLOADER_H
 
+#include <vd2/system/vdtypes.h>
+
 class ATCPUEmulator;
 class ATCPUHookManager;
 class ATSimulator;
@@ -32,7 +34,7 @@ public:
 	ATHLEBasicLoader();
 	~ATHLEBasicLoader();
 
-	void Init(ATCPUEmulator *cpu, ATSimulatorEventManager *simEventMan, ATSimulator *sim);
+	void Init(ATCPUEmulator *cpu, ATSimulatorEventManager *simEventMan = nullptr, ATSimulator *sim = nullptr);
 	void Shutdown();
 
 	bool IsLaunchPending() const { return mbLaunchPending; }
@@ -45,8 +47,6 @@ protected:
 
 	ATCPUEmulator *mpCPU = nullptr;
 	ATCPUHookManager *mpCPUHookMgr = nullptr;
-	ATSimulatorEventManager *mpSimEventMgr = nullptr;
-	ATSimulator *mpSim = nullptr;
 	ATCPUHookNode *mpLaunchHook = nullptr;
 
 	IATBlobImage *mpImage = nullptr;
@@ -60,7 +60,7 @@ protected:
 	bool		mbPushKeyToLoadTape = false;
 
 	bool		mbLaunchPending = false;
-	uint8		mProgramIOCB = 0;
+	uint8		mProgramIOCB = 0xFF;
 	uint32		mProgramIndex = 0;
 };
 

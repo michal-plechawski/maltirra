@@ -18,6 +18,8 @@
 #ifndef f_AT_HLEPROGRAMLOADER_H
 #define f_AT_HLEPROGRAMLOADER_H
 
+#include <initializer_list>
+#include <vd2/system/function.h>
 #include <at/atcore/devicesio.h>
 #include <at/atcore/devicesioimpl.h>
 #include "constants.h"
@@ -29,6 +31,19 @@ class ATSimulatorEventManager;
 struct ATCPUHookNode;
 class IATBlobImage;
 
+// Host services are supplied by the simulator; loading itself uses the CPU bus.
+struct ATHLEProgramLoaderConnections {
+	vdfunction<uint64()> mpGetTick;
+	vdfunction<bool(uint16)> mpIsKernelROMLocation;
+	vdfunction<uint32(uint16, uint32, uint32)> mpRandomizeRawMemory;
+	vdfunction<void(uint32, uint32)> mpPresetMemoryRange;
+	vdfunction<bool()> mpIsSymbolLoadingEnabled;
+	vdfunction<uint32(const wchar_t *)> mpLoadSymbols;
+	vdfunction<void(uint32)> mpProcessSymbolDirectives;
+	vdfunction<void(const wchar_t *)> mpQueueAutoLoadBatchFile;
+	vdfunction<void(uint32)> mpUnloadSymbols;
+};
+
 class ATHLEProgramLoader final : public ATDeviceSIO {
 	ATHLEProgramLoader(const ATHLEProgramLoader&) = delete;
 	ATHLEProgramLoader& operator=(const ATHLEProgramLoader&) = delete;
@@ -37,6 +52,7 @@ public:
 	~ATHLEProgramLoader();
 
 	void Init(ATCPUEmulator *cpu, ATSimulatorEventManager *simEventMan, ATSimulator *sim, IATDeviceSIOManager *siomgr);
+	void Init(ATCPUEmulator *cpu, ATSimulatorEventManager *simEventMan, ATHLEProgramLoaderConnections connections, IATDeviceSIOManager *siomgr);
 	void Shutdown();
 
 	void SetRandomizeMemoryOnLoad(bool enable) { mbRandomizeMemoryOnLoad = enable; }
@@ -63,7 +79,7 @@ protected:
 	ATSimulatorEventManager *mpSimEventMgr = nullptr;
 	IATDeviceSIOManager *mpSIOMgr = nullptr;
 	vdrefptr<IATDeviceSIOInterface> mpSIOInterface;
-	ATSimulator *mpSim = nullptr;
+	ATHLEProgramLoaderConnections mConnections;
 	ATCPUHookNode *mpLaunchHook = nullptr;
 	ATCPUHookNode *mpLoadContinueHook = nullptr;
 

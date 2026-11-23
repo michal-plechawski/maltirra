@@ -202,7 +202,7 @@
     <ClCompile Include="source\gtiatables.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\platform\Windows_x64\Altirra\source\hlebasicloader.cpp">
+    <ClCompile Include="source\hlebasicloader.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\platform\Windows_x64\Altirra\source\hleciohook.cpp">
@@ -214,7 +214,10 @@
     <ClCompile Include="source\hlefpaccelerator.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\platform\Windows_x64\Altirra\source\hleprogramloader.cpp">
+    <ClCompile Include="..\platform\Windows_x64\Altirra\source\hleprogramloaderbindings.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="source\hleprogramloader.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="source\hleutils.cpp">
@@ -1284,7 +1287,7 @@
     <ClInclude Include="h\gtiatables.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\platform\Windows_x64\Altirra\h\hlebasicloader.h">
+    <ClInclude Include="h\hlebasicloader.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\hleciohook.h">
@@ -1296,7 +1299,7 @@
     <ClInclude Include="h\hlefpaccelerator.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\platform\Windows_x64\Altirra\h\hleprogramloader.h">
+    <ClInclude Include="h\hleprogramloader.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="h\hleutils.h">
