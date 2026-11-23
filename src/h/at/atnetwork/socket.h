@@ -195,6 +195,10 @@ public:
 // Interface for stream (TCP) sockets in accept mode.
 class IATListenSocket : public IATSocket {
 public:
+	// Actual bound address, including an OS-assigned port when listening on 0.
+	// The port is zero until the native socket has been bound.
+	virtual ATSocketAddress GetLocalAddress() const = 0;
+
 	// Accept an incoming connection, if one is waiting. Returns null if no
 	// connection is pending or it could not be accepted.
 	virtual vdrefptr<IATStreamSocket> Accept() = 0;

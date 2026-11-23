@@ -787,6 +787,23 @@ ATNetListenSocket::ATNetListenSocket(ATNetSocketSyncContext& syncContext, const 
 ATNetListenSocket::~ATNetListenSocket() {
 }
 
+ATSocketAddress ATNetListenSocket::GetLocalAddress() const {
+	vdsynchronized(mpSyncContext->mMutex) {
+		if (mSocketHandle == INVALID_SOCKET)
+			return {};
+
+		union {
+			char buf[256] {};
+			sockaddr sa;
+		} address {};
+		int addressLen = sizeof address;
+		if (getsockname(mSocketHandle, &address.sa, &addressLen))
+			return {};
+
+		return ATSocketFromNativeAddress(&address.sa);
+	}
+}
+
 vdrefptr<IATStreamSocket> ATNetListenSocket::Accept() {
 	vdrefptr<IATStreamSocket> acceptedSocket;
 	SOCKET pendingSocket;

@@ -181,7 +181,7 @@ bool ATTestNetSocketWorker(ATPortableTestContext& context) {
 	receiver->SetOnEvent(&dispatcher,
 		[&](const ATSocketStatus& status) { receiverStatus = status; }, true);
 	AT_PORTABLE_TEST_ASSERT(context, ATWaitForSocketWorkerEvent(dispatcher, dispatchSignal, [&] {
-		return !receiverStatus.mbConnecting || receiverStatus.mError != ATSocketError::None;
+		return receiver->GetLocalAddress().mPort != 0 || receiverStatus.mError != ATSocketError::None;
 	}));
 	AT_PORTABLE_TEST_ASSERT(context, receiverStatus.mError == ATSocketError::None);
 	const uint16 receiverPort = receiver->GetLocalAddress().mPort;
@@ -246,35 +246,27 @@ bool ATTestNetSocketWorker(ATPortableTestContext& context) {
 	ATSocketStatus tcpListenerStatus {};
 	vdrefptr<ATMockStreamSocket> emulatedSocket;
 	vdrefptr<IATSocketHandler> bridgeHandler;
-	uint16 tcpPort = 0;
-	for(uint16 candidate = 49535; candidate < 49567; ++candidate) {
-		tcpListener = ATNetListen(ATSocketAddress::CreateLocalhostIPv4(candidate));
-		AT_PORTABLE_TEST_ASSERT(context, tcpListener != nullptr);
-		tcpListener->SetOnEvent(&dispatcher,
-			[&](const ATSocketStatus& status) { tcpListenerStatus = status; }, true);
-
-		emulatedSocket = new ATMockStreamSocket;
-		static constexpr uint8 kTcpRequest[] { 'e', 'm', 'u', '-', 't', 'c', 'p' };
-		emulatedSocket->mOutbound.assign(kTcpRequest, kTcpRequest + sizeof kTcpRequest);
-		if (worker->AsSocketListener()->OnSocketIncomingConnection(
-				VDToBE32(kEmulatedAddress), 23456,
-				udpStack.mIpStack.mGatewayAddress, candidate,
-				emulatedSocket, ~bridgeHandler)
-			&& ATWaitForSocketWorkerEvent(dispatcher, dispatchSignal, [&] {
-					return tcpListenerStatus.mbCanAccept || tcpListenerStatus.mError != ATSocketError::None;
-				})) {
-			tcpPort = candidate;
-			break;
-		}
-
-		bridgeHandler = nullptr;
-		tcpListener->SetOnEvent(nullptr, nullptr, false);
-		tcpListener->CloseSocket(true);
-		tcpListener = nullptr;
-		tcpListenerStatus = {};
-		worker->ResetAllConnections();
-	}
+	// Keep the listener bound while discovering its OS-assigned port. CI can
+	// reserve entire fixed port ranges, and a bind error is not an acceptance.
+	tcpListener = ATNetListen(ATSocketAddress::CreateLocalhostIPv4(0));
+	AT_PORTABLE_TEST_ASSERT(context, tcpListener != nullptr);
+	tcpListener->SetOnEvent(&dispatcher,
+		[&](const ATSocketStatus& status) { tcpListenerStatus = status; }, true);
+	AT_PORTABLE_TEST_ASSERT(context, ATWaitForSocketWorkerEvent(dispatcher, dispatchSignal, [&] {
+		return tcpListener->GetLocalAddress().mPort != 0 || tcpListenerStatus.mError != ATSocketError::None;
+	}));
+	AT_PORTABLE_TEST_ASSERT(context, tcpListener->GetSocketStatus().mError == ATSocketError::None);
+	const uint16 tcpPort = tcpListener->GetLocalAddress().mPort;
 	AT_PORTABLE_TEST_ASSERT(context, tcpPort != 0);
+	emulatedSocket = new ATMockStreamSocket;
+	static constexpr uint8 kTcpRequest[] { 'e', 'm', 'u', '-', 't', 'c', 'p' };
+	emulatedSocket->mOutbound.assign(kTcpRequest, kTcpRequest + sizeof kTcpRequest);
+	AT_PORTABLE_TEST_ASSERT(context, worker->AsSocketListener()->OnSocketIncomingConnection(
+		VDToBE32(kEmulatedAddress),23456,udpStack.mIpStack.mGatewayAddress,tcpPort,emulatedSocket,~bridgeHandler));
+	AT_PORTABLE_TEST_ASSERT(context, ATWaitForSocketWorkerEvent(dispatcher, dispatchSignal, [&] {
+		return tcpListenerStatus.mbCanAccept || tcpListenerStatus.mError != ATSocketError::None;
+	}));
+	AT_PORTABLE_TEST_ASSERT(context, tcpListenerStatus.mError == ATSocketError::None && tcpListenerStatus.mbCanAccept);
 
 	vdrefptr<IATStreamSocket> nativeServer = tcpListener->Accept();
 	AT_PORTABLE_TEST_ASSERT(context, nativeServer != nullptr);
@@ -282,7 +274,6 @@ bool ATTestNetSocketWorker(ATPortableTestContext& context) {
 	nativeServer->SetOnEvent(&dispatcher,
 		[&](const ATSocketStatus& status) { nativeServerStatus = status; }, true);
 
-	static constexpr uint8 kTcpRequest[] { 'e', 'm', 'u', '-', 't', 'c', 'p' };
 	bridgeHandler->OnSocketReadReady(sizeof kTcpRequest);
 	AT_PORTABLE_TEST_ASSERT(context, ATWaitForSocketWorkerEvent(dispatcher, dispatchSignal, [&] {
 		return nativeServerStatus.mbCanRead || nativeServerStatus.mError != ATSocketError::None;

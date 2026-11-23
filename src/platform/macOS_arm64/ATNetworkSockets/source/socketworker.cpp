@@ -569,6 +569,20 @@ ATNetListenSocket::ATNetListenSocket(ATNetSocketSyncContext& syncContext, const 
 ATNetListenSocket::~ATNetListenSocket() {
 }
 
+ATSocketAddress ATNetListenSocket::GetLocalAddress() const {
+	vdsynchronized(mpSyncContext->mMutex) {
+		if (mSocketHandle == kATInvalidSocket)
+			return {};
+
+		sockaddr_storage address {};
+		socklen_t addressLen = sizeof address;
+		if (getsockname(mSocketHandle, reinterpret_cast<sockaddr *>(&address), &addressLen))
+			return {};
+
+		return ATSocketFromNativeAddress(reinterpret_cast<const sockaddr *>(&address));
+	}
+}
+
 vdrefptr<IATStreamSocket> ATNetListenSocket::Accept() {
 	ATSocketNativeHandle pendingSocket = kATInvalidSocket;
 	ATSocketAddress pendingAddress;

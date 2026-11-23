@@ -658,3 +658,10 @@ tab-map persistence, input replacement/exhaustion, stale reset state, and cursor
 and margin bounds after resize. The native build has 642 translation units and
 391 portable groups. CIO manager wiring, simulator/application assembly, BASIC
 interpreter boot, and complete boot validation remain outstanding.
+
+Native socket and emulated socket-worker loopback tests use OS-assigned TCP/UDP
+ports instead of fixed ranges that Windows runners may reserve. Both native
+listener implementations expose the actual bound address through
+`IATListenSocket::GetLocalAddress()`, synchronized with the socket worker.
+The tests wait for binding before connecting, reject errors before accepting,
+and still verify real bidirectional payload transfer and address translation.

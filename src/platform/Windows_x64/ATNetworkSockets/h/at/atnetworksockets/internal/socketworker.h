@@ -186,6 +186,7 @@ public:
 	ATNetListenSocket(ATNetSocketSyncContext& syncContext, const ATSocketAddress& bindAddress, bool dualStack);
 	~ATNetListenSocket();
 
+	ATSocketAddress GetLocalAddress() const override;
 	vdrefptr<IATStreamSocket> Accept() override;
 
 	void Shutdown() override;

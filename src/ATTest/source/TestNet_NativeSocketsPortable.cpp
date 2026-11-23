@@ -55,39 +55,24 @@ bool ATTestNetNativeSockets(ATPortableTestContext& context) {
 	vdrefptr<IATStreamSocket> client;
 	ATSocketStatus listenerStatus {};
 	ATSocketStatus clientStatus {};
-	uint16 tcpPort = 0;
-
-	for(uint16 candidate = 49371; candidate < 49403; ++candidate) {
-		listener = ATNetListen(ATSocketAddress::CreateLocalhostIPv4(candidate));
-		client = ATNetConnect(ATSocketAddress::CreateLocalhostIPv4(candidate));
-		AT_PORTABLE_TEST_ASSERT(context, listener != nullptr);
-		AT_PORTABLE_TEST_ASSERT(context, client != nullptr);
-
-		listener->SetOnEvent(&dispatcher, [&](const ATSocketStatus& status) { listenerStatus = status; }, true);
-		client->SetOnEvent(&dispatcher, [&](const ATSocketStatus& status) { clientStatus = status; }, true);
-
-		const bool finished = ATWaitForSocketEvent(dispatcher, dispatchSignal, [&] {
-			return (listenerStatus.mbCanAccept && !clientStatus.mbConnecting)
-				|| listenerStatus.mError != ATSocketError::None
-				|| clientStatus.mError != ATSocketError::None;
-		});
-
-		if (finished && listenerStatus.mbCanAccept && clientStatus.mError == ATSocketError::None) {
-			tcpPort = candidate;
-			break;
-		}
-
-		client->SetOnEvent(nullptr, nullptr, false);
-		listener->SetOnEvent(nullptr, nullptr, false);
-		client->CloseSocket(true);
-		listener->CloseSocket(true);
-		client = nullptr;
-		listener = nullptr;
-		listenerStatus = {};
-		clientStatus = {};
-	}
-
+	listener = ATNetListen(ATSocketAddress::CreateLocalhostIPv4(0));
+	AT_PORTABLE_TEST_ASSERT(context, listener != nullptr);
+	listener->SetOnEvent(&dispatcher, [&](const ATSocketStatus& status) { listenerStatus = status; }, true);
+	AT_PORTABLE_TEST_ASSERT(context, ATWaitForSocketEvent(dispatcher, dispatchSignal, [&] {
+		return listener->GetLocalAddress().mPort != 0 || listenerStatus.mError != ATSocketError::None;
+	}));
+	const ATSocketAddress listenAddress = listener->GetLocalAddress();
+	const uint16 tcpPort = listenAddress.mPort;
 	AT_PORTABLE_TEST_ASSERT(context, tcpPort != 0);
+	AT_PORTABLE_TEST_ASSERT(context, listenAddress.mType == ATSocketAddressType::IPv4 && listenAddress.mIPv4Address == 0x7F000001 && listener->GetSocketStatus().mError == ATSocketError::None);
+	client = ATNetConnect(listenAddress);
+	AT_PORTABLE_TEST_ASSERT(context, client != nullptr);
+	client->SetOnEvent(&dispatcher, [&](const ATSocketStatus& status) { clientStatus = status; }, true);
+	AT_PORTABLE_TEST_ASSERT(context, ATWaitForSocketEvent(dispatcher, dispatchSignal, [&] {
+		return (listenerStatus.mbCanAccept && client->GetLocalAddress().mPort != 0)
+			|| listenerStatus.mError != ATSocketError::None || clientStatus.mError != ATSocketError::None;
+	}));
+	AT_PORTABLE_TEST_ASSERT(context, listenerStatus.mbCanAccept && listenerStatus.mError == ATSocketError::None);
 	AT_PORTABLE_TEST_ASSERT(context, !clientStatus.mbConnecting);
 	AT_PORTABLE_TEST_ASSERT(context, clientStatus.mError == ATSocketError::None);
 
@@ -97,9 +82,10 @@ bool ATTestNetNativeSockets(ATPortableTestContext& context) {
 	ATSocketStatus serverStatus {};
 	server->SetOnEvent(&dispatcher, [&](const ATSocketStatus& status) { serverStatus = status; }, true);
 	AT_PORTABLE_TEST_ASSERT(context, ATWaitForSocketEvent(dispatcher, dispatchSignal, [&] {
-		return !serverStatus.mbConnecting || serverStatus.mError != ATSocketError::None;
+		return server->GetLocalAddress().mPort != 0 || serverStatus.mError != ATSocketError::None;
 	}));
 	AT_PORTABLE_TEST_ASSERT(context, serverStatus.mError == ATSocketError::None);
+	AT_PORTABLE_TEST_ASSERT(context, server->GetLocalAddress().mPort == tcpPort && listener->GetLocalAddress().mPort == tcpPort);
 
 	static constexpr char kClientMessage[] = "Altirra TCP client";
 	AT_PORTABLE_TEST_ASSERT(context, client->Send(kClientMessage, sizeof kClientMessage) == sizeof kClientMessage);
@@ -130,34 +116,21 @@ bool ATTestNetNativeSockets(ATPortableTestContext& context) {
 	AT_PORTABLE_TEST_ASSERT(context, sender != nullptr);
 
 	ATSocketStatus receiverStatus {};
-	uint16 udpPort = 0;
-	for(uint16 candidate = 49403; candidate < 49435; ++candidate) {
-		receiver = ATNetBind(ATSocketAddress::CreateLocalhostIPv4(candidate), false);
-		AT_PORTABLE_TEST_ASSERT(context, receiver != nullptr);
-		receiver->SetOnEvent(&dispatcher, [&](const ATSocketStatus& status) { receiverStatus = status; }, true);
-		const bool ready = ATWaitForSocketEvent(dispatcher, dispatchSignal, [&] {
-			return !receiverStatus.mbConnecting || receiverStatus.mError != ATSocketError::None;
-		});
-
-		static constexpr uint8 kProbe[] { 0x41, 0x54, 0x52, 0x41 };
-		if (ready && receiverStatus.mError == ATSocketError::None)
-			AT_PORTABLE_TEST_ASSERT(context, sender->SendTo(ATSocketAddress::CreateLocalhostIPv4(candidate), kProbe, sizeof kProbe));
-
-		const bool finished = ready && ATWaitForSocketEvent(dispatcher, dispatchSignal, [&] {
-			return receiverStatus.mbCanRead || receiverStatus.mError != ATSocketError::None;
-		});
-		if (finished && receiverStatus.mbCanRead) {
-			udpPort = candidate;
-			break;
-		}
-
-		receiver->SetOnEvent(nullptr, nullptr, false);
-		receiver->CloseSocket(true);
-		receiver = nullptr;
-		receiverStatus = {};
-	}
-
+	receiver = ATNetBind(ATSocketAddress::CreateLocalhostIPv4(0), false);
+	AT_PORTABLE_TEST_ASSERT(context, receiver != nullptr);
+	receiver->SetOnEvent(&dispatcher, [&](const ATSocketStatus& status) { receiverStatus = status; }, true);
+	AT_PORTABLE_TEST_ASSERT(context, ATWaitForSocketEvent(dispatcher, dispatchSignal, [&] {
+		return receiver->GetLocalAddress().mPort != 0 || receiverStatus.mError != ATSocketError::None;
+	}));
+	AT_PORTABLE_TEST_ASSERT(context, receiver->GetSocketStatus().mError == ATSocketError::None);
+	const uint16 udpPort = receiver->GetLocalAddress().mPort;
 	AT_PORTABLE_TEST_ASSERT(context, udpPort != 0);
+	static constexpr uint8 kProbe[] {0x41,0x54,0x52,0x41};
+	AT_PORTABLE_TEST_ASSERT(context, sender->SendTo(ATSocketAddress::CreateLocalhostIPv4(udpPort),kProbe,sizeof kProbe));
+	AT_PORTABLE_TEST_ASSERT(context, ATWaitForSocketEvent(dispatcher, dispatchSignal, [&] {
+		return receiverStatus.mbCanRead || receiverStatus.mError != ATSocketError::None;
+	}));
+	AT_PORTABLE_TEST_ASSERT(context, receiverStatus.mbCanRead && receiverStatus.mError == ATSocketError::None);
 	ATSocketAddress sourceAddress;
 	uint8 udpBuffer[16] {};
 	AT_PORTABLE_TEST_ASSERT(context, receiver->RecvFrom(sourceAddress, udpBuffer, sizeof udpBuffer) == 4);
