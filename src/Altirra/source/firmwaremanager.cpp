@@ -15,7 +15,12 @@
 //	along with this program; if not, write to the Free Software
 //	Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
-#include <stdafx.h>
+#include <algorithm>
+#include <cstdio>
+#include <cstring>
+#include <cwchar>
+#include <cwctype>
+#include <functional>
 #include <numeric>
 #include <vd2/system/binary.h>
 #include <vd2/system/error.h>
@@ -28,7 +33,7 @@
 #include <at/atcore/vfs.h>
 #include "firmwaremanager.h"
 #include "oshelper.h"
-#include "resource.h"
+#include "../res/resource.h"
 
 bool g_ATFirmwarePathPortabilityEnabled;
 
@@ -120,7 +125,7 @@ bool ATIsKernelFirmwareType(ATFirmwareType type) {
 }
 
 const char *ATGetFirmwareTypeName(ATFirmwareType type) {
-	return kATFirmwareTypeNames[type];
+	return type < kATFirmwareTypeCount ? kATFirmwareTypeNames[type] : "";
 }
 
 ATFirmwareType ATGetFirmwareTypeFromName(const char *type) {
@@ -180,13 +185,22 @@ uint64 ATGetFirmwareIdFromPath(const wchar_t *path) {
 
 	uint64 hash = 14695981039346656037ull;
 
-	while(const wchar_t c = towlower(*path++))
-		hash = (hash ^ (unsigned)c) * 1099511628211ull;
+	// Persist the original Windows UTF-16 hash on hosts with 32-bit wchar_t.
+	while (const uint32 c = static_cast<uint32>(*path++)) {
+		if (c > 0xFFFF && c <= 0x10FFFF) {
+			hash = (hash ^ (0xD800 + ((c - 0x10000) >> 10))) * 1099511628211ull;
+			hash = (hash ^ (0xDC00 + ((c - 0x10000) & 0x3FF))) * 1099511628211ull;
+		} else {
+			hash = (hash ^ static_cast<uint32>(towlower(c))) * 1099511628211ull;
+		}
+	}
 
 	return hash | 0x8000000000000000ull;
 }
 
 bool ATLoadInternalFirmware(uint64 id, void *dst, uint32 offset, uint32 len, bool *changed, uint32 *actualLen, vdfastvector<uint8> *dstbuf, bool *isUsable) {
+	if (actualLen) *actualLen = 0;
+	if (isUsable) *isUsable = false;
 	static const uint32 kResourceIds[]={
 		IDR_NOKERNEL,
 		IDR_KERNEL,
@@ -215,81 +229,46 @@ bool ATLoadInternalFirmware(uint64 id, void *dst, uint32 offset, uint32 len, boo
 	if (id >= kATFirmwareId_PredefCount1 || id == kATFirmwareId_Kernel_HLE)
 		return false;
 
-	if (isUsable) {
-		bool usable = true;
-
-		switch(id) {
-			case kATFirmwareId_Invalid:
-			case kATFirmwareId_NoKernel:
-			case kATFirmwareId_5200_NoCartridge:
-			case kATFirmwareId_NoMIO:
-			case kATFirmwareId_NoBlackBox:
-			case kATFirmwareId_NoGame:
-				usable = false;
-				break;
-		}
-
-		*isUsable = usable;
-	}
-
-	uint32 resId = id ? kResourceIds[id - 1] : 0;
-
-	switch(resId) {
-		default:
-			// uncompressed
-			if (dstbuf)
-				return ATLoadKernelResource(resId, *dstbuf);
-			else
-				return ATLoadKernelResource(resId, dst, offset, len, true);
-
-		case 0:
-			break;
-
-		case IDR_U1MBBIOS:
-		case IDR_NOMIO:
-		case IDR_NOBLACKBOX:
-		case IDR_RAPIDUSFLASH:
-			// compressed
-			break;
-	}
-
+	const uint32 resId = id ? kResourceIds[id - 1] : 0;
 	vdfastvector<uint8> buffer;
-
 	if (id == kATFirmwareId_1090Charset) {
 		if (!ATLoadKernelResource(IDR_KERNELXL, buffer) || buffer.size() != 16384)
 			return false;
-
-		// normal charset
 		memmove(buffer.data(), buffer.data() + 0x2000, 0x0400);
-
-		// int'l charset
 		memmove(buffer.data() + 0x0400, buffer.data() + 0xC00, 0x0400);
-
 		buffer.resize(0x0800);
-	} else if (resId)
-		ATLoadKernelResourceLZPacked(resId, buffer);
-
-	if (dstbuf) {
-		if (changed && *dstbuf != buffer)
-			*changed = true;
-
-		*dstbuf = buffer;
 	} else {
-		if (offset >= buffer.size())
+		if (!resId)
 			return false;
-
-		size_t avail = buffer.size() - offset;
-		if (len > avail)
-			len = (uint32)avail;
-
-		if (changed && memcmp(dst, buffer.data() + offset, len))
-			*changed = true;
-
-		memcpy(dst, buffer.data() + offset, len);
+		const bool packed = resId == IDR_U1MBBIOS || resId == IDR_NOMIO
+			|| resId == IDR_NOBLACKBOX || resId == IDR_RAPIDUSFLASH;
+		if (!(packed ? ATLoadKernelResourceLZPacked(resId, buffer) : ATLoadKernelResource(resId, buffer)))
+			return false;
 	}
 
+	if (offset > buffer.size())
+		return false;
+	const uint32 available = static_cast<uint32>(buffer.size() - offset);
+	const uint8 *source = buffer.data() + offset;
+	if (dstbuf) {
+		if (changed && (dstbuf->size() != available || (available && memcmp(dstbuf->data(), source, available))))
+			*changed = true;
+		dstbuf->assign(source, source + available);
+		len = available;
+	} else {
+		len = std::min(len, available);
+		if (len) {
+			if (changed && memcmp(dst, source, len))
+				*changed = true;
+			memcpy(dst, source, len);
+		}
+	}
 	if (actualLen)
 		*actualLen = len;
+	if (isUsable) {
+		*isUsable = id != kATFirmwareId_NoKernel && id != kATFirmwareId_5200_NoCartridge
+			&& id != kATFirmwareId_NoMIO && id != kATFirmwareId_NoBlackBox && id != kATFirmwareId_NoGame;
+	}
 
 	return true;
 }
@@ -300,10 +279,11 @@ ATFirmwareManager::ATFirmwareManager() {
 		id = 0xFFFF;
 	}
 
-	ATVFSSetSpecialProtocolHandler(std::bind_front(&ATFirmwareManager::GetVFSSpecialFirmware, this));
+	ATVFSSetSpecialProtocolHandler(std::bind_front(&ATFirmwareManager::GetVFSSpecialFirmware, this), this);
 }
 
 ATFirmwareManager::~ATFirmwareManager() {
+	ATVFSClearSpecialProtocolHandler(this);
 }
 
 bool ATFirmwareManager::GetFirmwareInfo(uint64 id, ATFirmwareInfo& fwinfo) const {
@@ -443,7 +423,7 @@ bool ATFirmwareManager::GetFirmwareInfo(uint64 id, ATFirmwareInfo& fwinfo) const
 		fwinfo.mbAutoselect = true;
 		fwinfo.mbVisible = true;
 		fwinfo.mType = kATFirmwareType_Unknown;
-		
+
 		if (!key.getString("Path", fwinfo.mPath))
 			return false;
 
@@ -466,12 +446,12 @@ bool ATFirmwareManager::GetFirmwareInfo(uint64 id, ATFirmwareInfo& fwinfo) const
 
 void ATFirmwareManager::GetFirmwareList(vdvector<ATFirmwareInfo>& firmwares) const {
 	// add predefined
-	firmwares.resize(kATFirmwareId_PredefCount);
-	for(uint32 i=0; i<kATFirmwareId_PredefCount; ++i) {
-		if (i+1 == kATFirmwareId_Kernel_HLE)
-			continue;
-
-		VDVERIFY(GetFirmwareInfo(i+1, firmwares[i]));
+	firmwares.clear();
+	firmwares.reserve(kATFirmwareId_PredefCount);
+	for (uint32 i = 1; i < kATFirmwareId_PredefCount1; ++i) {
+		ATFirmwareInfo info {};
+		if (GetFirmwareInfo(i, info))
+			firmwares.push_back(info);
 	}
 
 	// add custom
@@ -568,8 +548,13 @@ uint64 ATFirmwareManager::GetFirmwareByRefString(const wchar_t *refstr, vdfuncti
 	if (!*refstr)
 		return 0;
 
-	if (!wcsncmp(refstr, L"internal:", 9))
-		return wcstoul(refstr + 9, NULL, 16);
+	if (!wcsncmp(refstr, L"internal:", 9)) {
+		wchar_t *end = nullptr;
+		const uint64 id = wcstoull(refstr + 9, &end, 16);
+		ATFirmwareInfo info {};
+		return end != refstr + 9 && !*end && id < kATFirmwareId_Custom
+			&& GetFirmwareInfo(id, info) && (!typeFilter || typeFilter(info.mType)) ? id : 0;
+	}
 
 	// try to find firmware by path
 	uint64 id = ATGetFirmwareIdFromPath(refstr);
@@ -672,8 +657,20 @@ void ATFirmwareManager::SetSpecificFirmware(ATSpecificFirmwareType ft, uint64 id
 }
 
 bool ATFirmwareManager::LoadFirmware(uint64 id, void *dst, uint32 offset, uint32 len, bool *changed, uint32 *actualLen, vdfastvector<uint8> *dstbuf, const uint8 *fill, bool *isUsable) const {
-	if (id < kATFirmwareId_Custom)
-		return ATLoadInternalFirmware(id, dst, offset, len, changed, actualLen, dstbuf, isUsable);
+	if (actualLen) *actualLen = 0;
+	if (id < kATFirmwareId_Custom) {
+		uint32 actual = 0;
+		if (!ATLoadInternalFirmware(id, dst, offset, len, changed, &actual, dstbuf, isUsable))
+			return false;
+		if (fill && !dstbuf && actual < len) {
+			auto *tail = static_cast<uint8 *>(dst) + actual;
+			if (changed && std::any_of(tail, tail + len - actual, [fill](uint8 c) { return c != *fill; }))
+				*changed = true;
+			memset(tail, *fill, len - actual);
+		}
+		if (actualLen) *actualLen = actual;
+		return true;
+	}
 
 	if (isUsable)
 		*isUsable = false;
@@ -695,10 +692,15 @@ bool ATFirmwareManager::LoadFirmware(uint64 id, void *dst, uint32 offset, uint32
 		if (dstbuf) {
 			auto fileSize = f.size();
 
+			if (offset > fileSize)
+				return false;
+			fileSize -= offset;
+
 			if (fileSize >= 16*1024*1024)
 				throw MyError("Firmware image is too big: %llu bytes.", (unsigned long long)fileSize);
 
-			dstbuf->clear();
+			if (changed && dstbuf->size() != static_cast<size_t>(fileSize))
+				*changed = true;
 			dstbuf->resize((size_t)fileSize, fill ? *fill : 0);
 
 			dst = dstbuf->data();
@@ -710,9 +712,10 @@ bool ATFirmwareManager::LoadFirmware(uint64 id, void *dst, uint32 offset, uint32
 			actual = f.readData(tmpData.data(), len);
 
 			if (actual >= 0) {
-				*changed = memcmp(dst, tmpData.data(), actual) != 0;
+				*changed |= actual > 0 && memcmp(dst, tmpData.data(), actual) != 0;
 
-				memcpy(dst, tmpData.data(), actual);
+				if (actual)
+					memcpy(dst, tmpData.data(), actual);
 			}
 		} else {
 			actual = f.readData(dst, len);
@@ -900,7 +903,7 @@ void ATFirmwareManager::GetVFSSpecialFirmware(const wchar_t *path, bool write, b
 
 	const wchar_t *name = path;
 	if (const wchar_t *split = wcsrchr(name, L'/'))
-		name = split;
+		name = split + 1;
 
 	view->SetFileName(name);
 

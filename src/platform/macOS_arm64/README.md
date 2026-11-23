@@ -434,3 +434,21 @@ events accumulate independently of vertical events. Device removal releases
 only that unit's held buttons, including unit 31, and manager destruction
 cleans up controllers and pending scheduled work. Persistence uses standard
 containers for non-trivial pairs so it works with both MSVC and libc++.
+
+The full firmware manager is shared in `firmwaremanager.cpp`. Six portable
+test groups cover firmware type/ref parsing, persistent path IDs, built-in
+ROM data and decompression, catalog/default/specific selections, custom file
+loading and fill/change metadata, and read-only `special://` VFS views with
+CAR headers. IDs retain the Windows UTF-16 hash on 32-bit-wchar hosts. The
+catalog omits the unsupported HLE entry, internal references honor type
+filters, and VFS handler ownership prevents callbacks into destroyed managers.
+
+The macOS build now requires MADS (`MADS=/path/to/mads` if needed). It links
+the existing native ATCompiler objects and builds 17 real firmware resources
+from the Kernel/ATBasic sources using the original assembler/relocation/packing
+recipes. `build-firmware.py` verifies ROM sizes and compression round trips,
+caches input/output hashes under `obj/macOS_arm64/firmware`, and copies resources
+beside the executable under `out/macOS_arm64/firmware`. Native resource loading
+checks that directory in addition to bundle and source-tree locations. CI
+downloads a revision-pinned ARM64 MADS binary, checks its SHA-256, and includes
+the firmware and ATCompiler in its artifacts. Full machine boot remains pending.

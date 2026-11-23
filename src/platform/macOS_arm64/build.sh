@@ -216,6 +216,7 @@ portable_test_sources=(
 	src/ATTest/source/TestAltirra_InputManagerDigitalPortable.cpp
 	src/ATTest/source/TestAltirra_InputManagerMapsPortable.cpp
 	src/ATTest/source/TestAltirra_InputManagerAnalogPortable.cpp
+	src/ATTest/source/TestAltirra_FirmwareManagerPortable.cpp
 	src/ATTest/source/TestAltirra_DisasmOpcodesPortable.cpp
 	src/ATTest/source/TestAltirra_DisasmReferencesPortable.cpp
 	src/ATTest/source/TestAltirra_DisasmContextPortable.cpp
@@ -453,6 +454,7 @@ portable_test_sources=(
 	src/Altirra/source/portmanager.cpp
 	src/Altirra/source/inputcontroller.cpp
 	src/Altirra/source/inputmanager.cpp
+	src/Altirra/source/firmwaremanager.cpp
 	src/platform/macOS_arm64/Altirra/source/inputkeyname.cpp
 	src/Altirra/source/cpuheatmapadapter.cpp
 	src/Altirra/source/cpu.cpp
@@ -691,6 +693,12 @@ done
 	-o "$portable_test_executable"
 
 manifest="$build_root/build-manifest.txt"
+compiler_objects=("$build_root"/src/ATCompiler/source/*.cpp.o)
+"$compiler" -arch arm64 "${compiler_objects[@]}" -o "$output_root/ATCompiler"
+python3 src/platform/macOS_arm64/build-firmware.py \
+	--mads "${MADS:-mads}" --compiler "$output_root/ATCompiler" \
+	--cache-root "$build_root/firmware" --output-root "$output_root/firmware"
+
 {
 	printf 'platform=macOS_arm64\n'
 	printf 'compiler=%s\n' "$(printf '%s\n' "$compiler_version" | head -n 1)"

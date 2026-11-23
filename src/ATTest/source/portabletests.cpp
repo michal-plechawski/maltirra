@@ -92,6 +92,12 @@ bool ATTestAltirraInputManagerAnalog(ATPortableTestContext& context);
 bool ATTestAltirraInputManagerPointers(ATPortableTestContext& context);
 bool ATTestAltirraInputManagerWheel(ATPortableTestContext& context);
 bool ATTestAltirraInputKeyNames(ATPortableTestContext& context);
+bool ATTestAltirraFirmwareTypes(ATPortableTestContext& context);
+bool ATTestAltirraFirmwarePathIds(ATPortableTestContext& context);
+bool ATTestAltirraFirmwareInternal(ATPortableTestContext& context);
+bool ATTestAltirraFirmwareCatalog(ATPortableTestContext& context);
+bool ATTestAltirraFirmwareFiles(ATPortableTestContext& context);
+bool ATTestAltirraFirmwareVFS(ATPortableTestContext& context);
 bool ATTestAltirraMemoryManager(ATPortableTestContext& context);
 bool ATTestAltirraRTime8(ATPortableTestContext& context);
 bool ATTestAltirraRVerter(ATPortableTestContext& context);
@@ -370,6 +376,12 @@ const ATPortableTestCase *ATGetPortableTests(size_t& count) {
 		{ "Altirra_InputManagerPointers", ATTestAltirraInputManagerPointers },
 		{ "Altirra_InputManagerWheel", ATTestAltirraInputManagerWheel },
 		{ "Altirra_InputKeyNames", ATTestAltirraInputKeyNames },
+		{ "Altirra_FirmwareTypes", ATTestAltirraFirmwareTypes },
+		{ "Altirra_FirmwarePathIds", ATTestAltirraFirmwarePathIds },
+		{ "Altirra_FirmwareInternal", ATTestAltirraFirmwareInternal },
+		{ "Altirra_FirmwareCatalog", ATTestAltirraFirmwareCatalog },
+		{ "Altirra_FirmwareFiles", ATTestAltirraFirmwareFiles },
+		{ "Altirra_FirmwareVFS", ATTestAltirraFirmwareVFS },
 		{ "Altirra_MemoryManager", ATTestAltirraMemoryManager },
 		{ "Altirra_RTime8", ATTestAltirraRTime8 },
 		{ "Altirra_RVerter", ATTestAltirraRVerter },

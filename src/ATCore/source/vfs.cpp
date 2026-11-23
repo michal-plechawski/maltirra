@@ -20,6 +20,8 @@
 //	archive for details.
 
 #include <stdafx.h>
+#include <algorithm>
+#include <vector>
 #include <vd2/system/file.h>
 #include <vd2/system/filesys.h>
 #include <vd2/system/strutil.h>
@@ -29,6 +31,11 @@
 vdfunction<void(ATVFSFileView *, const wchar_t *, ATVFSFileView **)> g_ATVFSAtfsHandler;
 vdfunction<void(const wchar_t *, bool, bool, ATVFSFileView **)> g_ATVFSBlobHandler;
 vdfunction<void(const wchar_t *, bool, bool, ATVFSFileView **)> g_ATVFSSpecialHandler;
+struct ATVFSSpecialRegistration {
+	const void *mpOwner;
+	vdfunction<void(const wchar_t *, bool, bool, ATVFSFileView **)> mHandler;
+};
+std::vector<ATVFSSpecialRegistration> g_ATVFSSpecialRegistrations;
 
 ATInvalidVFSPathException::ATInvalidVFSPathException(const wchar_t *badPath)
 	: VDException(L"Invalid VFS path: %s.", badPath)
@@ -692,5 +699,30 @@ void ATVFSSetBlobProtocolHandler(vdfunction<void(const wchar_t *, bool, bool, AT
 }
 
 void ATVFSSetSpecialProtocolHandler(vdfunction<void(const wchar_t *, bool, bool, ATVFSFileView **)> handler) {
+	g_ATVFSSpecialRegistrations.clear();
 	g_ATVFSSpecialHandler = std::move(handler);
+}
+
+void ATVFSSetSpecialProtocolHandler(vdfunction<void(const wchar_t *, bool, bool, ATVFSFileView **)> handler, const void *owner) {
+	if (!owner) {
+		ATVFSSetSpecialProtocolHandler(std::move(handler));
+		return;
+	}
+	if (g_ATVFSSpecialRegistrations.empty())
+		g_ATVFSSpecialRegistrations.push_back({nullptr, g_ATVFSSpecialHandler});
+	g_ATVFSSpecialRegistrations.push_back({owner, std::move(handler)});
+	g_ATVFSSpecialHandler = g_ATVFSSpecialRegistrations.back().mHandler;
+}
+
+void ATVFSClearSpecialProtocolHandler(const void *owner) {
+	if (!owner)
+		return;
+	auto it = std::find_if(g_ATVFSSpecialRegistrations.begin(), g_ATVFSSpecialRegistrations.end(),
+		[owner](const auto& entry) { return entry.mpOwner == owner; });
+	if (it == g_ATVFSSpecialRegistrations.end())
+		return;
+	g_ATVFSSpecialRegistrations.erase(it);
+	g_ATVFSSpecialHandler = g_ATVFSSpecialRegistrations.back().mHandler;
+	if (g_ATVFSSpecialRegistrations.size() == 1)
+		g_ATVFSSpecialRegistrations.clear();
 }

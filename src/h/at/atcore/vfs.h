@@ -184,5 +184,8 @@ vdrefptr<ATVFSFileView> ATVFSWrapStream(IVDRandomAccessStream& stream, const wch
 void ATVFSSetAtfsProtocolHandler(vdfunction<void(ATVFSFileView *, const wchar_t *, ATVFSFileView **)> handler);
 void ATVFSSetBlobProtocolHandler(vdfunction<void(const wchar_t *, bool, bool, ATVFSFileView **)> handler);
 void ATVFSSetSpecialProtocolHandler(vdfunction<void(const wchar_t *, bool, bool, ATVFSFileView **)> handler);
+// Owned handlers can be cleared without removing a later replacement.
+void ATVFSSetSpecialProtocolHandler(vdfunction<void(const wchar_t *, bool, bool, ATVFSFileView **)> handler, const void *owner);
+void ATVFSClearSpecialProtocolHandler(const void *owner);
 
 #endif

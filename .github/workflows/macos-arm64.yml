@@ -36,6 +36,16 @@ jobs:
           toolchain_hash=$(clang++ --version | shasum -a 256 | cut -c1-16)
           echo "cache-key=apple-clang-$toolchain_hash" >> "$GITHUB_OUTPUT"
 
+      - name: Install native MADS 2.1.8
+        run: |
+          mads_path="$RUNNER_TEMP/mads"
+          curl --fail --silent --show-error --location --retry 3 \
+            'https://raw.githubusercontent.com/tebe6502/Mad-Assembler/da7ab45531dce63bf404e7410c69585d379d55aa/bin/macos_aarch64/mads' \
+            --output "$mads_path"
+          echo 'ba89693a2881906d9fafca1b2d2ecf800b3d69aa374ce77fe83d9cfba864d1ef  '"$mads_path" | shasum -a 256 --check
+          chmod +x "$mads_path"
+          echo "MADS=$mads_path" >> "$GITHUB_ENV"
+
       - name: Restore macOS ARM64 object cache
         uses: actions/cache@v5
         with:
@@ -97,6 +107,8 @@ jobs:
           path: |
             obj/macOS_arm64/build-manifest.txt
             out/macOS_arm64/AltirraPortableTests
+            out/macOS_arm64/ATCompiler
+            out/macOS_arm64/firmware/
             out/macOS_arm64/Help/
           if-no-files-found: error
           retention-days: 14

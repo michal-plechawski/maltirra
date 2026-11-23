@@ -236,6 +236,11 @@ namespace {
 				withExtension:nil
 				subdirectory:directory];
 			NSData *resourceData = bundleURL ? [NSData dataWithContentsOfURL:bundleURL] : nil;
+			if (!resourceData && [directory isEqualToString:@"KERNEL"]) {
+				NSString *const executableDirectory = [[[NSBundle mainBundle] executablePath] stringByDeletingLastPathComponent];
+				NSString *const firmwarePath = [[executableDirectory stringByAppendingPathComponent:@"firmware"] stringByAppendingPathComponent:filename];
+				resourceData = [NSData dataWithContentsOfFile:firmwarePath];
+			}
 
 			if (!resourceData) {
 				NSString *const sourcePath = [NSString stringWithUTF8String:location->mpSourcePath];

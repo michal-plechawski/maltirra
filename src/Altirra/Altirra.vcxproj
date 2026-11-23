@@ -341,7 +341,9 @@
     <ClCompile Include="source\firmwaredetect.cpp">
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="..\platform\Windows_x64\Altirra\source\firmwaremanager.cpp" />
+    <ClCompile Include="source\firmwaremanager.cpp">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+    </ClCompile>
     <ClCompile Include="source\gtia.cpp">
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
     </ClCompile>
