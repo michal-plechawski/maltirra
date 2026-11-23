@@ -37,13 +37,14 @@ public:
 		mpPokeyLayer = mMachine.mMemory.CreateLayer(kATMemoryPri_Hardware, h, 0xD2, 1);
 		mMachine.mMemory.EnableLayer(mpPokeyLayer, true);
 		ATSIOManagerConnections c;
+		c.mpGetCassette = [this]() -> ATCassetteEmulator& { ++mCassetteLookups; return *mMachine.mTape; };
 		c.mpIsFastBootEnabled = [this] { return mbFastBoot; };
 		c.mpIsCassetteSIOPatchEnabled = [this] { return mbCassettePatch; };
 		c.mpIsDiskSIOOverrideDetectEnabled = [this] { return mbDetectOverride; };
 		c.mpIsDiskDriveEnabled = [this](uint32 i) { return mDiskEnabled.at(i); };
 		c.mpGetDiskClientCount = [this](uint32 i) { return mDiskClients.at(i); };
 		c.mpPulseStatusFlags = [this](uint32 flags) { mActivity.push_back(flags); };
-		mManager.Init(mCPU, chips.mVideo.mScheduler, chips.mPOKEY, chips.mPIA, *mMachine.mTape, std::move(c));
+		mManager.Init(mCPU, chips.mVideo.mScheduler, chips.mPOKEY, chips.mPIA, std::move(c));
 		mManager.SetFrameTime(262 * 114);
 		mMachine.mTape->Init(&chips.mPOKEY, &chips.mVideo.mScheduler, &mMachine.mSlowScheduler,
 			&mMachine.mMixer, &mMachine.mDeferred, &mManager, &chips.mPorts);
@@ -107,6 +108,7 @@ public:
 	std::array<uint32, 15> mDiskClients {};
 	std::vector<uint32> mActivity;
 	bool mbFastBoot = false, mbCassettePatch = false, mbDetectOverride = false;
+	uint32 mCassetteLookups = 0;
 };
 
 class SIOTestDevice final : public IATDeviceSIO {

@@ -39,6 +39,7 @@ class ATTraceChannelFormatted;
 // Machine policies and UI activity remain owned by the surrounding simulator.
 // All serial protocol, timing, memory and chip operations live in ATSIOManager.
 struct ATSIOManagerConnections {
+	vdfunction<ATCassetteEmulator&()> mpGetCassette;
 	vdfunction<bool()> mpIsCassetteSIOPatchEnabled;
 	vdfunction<bool()> mpIsFastBootEnabled;
 	vdfunction<bool()> mpIsDiskSIOOverrideDetectEnabled;
@@ -86,7 +87,7 @@ public:
 
 	void Init(ATCPUEmulator *cpu, ATSimulator *sim);
 	void Init(ATCPUEmulator& cpu, ATScheduler& scheduler, ATPokeyEmulator& pokey,
-		ATPIAEmulator& pia, ATCassetteEmulator& cassette, ATSIOManagerConnections connections);
+		ATPIAEmulator& pia, ATSIOManagerConnections connections);
 	void Shutdown();
 
 	void ColdReset();
@@ -190,7 +191,6 @@ private:
 
 	ATCPUEmulator *mpCPU = nullptr;
 	ATCPUEmulatorMemory *mpMemory = nullptr;
-	ATCassetteEmulator *mpCassette = nullptr;
 	ATSIOManagerConnections mConnections;
 	ATScheduler *mpScheduler = nullptr;
 	ATPokeyEmulator *mpPokey = nullptr;

@@ -25,11 +25,13 @@
 
 void ATSIOManager::Init(ATCPUEmulator *cpu, ATSimulator *sim) {
 	ATSIOManagerConnections c;
+	// The simulator constructs its cassette after initializing SIO.
+	c.mpGetCassette = [sim]() -> ATCassetteEmulator& { return sim->GetCassette(); };
 	c.mpIsCassetteSIOPatchEnabled = [sim] { return sim->IsCassetteSIOPatchEnabled(); };
 	c.mpIsFastBootEnabled = [sim] { return sim->IsFastBootEnabled(); };
 	c.mpIsDiskSIOOverrideDetectEnabled = [sim] { return sim->IsDiskSIOOverrideDetectEnabled(); };
 	c.mpIsDiskDriveEnabled = [sim](uint32 index) { return sim->GetDiskDrive(index).IsEnabled(); };
 	c.mpGetDiskClientCount = [sim](uint32 index) { return sim->GetDiskInterface(index).GetClientCount(); };
 	c.mpPulseStatusFlags = [sim](uint32 flags) { sim->GetUIRenderer()->PulseStatusFlags(flags); };
-	Init(*cpu, *sim->GetScheduler(), sim->GetPokey(), sim->GetPIA(), sim->GetCassette(), std::move(c));
+	Init(*cpu, *sim->GetScheduler(), sim->GetPokey(), sim->GetPIA(), std::move(c));
 }

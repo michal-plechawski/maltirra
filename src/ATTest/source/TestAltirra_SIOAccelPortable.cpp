@@ -99,6 +99,7 @@ bool ATTestAltirraSIOAccelGuards(ATPortableTestContext& context) {
 
 bool ATTestAltirraSIOHooksCassette(ATPortableTestContext& context) {
 	auto f = std::make_unique<SIOPortableFixture>(); auto& m = f->mManager; SIOTestDevice d; d.InitSIO(&m);
+	AT_PORTABLE_TEST_ASSERT(context, f->mCassetteLookups == 0); // cassette need not exist during SIO initialization
 	m.SetOtherSIOAccelEnabled(true); m.SetSIOPatchEnabled(true);
 	d.mpAccel = [](const ATDeviceSIORequest& req) { return req.mDevice == 0x71 ? IATDeviceSIO::kCmdResponse_Send_ACK_Complete : IATDeviceSIO::kCmdResponse_NotHandled; };
 	const std::array<uint8, 12> dcb {0x71, 1, 0x53, 0x40, 0, 0x40, 1, 0, 4, 0, 1, 0};
@@ -122,6 +123,7 @@ bool ATTestAltirraSIOHooksCassette(ATPortableTestContext& context) {
 	tape.LoadNew(); f->mMachine.Motor(true); req.mMode = 0x80; f->Mem(ATKernelSymbols::DAUX2, 0x80);
 	AT_PORTABLE_TEST_ASSERT(context, m.TryAccelRequest(req, false) && tape.IsImageDirty() && tape.GetSampleLen() > 0);
 	AT_PORTABLE_TEST_ASSERT(context, f->mActivity.size() == 2);
+	AT_PORTABLE_TEST_ASSERT(context, f->mCassetteLookups == 2);
 	return true;
 }
 

@@ -32,5 +32,7 @@ DEFINE_TEST(System_Portable) {
 			context.mpExpression ? context.mpExpression : "<no expression>");
 	}
 
+	printf("Portable tests complete. Tests: %zu, failures: 0\n", testCount);
+	fflush(stdout);
 	return 0;
 }

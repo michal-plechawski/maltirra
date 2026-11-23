@@ -69,7 +69,7 @@ public:
 		rw.Transfer("command_buffer_index", &mCommandBufferIndex);
 		rw.TransferArray("command_buffer", mCommandBuffer);
 
-		if constexpr (rw.IsReader) {
+		if constexpr (T::IsReader) {
 			if (mCommandBufferIndex > 5)
 				throw ATInvalidSaveStateException();
 		}
@@ -101,7 +101,7 @@ public:
 		rw.Transfer("command_frame_end_time", &mCommandFrameEndTime);
 		rw.Transfer("command_deassert_time", &mCommandDeassertTime);
 
-		if constexpr (rw.IsReader) {
+		if constexpr (T::IsReader) {
 			if (mTransferIndex > ATSIOManager::kMaxTransferSize)
 				throw ATInvalidSaveStateException();
 		}
@@ -137,7 +137,7 @@ public:
 		uint32 arg1 = 0;
 		uint32 arg2 = 0;
 
-		if constexpr (rw.IsWriter) {
+		if constexpr (T::IsWriter) {
 			stepType = mStep.mType;
 			arg1 = 0;
 			arg2 = 0;
@@ -183,7 +183,7 @@ public:
 		rw.Transfer("arg2", &arg2);
 		rw.Transfer("transfer_data", &mTransferData);
 
-		if constexpr (rw.IsReader) {
+		if constexpr (T::IsReader) {
 			mStep.mType = stepType;
 
 			switch(stepType) {
@@ -1331,13 +1331,12 @@ void ATSIOManager::SetDebuggerDeviceId(uint8 id) {
 }
 
 void ATSIOManager::Init(ATCPUEmulator& cpu, ATScheduler& scheduler, ATPokeyEmulator& pokey,
-	ATPIAEmulator& pia, ATCassetteEmulator& cassette, ATSIOManagerConnections connections) {
+	ATPIAEmulator& pia, ATSIOManagerConnections connections) {
 	mpCPU = &cpu;
 	mpMemory = cpu.GetMemory();
 	mpScheduler = &scheduler;
 	mpPokey = &pokey;
 	mpPIA = &pia;
-	mpCassette = &cassette;
 	mConnections = std::move(connections);
 	mbMotorState = (mpPIA->GetOutputState() & kATPIAOutput_CA2) == 0;
 	mPIAOutput = mpPIA->AllocOutput(
@@ -1384,7 +1383,6 @@ void ATSIOManager::Shutdown() {
 	SetTraceContext(nullptr);
 
 	mpScheduler = nullptr;
-	mpCassette = nullptr;
 	mConnections = {};
 	mpMemory = NULL;
 	mpCPU = NULL;
@@ -1599,7 +1597,7 @@ fastbootignore:
 		if (!mConnections.mpIsCassetteSIOPatchEnabled())
 			return false;
 
-		ATCassetteEmulator& cassette = *mpCassette;
+		ATCassetteEmulator& cassette = mConnections.mpGetCassette();
 
 		// Check if a read or write is requested.
 		//

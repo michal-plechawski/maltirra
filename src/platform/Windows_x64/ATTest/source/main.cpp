@@ -3,6 +3,7 @@
 #include <stdlib.h>
 #include <signal.h>
 #include <windows.h>
+#include <dbghelp.h>
 #include <corecrt_startup.h>
 #include <vd2/system/vdtypes.h>
 #include <vd2/system/cpuaccel.h>
@@ -17,6 +18,8 @@
 #include <vector>
 #include <utility>
 
+#pragma comment(lib, "dbghelp.lib")
+
 #if defined(_M_IX86)
 	#define BUILD L"80x86"
 #elif defined(_M_AMD64)
@@ -28,6 +31,45 @@
 extern void ATTestInitBlobHandler();
 
 namespace {
+	LONG WINAPI ReportTestException(EXCEPTION_POINTERS *exception) {
+		fprintf(stderr, "FATAL ERROR: Structured exception %08lX at %p\n",
+			exception->ExceptionRecord->ExceptionCode, exception->ExceptionRecord->ExceptionAddress);
+#if defined(_M_AMD64)
+		HANDLE process = GetCurrentProcess();
+		SymSetOptions(SYMOPT_LOAD_LINES | SYMOPT_UNDNAME | SYMOPT_DEFERRED_LOADS);
+		if (SymInitialize(process, nullptr, TRUE)) {
+			CONTEXT context = *exception->ContextRecord;
+			STACKFRAME64 frame {};
+			frame.AddrPC.Offset = context.Rip;
+			frame.AddrFrame.Offset = context.Rbp;
+			frame.AddrStack.Offset = context.Rsp;
+			frame.AddrPC.Mode = frame.AddrFrame.Mode = frame.AddrStack.Mode = AddrModeFlat;
+			for (unsigned i = 0; i < 8 && frame.AddrPC.Offset; ++i) {
+				alignas(SYMBOL_INFO) char buffer[sizeof(SYMBOL_INFO) + MAX_SYM_NAME] {};
+				auto *symbol = reinterpret_cast<SYMBOL_INFO *>(buffer);
+				symbol->SizeOfStruct = sizeof(SYMBOL_INFO);
+				symbol->MaxNameLen = MAX_SYM_NAME;
+				DWORD64 displacement = 0;
+				const bool named = SymFromAddr(process, frame.AddrPC.Offset, &displacement, symbol) != FALSE;
+				IMAGEHLP_LINE64 line {};
+				line.SizeOfStruct = sizeof(line);
+				DWORD lineDisplacement = 0;
+				const bool located = SymGetLineFromAddr64(process, frame.AddrPC.Offset, &lineDisplacement, &line) != FALSE;
+				fprintf(stderr, "ERROR stack: %016llX %s + %llu %s:%lu\n",
+					frame.AddrPC.Offset, named ? symbol->Name : "<unknown>", displacement,
+					located ? line.FileName : "<unknown>", located ? line.LineNumber : 0);
+				if (!StackWalk64(IMAGE_FILE_MACHINE_AMD64, process, GetCurrentThread(), &frame, &context,
+					nullptr, SymFunctionTableAccess64, SymGetModuleBase64, nullptr))
+					break;
+			}
+			SymCleanup(process);
+		}
+#endif
+		fflush(stderr);
+		fflush(stdout);
+		return EXCEPTION_EXECUTE_HANDLER;
+	}
+
 	struct TestInfo {
 		ATTestFn	mpTestFn;
 		const char	*mpName;
@@ -93,12 +135,13 @@ int ATTestMain() {
 }
 
 int ATTestMain(int argc, wchar_t **argv) {
+	SetUnhandledExceptionFilter(ReportTestException);
 	_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_CHECK_ALWAYS_DF | _CRTDBG_LEAK_CHECK_DF);
 	_CrtSetReportMode(_CRT_ASSERT, _CRTDBG_MODE_FILE | _CRTDBG_MODE_DEBUG);
 	_CrtSetReportFile(_CRT_ASSERT, _CRTDBG_FILE_STDERR);
 	_CrtSetReportMode(_CRT_ERROR, _CRTDBG_MODE_FILE | _CRTDBG_MODE_DEBUG);
 	_CrtSetReportFile(_CRT_ERROR, _CRTDBG_FILE_STDERR);
-	
+
 	signal(SIGABRT,
 		[](int) {
 			if (IsDebuggerPresent())
@@ -416,6 +459,7 @@ next:
 			for(const SelectedTest& selTest : selectedTests) {
 
 				wprintf(L"Running test: %hs\n", selTest.testInfo->mpName);
+				fflush(stdout);
 
 				[&] {
 					__try {
@@ -433,8 +477,7 @@ next:
 								++failedTests;
 							}
 						}();
-					} __except(1) {
-						printf("FATAL ERROR: Structured exception %08lX occurred.\n", GetExceptionCode());
+					} __except(ReportTestException(GetExceptionInformation())) {
 						_exit(10);
 					}
 				}();
@@ -448,6 +491,7 @@ next:
 	}
 
 	printf("Tests complete. Failures: %u\n", failedTests);
+	fflush(stdout);
 
 	if (waitBeforeExit) {
 		puts("Press Enter to exit.");
