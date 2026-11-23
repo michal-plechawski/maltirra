@@ -18,6 +18,8 @@
 #ifndef f_AT_CARTRIDGE_H
 #define f_AT_CARTRIDGE_H
 
+#include <optional>
+#include <vd2/system/vdtypes.h>
 #include <vd2/system/vdalloc.h>
 #include <vd2/system/vdstl.h>
 #include <vd2/system/VDString.h>
@@ -38,6 +40,12 @@ class ATScheduler;
 class IATObjectState;
 struct ATCartridgeModeTable;
 
+struct ATCartridgeFlashOptions {
+	VDStringA mMaxflash1MbFlashChip;
+	VDStringA mMaxflash8MbFlashChip;
+	VDStringA mSICFlashChip;
+};
+
 class ATCartridgeEmulator final
 	: public ATDeviceT<IATDeviceCartridge, IATDeviceButtons>
 	, public IATSchedulerCallback
@@ -50,6 +58,8 @@ public:
 
 	void GetDeviceInfo(ATDeviceInfo& info) override;
 	void Init() override;
+	void Init(ATMemoryManager& memory, ATScheduler& scheduler, IATDeviceIndicatorManager *indicators);
+	void SetFlashOptions(const ATCartridgeFlashOptions& options) { mFlashOptions = options; }
 	void Shutdown() override;
 
 	void SetFastBus(bool fastBus);
@@ -272,6 +282,7 @@ protected:
 	void InitFromImage();
 	void InitMemoryLayers();
 	void ShutdownMemoryLayers();
+	void NotifyFlashWrite();
 	void SetCartBank(int bank);
 	void SetCartBank2(int bank);
 	void UpdateCartBank();
@@ -284,6 +295,7 @@ protected:
 	void InitDebugBankMap();
 	void ResetDebugBankMap();
 
+	std::optional<ATCartridgeFlashOptions> mFlashOptions;
 	ATCartridgeMode mCartMode = kATCartridgeMode_None;
 	int	mCartBank = -1;
 	int	mCartBank2 = -1;
@@ -326,7 +338,7 @@ protected:
 
 	union {
 		uint8	mSC3D[4];
-		uint8	mTheCartRegs[9];
+		uint8	mTheCartRegs[9] {};
 	};
 
 	uint8 *mpROM = nullptr;
@@ -337,11 +349,11 @@ protected:
 	vdrefptr<IATCartridgeImage> mpImage;
 
 	vdblock<sint16> mTheCartBankInfo;
-	bool mbTheCartBankByAddress;
-	uint8 mTheCartOSSBank;
-	uint8 mTheCartSICEnables;
-	uint16 mTheCartBankMask;
-	bool mbTheCartConfigLock;
+	bool mbTheCartBankByAddress = false;
+	uint8 mTheCartOSSBank = 0;
+	uint8 mTheCartSICEnables = 0;
+	uint16 mTheCartBankMask = 0;
+	bool mbTheCartConfigLock = false;
 
 	enum TheCartBankMode {
 		kTheCartBankMode_Disabled,
@@ -353,7 +365,7 @@ protected:
 		kTheCartBankMode_SIC		// 16K, independently switchable halves
 	};
 
-	TheCartBankMode mTheCartBankMode;
+	TheCartBankMode mTheCartBankMode = kTheCartBankMode_Disabled;
 
 	// Map from bank and A10-A13 to raw cartridge bank offset.
 	sint32 mDebugBankMap[256][4];

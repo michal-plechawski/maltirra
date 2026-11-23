@@ -15,7 +15,9 @@
 //	along with this program; if not, write to the Free Software
 //	Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
 
-#include <stdafx.h>
+#include <algorithm>
+#include <cstring>
+#include <iterator>
 #include <vd2/system/binary.h>
 #include <vd2/system/zip.h>
 #include <vd2/system/error.h>
@@ -23,15 +25,19 @@
 #include <vd2/system/vdstl.h>
 #include <at/atcore/address.h>
 #include <at/atcore/checksum.h>
+#include <at/atcore/deviceindicators.h>
 #include <at/atcore/snapshotimpl.h>
 #include <at/atcore/vfs.h>
 #include "cartridge.h"
 #include "savestate.h"
-#include "options.h"
+#include "constants.h"
+#include "memorymanager.h"
 #include "oshelper.h"
-#include "resource.h"
-#include "simulator.h"
-#include "uirender.h"
+#include "../res/resource.h"
+
+// Host preferences are read when an image is mapped, preserving live Windows
+// settings. Native callers may override these options on an individual cart.
+ATCartridgeFlashOptions ATGetDefaultCartridgeFlashOptions();
 
 bool ATIsCartridgeModeHWCompatible(ATCartridgeMode cartmode, int hwmode) {
 	bool modeIs5200 = (hwmode == kATHardwareMode_5200);
@@ -790,9 +796,13 @@ void ATCartridgeEmulator::GetDeviceInfo(ATDeviceInfo& info) {
 }
 
 void ATCartridgeEmulator::Init() {
-	mpMemMan = GetService<ATMemoryManager>();
-	mpScheduler = GetService<IATDeviceSchedulingService>()->GetMachineScheduler();
-	mpUIRenderer = GetService<IATDeviceIndicatorManager>();
+	Init(*GetService<ATMemoryManager>(), *GetService<IATDeviceSchedulingService>()->GetMachineScheduler(), GetService<IATDeviceIndicatorManager>());
+}
+
+void ATCartridgeEmulator::Init(ATMemoryManager& memory, ATScheduler& scheduler, IATDeviceIndicatorManager *indicators) {
+	mpMemMan = &memory;
+	mpScheduler = &scheduler;
+	mpUIRenderer = indicators;
 
 	mpCartridgePort->AddCartridge(this, mCartPriority, mCartId);
 }
@@ -855,11 +865,9 @@ void ATCartridgeEmulator::Load5200Default() {
 }
 
 void ATCartridgeEmulator::LoadNewCartridge(ATCartridgeMode mode) {
-	Unload();
-
-	ATCreateCartridgeImage(mode, ~mpImage);
-
-	InitFromImage();
+	vdrefptr<IATCartridgeImage> image;
+	ATCreateCartridgeImage(mode, ~image);
+	Load(image);
 }
 
 bool ATCartridgeEmulator::Load(const wchar_t *s, ATCartLoadContext *loadCtx) {
@@ -871,15 +879,21 @@ bool ATCartridgeEmulator::Load(const wchar_t *s, ATCartLoadContext *loadCtx) {
 }
 
 bool ATCartridgeEmulator::Load(const wchar_t *origPath, IVDRandomAccessStream& f, ATCartLoadContext *loadCtx) {
-	if (!ATLoadCartridgeImage(origPath, f, loadCtx, ~mpImage))
+	vdrefptr<IATCartridgeImage> image;
+	if (!ATLoadCartridgeImage(origPath, f, loadCtx, ~image))
 		return false;
 
-	InitFromImage();
+	Load(image);
 	return true;
 }
 
 void ATCartridgeEmulator::Load(IATCartridgeImage *image) {
-	mpImage = image;
+	// Retain before detaching: the caller may be reloading our own image.
+	vdrefptr<IATCartridgeImage> retained(image);
+	Unload();
+	if (!retained)
+		return;
+	mpImage = retained;
 	InitFromImage();
 }
 
@@ -926,6 +940,9 @@ void ATCartridgeEmulator::Unload() {
 	mCartBank = 0;
 	mCartBank2 = 0;
 	mCartMode = kATCartridgeMode_None;
+	mbDirty = false;
+	if (mpCartridgePort && mCartId)
+		mpCartridgePort->OnLeftWindowChanged(mCartId, false);
 }
 
 void ATCartridgeEmulator::Save(const wchar_t *fn, bool includeHeader) {
@@ -1117,7 +1134,7 @@ bool ATCartridgeEmulator::WriteByte_SIC(void *thisptr0, uint32 address, uint8 va
 
 	if (thisptr->mFlashEmu.WriteByte(fullAddr, value)) {
 		if (thisptr->mFlashEmu.CheckForWriteActivity()) {
-			thisptr->mpUIRenderer->SetFlashWriteActivity();
+			thisptr->NotifyFlashWrite();
 
 			if (!thisptr->mbDirty && thisptr->mFlashEmu.IsDirty()) {
 				thisptr->mbDirty = true;
@@ -1175,7 +1192,7 @@ bool ATCartridgeEmulator::WriteByte_SICPlus(void *thisptr0, uint32 address, uint
 
 	if (flashChip.WriteByte(fullAddr, value)) {
 		if (flashChip.CheckForWriteActivity()) {
-			thisptr->mpUIRenderer->SetFlashWriteActivity();
+			thisptr->NotifyFlashWrite();
 
 			if (!thisptr->mbDirty && flashChip.IsDirty()) {
 				thisptr->mbDirty = true;
@@ -1246,7 +1263,7 @@ bool ATCartridgeEmulator::WriteByte_TheCart(void *thisptr0, uint32 address, uint
 	}
 
 	if (thisptr->mFlashEmu.CheckForWriteActivity()) {
-		thisptr->mpUIRenderer->SetFlashWriteActivity();
+		thisptr->NotifyFlashWrite();
 
 		if (!thisptr->mbDirty && thisptr->mFlashEmu.IsDirty()) {
 			thisptr->mbDirty = true;
@@ -1301,7 +1318,7 @@ bool ATCartridgeEmulator::WriteByte_MegaCart3(void *thisptr0, uint32 address, ui
 
 	if (thisptr->mFlashEmu.WriteByte(fullAddr, value)) {
 		if (thisptr->mFlashEmu.CheckForWriteActivity()) {
-			thisptr->mpUIRenderer->SetFlashWriteActivity();
+			thisptr->NotifyFlashWrite();
 
 			if (!thisptr->mbDirty && thisptr->mFlashEmu.IsDirty()) {
 				thisptr->mbDirty = true;
@@ -1365,7 +1382,7 @@ bool ATCartridgeEmulator::WriteByte_MaxFlash(void *thisptr0, uint32 address, uin
 
 	if (flashEmu.WriteByte(fullAddr & 0x7FFFF, value)) {
 		if (flashEmu.CheckForWriteActivity()) {
-			thisptr->mpUIRenderer->SetFlashWriteActivity();
+			thisptr->NotifyFlashWrite();
 
 			if (!thisptr->mbDirty && flashEmu.IsDirty()) {
 				thisptr->mbDirty = true;
@@ -1436,7 +1453,7 @@ bool ATCartridgeEmulator::WriteByte_JAtariCart_512K(void *thisptr0, uint32 addre
 
 	if (thisptr->mFlashEmu.WriteByte(fullAddr & 0x3FFFF, value)) {
 		if (thisptr->mFlashEmu.CheckForWriteActivity()) {
-			thisptr->mpUIRenderer->SetFlashWriteActivity();
+			thisptr->NotifyFlashWrite();
 
 			if (!thisptr->mbDirty && thisptr->mFlashEmu.IsDirty()) {
 				thisptr->mbDirty = true;
@@ -1461,8 +1478,7 @@ bool ATCartridgeEmulator::WriteByte_Corina1M(void *thisptr0, uint32 address, uin
 		thisptr->mbDirty = true;
 		thisptr->mpImage->SetDirty();
 
-		if (thisptr->mpUIRenderer)
-			thisptr->mpUIRenderer->SetFlashWriteActivity();
+		thisptr->NotifyFlashWrite();
 
 		thisptr->mpROM[0x100000 + (address & 0x1fff)] = value;
 	}
@@ -1478,8 +1494,7 @@ bool ATCartridgeEmulator::WriteByte_Corina512K(void *thisptr0, uint32 address, u
 		thisptr->mbDirty = true;
 		thisptr->mpImage->SetDirty();
 
-		if (thisptr->mpUIRenderer)
-			thisptr->mpUIRenderer->SetFlashWriteActivity();
+		thisptr->NotifyFlashWrite();
 
 		thisptr->mpROM[0x80000 + (address & 0x1fff)] = value;
 	}
@@ -1962,8 +1977,7 @@ bool ATCartridgeEmulator::WriteByte_CCTL_TelelinkII(void *thisptr0, uint32 addre
 	thisptr->mbDirty = true;
 	thisptr->mpImage->SetDirty();
 
-	if (thisptr->mpUIRenderer)
-		thisptr->mpUIRenderer->SetFlashWriteActivity();
+	thisptr->NotifyFlashWrite();
 
 	return true;
 }
@@ -2368,8 +2382,7 @@ bool ATCartridgeEmulator::WriteByte_CCTL_Pronto(void *thisptr0, uint32 address, 
 		thisptr->mbDirty = true;
 		thisptr->mpImage->SetDirty();
 
-		if (thisptr->mpUIRenderer)
-			thisptr->mpUIRenderer->SetFlashWriteActivity();
+		thisptr->NotifyFlashWrite();
 	}
 
 	return true;
@@ -2605,6 +2618,7 @@ void ATCartridgeEmulator::ExchangeState(T& io) {
 }
 
 void ATCartridgeEmulator::InitMemoryLayers() {
+	const auto flashOptions = mFlashOptions ? *mFlashOptions : ATGetDefaultCartridgeFlashOptions();
 	uint32 fixedBase = 0;
 	uint32 fixedSize = 0;
 	uint32 fixedOffset = 0;
@@ -2922,9 +2936,9 @@ void ATCartridgeEmulator::InitMemoryLayers() {
 			{
 				ATFlashType flashType = kATFlashType_Am29F010;
 
-				if (g_ATOptions.mMaxflash1MbFlashChip == "M29F010B")
+				if (flashOptions.mMaxflash1MbFlashChip == "M29F010B")
 					flashType = kATFlashType_M29F010B;
-				else if (g_ATOptions.mMaxflash1MbFlashChip == "SST39SF010")
+				else if (flashOptions.mMaxflash1MbFlashChip == "SST39SF010")
 					flashType = kATFlashType_SST39SF010;
 
 				mFlashEmu.Init(mpROM, flashType, mpScheduler);
@@ -2968,11 +2982,11 @@ void ATCartridgeEmulator::InitMemoryLayers() {
 			{
 				ATFlashType flashType = kATFlashType_Am29F040B;
 
-				if (g_ATOptions.mMaxflash8MbFlashChip == "BM29F040")
+				if (flashOptions.mMaxflash8MbFlashChip == "BM29F040")
 					flashType = kATFlashType_BM29F040;
-				else if (g_ATOptions.mMaxflash8MbFlashChip == "HY29F040A")
+				else if (flashOptions.mMaxflash8MbFlashChip == "HY29F040A")
 					flashType = kATFlashType_HY29F040A;
-				else if (g_ATOptions.mMaxflash8MbFlashChip == "SST39SF040")
+				else if (flashOptions.mMaxflash8MbFlashChip == "SST39SF040")
 					flashType = kATFlashType_SST39SF040;
 
 				mFlashEmu.Init(mpROM, flashType, mpScheduler);
@@ -3092,14 +3106,14 @@ void ATCartridgeEmulator::InitMemoryLayers() {
 			spec2hd.mpReadHandler = ReadByte_SIC;
 			spec2hd.mpWriteHandler = WriteByte_SIC;
 
-			if (g_ATOptions.mSICFlashChip == "MX29F040") {
+			if (flashOptions.mSICFlashChip == "MX29F040") {
 				if (mCartMode == kATCartridgeMode_SIC_128K)
 					mFlashEmu.Init(mpROM, kATFlashType_MX29F001T, mpScheduler);
 				else if (mCartMode == kATCartridgeMode_SIC_256K)
 					mFlashEmu.Init(mpROM, kATFlashType_MX29F002T, mpScheduler);
 				else
 					mFlashEmu.Init(mpROM, kATFlashType_MX29F040, mpScheduler);
-			} else if (g_ATOptions.mSICFlashChip == "SST39SF040") {
+			} else if (flashOptions.mSICFlashChip == "SST39SF040") {
 				if (mCartMode == kATCartridgeMode_SIC_128K)
 					mFlashEmu.Init(mpROM, kATFlashType_SST39SF010, mpScheduler);
 				else if (mCartMode == kATCartridgeMode_SIC_256K)
@@ -3140,10 +3154,10 @@ void ATCartridgeEmulator::InitMemoryLayers() {
 			spec2hd.mpReadHandler = ReadByte_SICPlus;
 			spec2hd.mpWriteHandler = WriteByte_SICPlus;
 
-			if (g_ATOptions.mSICFlashChip == "MX29F040") {
+			if (flashOptions.mSICFlashChip == "MX29F040") {
 				mFlashEmu.Init(mpROM, kATFlashType_MX29F040, mpScheduler);
 				mFlashEmu2.Init(mpROM + 512*1024, kATFlashType_MX29F040, mpScheduler);
-			} else if (g_ATOptions.mSICFlashChip == "SST39SF040") {
+			} else if (flashOptions.mSICFlashChip == "SST39SF040") {
 				mFlashEmu.Init(mpROM, kATFlashType_SST39SF040, mpScheduler);
 				mFlashEmu2.Init(mpROM + 512*1024, kATFlashType_SST39SF040, mpScheduler);
 			} else {
@@ -3434,7 +3448,7 @@ void ATCartridgeEmulator::InitMemoryLayers() {
 
 	if (bank2Size) {
 		mpMemLayerVarBank2 = mpMemMan->CreateLayer(mBasePriority+2, mpROM, bank2Base, bank2Size, true);
-		mpMemMan->SetLayerIoBus(mpMemLayerVarBank1, true);
+		mpMemMan->SetLayerIoBus(mpMemLayerVarBank2, true);
 		mpMemMan->SetLayerName(mpMemLayerVarBank2, "Cartridge variable window 2");
 	}
 
@@ -3497,7 +3511,16 @@ void ATCartridgeEmulator::InitMemoryLayers() {
 	mpCartridgePort->OnLeftWindowChanged(mCartId, IsLeftCartActive());
 }
 
+void ATCartridgeEmulator::NotifyFlashWrite() {
+	if (mpUIRenderer)
+		mpUIRenderer->SetFlashWriteActivity();
+}
+
 void ATCartridgeEmulator::ShutdownMemoryLayers() {
+	if (mpScheduler)
+		mpScheduler->UnsetEvent(mpEventReset);
+	mFlashEmu.Shutdown();
+	mFlashEmu2.Shutdown();
 	if (mpMemMan)
 	{
 #define X(layer) if (layer) { mpMemMan->DeleteLayer(layer); layer = NULL; }

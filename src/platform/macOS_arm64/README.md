@@ -532,3 +532,28 @@ an empty drive has a valid head position. Forced phantom selection accepts the
 last sector, rejects invalid indices and marks a forced rotational match as
 found. Full CPU-based drive devices, the complete simulator and native
 application assembly remain to be ported/connected.
+
+The complete cartridge emulator is shared in `cartridge.cpp`/`cartridge.h`,
+including all 106 mapper modes, flash/EEPROM emulation, cartridge RAM, button
+controls, debug views, image loading/saving, and the existing snapshot format.
+Windows continues to read its current flash-chip preferences whenever a new
+image is mapped. Native machines can supply their memory manager, scheduler,
+indicator service, and per-cartridge flash options without a Windows simulator.
+
+Sixteen portable groups exercise fixed ROM windows and cartridge-port gates,
+XEGS/MegaCart and address-based banking, Bounty Bob read/write strobes, SIC and
+SIC+, OSS combined banks, Telelink/Pronto NVRAM, The!Cart RAM and protection,
+SuperCharger3D arithmetic, real 6502 execution from a cartridge, JSON bank
+state and ZIP-backed RAM restoration, image save/reload and rejected loads,
+and pending COS32K/flash events during replacement and shutdown. Every mapper
+is constructed, read through CPU/ANTIC/debug windows, reset, snapshotted and
+removed. The 5200 default cartridge uses the actual built-in firmware resource.
+
+Image replacement now removes the previous memory layers while retaining an
+aliased image safely; a rejected load preserves the inserted cartridge.
+Unload clears the cartridge-port signal and dirty state, and cancels flash
+and COS32K events before releasing their backing storage. Optional indicator
+services are handled safely. New 2/4KB and OSS images allocate the same expanded
+backing store used by file-loaded images, avoiding mapper buffer overruns.
+The native build has 624 translation units and 339 portable groups. The full
+simulator and native application still need assembly and boot validation.

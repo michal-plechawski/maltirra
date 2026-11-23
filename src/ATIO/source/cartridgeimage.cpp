@@ -222,7 +222,23 @@ private:
 void ATCartridgeImage::Init(ATCartridgeMode mode) {
 	mCartMode = mode;
 	mCartSize = ATGetImageSizeForCartridgeType(mode);
-	mCARTROM.resize(mCartSize, 0xFF);
+	// The mapper sees an expanded backing store, just as it does after
+	// loading a file. Keep the logical image size used by the file format.
+	uint32 storageSize = mCartSize;
+	switch(mode) {
+		case kATCartridgeMode_2K:
+		case kATCartridgeMode_4K:
+		case kATCartridgeMode_RightSlot_4K:
+			storageSize = 8192;
+			break;
+		case kATCartridgeMode_OSS_034M:
+		case kATCartridgeMode_OSS_043M:
+			storageSize = 0x7000;
+			break;
+		default:
+			break;
+	}
+	mCARTROM.resize(storageSize, 0xFF);
 	mImagePath.clear();
 	mbCartChecksumValid = false;
 	mbDirty = false;

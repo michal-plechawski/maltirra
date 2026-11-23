@@ -100,7 +100,10 @@
     <ClCompile Include="..\platform\Windows_x64\Altirra\source\cartdetect.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\platform\Windows_x64\Altirra\source\cartridge.cpp">
+    <ClCompile Include="..\platform\Windows_x64\Altirra\source\cartridgeoptions.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="source\cartridge.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="source\cassette.cpp">
@@ -1200,7 +1203,7 @@
     <ClInclude Include="h\callback.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\platform\Windows_x64\Altirra\h\cartridge.h">
+    <ClInclude Include="h\cartridge.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="h\cassette.h">

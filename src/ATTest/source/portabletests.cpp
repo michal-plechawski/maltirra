@@ -16,6 +16,22 @@ bool ATTestAltirraAudioStockSamples(ATPortableTestContext& context);
 bool ATTestAltirraBlockDevDiskAdapter(ATPortableTestContext& context);
 bool ATTestAltirraCallback(ATPortableTestContext& context);
 bool ATTestAltirraCartridgePort(ATPortableTestContext& context);
+bool ATTestAltirraCartridgeMapping(ATPortableTestContext& context);
+bool ATTestAltirraCartridgeDataBanking(ATPortableTestContext& context);
+bool ATTestAltirraCartridgeAddressBanking(ATPortableTestContext& context);
+bool ATTestAltirraCartridgeBountyBob(ATPortableTestContext& context);
+bool ATTestAltirraCartridgeSIC(ATPortableTestContext& context);
+bool ATTestAltirraCartridgeSC3D(ATPortableTestContext& context);
+bool ATTestAltirraCartridgeCPU(ATPortableTestContext& context);
+bool ATTestAltirraCartridgeFlash(ATPortableTestContext& context);
+bool ATTestAltirraCartridgeRAM(ATPortableTestContext& context);
+bool ATTestAltirraCartridgeTheCart(ATPortableTestContext& context);
+bool ATTestAltirraCartridgeSnapshot(ATPortableTestContext& context);
+bool ATTestAltirraCartridgeImages(ATPortableTestContext& context);
+bool ATTestAltirraCartridgeLifecycle(ATPortableTestContext& context);
+bool ATTestAltirraCartridgeModes(ATPortableTestContext& context);
+bool ATTestAltirraCartridgeOSS(ATPortableTestContext& context);
+bool ATTestAltirraCartridgeSmallROM(ATPortableTestContext& context);
 bool ATTestAltirraCheatEngine(ATPortableTestContext& context);
 bool ATTestAltirraConstants(ATPortableTestContext& context);
 bool ATTestAltirraCompatDB(ATPortableTestContext& context);
@@ -344,6 +360,22 @@ const ATPortableTestCase *ATGetPortableTests(size_t& count) {
 		{ "Altirra_BlockDevDiskAdapter", ATTestAltirraBlockDevDiskAdapter },
 		{ "Altirra_Callback", ATTestAltirraCallback },
 		{ "Altirra_CartridgePort", ATTestAltirraCartridgePort },
+		{ "Altirra_CartridgeMapping", ATTestAltirraCartridgeMapping },
+		{ "Altirra_CartridgeDataBanking", ATTestAltirraCartridgeDataBanking },
+		{ "Altirra_CartridgeAddressBanking", ATTestAltirraCartridgeAddressBanking },
+		{ "Altirra_CartridgeBountyBob", ATTestAltirraCartridgeBountyBob },
+		{ "Altirra_CartridgeSIC", ATTestAltirraCartridgeSIC },
+		{ "Altirra_CartridgeSC3D", ATTestAltirraCartridgeSC3D },
+		{ "Altirra_CartridgeCPU", ATTestAltirraCartridgeCPU },
+		{ "Altirra_CartridgeFlash", ATTestAltirraCartridgeFlash },
+		{ "Altirra_CartridgeRAM", ATTestAltirraCartridgeRAM },
+		{ "Altirra_CartridgeTheCart", ATTestAltirraCartridgeTheCart },
+		{ "Altirra_CartridgeSnapshot", ATTestAltirraCartridgeSnapshot },
+		{ "Altirra_CartridgeImages", ATTestAltirraCartridgeImages },
+		{ "Altirra_CartridgeLifecycle", ATTestAltirraCartridgeLifecycle },
+		{ "Altirra_CartridgeModes", ATTestAltirraCartridgeModes },
+		{ "Altirra_CartridgeOSS", ATTestAltirraCartridgeOSS },
+		{ "Altirra_CartridgeSmallROM", ATTestAltirraCartridgeSmallROM },
 		{ "Altirra_CheatEngine", ATTestAltirraCheatEngine },
 		{ "Altirra_Constants", ATTestAltirraConstants },
 		{ "Altirra_CompatDB", ATTestAltirraCompatDB },

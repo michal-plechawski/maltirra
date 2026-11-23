@@ -216,7 +216,10 @@
     <ClCompile Include="..\platform\Windows_x64\Altirra\source\blockdevvirtfat32.cpp" />
     <ClCompile Include="..\platform\Windows_x64\Altirra\source\browser.cpp" />
     <ClCompile Include="..\platform\Windows_x64\Altirra\source\cartdetect.cpp" />
-    <ClCompile Include="..\platform\Windows_x64\Altirra\source\cartridge.cpp" />
+    <ClCompile Include="source\cartridge.cpp">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="..\platform\Windows_x64\Altirra\source\cartridgeoptions.cpp" />
     <ClCompile Include="source\cartridgeport.cpp">
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
     </ClCompile>
@@ -739,7 +742,7 @@
     <ClInclude Include="h\bkptmanager.h" />
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\blackbox.h" />
     <ClInclude Include="h\callback.h" />
-    <ClInclude Include="..\platform\Windows_x64\Altirra\h\cartridge.h" />
+    <ClInclude Include="h\cartridge.h" />
     <ClInclude Include="h\cassette.h" />
     <ClInclude Include="h\cheatengine.h" />
     <ClInclude Include="h\common_png.h" />
