@@ -15,20 +15,20 @@
 //	along with this program; if not, write to the Free Software
 //	Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
-#include <stdafx.h>
+#include <algorithm>
+#include <cwchar>
+#include <utility>
 #include <vd2/system/error.h>
 #include <vd2/system/filesys.h>
 #include <at/atcore/vfs.h>
 #include "diskinterface.h"
-#include "simulator.h"
-#include "uirender.h"
-
-extern ATSimulator g_sim;
 
 ATDiskInterface::ATDiskInterface() {
 }
 
 ATDiskInterface::~ATDiskInterface() {
+	if (mpDiskImage)
+		Shutdown();
 	mFlushTimer.Stop();
 }
 
@@ -89,10 +89,9 @@ void ATDiskInterface::SwapSettings(ATDiskInterface& other) {
 	other.NotifyStateResume(false);
 }
 
-void ATDiskInterface::Init(uint32 index, IATUIRenderer *uirenderer) {
+void ATDiskInterface::Init(uint32 index, ATDiskInterfaceConnections connections) {
 	mIndex = index;
-	mpUIRenderer = uirenderer;
-	mErrorSourceId = uirenderer->AllocateErrorSourceId();
+	mConnections = std::move(connections);
 }
 
 void ATDiskInterface::Shutdown() {
@@ -105,8 +104,7 @@ void ATDiskInterface::SetAccurateSectorTimingEnabled(bool enabled) {
 
 	mbAccurateSectorTiming = enabled;
 
-	for(auto *client : mClients)
-		client->OnTimingModeChanged();
+	NotifyClients([](IATDiskInterfaceClient *client) { client->OnTimingModeChanged(); });
 }
 
 void ATDiskInterface::SetDriveSoundsEnabled(bool enabled) {
@@ -115,8 +113,7 @@ void ATDiskInterface::SetDriveSoundsEnabled(bool enabled) {
 
 	mbDriveSoundsEnabled = enabled;
 
-	for(auto *client : mClients)
-		client->OnAudioModeChanged();
+	NotifyClients([](IATDiskInterfaceClient *client) { client->OnAudioModeChanged(); });
 }
 
 bool ATDiskInterface::IsDirty() const {
@@ -164,11 +161,10 @@ void ATDiskInterface::SetWriteMode(ATMediaWriteMode mode) {
 				mFlushTimer.Stop();
 			}
 
-			mpUIRenderer->SetDiskErrorState(mIndex, false);
+			mConnections.mpSetDiskErrorState(mIndex, false);
 		}
 
-		for(auto *client : mClients)
-			client->OnWriteModeChanged();
+		NotifyClients([](IATDiskInterfaceClient *client) { client->OnWriteModeChanged(); });
 
 		NotifyStateChange();
 	}
@@ -232,10 +228,10 @@ void ATDiskInterface::LoadDisk(const wchar_t *s) {
 	size_t len = wcslen(s);
 
 	if (len >= 3) {
-		if (!wcscmp(s + len - 3, L"\\**")) {
+		if ((s[len - 3] == L'\\' || s[len - 3] == L'/') && !wcscmp(s + len - 2, L"**")) {
 			VDStringW t(s, s + len - 3);
 			return MountFolder(t.c_str(), true);
-		} else if (!wcscmp(s + len - 2, L"\\*")) {
+		} else if ((s[len - 2] == L'\\' || s[len - 2] == L'/') && s[len - 1] == L'*') {
 			VDStringW t(s, s + len - 2);
 			return MountFolder(t.c_str(), false);
 		}
@@ -253,17 +249,21 @@ void ATDiskInterface::LoadDisk(const wchar_t *s) {
 }
 
 void ATDiskInterface::LoadDisk(const wchar_t *path, const wchar_t *imageName, IATDiskImage *image) {
+	// The image and either name may belong to this slot already.
+	vdrefptr<IATDiskImage> retained(image);
+	const VDStringW savedPath(path ? path : L"");
+	const VDStringW savedName(imageName ? imageName : L"");
 	UnloadDisk();
 
 	mbHasPersistentSource = false;
 
-	mpDiskImage = image;
+	mpDiskImage = std::move(retained);
 
-	if (path && *path) {
-		mPath = path;
+	if (!savedPath.empty()) {
+		mPath = savedPath;
 		mbHasPersistentSource = true;
-	} else if (imageName)
-		mPath = imageName;
+	} else if (!savedName.empty())
+		mPath = savedName;
 	else
 		mPath.clear();
 
@@ -338,6 +338,10 @@ void ATDiskInterface::FormatDisk(const ATDiskGeometryInfo& geometry) {
 }
 
 void ATDiskInterface::UnloadDisk() {
+	Flush(false, false);
+	mFlushTimeStart = 0;
+	mFlushTimer.Stop();
+
 	if (mpDiskImage)
 		OnDiskChanging();
 
@@ -365,8 +369,7 @@ void ATDiskInterface::OnDiskModified() {
 void ATDiskInterface::OnDiskChanging() {
 	NotifyStateSuspend();
 
-	for(auto *client : mClients)
-		client->OnDiskChanging();
+	NotifyClients([](IATDiskInterfaceClient *client) { client->OnDiskChanging(); });
 
 	NotifyStateResume(true);
 }
@@ -376,8 +379,7 @@ void ATDiskInterface::OnDiskChanged(bool mediaRemoved) {
 
 	OnDiskModified();
 
-	for(auto *client : mClients)
-		client->OnDiskChanged(mediaRemoved);
+	NotifyClients([mediaRemoved](IATDiskInterfaceClient *client) { client->OnDiskChanged(mediaRemoved); });
 
 	NotifyStateResume(true);
 }
@@ -398,10 +400,10 @@ VDStringW ATDiskInterface::GetMountedImageLabel() const {
 }
 
 uint32 ATDiskInterface::GetSectorSize(uint16 sector) const {
-	if (!mpDiskImage)
+	if (!mpDiskImage || !sector || sector > mpDiskImage->GetVirtualSectorCount())
 		return 0;
 
-	return mpDiskImage->GetSectorSize(sector);
+	return mpDiskImage->GetSectorSize(sector - 1);
 }
 
 uint32 ATDiskInterface::GetSectorPhantomCount(uint16 sector) const {
@@ -461,18 +463,18 @@ void ATDiskInterface::AddClient(IATDiskInterfaceClient *client) {
 
 void ATDiskInterface::RemoveClient(IATDiskInterfaceClient *client) {
 	auto it = std::find(mClients.begin(), mClients.end(), client);
-	
+
 	if (it != mClients.end())
 		mClients.erase(it);
 }
 
 void ATDiskInterface::CheckSectorBreakpoint(uint32 sector) {
 	if (mSectorBreakpoint >= 0 && sector == (uint32)mSectorBreakpoint)
-		g_sim.PostInterruptingEvent(kATSimEvent_DiskSectorBreakpoint);
+		mConnections.mpOnSectorBreakpoint();
 }
 
 void ATDiskInterface::SetShowMotorActive(bool active) {
-	mpUIRenderer->SetDiskMotorActivity(mIndex, active);
+	mConnections.mpSetDiskMotorActivity(mIndex, active);
 }
 
 void ATDiskInterface::SetShowActivity(bool active, uint32 sector, uint32 holdTime) {
@@ -482,15 +484,15 @@ void ATDiskInterface::SetShowActivity(bool active, uint32 sector, uint32 holdTim
 		if (!mbShowSectorCounter)
 			value = mIndex + 1;
 
-		mpUIRenderer->SetStatusCounter(mIndex, value);
+		mConnections.mpSetStatusCounter(mIndex, value);
 
-		mpUIRenderer->SetStatusFlags(1 << mIndex);
+		mConnections.mpSetStatusFlags(1 << mIndex);
 	} else
-		mpUIRenderer->ResetStatusFlags(1 << mIndex, holdTime);
+		mConnections.mpResetStatusFlags(1 << mIndex, holdTime);
 }
 
 void ATDiskInterface::SetShowLEDReadout(sint32 ledDisplay) {
-	mpUIRenderer->SetDiskLEDState(mIndex, ledDisplay);
+	mConnections.mpSetDiskLEDState(mIndex, ledDisplay);
 }
 
 void ATDiskInterface::Flush(bool ignoreAutoFlush, bool rethrowErrors) {
@@ -516,17 +518,17 @@ void ATDiskInterface::Flush(bool ignoreAutoFlush, bool rethrowErrors) {
 
 		if (rethrowErrors)
 			throw;
-		else if (mpUIRenderer) {
+		else if (mConnections.mpReportError) {
 			VDStringW msg(e.wc_str());
 
 			for(wchar_t& c : msg) {
 				if (c == L'\n')
 					c = ' ';
 			}
-			
+
 			VDStringW s;
 			s.sprintf(L"D%u: remounted virtual read/write due to write error: %ls", mIndex + 1, msg.c_str());
-			mpUIRenderer->ReportError(mErrorSourceId, s.c_str());
+			mConnections.mpReportError(s.c_str());
 		}
 	}
 
@@ -549,7 +551,7 @@ void ATDiskInterface::OnFlushTimerFire() {
 	if (mFlushTimeStart) {
 		constexpr uint32 kFlushDelay = 1750;		// 2 seconds - half timer interval
 
-		if ((uint32)(mFlushTimeStart - VDGetCurrentTick() + kFlushDelay) >= kFlushDelay*2)
+		if ((uint32)(VDGetCurrentTick() - mFlushTimeStart) < kFlushDelay)
 			return;
 
 		mFlushTimeStart = 0;
@@ -561,7 +563,7 @@ void ATDiskInterface::OnFlushTimerFire() {
 }
 
 void ATDiskInterface::SetFlushError(bool error) {
-	mpUIRenderer->SetDiskErrorState(mIndex, error);
+	mConnections.mpSetDiskErrorState(mIndex, error);
 }
 
 void ATDiskInterface::CheckForModifiedChange() {
@@ -600,5 +602,15 @@ void ATDiskInterface::NotifyStateChange() {
 		mStateChangeSuspendCount |= 1;
 	} else {
 		mStateChangeHandlers.Notify([](auto fn) -> bool { (*fn)(); return false; });
+	}
+}
+
+void ATDiskInterface::NotifyClients(const vdfunction<void(IATDiskInterfaceClient *)>& fn) {
+	// New clients wait for the next notification; removed clients are skipped,
+	// including when an earlier callback removes a drive from the same slot.
+	const auto clients = mClients;
+	for (auto *client : clients) {
+		if (std::find(mClients.begin(), mClients.end(), client) != mClients.end())
+			fn(client);
 	}
 }

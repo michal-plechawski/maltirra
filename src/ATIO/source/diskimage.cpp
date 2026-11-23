@@ -409,7 +409,7 @@ void ATDiskImage::Init(const ATDiskGeometryInfo& geometry) {
 
 void ATDiskImage::Load(const wchar_t *s) {
 	vdrefptr<ATVFSFileView> view;
-	
+
 	ATVFSOpenFileView(s, false, ~view);
 	Load(s, view->GetFileName(), view->GetStream());
 }
@@ -426,7 +426,7 @@ void ATDiskImage::Load(const wchar_t *origPath, const wchar_t *imagePath, IVDRan
 	} else if (fileSize <= 65535 * 128 && imagePath && !vdwcsicmp(ext, L".xfd")) {
 		LoadXFD(stream, fileSize);
 	} else {
-		
+
 		uint8 header[16];
 		stream.Read(header, 16);
 
@@ -483,7 +483,12 @@ void ATDiskImage::Load(const wchar_t *origPath, const wchar_t *imagePath, IVDRan
 	mbDiskFormatDirty = false;
 	mbHasDiskSource = true;
 
-	if (!origPath || (imagePath && wcscmp(origPath, imagePath)))
+	// VFS views expose the leaf name even for ordinary host files. Comparing
+	// that name with the complete path incorrectly made images loaded by full
+	// path non-updatable. Archives and decompressed views cannot be flushed.
+	VDStringW basePath, subPath;
+	if (!origPath || ATParseVFSPath(origPath, basePath, subPath) != kATVFSProtocol_File
+		|| (imagePath && wcscmp(VDFileSplitPath(basePath.c_str()), VDFileSplitPath(imagePath))))
 		mImageFormat = kATDiskImageFormat_None;
 }
 
@@ -518,7 +523,7 @@ void ATDiskImage::LoadXFD(IVDRandomAccessStream& stream, sint64 fileSize) {
 
 	mPhysSectors.resize(sectorCount);
 	mVirtSectors.resize(sectorCount);
-	
+
 	ComputeGeometry();
 
 	const bool isDD = (mSectorSize == 256);
@@ -983,7 +988,7 @@ void ATDiskImage::LoadATX(IVDRandomAccessStream& stream, uint32 len, const uint8
 			ATXTrackChunkHeader ch;
 			memcpy(&ch, &trackBuf[chunkOffset], sizeof ch);
 
-			if (ch.mType == ATXTrackChunkHeader::kTypeWeakBits || 
+			if (ch.mType == ATXTrackChunkHeader::kTypeWeakBits ||
 				ch.mType == ATXTrackChunkHeader::kTypeExtSectorHeader) {
 
 				if (ch.mNum >= trkhdr.mNumSectors)
@@ -1026,7 +1031,7 @@ void ATDiskImage::LoadATX(IVDRandomAccessStream& stream, uint32 len, const uint8
 	// Now that we have all sectors, scan the first sectors of track 0 and do
 	// partial density detection.
 	mSectorSize = 128;
-	
+
 	if (isTrack0MFM) {
 		uint32 mask128 = 0;
 		uint32 mask256 = 0;
@@ -1405,7 +1410,7 @@ void ATDiskImage::LoadATR(IVDRandomAccessStream& stream, uint32 len, const wchar
 
 	mImageFormat = kATDiskImageFormat_ATR;
 	mImageChecksum = 0;
-	
+
 	if (len < 128*imageBootSectorCount) {
 		imageBootSectorCount = len >> 7;
 		if (mBootSectorCount > imageBootSectorCount)
@@ -1522,7 +1527,7 @@ void ATDiskImage::LoadARC(IVDRandomAccessStream& stream, const wchar_t *origPath
 
 	// initialize a new disk image (on us!)
 	Init(totalSectors, bootSectors, 128);
-	
+
 	// mount SDFS on us
 	vdautoptr<IATDiskFS> sdfs(ATDiskFormatImageSDX2(this, origPath ? VDTextWToA(VDFileSplitPath(origPath)).c_str() : NULL));
 
@@ -1992,7 +1997,7 @@ void ATDiskImage::Resize(uint32 newSectors) {
 		const uint32 imageOffset = (uint32)mImage.size();
 
 		mImage.resize(imageOffset + mSectorSize * sectorsToAdd, 0);
-		
+
 		try {
 			// Extend the physical sector array.
 			mPhysSectors.resize(newPhysStart + sectorsToAdd);
@@ -2011,7 +2016,7 @@ void ATDiskImage::Resize(uint32 newSectors) {
 					ps.mPhysicalSize = mSectorSize;
 					ps.mWeakDataOffset = -1;
 				}
-		
+
 				// Extend the virtual sector array.
 				mVirtSectors.resize(newSectors);
 
@@ -2604,7 +2609,7 @@ void ATDiskImage::SaveDCM(IVDRandomAccessStream& f, PhysSectors& phySecs) {
 				// begin encoding RLE segment
 				const uint8 runVal = nextBuf[runEnd];
 				runStart = runEnd;
-			
+
 				do {
 					++runEnd;
 				} while(runEnd < mSectorSize && nextBuf[runEnd] == runVal);
@@ -3197,7 +3202,7 @@ ATDiskGeometryInfo ATDiskCreateDefaultGeometry(uint32 sectorCount, uint32 sector
 				geom.mSectorsPerTrack = 9;
 			else {
 				geom.mSideCount = 2;
-					
+
 				if (geom.mTotalSectorCount <= 1440)
 					geom.mSectorsPerTrack = 9;
 				else {

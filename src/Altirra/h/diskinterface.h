@@ -30,6 +30,18 @@
 class IATUIRenderer;
 class IATDiskImage;
 
+// Host-facing activity and breakpoint sinks; media operations remain in the core.
+struct ATDiskInterfaceConnections {
+	vdfunction<void(uint32, bool)> mpSetDiskErrorState;
+	vdfunction<void(uint32, bool)> mpSetDiskMotorActivity;
+	vdfunction<void(uint32, uint32)> mpSetStatusCounter;
+	vdfunction<void(uint32)> mpSetStatusFlags;
+	vdfunction<void(uint32, uint32)> mpResetStatusFlags;
+	vdfunction<void(uint32, sint32)> mpSetDiskLEDState;
+	vdfunction<void(const wchar_t *)> mpReportError;
+	vdfunction<void()> mpOnSectorBreakpoint;
+};
+
 // ATDiskInterface
 //
 // A disk interface object represents a numbered disk drive slot, i.e. D1:.
@@ -46,6 +58,7 @@ public:
 	void SwapSettings(ATDiskInterface& other);
 
 	void Init(uint32 index, IATUIRenderer *uirenderer);
+	void Init(uint32 index, ATDiskInterfaceConnections connections);
 	void Shutdown();
 
 	bool IsAccurateSectorTimingEnabled() const { return mbAccurateSectorTiming; }
@@ -103,7 +116,7 @@ public:
 	// Save any changes back to the persistent store.
 	void SaveDisk();
 
-	// Save the disk to a new location, regardless of the 
+	// Save the disk to a new location, regardless of the
 	void SaveDiskAs(const wchar_t *s, ATDiskImageFormat format);
 
 	void CreateDisk(const ATDiskGeometryInfo& geom);
@@ -135,10 +148,10 @@ public:
 
 	void AddStateChangeHandler(const vdfunction<void()> *fn);
 	void RemoveStateChangeHandler(const vdfunction<void()> *fn);
-	
-	// Returns true if the client(s) attached to this disk interface can support the disk
-	// image, false if none can. (This means that when a full drive emulator is present,
-	// the standard emulator must not veto the image.) Note that unsupported disk images
+
+	// Returns true if all attached clients accept the disk image. Clients that impose
+	// no restrictions, including the standard emulator alongside a full drive emulator,
+	// must return true so the full drive's geometry checks apply. Unsupported disk images
 	// can still be mounted and all clients have to deal with it -- it's just that the
 	// image may not work in the disk drive.
 	bool IsImageSupported(const IATDiskImage& image) const;
@@ -165,10 +178,10 @@ private:
 	void NotifyStateSuspend();
 	void NotifyStateResume(bool notify);
 	void NotifyStateChange();
+	void NotifyClients(const vdfunction<void(IATDiskInterfaceClient *)>& fn);
 
 	uint32 mIndex = 0;
-	IATUIRenderer *mpUIRenderer = nullptr;
-	uint32 mErrorSourceId = 0;
+	ATDiskInterfaceConnections mConnections;
 
 	bool mbDriveSoundsEnabled = false;
 	bool mbAccurateSectorTiming = false;

@@ -491,3 +491,21 @@ longer removes another device's assertion. Acceleration retains the device ID
 across the chain and detects TIMFLG overlap across the 16-bit address wrap.
 Shutdown cancels commands, unregisters chips and releases line/clock state.
 The complete simulator and native application wiring remain to be connected.
+
+The numbered disk-slot/media interface is shared in `diskinterface.cpp` and
+`diskinterface.h`. Windows UI indicators and sector-breakpoint delivery are
+bound by `diskinterfaceadapter.cpp`; the shared implementation owns the real
+images, write policies, client/state notifications and lazy-flush timer.
+Ten portable test groups cover media geometry and write modes, multiple drive
+clients, swapping slots, indicators/breakpoints, observer removal during a
+notification, ATR/XFD save/reload/revert/format, ZIP-backed images, DOS/SpartaDOS
+folder mounts, real delayed saves, cancellation, I/O errors and shutdown.
+
+Lazy flush now waits for inactivity and saves pending changes on unmount or
+destruction. Image/path aliases are retained across reloads, client callbacks
+tolerate removal during notification, and sector queries consistently use
+one-based sector numbers. Folder mount markers accept native path separators.
+The image loader compares the VFS leaf name with the host-file leaf name,
+allowing full-path ATR/XFD loads to remain updatable while ZIP views stay
+virtual. The full disk-drive emulator and simulator/application assembly are
+still platform-specific work.

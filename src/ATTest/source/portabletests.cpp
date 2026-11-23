@@ -118,6 +118,16 @@ bool ATTestAltirraSIOSnapshot(ATPortableTestContext& context);
 bool ATTestAltirraSIOLifecycle(ATPortableTestContext& context);
 bool ATTestAltirraSIOClocks(ATPortableTestContext& context);
 bool ATTestAltirraSIOSerialWire(ATPortableTestContext& context);
+bool ATTestAltirraDiskInterfaceMedia(ATPortableTestContext& context);
+bool ATTestAltirraDiskInterfaceClients(ATPortableTestContext& context);
+bool ATTestAltirraDiskInterfaceSwap(ATPortableTestContext& context);
+bool ATTestAltirraDiskInterfaceIndicators(ATPortableTestContext& context);
+bool ATTestAltirraDiskInterfaceReentry(ATPortableTestContext& context);
+bool ATTestAltirraDiskInterfaceFiles(ATPortableTestContext& context);
+bool ATTestAltirraDiskInterfaceFolders(ATPortableTestContext& context);
+bool ATTestAltirraDiskInterfaceAutoFlush(ATPortableTestContext& context);
+bool ATTestAltirraDiskInterfaceErrors(ATPortableTestContext& context);
+bool ATTestAltirraDiskInterfaceLifecycle(ATPortableTestContext& context);
 bool ATTestAltirraMemoryManager(ATPortableTestContext& context);
 bool ATTestAltirraRTime8(ATPortableTestContext& context);
 bool ATTestAltirraRVerter(ATPortableTestContext& context);
@@ -422,6 +432,16 @@ const ATPortableTestCase *ATGetPortableTests(size_t& count) {
 		{ "Altirra_SIOLifecycle", ATTestAltirraSIOLifecycle },
 		{ "Altirra_SIOClocks", ATTestAltirraSIOClocks },
 		{ "Altirra_SIOSerialWire", ATTestAltirraSIOSerialWire },
+		{ "Altirra_DiskInterfaceMedia", ATTestAltirraDiskInterfaceMedia },
+		{ "Altirra_DiskInterfaceClients", ATTestAltirraDiskInterfaceClients },
+		{ "Altirra_DiskInterfaceSwap", ATTestAltirraDiskInterfaceSwap },
+		{ "Altirra_DiskInterfaceIndicators", ATTestAltirraDiskInterfaceIndicators },
+		{ "Altirra_DiskInterfaceReentry", ATTestAltirraDiskInterfaceReentry },
+		{ "Altirra_DiskInterfaceFiles", ATTestAltirraDiskInterfaceFiles },
+		{ "Altirra_DiskInterfaceFolders", ATTestAltirraDiskInterfaceFolders },
+		{ "Altirra_DiskInterfaceAutoFlush", ATTestAltirraDiskInterfaceAutoFlush },
+		{ "Altirra_DiskInterfaceErrors", ATTestAltirraDiskInterfaceErrors },
+		{ "Altirra_DiskInterfaceLifecycle", ATTestAltirraDiskInterfaceLifecycle },
 		{ "Altirra_MemoryManager", ATTestAltirraMemoryManager },
 		{ "Altirra_RTime8", ATTestAltirraRTime8 },
 		{ "Altirra_RVerter", ATTestAltirraRVerter },

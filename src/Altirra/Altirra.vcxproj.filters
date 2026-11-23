@@ -700,7 +700,10 @@
     <ClCompile Include="source\audiorawsource.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\platform\Windows_x64\Altirra\source\diskinterface.cpp">
+    <ClCompile Include="..\platform\Windows_x64\Altirra\source\diskinterfaceadapter.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="source\diskinterface.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\platform\Windows_x64\Altirra\source\uiconfdiskdrivefull.cpp">
@@ -1584,7 +1587,7 @@
     <ClInclude Include="h\audiostocksamples.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\platform\Windows_x64\Altirra\h\diskinterface.h">
+    <ClInclude Include="h\diskinterface.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\diskdriveatr8000.h">
