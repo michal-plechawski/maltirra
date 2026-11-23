@@ -14,7 +14,15 @@
 //	You should have received a copy of the GNU General Public License along
 //	with this program. If not, see <http://www.gnu.org/licenses/>.
 
-#include <stdafx.h>
+#include <algorithm>
+#include <cctype>
+#include <cstring>
+#include <cwchar>
+#include <exception>
+#include <limits>
+#include <utility>
+#include <vd2/system/vdtypes.h>
+#include <vd2/system/strutil.h>
 #include <vd2/system/error.h>
 #include <vd2/system/refcount.h>
 #include <vd2/system/registry.h>
@@ -38,6 +46,7 @@ ATDeviceManager::ATDeviceManager() {
 }
 
 ATDeviceManager::~ATDeviceManager() {
+	RemoveAllDevices(true);
 }
 
 void ATDeviceManager::Init() {
@@ -60,61 +69,71 @@ IATDevice *ATDeviceManager::AddDevice(const ATDeviceDefinition *def, const ATPro
 
 		dev->SetSettings(pset);
 		AddDevice(dev, child);
+		if (std::none_of(mDevices.begin(), mDevices.end(), [&](const DeviceEntry& e) { return e.mpDevice == dev.get(); }))
+			return nullptr;
 	}
 
 	return dev;
 }
 
 void ATDeviceManager::AddDevice(IATDevice *dev, bool child) {
+	vdrefptr<IATDevice> retained(dev);
+	bool owned = false;
+	const auto isRegistered = [&] {
+		return std::any_of(mDevices.begin(), mDevices.end(), [dev](const DeviceEntry& e) { return e.mpDevice == dev; });
+	};
 	try {
 		mInterfaceListCache.clear();
-
 		dev->SetManager(this);
-
-		for(const auto& fn : mInitHandlers)
-			fn(*dev);
-
+		for (const auto& fn : mInitHandlers) fn(*dev);
 		ATDeviceInfo info;
 		dev->GetDeviceInfo(info);
-
-		DeviceEntry ent = {
-			.mpDevice = dev,
-			.mpTag = info.mpDef->mpTag,
-			.mbChild = child,
-			.mbHidden = (info.mpDef->mFlags & kATDeviceDefFlag_Hidden) != 0,
-			.mbInternal = (info.mpDef->mFlags & kATDeviceDefFlag_Internal) != 0
-		};
-
-		mDevices.push_back(ent);
-
-		try {
-			dev->AddRef();
-
-			dev->Init();
-		} catch(...) {
-			mDevices.pop_back();
-			dev->Release();
-			dev->SetManager(nullptr);
-			throw;
+		mDevices.push_back(DeviceEntry {dev, info.mpDef->mpTag, child,
+			(info.mpDef->mFlags & kATDeviceDefFlag_Hidden) != 0,
+			(info.mpDef->mFlags & kATDeviceDefFlag_Internal) != 0});
+		dev->AddRef(); owned = true;
+		mInterfaceListCache.clear();
+		dev->Init();
+		if (!isRegistered()) return;
+		dev->ColdReset();
+		if (!isRegistered()) return;
+		dev->PeripheralColdReset();
+		if (!isRegistered()) return;
+		dev->ComputerColdReset();
+		if (!isRegistered()) return;
+	} catch (...) {
+		// Init/reset can add other devices, so the failing device need not
+		// be the last entry. Keep it alive until all rollback calls finish.
+		const auto failure = std::current_exception();
+		auto it = std::find_if(mDevices.begin(), mDevices.end(), [dev](const DeviceEntry& e) { return e.mpDevice == dev; });
+		const bool release = owned && it != mDevices.end();
+		if (release) mDevices.erase(it);
+		mInterfaceListCache.clear();
+		if (!owned || release) {
+			try { dev->Shutdown(); } catch (...) {}
 		}
-	} catch(...) {
-		dev->Shutdown();
-		throw;
+		dev->SetManager(nullptr);
+		if (release) dev->Release();
+		std::rethrow_exception(failure);
 	}
-
-	dev->ColdReset();
-	dev->PeripheralColdReset();
-	dev->ComputerColdReset();
-
 	++mChangeCounter;
+	NotifyDeviceChange(*dev, DeviceChange::Added);
+}
 
-	for(const auto& changeClass : mChangeCallbacks) {
-		const uint32 iid = changeClass.first;
-		void *iface = dev->AsInterface(iid);
-
-		if (iface) {
-			for(IATDeviceChangeCallback *cb : changeClass.second)
-				cb->OnDeviceAdded(iid, dev, iface);
+void ATDeviceManager::NotifyDeviceChange(IATDevice& dev, DeviceChange change) {
+	// Observers can unregister themselves or another observer in a callback.
+	const auto callbacks = mChangeCallbacks;
+	for (const auto& entry : callbacks) {
+		void *iface = dev.AsInterface(entry.first);
+		if (!iface) continue;
+		for (auto *cb : entry.second) {
+			const auto live = mChangeCallbacks.find(entry.first);
+			if (live == mChangeCallbacks.end() || std::find(live->second.begin(), live->second.end(), cb) == live->second.end()) continue;
+			switch (change) {
+				case DeviceChange::Added: cb->OnDeviceAdded(entry.first, &dev, iface); break;
+				case DeviceChange::Removing: cb->OnDeviceRemoving(entry.first, &dev, iface); break;
+				case DeviceChange::Removed: cb->OnDeviceRemoved(entry.first, &dev, iface); break;
+			}
 		}
 	}
 }
@@ -125,6 +144,7 @@ void ATDeviceManager::RemoveDevice(const char *tag) {
 }
 
 void ATDeviceManager::RemoveDevice(IATDevice *dev) {
+	vdrefptr<IATDevice> retained(dev);
 	mInterfaceListCache.clear();
 
 	for(auto it = mDevices.begin(), itEnd = mDevices.end();
@@ -143,27 +163,11 @@ void ATDeviceManager::RemoveDevice(IATDevice *dev) {
 
 			++mChangeCounter;
 
-			for(const auto& changeClass : mChangeCallbacks) {
-				const uint32 iid = changeClass.first;
-				void *iface = dev->AsInterface(iid);
-
-				if (iface) {
-					for(IATDeviceChangeCallback *cb : changeClass.second)
-						cb->OnDeviceRemoving(iid, dev, iface);
-				}
-			}
+			NotifyDeviceChange(*dev, DeviceChange::Removing);
 
 			dev->Shutdown();
 
-			for(const auto& changeClass : mChangeCallbacks) {
-				const uint32 iid = changeClass.first;
-				void *iface = dev->AsInterface(iid);
-
-				if (iface) {
-					for(IATDeviceChangeCallback *cb : changeClass.second)
-						cb->OnDeviceRemoved(iid, dev, iface);
-				}
-			}
+			NotifyDeviceChange(*dev, DeviceChange::Removed);
 
 			dev->SetManager(nullptr);
 			dev->Release();
@@ -174,7 +178,8 @@ void ATDeviceManager::RemoveDevice(IATDevice *dev) {
 
 void ATDeviceManager::RemoveAllDevices(bool includeInternal) {
 	auto devs = GetDevices(false, false, !includeInternal);
-	vdfastvector<IATDevice *> devices(devs.begin(), devs.end());
+	vdvector<vdrefptr<IATDevice>> devices;
+	for (IATDevice *dev : devs) devices.emplace_back(dev);
 
 	for(IATDevice *dev : devices)
 		RemoveDevice(dev);
@@ -218,111 +223,59 @@ IATDevice *ATDeviceManager::GetDeviceByIndex(uint32 i) const {
 }
 
 ATParsedDevicePath ATDeviceManager::ParsePath(const char *path) const {
-	ATParsedDevicePath result {};
-
-	const auto parseComponent = [](const char *& path) -> std::pair<VDStringSpanA, uint32> {
-		if (*path != '/')
-			return {};
-
-		++path;
-
-		const char *nameStart = path;
-
-		if (!isalnum((unsigned char)*path))
-			return {};
-
-		++path;
-
-		while(isalnum((unsigned char)*path))
-			++path;
-
-		const char *nameEnd = path;
+	if (!path) return {};
+	const auto parseComponent = [](const char *& p) -> std::pair<VDStringSpanA, uint32> {
+		if (*p != '/') return {};
+		const char *start = ++p;
+		while (std::isalnum((unsigned char)*p) || *p == '_' || *p == '-') ++p;
+		if (p == start) return {};
+		const char *end = p;
 		uint32 index = 0;
-
-		if (*path == '.') {
-			++path;
-
-			if (!isdigit((unsigned char)*path))
-				return {};
-
+		if (*p == '.') {
+			++p;
+			if (!std::isdigit((unsigned char)*p)) return {};
 			do {
-				++path;
-			} while(isdigit((unsigned char)*path));
+				const uint32 digit = *p++ - '0';
+				if (index > (std::numeric_limits<uint32>::max() - digit) / 10) return {};
+				index = index * 10 + digit;
+			} while (std::isdigit((unsigned char)*p));
 		}
-
-		if (*path)
-			return {};
-
-		return { VDStringSpanA(nameStart, nameEnd), index };
+		if (*p && *p != '/') return {};
+		return {VDStringSpanA(start, end), index};
 	};
-
-	IATDeviceParent *parent = nullptr;
-	IATDeviceBus *bus = nullptr;
-	uint32 busIndex = 0;
-	for(;;) {
-		const auto deviceComponent = parseComponent(path);
-		if (deviceComponent.first.empty())
-			break;
-
-		IATDevice *dev = nullptr;
-		if (parent) {
-			vdfastvector<IATDevice *> children;
-			bus->GetChildDevices(children);
-
-			uint32 matchIndex = deviceComponent.second;
-			for(IATDevice *child : children) {
-				ATDeviceInfo info;
-				child->GetDeviceInfo(info);
-
-				if (deviceComponent.first == info.mpDef->mpTag) {
-					if (!matchIndex--) {
-						dev = child;
-						break;
-					}
-				}
-			}
-		} else {
-			dev = GetDeviceByTag(VDStringA(deviceComponent.first).c_str(), deviceComponent.second);
-			if (!dev)
-				break;
-		}
-
-		if (!*path) {
-			result.mbValid = true;
-			result.mpDevice = dev;
-		}
-
-		auto busComponent = parseComponent(path);
-		if (busComponent.first.empty())
-			break;
-
-		parent = vdpoly_cast<IATDeviceParent *>(dev);
-		if (!parent)
-			break;
-
-		for(busIndex = 0; ; ++busIndex) {
-			bus = parent->GetDeviceBus(busIndex);
-			if (!bus)
-				break;
-
-			if (busComponent.first == bus->GetBusTag()) {
-				if (!busComponent.second--)
-					break;
-			}
-		}
-
-		if (!bus)
-			break;
-
-		if (!*path) {
-			result.mbValid = true;
-			result.mpDeviceBusParent = parent;
-			result.mpDeviceBus = bus;
-			result.mDeviceBusIndex = busIndex;
-		}
+	const auto root = parseComponent(path);
+	if (root.first.empty()) return {};
+	IATDevice *dev = nullptr;
+	uint32 match = root.second;
+	for (IATDevice *candidate : GetDevices(true, false, false)) {
+		ATDeviceInfo info; candidate->GetDeviceInfo(info);
+		if (root.first == info.mpDef->mpTag && !match--) { dev = candidate; break; }
 	}
-
-	return result;
+	if (!dev) return {};
+	for (;;) {
+		if (!*path) return {true, dev, nullptr, nullptr, 0};
+		const auto busName = parseComponent(path);
+		if (busName.first.empty()) return {};
+		auto *parent = vdpoly_cast<IATDeviceParent *>(dev);
+		if (!parent) return {};
+		IATDeviceBus *bus = nullptr;
+		uint32 busIndex = 0, busMatch = busName.second;
+		for (;; ++busIndex) {
+			bus = parent->GetDeviceBus(busIndex);
+			if (!bus) return {};
+			if (busName.first == bus->GetBusTag() && !busMatch--) break;
+		}
+		if (!*path) return {true, nullptr, parent, bus, busIndex};
+		const auto childName = parseComponent(path);
+		if (childName.first.empty()) return {};
+		vdfastvector<IATDevice *> children; bus->GetChildDevices(children);
+		dev = nullptr; match = childName.second;
+		for (IATDevice *child : children) {
+			ATDeviceInfo info; child->GetDeviceInfo(info);
+			if (childName.first == info.mpDef->mpTag && !match--) { dev = child; break; }
+		}
+		if (!dev) return {};
+	}
 }
 
 VDStringA ATDeviceManager::GetPathForDevice(IATDevice *dev) const {
@@ -350,6 +303,11 @@ void ATDeviceManager::AppendPathForDevice(VDStringA& s, IATDevice *dev, bool rec
 
 		s += '/';
 		s += bus->GetBusTag();
+		uint32 busOrdinal = 0;
+		for (uint32 i = 0; i < busIndex; ++i)
+			if (!strcmp(parent->GetDeviceBus(i)->GetBusTag(), bus->GetBusTag())) ++busOrdinal;
+		if (busOrdinal) s.append_sprintf(".%u", busOrdinal);
+
 
 		vdfastvector<IATDevice *> siblings;
 		bus->GetChildDevices(siblings);
@@ -361,18 +319,18 @@ void ATDeviceManager::AppendPathForDevice(VDStringA& s, IATDevice *dev, bool rec
 			ATDeviceInfo info2;
 			sibling->GetDeviceInfo(info2);
 
-			if (info2.mpDef == info.mpDef)
+			if (!strcmp(info2.mpDef->mpTag, info.mpDef->mpTag))
 				++devIndex;
 		}
 	} else {
-		for(IATDevice *sibling : GetDevices(true, false, true)) {
+		for(IATDevice *sibling : GetDevices(true, false, false)) {
 			if (sibling == dev)
 				break;
 
 			ATDeviceInfo info2;
 			sibling->GetDeviceInfo(info2);
 
-			if (info2.mpDef == info.mpDef)
+			if (!strcmp(info2.mpDef->mpTag, info.mpDef->mpTag))
 				++devIndex;
 		}
 	}
@@ -567,10 +525,10 @@ void ATDeviceManager::LoadSettings(VDRegistryKey& key) {
 	while(const char *name = it.Next()) {
 		const int len = key.getBinaryLength(name);
 
-		if (len > 0) {
+		if (key.getValueType(name) == VDRegistryKey::kTypeBinary && len >= 0) {
 			vdfastvector<uint8> buf(len, 0);
 
-			if (key.getBinary(name, (char *)buf.data(), len)) {
+			if (!len || key.getBinary(name, (char *)buf.data(), len)) {
 				NVRAM& nvblob = mNVRAMs.insert_as(name).first->second;
 				nvblob.mBlobVal = std::move(buf);
 				nvblob.mbIsInt = false;
@@ -788,6 +746,7 @@ void *ATDeviceManager::GetService(uint32 iid) {
 }
 
 void ATDeviceManager::NotifyDeviceStatusChanged(IATDevice& dev) {
+	vdrefptr<IATDevice> retained(&dev);
 	mStatusHandlers.NotifyAll(
 		[&dev](const auto *fn) {
 			(*fn)(dev);
@@ -844,7 +803,10 @@ bool ATDeviceManager::LoadNVRAMInt(const char *name, sint32& val) {
 void ATDeviceManager::SaveNVRAM(const char *name, const void *buf, size_t len) {
 	auto& nvram = mNVRAMs.insert_as(name).first->second;
 
-	nvram.mBlobVal.assign((const uint8 *)buf, (const uint8 *)buf + len);
+	if (len)
+		nvram.mBlobVal.assign((const uint8 *)buf, (const uint8 *)buf + len);
+	else
+		nvram.mBlobVal.clear();
 	nvram.mbIsInt = false;
 }
 
@@ -1076,12 +1038,12 @@ void ATDeviceManager::DeserializeDevices(IATDeviceParent *parent, IATDeviceBus *
 
 	const auto& rootVal = doc.Root();
 	if (doc.mValue.mType == VDJSONValue::kTypeObject) {
-		DeserializeDevice(parent, nullptr, rootVal);
+		DeserializeDevice(parent, bus, rootVal);
 	} else if (doc.mValue.mType == VDJSONValue::kTypeArray) {
 		size_t n = rootVal.GetArrayLength();
 
 		for(size_t i=0; i<n; ++i)
-			DeserializeDevice(parent, nullptr, rootVal[i]);
+			DeserializeDevice(parent, bus, rootVal[i]);
 	}
 }
 
@@ -1141,8 +1103,10 @@ void ATDeviceManager::DeserializeDevice(IATDeviceParent *parent, IATDeviceBus *b
 	if (bus) {
 		bus->AddChildDevice(dev);
 
-		if (!dev->GetParent())
+		if (!dev->GetParent()) {
+			RemoveDevice(dev);
 			return;
+		}
 	} else if (parent) {
 		for(uint32 busIndex = 0; ; ++busIndex) {
 			IATDeviceBus *tryBus = parent->GetDeviceBus(busIndex);
@@ -1155,8 +1119,10 @@ void ATDeviceManager::DeserializeDevice(IATDeviceParent *parent, IATDeviceBus *b
 				break;
 		}
 
-		if (!dev->GetParent())
+		if (!dev->GetParent()) {
+			RemoveDevice(dev);
 			return;
+		}
 	}
 
 	IATDeviceParent *devParent = vdpoly_cast<IATDeviceParent *>(dev);

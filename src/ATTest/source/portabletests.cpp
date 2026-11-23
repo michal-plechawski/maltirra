@@ -16,6 +16,18 @@ bool ATTestAltirraAudioStockSamples(ATPortableTestContext& context);
 bool ATTestAltirraBlockDevDiskAdapter(ATPortableTestContext& context);
 bool ATTestAltirraCallback(ATPortableTestContext& context);
 bool ATTestAltirraCartridgePort(ATPortableTestContext& context);
+bool ATTestAltirraDeviceRegistration(ATPortableTestContext& context);
+bool ATTestAltirraDeviceRollback(ATPortableTestContext& context);
+bool ATTestAltirraDeviceCallbacks(ATPortableTestContext& context);
+bool ATTestAltirraDeviceServices(ATPortableTestContext& context);
+bool ATTestAltirraDeviceReconfigure(ATPortableTestContext& context);
+bool ATTestAltirraDeviceSweep(ATPortableTestContext& context);
+bool ATTestAltirraDevicePaths(ATPortableTestContext& context);
+bool ATTestAltirraDeviceJSON(ATPortableTestContext& context);
+bool ATTestAltirraDeviceAttachment(ATPortableTestContext& context);
+bool ATTestAltirraDeviceSnapshots(ATPortableTestContext& context);
+bool ATTestAltirraDeviceNVRAM(ATPortableTestContext& context);
+bool ATTestAltirraDeviceStorage(ATPortableTestContext& context);
 bool ATTestAltirraCPUTraceHistory(ATPortableTestContext& context);
 bool ATTestAltirraCPUTraceModes(ATPortableTestContext& context);
 bool ATTestAltirraCPUTraceContexts(ATPortableTestContext& context);
@@ -378,6 +390,18 @@ const ATPortableTestCase *ATGetPortableTests(size_t& count) {
 		{ "Altirra_BlockDevDiskAdapter", ATTestAltirraBlockDevDiskAdapter },
 		{ "Altirra_Callback", ATTestAltirraCallback },
 		{ "Altirra_CartridgePort", ATTestAltirraCartridgePort },
+		{ "Altirra_DeviceRegistration", ATTestAltirraDeviceRegistration },
+		{ "Altirra_DeviceRollback", ATTestAltirraDeviceRollback },
+		{ "Altirra_DeviceCallbacks", ATTestAltirraDeviceCallbacks },
+		{ "Altirra_DeviceServices", ATTestAltirraDeviceServices },
+		{ "Altirra_DeviceReconfigure", ATTestAltirraDeviceReconfigure },
+		{ "Altirra_DeviceSweep", ATTestAltirraDeviceSweep },
+		{ "Altirra_DevicePaths", ATTestAltirraDevicePaths },
+		{ "Altirra_DeviceJSON", ATTestAltirraDeviceJSON },
+		{ "Altirra_DeviceAttachment", ATTestAltirraDeviceAttachment },
+		{ "Altirra_DeviceSnapshots", ATTestAltirraDeviceSnapshots },
+		{ "Altirra_DeviceNVRAM", ATTestAltirraDeviceNVRAM },
+		{ "Altirra_DeviceStorage", ATTestAltirraDeviceStorage },
 		{ "Altirra_CPUTraceHistory", ATTestAltirraCPUTraceHistory },
 		{ "Altirra_CPUTraceModes", ATTestAltirraCPUTraceModes },
 		{ "Altirra_CPUTraceContexts", ATTestAltirraCPUTraceContexts },

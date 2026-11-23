@@ -191,6 +191,8 @@ portable_test_sources=(
 	src/ATTest/source/TestAltirra_BlockDevDiskAdapterPortable.cpp
 	src/ATTest/source/TestAltirra_CallbackPortable.cpp
 	src/ATTest/source/TestAltirra_CartridgePortPortable.cpp
+	src/ATTest/source/TestAltirra_DeviceManagerPortable.cpp
+	src/ATTest/source/TestAltirra_DeviceManagerStatePortable.cpp
 	src/ATTest/source/TestAltirra_CPUTraceProcessorPortable.cpp
 	src/ATTest/source/TestAltirra_CPUTracerPortable.cpp
 	src/ATTest/source/TestAltirra_MathPackPortable.cpp
@@ -513,6 +515,7 @@ portable_test_sources=(
 	src/Altirra/source/blockdevdiskadapter.cpp
 	src/Altirra/source/cartridgeport.cpp
 	src/Altirra/source/cartridge.cpp
+	src/Altirra/source/devicemanager.cpp
 	src/Altirra/source/cputracer.cpp
 	src/Altirra/source/decmath.cpp
 	src/ATCore/source/decmath.cpp

@@ -601,3 +601,25 @@ time zero, in-place edits and final-span flushing. Windows trace loading now
 initializes its final lookahead pointer as required by the processor contract.
 The native build has 632 translation units and 357 portable groups. Complete
 simulator/native application assembly and end-to-end boot validation remain.
+
+The device manager is shared in `devicemanager.cpp`/`devicemanager.h`, retaining
+device factories, services, interface enumeration, tree paths, callbacks,
+reconfiguration, JSON configuration, snapshots, extended commands and NVRAM.
+Twelve portable groups exercise registration/filtering, callback mutation,
+initialization/reset failures, nested device trees and garbage collection,
+configuration and snapshot round trips, internal-device settings, bus-specific
+attachment, and integer/blob NVRAM through the registry abstraction. A real
+cartridge is initialized through the manager's services and cartridge-port
+callback, then its bank mapping and removal are checked on the production CPU
+memory bus.
+
+Failed initialization/reset now rolls back the failing device even when its
+initialization added another device. Interface caches are refreshed on insertion
+and rollback; owned devices survive callback dispatch and are released on manager
+destruction. Observer removal during dispatch and device removal during a status
+callback are safe. Indexed and nested paths parse correctly, including repeated
+bus tags, and malformed/overflowing path indices are rejected. Deserialization
+honors the requested bus and removes rejected attachments. Empty NVRAM blobs
+survive registry save/load. The native build has 635 translation units and
+369 portable groups. Full simulator/application assembly and boot validation
+remain outstanding.

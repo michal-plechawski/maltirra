@@ -837,6 +837,12 @@
     <ClCompile Include="source\TestAltirra_DiskInterfaceFilesPortable.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="source\TestAltirra_DeviceManagerPortable.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="source\TestAltirra_DeviceManagerStatePortable.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
     <ClCompile Include="source\TestAltirra_CPUTraceProcessorPortable.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>

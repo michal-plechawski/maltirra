@@ -80,7 +80,7 @@
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\customdevice_win32.h" />
     <ClInclude Include="h\debuggersettings.h" />
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\decode_png.h" />
-    <ClInclude Include="..\platform\Windows_x64\Altirra\h\devicemanager.h" />
+    <ClInclude Include="h\devicemanager.h" />
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\devxcmdcopypaste.h" />
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\diskdrive815.h" />
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\diskdriveamdc.h" />
@@ -301,7 +301,9 @@
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="..\platform\Windows_x64\Altirra\source\decode_png.cpp" />
-    <ClCompile Include="..\platform\Windows_x64\Altirra\source\devicemanager.cpp" />
+    <ClCompile Include="source\devicemanager.cpp">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+    </ClCompile>
     <ClCompile Include="..\platform\Windows_x64\Altirra\source\devices.cpp" />
     <ClCompile Include="..\platform\Windows_x64\Altirra\source\devxcmdcopypaste.cpp" />
     <ClCompile Include="..\platform\Windows_x64\Altirra\source\devxcmdexploredisk.cpp" />

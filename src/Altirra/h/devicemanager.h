@@ -17,6 +17,10 @@
 #ifndef f_AT_ATCORE_DEVICEMANAGER_H
 #define f_AT_ATCORE_DEVICEMANAGER_H
 
+#include <iterator>
+#include <utility>
+#include <vd2/system/vdtypes.h>
+#include <vd2/system/VDString.h>
 #include <vd2/system/function.h>
 #include <vd2/system/vdstl.h>
 #include <vd2/system/vdstl_hashset.h>
@@ -88,13 +92,13 @@ public:
 	ATDeviceInterfaceIterator operator++(int) { ATDeviceInterfaceIterator it(*this); ++*this; return it; }
 	ATDeviceInterfaceIterator operator--(int) { ATDeviceInterfaceIterator it(*this); --*this; return it; }
 
-	ATDeviceInterfaceIterator operator+(ptrdiff_t n) { return ATDeviceInterfaceIterator(mp + n); }
-	ATDeviceInterfaceIterator operator-(ptrdiff_t n) { return ATDeviceInterfaceIterator(mp - n); }
+	ATDeviceInterfaceIterator operator+(ptrdiff_t n) const { return ATDeviceInterfaceIterator(n ? mp + n : mp); }
+	ATDeviceInterfaceIterator operator-(ptrdiff_t n) const { return ATDeviceInterfaceIterator(n ? mp - n : mp); }
 
-	ATDeviceInterfaceIterator& operator+=(ptrdiff_t n) { mp += n; return *this; }
-	ATDeviceInterfaceIterator& operator-=(ptrdiff_t n) { mp -= n; return *this; }
+	ATDeviceInterfaceIterator& operator+=(ptrdiff_t n) { if (n) mp += n; return *this; }
+	ATDeviceInterfaceIterator& operator-=(ptrdiff_t n) { if (n) mp -= n; return *this; }
 
-	ptrdiff_t operator-(const ATDeviceInterfaceIterator& other) { return mp - other.mp; }
+	ptrdiff_t operator-(const ATDeviceInterfaceIterator& other) const { return mp == other.mp ? 0 : mp - other.mp; }
 
 	T *operator*() const { return (T *)*mp; }
 	T *operator->() const { return (T *)*mp; }
@@ -257,6 +261,8 @@ public:		// IATDeviceStorageManager
 	void SaveNVRAMInt(const char *name, sint32 val) override;
 
 protected:
+	enum class DeviceChange { Added, Removing, Removed };
+	void NotifyDeviceChange(IATDevice& dev, DeviceChange change);
 	typedef vdfastvector<void *> InterfaceList;
 
 	const InterfaceList *GetInterfaceList(uint32 iid, bool rootOnly, bool visibleOnly, bool externalOnly) const;

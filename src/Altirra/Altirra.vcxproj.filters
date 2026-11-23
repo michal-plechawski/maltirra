@@ -925,7 +925,7 @@
     <ClCompile Include="source\portmanager.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\platform\Windows_x64\Altirra\source\devicemanager.cpp">
+    <ClCompile Include="source\devicemanager.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\platform\Windows_x64\Altirra\source\uidisplaytool.cpp">
@@ -1740,7 +1740,7 @@
     <ClInclude Include="h\portmanager.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\platform\Windows_x64\Altirra\h\devicemanager.h">
+    <ClInclude Include="h\devicemanager.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\uidisplaytool.h">
