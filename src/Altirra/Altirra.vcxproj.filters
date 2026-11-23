@@ -205,7 +205,10 @@
     <ClCompile Include="source\hlebasicloader.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\platform\Windows_x64\Altirra\source\hleciohook.cpp">
+    <ClCompile Include="..\platform\Windows_x64\Altirra\source\hleciobindings.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="source\hleciohook.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="source\hlefastboothook.cpp">
@@ -1290,7 +1293,7 @@
     <ClInclude Include="h\hlebasicloader.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\platform\Windows_x64\Altirra\h\hleciohook.h">
+    <ClInclude Include="h\hleciohook.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="h\hlefastboothook.h">

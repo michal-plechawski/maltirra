@@ -15,7 +15,12 @@
 //	along with this program; if not, write to the Free Software
 //	Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
-#include <stdafx.h>
+#include <algorithm>
+#include <cstring>
+#include <functional>
+#include <iterator>
+#include <utility>
+#include <vd2/system/vdstl.h>
 #include <vd2/system/binary.h>
 #include <vd2/system/vdalloc.h>
 #include <at/atcore/cio.h>
@@ -25,8 +30,6 @@
 #include "cpuhookmanager.h"
 #include "memorymanager.h"
 #include "cassette.h"
-#include "simulator.h"
-#include "hostdevice.h"
 #include "virtualscreen.h"
 #include "kerneldb.h"
 #include "hleciohook.h"
@@ -38,7 +41,7 @@ public:
 
 	void *AsInterface(uint32 id) override;
 
-	void Init(ATCPUEmulator *cpu, ATSimulator *sim, ATMemoryManager *memman);
+	void Init(ATCPUEmulator *cpu, ATHLECIOConnections connections, ATMemoryManager *memman);
 	void Shutdown();
 
 	void WarmReset();
@@ -107,9 +110,10 @@ protected:
 	void UpdateHookPage();
 	void CloseAllIOCBs();
 	void AbortPendingCommand(IATDeviceCIO *dev);
+	IATVirtualScreenHandler *GetVirtualScreen() const { return mConnections.mpGetVirtualScreenHandler ? mConnections.mpGetVirtualScreenHandler() : nullptr; }
 
 	ATCPUEmulator *mpCPU = nullptr;
-	ATSimulator *mpSim = nullptr;
+	ATHLECIOConnections mConnections;
 	ATMemoryManager *mpMemMan = nullptr;
 
 	uint32	mCIOPatchMask = 1U << ('P' - 'A');
@@ -172,6 +176,7 @@ protected:
 	ExtendedIOCB mExtIOCBs[8] {};
 
 	uint16 mCIODeviceNameToNodeMap[256] {};
+	uint16 mOwnedDeviceAddresses[256] {};
 
 	struct DeviceIdNode {
 		uint16 mNext;
@@ -206,9 +211,9 @@ void *ATHLECIOHook::AsInterface(uint32 id) {
 	return nullptr;
 }
 
-void ATHLECIOHook::Init(ATCPUEmulator *cpu, ATSimulator *sim, ATMemoryManager *memman) {
+void ATHLECIOHook::Init(ATCPUEmulator *cpu, ATHLECIOConnections connections, ATMemoryManager *memman) {
 	mpCPU = cpu;
-	mpSim = sim;
+	mConnections = std::move(connections);
 	mpMemMan = memman;
 
 	mpInitHook = cpu->GetHookManager()->AddInitHook([this](const uint8 *lower, const uint8 *upper) { InitHooks(lower, upper); });
@@ -233,6 +238,7 @@ void ATHLECIOHook::Shutdown() {
 
 		mpMemMan = nullptr;
 		mpCPU = nullptr;
+		mConnections = {};
 	}
 }
 
@@ -250,6 +256,7 @@ void ATHLECIOHook::WarmReset() {
 	CloseAllIOCBs();
 
 	mbCIOHandlersEstablished = false;
+	std::fill(std::begin(mOwnedDeviceAddresses), std::end(mOwnedDeviceAddresses), 0);
 
 	UninitHooks();
 }
@@ -293,7 +300,7 @@ void ATHLECIOHook::SetCIOPatchEnabled(char c, bool enabled) {
 }
 
 bool ATHLECIOHook::IsHookPageNeeded() const {
-	IATVirtualScreenHandler *vs = mpSim->GetVirtualScreenHandler();
+	IATVirtualScreenHandler *vs = GetVirtualScreen();
 	if (vs)
 		return true;
 
@@ -314,7 +321,7 @@ void ATHLECIOHook::ReinitHooks(uint8 hookPage) {
 
 	ATCPUHookManager& hookmgr = *mpCPU->GetHookManager();
 	
-	IATVirtualScreenHandler *vs = mpSim->GetVirtualScreenHandler();
+	IATVirtualScreenHandler *vs = GetVirtualScreen();
 
 	const bool genericDevs = !mCIODevices.empty();
 
@@ -354,7 +361,7 @@ void ATHLECIOHook::ReinitHooks(uint8 hookPage) {
 	}
 
 	// Cassette hooks
-	if (mpSim->IsCassetteSIOPatchEnabled()) {
+	if (mConnections.mpIsCassetteSIOPatchEnabled && mConnections.mpIsCassetteSIOPatchEnabled()) {
 		ATCPUHookManager& hookmgr = *mpCPU->GetHookManager();
 
 		hookmgr.SetHookMethod(mpCSOPIVHook, kATCPUHookMode_KernelROMOnly, ATKernelSymbols::CSOPIV, 0, this, &ATHLECIOHook::OnHookCassetteOpen);
@@ -415,6 +422,10 @@ void ATHLECIOHook::ReinitHooks(uint8 hookPage) {
 			mpMemMan->EnableLayer(mpMemLayerHook, kATMemoryAccessMode_CPURead, true);
 		}
 	}
+	if (mbCIOHandlersEstablished) {
+		mNewRegisteredDeviceNames = mRegisteredDeviceNames;
+		RegisterCIODevices();
+	}
 }
 
 void ATHLECIOHook::UninitHooks() {
@@ -443,10 +454,13 @@ void ATHLECIOHook::UninitHooks() {
 }
 
 void ATHLECIOHook::SetPBIHookEnabled(bool enabled) {
+	if (mbPBIHookEnabled == enabled) return;
 	mbPBIHookEnabled = enabled;
+	ReinitHooks(mHookPage);
 }
 
 void ATHLECIOHook::TryAccelPBIRequest(uint8 entryPointIndex) {
+	if (entryPointIndex > 6) { mpCPU->SetP(mpCPU->GetP() & ~AT6502::kFlagV); return; }
 	switch(entryPointIndex == 6 ? HandleContinuation() : HandleGenericDevice(entryPointIndex * 2, 0)) {
 		case HookResult::NotHandled:
 			mpCPU->SetP(mpCPU->GetP() & ~AT6502::kFlagV);
@@ -465,7 +479,7 @@ void ATHLECIOHook::TryAccelPBIRequest(uint8 entryPointIndex) {
 void ATHLECIOHook::AddCIODevice(IATDeviceCIO *dev) {
 	VDASSERT(dev);
 
-	auto it = std::lower_bound(mCIODevices.begin(), mCIODevices.end(), dev);
+	auto it = std::lower_bound(mCIODevices.begin(), mCIODevices.end(), dev, std::less<IATDeviceCIO *>{});
 	if (it == mCIODevices.end() || *it != dev) {
 		mCIODevices.insert(it, dev);
 		RebuildCIODeviceList();
@@ -485,12 +499,14 @@ void ATHLECIOHook::RemoveCIODevice(IATDeviceCIO *dev) {
 				ExtendedIOCB& xiocb = mExtIOCBs[i];
 
 				if (xiocb.mpDevice == dev) {
-					xiocb.mpDevice->OnCIOClose(i, xiocb.mDeviceNo);
 					xiocb.mpDevice = nullptr;
+					dev->OnCIOClose(i, xiocb.mDeviceNo);
 				}
 			}
 
-			mCIODevices.erase(it);
+			// Closing may unregister the same device or add another one.
+			it = std::find(mCIODevices.begin(), mCIODevices.end(), dev);
+			if (it != mCIODevices.end()) mCIODevices.erase(it);
 			RebuildCIODeviceList();
 			ReinitHooks(mHookPage);
 		}
@@ -498,17 +514,18 @@ void ATHLECIOHook::RemoveCIODevice(IATDeviceCIO *dev) {
 }
 
 void ATHLECIOHook::NotifyCIODevicesChanged(IATDeviceCIO *dev) {
-	VDASSERT(std::binary_search(mCIODevices.begin(), mCIODevices.end(), dev));
+	VDASSERT(std::binary_search(mCIODevices.begin(), mCIODevices.end(), dev, std::less<IATDeviceCIO *>{}));
 
 	RebuildCIODeviceList();
 }
 
 size_t ATHLECIOHook::ReadFilename(uint8 *buf, size_t buflen, uint16 filenameAddr) {
+	if (!buflen) return 0;
 	auto& mem = *mpCPU->GetMemory();
-	uint32 n = 0;
+	size_t n = 0;
 
 	while(n + 1 < buflen) {
-		uint8 c = mem.ReadByte(filenameAddr + n);
+		uint8 c = mem.ReadByte((uint16)(filenameAddr + n));
 
 		// The original CIO specification in the OS manual says that paths are supposed to
 		// terminated by an EOL character, but this is pretty widely violated. The most common
@@ -577,6 +594,9 @@ ATHLECIOHook::HookResult ATHLECIOHook::HandleGenericDevice(int function, uint8 d
 		return HookResult::Handled;
 	}
 	
+	// Only one asynchronous operation may be active.
+	AbortPendingCommand(nullptr);
+
 	// look up the extended IOCB
 	const int channel = iocb >> 4;
 	ExtendedIOCB& xiocb = mExtIOCBs[channel];
@@ -587,10 +607,11 @@ ATHLECIOHook::HookResult ATHLECIOHook::HandleGenericDevice(int function, uint8 d
 	ATKernelDatabase kdb(mem);
 
 	if (function == 0) {
+		if (xiocb.mpDevice) { mpCPU->Ldy(kATCIOStat_IOCBInUse); return HookResult::Handled; }
 		// pull filename
 		const uint16 addr = kdb.ICBAZ;
 		const uint8 name = mem->ReadByte(addr);
-		uint8 unit = mem->ReadByte(addr);
+		uint8 unit = mem->ReadByte((uint16)(addr + 1));
 
 		if (unit >= 0x31 && unit <= 0x39)
 			unit -= 0x30;
@@ -627,7 +648,7 @@ ATHLECIOHook::HookResult ATHLECIOHook::HandleGenericDevice(int function, uint8 d
 		mpContinuationFn = [this]() -> sint32 {
 			sint32 result = mpActiveDevice->OnCIOOpen(mActiveChannel, mActiveDeviceNo, mActiveCommandAUX[0], mActiveCommandAUX[1], mTransferBuffer);
 
-			if (result >= 0) {
+			if (result >= 0 && result < 0x80) {
 				ExtendedIOCB& xiocb = mExtIOCBs[mActiveChannel];
 				xiocb.mpDevice = mpActiveDevice;
 				xiocb.mName = mActiveDeviceName;
@@ -720,7 +741,9 @@ ATHLECIOHook::HookResult ATHLECIOHook::HandleGenericDevice(int function, uint8 d
 					mActiveChannel = channel;
 					mActiveDeviceNo = deviceNo;
 					mpContinuationFn = [this]() -> sint32 {
-						return mpActiveDevice->OnCIOClose(mActiveChannel, mActiveDeviceNo);
+						const sint32 r = mpActiveDevice->OnCIOClose(mActiveChannel, mActiveDeviceNo);
+						if (r >= 0) mExtIOCBs[mActiveChannel].mpDevice = nullptr;
+						return r;
 					};
 
 					return HookResult::Poll;
@@ -757,6 +780,7 @@ ATHLECIOHook::HookResult ATHLECIOHook::HandleGenericDevice(int function, uint8 d
 							uint32 actual = 0;
 							sint32 result = mpActiveDevice->OnCIOGetBytes(mActiveChannel, mActiveDeviceNo, mTransferBuffer + mActiveActualLength, mActiveTransferLength - mActiveActualLength, actual);
 
+							if (actual > mActiveTransferLength - mActiveActualLength) return kATCIOStat_DeviceError;
 							mActiveActualLength += actual;
 
 							if (result >= 0) {
@@ -782,8 +806,8 @@ ATHLECIOHook::HookResult ATHLECIOHook::HandleGenericDevice(int function, uint8 d
 				}
 
 				mpContinuationFn = [this]() -> sint32 {
-					uint8 c;
-					uint32 actual;
+					uint8 c = 0;
+					uint32 actual = 0;
 
 					sint32 result = mpActiveDevice->OnCIOGetBytes(mActiveChannel, mActiveDeviceNo, &c, 1, actual);
 					if (result >= 0)
@@ -825,6 +849,7 @@ ATHLECIOHook::HookResult ATHLECIOHook::HandleGenericDevice(int function, uint8 d
 							uint32 actual = 0;
 							sint32 result = mpActiveDevice->OnCIOPutBytes(mActiveChannel, mActiveDeviceNo, mTransferBuffer + mActiveActualLength, mActiveTransferLength - mActiveActualLength, actual);
 
+							if (actual > mActiveTransferLength - mActiveActualLength) return kATCIOStat_DeviceError;
 							mActiveActualLength += actual;
 
 							if (result >= 0 && mActiveActualLength > 1) {
@@ -842,11 +867,13 @@ ATHLECIOHook::HookResult ATHLECIOHook::HandleGenericDevice(int function, uint8 d
 
 				mTransferBuffer[0] = mpCPU->GetA();
 				mActiveActualLength = 0;
+				mActiveTransferLength = 1;
 
 				mpContinuationFn = [this]() -> sint32 {
 					uint32 actual = 0;
 					sint32 result = mpActiveDevice->OnCIOPutBytes(mActiveChannel, mActiveDeviceNo, mTransferBuffer, mActiveActualLength ? 0 : 1, actual);
 
+					if (actual > mActiveTransferLength - mActiveActualLength) return kATCIOStat_DeviceError;
 					mActiveActualLength += actual;
 
 					return result;
@@ -951,7 +978,9 @@ ATHLECIOHook::HookResult ATHLECIOHook::HandleContinuation() {
 		return HookResult::Handled;
 	}
 
-	sint32 r = mpContinuationFn();
+	auto fn = mpContinuationFn;
+	sint32 r = fn();
+	if (!mpContinuationFn) { mpCPU->Ldy(kATCIOStat_UnkDevice); return HookResult::Handled; }
 
 	if (r < 0) {
 		if (r == IATDeviceCIO::kCIOStatus_PendingInterruptable) {
@@ -967,6 +996,7 @@ ATHLECIOHook::HookResult ATHLECIOHook::HandleContinuation() {
 	}
 
 	mpContinuationFn = nullptr;
+	mpActiveDevice = nullptr;
 
 	mpCPU->Ldy((uint8)r);
 
@@ -1004,6 +1034,7 @@ uint8 ATHLECIOHook::OnHookCIOINV(uint16 pc) {
 	// the CIOV hook to do this instead.
 	if (mem->ReadByte(ATKernelSymbols::HATABS)) {
 		mbCIOHandlersEstablished = true;
+		std::fill(std::begin(mOwnedDeviceAddresses), std::end(mOwnedDeviceAddresses), 0);
 
 		mNewRegisteredDeviceNames.swap(mRegisteredDeviceNames);
 		mRegisteredDeviceNames.clear();
@@ -1018,6 +1049,7 @@ uint8 ATHLECIOHook::OnHookCIOV(uint16 pc) {
 	// HATABS last.
 	if (!mbCIOHandlersEstablished) {
 		mbCIOHandlersEstablished = true;
+		std::fill(std::begin(mOwnedDeviceAddresses), std::end(mOwnedDeviceAddresses), 0);
 
 		mNewRegisteredDeviceNames.swap(mRegisteredDeviceNames);
 		mRegisteredDeviceNames.clear();
@@ -1072,7 +1104,7 @@ uint8 ATHLECIOHook::OnHookCIOV(uint16 pc) {
 
 		if (accelok && (cmd == kATCIOCmd_PutRecord || cmd == kATCIOCmd_PutChars)) {
 			// check permissions
-			const uint8 perms = kdb.ICAX1;
+			const uint8 perms = kdb.ICAX1[iocbIdx];
 
 			if (!(perms & 0x08)) {
 				// no write permissions -- punt
@@ -1090,13 +1122,17 @@ uint8 ATHLECIOHook::OnHookCIOV(uint16 pc) {
 			};
 
 			for(const auto& region : kDangerousRegions) {
-				if ((uint32)(addr - region[0]) < region[1])
+				const uint32 end = (uint32)addr + std::max<uint32>(len, 1);
+				if ((addr < region[0] + region[1] && end > region[0])
+					|| (end > 0x10000 && end - 0x10000 > region[0]))
 					return 0;
 			}
 
+			AbortPendingCommand(nullptr);
+
 			// copy first 12 bytes from IOCB to ZIOCB, like CIO does
 			for(int i=0; i<12; ++i)
-				kdb.ICCOMZ[i] = kdb.ICHID[iocbIdx + i];
+				kdb.ICHIDZ[i] = (uint8)kdb.ICHID[iocbIdx + i];
 
 			// read data into the buffer
 			mLargeTransferBuffer.clear();
@@ -1134,10 +1170,11 @@ uint8 ATHLECIOHook::OnHookCIOV(uint16 pc) {
 				uint32 actual = 0;
 				sint32 result = mpActiveDevice->OnCIOPutBytes(mActiveChannel, mActiveDeviceNo, mLargeTransferBuffer.data() + mActiveActualLength, mActiveTransferLength - mActiveActualLength, actual);
 
+				if (actual > mActiveTransferLength - mActiveActualLength) return kATCIOStat_DeviceError;
 				mActiveActualLength += actual;
 
 				if (result < 0)
-					return -1;
+					return result;
 
 				// set status on IOCB and ZIOCB
 				ATKernelDatabase kdb(mpCPU->GetMemory());
@@ -1164,6 +1201,8 @@ uint8 ATHLECIOHook::OnHookCIOV(uint16 pc) {
 }
 
 uint8 ATHLECIOHook::OnHookCassetteOpen(uint16 pc) {
+	auto *cassette = mConnections.mpGetCassette ? mConnections.mpGetCassette() : nullptr;
+	if (!cassette) return 0;
 	// read I/O bits in ICAX1Z
 	ATKernelDatabase kdb(mpCPU->GetMemory());
 
@@ -1177,14 +1216,13 @@ uint8 ATHLECIOHook::OnHookCassetteOpen(uint16 pc) {
 	}
 
 	// press play on cassette
-	ATCassetteEmulator& cassette = mpSim->GetCassette();
-	cassette.Play();
+	cassette->Play();
 
 	// turn motor on by clearing port A control bit 3
 	kdb.PACTL &= ~0x08;
 
 	// skip forward by nine seconds
-	cassette.SkipForward(9.0f);
+	cassette->SkipForward(9.0f);
 
 	// set open mode to read
 	kdb.WMODE = 0;
@@ -1205,7 +1243,7 @@ uint8 ATHLECIOHook::OnHookCassetteOpen(uint16 pc) {
 }
 
 uint8 ATHLECIOHook::OnHookEditorOpen(uint16 pc) {
-	IATVirtualScreenHandler *vs = mpSim->GetVirtualScreenHandler();
+	IATVirtualScreenHandler *vs = GetVirtualScreen();
 
 	if (!vs)
 		return 0;
@@ -1214,7 +1252,7 @@ uint8 ATHLECIOHook::OnHookEditorOpen(uint16 pc) {
 }
 
 uint8 ATHLECIOHook::OnHookEditorGetChar(uint16 pc) {
-	IATVirtualScreenHandler *vs = mpSim->GetVirtualScreenHandler();
+	IATVirtualScreenHandler *vs = GetVirtualScreen();
 
 	if (!vs)
 		return 0;
@@ -1223,7 +1261,7 @@ uint8 ATHLECIOHook::OnHookEditorGetChar(uint16 pc) {
 }
 
 uint8 ATHLECIOHook::OnHookEditorPutChar(uint16 pc) {
-	IATVirtualScreenHandler *vs = mpSim->GetVirtualScreenHandler();
+	IATVirtualScreenHandler *vs = GetVirtualScreen();
 
 	if (!vs)
 		return 0;
@@ -1232,7 +1270,7 @@ uint8 ATHLECIOHook::OnHookEditorPutChar(uint16 pc) {
 }
 
 uint8 ATHLECIOHook::OnHookScreenOpen(uint16 pc) {
-	IATVirtualScreenHandler *vs = mpSim->GetVirtualScreenHandler();
+	IATVirtualScreenHandler *vs = GetVirtualScreen();
 
 	if (!vs)
 		return 0;
@@ -1241,7 +1279,7 @@ uint8 ATHLECIOHook::OnHookScreenOpen(uint16 pc) {
 }
 
 uint8 ATHLECIOHook::OnHookScreenGetChar(uint16 pc) {
-	IATVirtualScreenHandler *vs = mpSim->GetVirtualScreenHandler();
+	IATVirtualScreenHandler *vs = GetVirtualScreen();
 
 	if (!vs)
 		return 0;
@@ -1250,7 +1288,7 @@ uint8 ATHLECIOHook::OnHookScreenGetChar(uint16 pc) {
 }
 
 uint8 ATHLECIOHook::OnHookScreenPutChar(uint16 pc) {
-	IATVirtualScreenHandler *vs = mpSim->GetVirtualScreenHandler();
+	IATVirtualScreenHandler *vs = GetVirtualScreen();
 
 	if (!vs)
 		return 0;
@@ -1318,10 +1356,10 @@ bool ATHLECIOHook::IsValidOSCIORoutine(const uint8 *lowerROM, const uint8 *upper
 		if (routine[0] == 0x60)
 			return false;
 
-		if (pc < 0xCFFE && lowerROM[0] == 0xA0 && lowerROM[2] == 0x60)
+		if (pc <= 0xCFFD && routine[0] == 0xA0 && routine[2] == 0x60)
 			return false;
 	} else {
-		if (pc < 0xD800)
+		if (pc < 0xD800 || !upperROM)
 			return false;
 
 		const uint8 *routine = &upperROM[pc - 0xD800];
@@ -1329,7 +1367,7 @@ bool ATHLECIOHook::IsValidOSCIORoutine(const uint8 *lowerROM, const uint8 *upper
 		if (routine[0] == 0x60)
 			return false;
 
-		if (routine[0] == 0xA0 && routine[2] == 0x60)
+		if (pc <= 0xFFFD && routine[0] == 0xA0 && routine[2] == 0x60)
 			return false;
 	}
 
@@ -1349,7 +1387,7 @@ void ATHLECIOHook::RebuildCIODeviceList() {
 		}
 
 		void AddDevice(uint8 id, uint32 unitMask) {
-			if (mParent.mDeviceNodes.size() >= 65535)
+			if (!id || mParent.mDeviceNodes.size() >= 65535)
 				return;
 
 			mParent.mNewRegisteredDeviceNames.push_back(id);
@@ -1379,7 +1417,7 @@ void ATHLECIOHook::RebuildCIODeviceList() {
 		mNewRegisteredDeviceNames.end()
 	);
 
-	if (mNewRegisteredDeviceNames != mRegisteredDeviceNames) {
+	if (mbCIOHandlersEstablished || mNewRegisteredDeviceNames != mRegisteredDeviceNames) {
 		RegisterCIODevices();
 	}
 }
@@ -1400,92 +1438,42 @@ void ATHLECIOHook::RegisterCIODevices() {
 	for(int i=0; i<8; ++i)
 		iocbIDs[i] = mem.ReadByte(ATKernelSymbols::ICHID + (i << 4));
 
-	// first, remove devices that are dead
-	for(uint32 i=0; i<36; i += 3) {
-		uint8 name = hatabs[i];
-
-		if (!name)
-			break;
-
-		// skip standard names
-		if (strchr(kStandardNames, (char)name))
-			continue;
-
-		// check if this device was registered
-		if (!std::binary_search(mRegisteredDeviceNames.begin(), mRegisteredDeviceNames.end(), name)) {
-			// nope -- ignore it
-			continue;
-		}
-
-		// check if this device is one we want
+	const uint16 handler = mbPBIHookEnabled ? 0xE48F : (uint16)((mHookPage << 8) + 0x70);
+	bool seen[256] {};
+	for (uint32 i=0; i<36; i+=3) {
+		const uint8 name = hatabs[i];
+		if (!name) continue;
+		seen[name] = true;
+		auto& owned = mOwnedDeviceAddresses[name];
+		const uint16 current = (uint16)(hatabs[i+1] + 256*hatabs[i+2]);
+		if (!owned || current != owned) { owned = 0; continue; }
 		if (std::binary_search(mNewRegisteredDeviceNames.begin(), mNewRegisteredDeviceNames.end(), name)) {
-			// yes -- either we already registered it, or it already
-			// existed, or it's been hooked. In any case, we don't want
-			// to change it.
-			continue;
-		}
-
-		// check if this device is being referenced by an open IOCB -- if so,
-		// we can't pull it yet
-		bool referenced = false;
-		for(uint8 id : iocbIDs) {
-			if (id == i) {
-				referenced = true;
-				break;
-			}
-		}
-
-		if (!referenced) {
-			// zero out the entry and continue
-			hatabs[i] = 0;
-			hatabs[i+1] = 0;
-			hatabs[i+2] = 0;
+			owned = handler;
+			hatabs[i+1] = (uint8)handler;
+			hatabs[i+2] = (uint8)(handler >> 8);
+		} else if (std::find(std::begin(iocbIDs), std::end(iocbIDs), i) == std::end(iocbIDs)) {
+			hatabs[i] = hatabs[i+1] = hatabs[i+2] = 0;
+			owned = 0;
+			seen[name] = false;
 		}
 	}
+	for (uint32 i=0; i<256; ++i) if (!seen[i]) mOwnedDeviceAddresses[i] = 0;
 
-	// add new devices
-	uint32 insertPos = 0;
-
-	for(const uint8 name : mNewRegisteredDeviceNames) {
-		if (std::binary_search(mRegisteredDeviceNames.begin(), mRegisteredDeviceNames.end(), name))
-			continue;
-
-		// skip standard names
-		if (strchr(kStandardNames, (char)name))
-			continue;
-
-		// try to find a free location in HATABS
-		bool alreadyExists = false;
-
-		while(hatabs[insertPos] && insertPos < 36) {
-			if (hatabs[insertPos] == name) {
-				alreadyExists = true;
-				break;
-			}
-
-			insertPos += 3;
+	// Search the whole table before using a hole: an existing native handler
+	// may occur after that hole. Full tables must never be indexed at 36.
+	for (const uint8 name : mNewRegisteredDeviceNames) {
+		if (!name || strchr(kStandardNames, (char)name)) continue;
+		uint32 freeSlot = 36;
+		bool exists = false;
+		for (uint32 i=0; i<36; i+=3) {
+			if (hatabs[i] == name) { exists = true; break; }
+			if (!hatabs[i] && freeSlot == 36) freeSlot = i;
 		}
-
-		// bail if this name already exists
-		if (alreadyExists)
-			continue;
-
-		// bail if no slots are free
-		if (insertPos >= 36)
-			break;
-
-		// install handler
-		hatabs[insertPos++] = name;
-
-		if (!mbPBIHookEnabled) {
-			// register using hook page
-			hatabs[insertPos++] = 0x70;
-			hatabs[insertPos++] = mHookPage;
-		} else {
-			// register using GPDVV
-			hatabs[insertPos++] = 0x8F;
-			hatabs[insertPos++] = 0xE4;
-		}
+		if (exists || freeSlot == 36) continue;
+		hatabs[freeSlot] = name;
+		hatabs[freeSlot+1] = (uint8)handler;
+		hatabs[freeSlot+2] = (uint8)(handler >> 8);
+		mOwnedDeviceAddresses[name] = handler;
 	}
 
 	// compact HATABS
@@ -1588,8 +1576,8 @@ void ATHLECIOHook::CloseAllIOCBs() {
 		ExtendedIOCB& xiocb = mExtIOCBs[i];
 
 		if (xiocb.mpDevice) {
-			xiocb.mpDevice->OnCIOClose(i, xiocb.mDeviceNo);
-			xiocb.mpDevice = nullptr;
+			auto *device = std::exchange(xiocb.mpDevice, nullptr);
+			device->OnCIOClose(i, xiocb.mDeviceNo);
 		}
 	}
 }
@@ -1598,20 +1586,20 @@ void ATHLECIOHook::AbortPendingCommand(IATDeviceCIO *dev) {
 	if (!mpContinuationFn)
 		return;
 
-	if (dev && mpActiveDevice == dev) {
-		mpActiveDevice->OnCIOAbortAsync();
-
+	if (!dev || mpActiveDevice == dev) {
+		auto *active = mpActiveDevice;
 		mpActiveDevice = nullptr;
 		mpContinuationFn = nullptr;
+		if (active) active->OnCIOAbortAsync();
 	}
 }
 
 ///////////////////////////////////////////////////////////////////////////
 
-IATHLECIOHook *ATCreateHLECIOHook(ATCPUEmulator *cpu, ATSimulator *sim, ATMemoryManager *memmgr) {
+IATHLECIOHook *ATCreateHLECIOHook(ATCPUEmulator *cpu, ATHLECIOConnections connections, ATMemoryManager *memmgr) {
 	vdautoptr<ATHLECIOHook> hook(new ATHLECIOHook);
 
-	hook->Init(cpu, sim, memmgr);
+	hook->Init(cpu, std::move(connections), memmgr);
 
 	return hook.release();
 }

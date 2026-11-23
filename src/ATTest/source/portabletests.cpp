@@ -16,6 +16,22 @@ bool ATTestAltirraAudioStockSamples(ATPortableTestContext& context);
 bool ATTestAltirraBlockDevDiskAdapter(ATPortableTestContext& context);
 bool ATTestAltirraCallback(ATPortableTestContext& context);
 bool ATTestAltirraCartridgePort(ATPortableTestContext& context);
+bool ATTestAltirraCIORegistration(ATPortableTestContext& context);
+bool ATTestAltirraCIOFullTable(ATPortableTestContext& context);
+bool ATTestAltirraCIOMemory(ATPortableTestContext& context);
+bool ATTestAltirraCIOCommands(ATPortableTestContext& context);
+bool ATTestAltirraCIOAsync(ATPortableTestContext& context);
+bool ATTestAltirraCIOLifecycle(ATPortableTestContext& context);
+bool ATTestAltirraCIOBytes(ATPortableTestContext& context);
+bool ATTestAltirraCIOBurst(ATPortableTestContext& context);
+bool ATTestAltirraCIOWriteAccel(ATPortableTestContext& context);
+bool ATTestAltirraCIOWriteGuards(ATPortableTestContext& context);
+bool ATTestAltirraCIOCPU(ATPortableTestContext& context);
+bool ATTestAltirraCIOPBI(ATPortableTestContext& context);
+bool ATTestAltirraCIOROM(ATPortableTestContext& context);
+bool ATTestAltirraCIOPrinter(ATPortableTestContext& context);
+bool ATTestAltirraCIOEditor(ATPortableTestContext& context);
+bool ATTestAltirraCIOCassette(ATPortableTestContext& context);
 bool ATTestAltirraVirtualScreenOutput(ATPortableTestContext& context);
 bool ATTestAltirraVirtualScreenControls(ATPortableTestContext& context);
 bool ATTestAltirraVirtualScreenEditing(ATPortableTestContext& context);
@@ -412,6 +428,22 @@ const ATPortableTestCase *ATGetPortableTests(size_t& count) {
 		{ "Altirra_BlockDevDiskAdapter", ATTestAltirraBlockDevDiskAdapter },
 		{ "Altirra_Callback", ATTestAltirraCallback },
 		{ "Altirra_CartridgePort", ATTestAltirraCartridgePort },
+		{ "Altirra_CIORegistration", ATTestAltirraCIORegistration },
+		{ "Altirra_CIOFullTable", ATTestAltirraCIOFullTable },
+		{ "Altirra_CIOMemory", ATTestAltirraCIOMemory },
+		{ "Altirra_CIOCommands", ATTestAltirraCIOCommands },
+		{ "Altirra_CIOAsync", ATTestAltirraCIOAsync },
+		{ "Altirra_CIOLifecycle", ATTestAltirraCIOLifecycle },
+		{ "Altirra_CIOBytes", ATTestAltirraCIOBytes },
+		{ "Altirra_CIOBurst", ATTestAltirraCIOBurst },
+		{ "Altirra_CIOWriteAccel", ATTestAltirraCIOWriteAccel },
+		{ "Altirra_CIOWriteGuards", ATTestAltirraCIOWriteGuards },
+		{ "Altirra_CIOCPU", ATTestAltirraCIOCPU },
+		{ "Altirra_CIOPBI", ATTestAltirraCIOPBI },
+		{ "Altirra_CIOROM", ATTestAltirraCIOROM },
+		{ "Altirra_CIOPrinter", ATTestAltirraCIOPrinter },
+		{ "Altirra_CIOEditor", ATTestAltirraCIOEditor },
+		{ "Altirra_CIOCassette", ATTestAltirraCIOCassette },
 		{ "Altirra_VirtualScreenOutput", ATTestAltirraVirtualScreenOutput },
 		{ "Altirra_VirtualScreenControls", ATTestAltirraVirtualScreenControls },
 		{ "Altirra_VirtualScreenEditing", ATTestAltirraVirtualScreenEditing },

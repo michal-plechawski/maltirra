@@ -732,6 +732,15 @@
     <ClCompile Include="source\TestAltirra_DiskInterfaceFilesPortable.cpp">
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="source\TestAltirra_CIOPortable.cpp">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="source\TestAltirra_CIOTransfersPortable.cpp">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="source\TestAltirra_CIOIntegrationPortable.cpp">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+    </ClCompile>
     <ClCompile Include="source\TestAltirra_VirtualScreenPortable.cpp">
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
     </ClCompile>

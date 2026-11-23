@@ -655,9 +655,8 @@ The ten groups pass AddressSanitizer and UBSan.
 The port corrects column-offset selection reads, S: cursor advancement and range
 errors, 16-bit cursor/display-list addresses, lost characters during insertion,
 tab-map persistence, input replacement/exhaustion, stale reset state, and cursor
-and margin bounds after resize. The native build has 642 translation units and
-391 portable groups. CIO manager wiring, simulator/application assembly, BASIC
-interpreter boot, and complete boot validation remain outstanding.
+and margin bounds after resize. The handler is also exercised through the shared
+CIO manager described below.
 
 Native socket and emulated socket-worker loopback tests use OS-assigned TCP/UDP
 ports instead of fixed ranges that Windows runners may reserve. Both native
@@ -665,3 +664,29 @@ listener implementations expose the actual bound address through
 `IATListenSocket::GetLocalAddress()`, synchronized with the socket worker.
 The tests wait for binding before connecting, reject errors before accepting,
 and still verify real bidirectional payload transfer and address translation.
+
+The complete CIO manager (`hleciohook.cpp`/`hleciohook.h`) is shared. Explicit
+connections supply the current virtual editor, cassette, and cassette-patch
+setting; a small Windows adapter binds these to the existing simulator. The
+original hook-page and PBI paths, generic devices, printer interception, bounded
+burst transfers, accelerated records, ROM-vector discovery, and asynchronous
+continuations remain implemented. Sixteen portable groups cover the manager,
+full/holey HATABS tables, unit masks, memory services and 16-bit wrapping, command
+dispatch, EOF, partial asynchronous progress, BREAK, reset/shutdown and device
+removal (including callbacks that unregister their device). Production 6502
+programs execute both the generic polling loop and the virtual editor through
+discovered ROM vectors. Tape tests use the actual cassette image, SIO machine,
+PIA motor line, and nine-second skip. ROM probes use exact-sized allocations at
+the CFFF/FFFF boundaries; all sixteen groups pass AddressSanitizer and UBSan.
+
+The port fixes failed/asynchronous open/close state, cancellation on reset/new
+commands, unit selection, selected-IOCB permissions, zero-page IOCB copying,
+interruptible accelerated writes, transfer-length bounds, and ROM-stub checks.
+Only owned HATABS handler addresses are rewritten, and only unused owned entries
+are removed. Foreign handler addresses and entries still referenced by native
+IOCBs are preserved; table compaction updates IOCB IDs. The PIA overlay keeps
+chip registers and writes accessible around the CIO ROM window. Full tables
+and wrapped buffers are checked before access. The
+native build has 646 translation units and 407 portable groups. Full simulator
+and application assembly, host-file device integration, BASIC interpreter boot,
+and complete boot validation remain outstanding.

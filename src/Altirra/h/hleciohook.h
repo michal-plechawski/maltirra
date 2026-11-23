@@ -19,11 +19,20 @@
 #define f_AT_HLECIOHOOK_H
 
 #include <vd2/system/unknown.h>
+#include <vd2/system/function.h>
 
 class ATCPUEmulator;
 class ATMemoryManager;
 class ATSimulator;
 class IATDeviceCIOManager;
+class ATCassetteEmulator;
+class IATVirtualScreenHandler;
+
+struct ATHLECIOConnections {
+	vdfunction<ATCassetteEmulator *()> mpGetCassette;
+	vdfunction<IATVirtualScreenHandler *()> mpGetVirtualScreenHandler;
+	vdfunction<bool()> mpIsCassetteSIOPatchEnabled;
+};
 
 class IATHLECIOHook : public IVDUnknown {
 public:
@@ -43,6 +52,7 @@ public:
 };
 
 IATHLECIOHook *ATCreateHLECIOHook(ATCPUEmulator *cpu, ATSimulator *sim, ATMemoryManager *memmgr);
+IATHLECIOHook *ATCreateHLECIOHook(ATCPUEmulator *cpu, ATHLECIOConnections connections, ATMemoryManager *memmgr);
 void ATDestroyHLECIOHook(IATHLECIOHook *hook);
 
 IATHLECIOHook *ATGetHLECIOHook(IATDeviceCIOManager *mgr);

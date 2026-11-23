@@ -837,6 +837,15 @@
     <ClCompile Include="source\TestAltirra_DiskInterfaceFilesPortable.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="source\TestAltirra_CIOPortable.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="source\TestAltirra_CIOTransfersPortable.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="source\TestAltirra_CIOIntegrationPortable.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
     <ClCompile Include="source\TestAltirra_VirtualScreenPortable.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>

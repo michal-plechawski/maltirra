@@ -376,7 +376,10 @@
     <ClCompile Include="source\hlebasicloader.cpp">
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="..\platform\Windows_x64\Altirra\source\hleciohook.cpp" />
+    <ClCompile Include="..\platform\Windows_x64\Altirra\source\hleciobindings.cpp" />
+    <ClCompile Include="source\hleciohook.cpp">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+    </ClCompile>
     <ClCompile Include="source\hlefastboothook.cpp">
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
     </ClCompile>
@@ -788,7 +791,7 @@
     <ClInclude Include="h\gtiarenderer.h" />
     <ClInclude Include="h\gtiatables.h" />
     <ClInclude Include="h\hlebasicloader.h" />
-    <ClInclude Include="..\platform\Windows_x64\Altirra\h\hleciohook.h" />
+    <ClInclude Include="h\hleciohook.h" />
     <ClInclude Include="h\hlefastboothook.h" />
     <ClInclude Include="h\hlefpaccelerator.h" />
     <ClInclude Include="h\hleprogramloader.h" />
