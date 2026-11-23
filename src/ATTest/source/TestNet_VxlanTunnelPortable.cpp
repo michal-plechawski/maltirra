@@ -91,46 +91,20 @@ bool ATTestNetVxlanTunnel(ATPortableTestContext& context) {
 	ATSocketSystemScope socketSystem;
 	AT_PORTABLE_TEST_ASSERT(context, socketSystem.mbInitialized);
 
+	// Let the OS allocate ports: fixed ranges can be occupied or reserved on
+	// CI runners. Keep both sockets bound for the entire packet exchange.
 	uint16 tunnelSourcePort = 0;
-	uint16 tunnelTargetPort = 0;
-	vdrefptr<IATDatagramSocket> targetSocket;
+	vdrefptr<IATDatagramSocket> targetSocket = ATNetBind(ATSocketAddress::CreateLocalhostIPv4(0), false);
+	AT_PORTABLE_TEST_ASSERT(context, targetSocket != nullptr);
 	ATSocketStatus targetStatus {};
-	for(uint16 candidate = 49521; candidate < 49553; candidate += 2) {
-		ATSocketStatus sourceProbeStatus {};
-		vdrefptr<IATDatagramSocket> sourceProbe = ATNetBind(ATSocketAddress::CreateLocalhostIPv4(candidate), false);
-		targetSocket = ATNetBind(ATSocketAddress::CreateLocalhostIPv4(candidate + 1), false);
-		AT_PORTABLE_TEST_ASSERT(context, sourceProbe != nullptr);
-		AT_PORTABLE_TEST_ASSERT(context, targetSocket != nullptr);
-
-		sourceProbe->SetOnEvent(&dispatcher, [&](const ATSocketStatus& status) { sourceProbeStatus = status; }, true);
-		targetSocket->SetOnEvent(&dispatcher, [&](const ATSocketStatus& status) { targetStatus = status; }, true);
-		const bool ready = ATWaitForVxlanEvent(dispatcher, dispatchSignal, [&] {
-			return ((!sourceProbeStatus.mbConnecting && !targetStatus.mbConnecting)
-				|| sourceProbeStatus.mError != ATSocketError::None
-				|| targetStatus.mError != ATSocketError::None);
-		});
-
-		if (ready && sourceProbeStatus.mError == ATSocketError::None && targetStatus.mError == ATSocketError::None) {
-			sourceProbe->CloseSocket(true);
-			AT_PORTABLE_TEST_ASSERT(context, ATWaitForVxlanEvent(dispatcher, dispatchSignal, [&] {
-				return sourceProbeStatus.mbClosed;
-			}));
-			sourceProbe->SetOnEvent(nullptr, nullptr, false);
-			tunnelSourcePort = candidate;
-			tunnelTargetPort = candidate + 1;
-			break;
-		}
-
-		sourceProbe->SetOnEvent(nullptr, nullptr, false);
-		targetSocket->SetOnEvent(nullptr, nullptr, false);
-		sourceProbe->CloseSocket(true);
-		targetSocket->CloseSocket(true);
-		targetSocket = nullptr;
-		targetStatus = {};
-	}
-
-	AT_PORTABLE_TEST_ASSERT(context, tunnelSourcePort != 0);
+	bool targetObserved = false;
+	targetSocket->SetOnEvent(&dispatcher, [&](const ATSocketStatus& status) { targetStatus = status; targetObserved = true; }, true);
+	AT_PORTABLE_TEST_ASSERT(context, ATWaitForVxlanEvent(dispatcher, dispatchSignal, [&] {
+		return targetStatus.mError != ATSocketError::None || (targetObserved && targetSocket->GetLocalAddress().mPort != 0);
+	}));
 	AT_PORTABLE_TEST_ASSERT(context, targetStatus.mError == ATSocketError::None);
+	const uint16 tunnelTargetPort = targetSocket->GetLocalAddress().mPort;
+	AT_PORTABLE_TEST_ASSERT(context, tunnelTargetPort != 0);
 	vdrefptr<IATDatagramSocket> sourceSocket = ATNetBind(ATSocketAddress::CreateIPv4(), false);
 	AT_PORTABLE_TEST_ASSERT(context, sourceSocket != nullptr);
 
@@ -167,7 +141,9 @@ bool ATTestNetVxlanTunnel(ATPortableTestContext& context) {
 	const sint32 vxlanLength = targetSocket->RecvFrom(datagramSource, vxlanPacket, sizeof vxlanPacket);
 	AT_PORTABLE_TEST_ASSERT(context, vxlanLength == 20 + (sint32)sizeof ethernetPayload);
 	AT_PORTABLE_TEST_ASSERT(context, datagramSource.mType == ATSocketAddressType::IPv4);
-	AT_PORTABLE_TEST_ASSERT(context, datagramSource.mPort == tunnelSourcePort);
+	// Discover the tunnel's OS-assigned source port from the real datagram.
+	tunnelSourcePort = datagramSource.mPort;
+	AT_PORTABLE_TEST_ASSERT(context, tunnelSourcePort != 0 && tunnelSourcePort != tunnelTargetPort);
 	AT_PORTABLE_TEST_ASSERT(context, vxlanPacket[0] == 0x08);
 	for(size_t i = 1; i < 8; ++i)
 		AT_PORTABLE_TEST_ASSERT(context, vxlanPacket[i] == 0);
