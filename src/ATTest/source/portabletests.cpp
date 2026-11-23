@@ -98,6 +98,14 @@ bool ATTestAltirraFirmwareInternal(ATPortableTestContext& context);
 bool ATTestAltirraFirmwareCatalog(ATPortableTestContext& context);
 bool ATTestAltirraFirmwareFiles(ATPortableTestContext& context);
 bool ATTestAltirraFirmwareVFS(ATPortableTestContext& context);
+bool ATTestAltirraCassetteTransport(ATPortableTestContext& context);
+bool ATTestAltirraCassetteLifecycle(ATPortableTestContext& context);
+bool ATTestAltirraCassetteBlockRead(ATPortableTestContext& context);
+bool ATTestAltirraCassetteBlockWrite(ATPortableTestContext& context);
+bool ATTestAltirraCassetteSerial(ATPortableTestContext& context);
+bool ATTestAltirraCassetteTurbo(ATPortableTestContext& context);
+bool ATTestAltirraCassetteAudio(ATPortableTestContext& context);
+bool ATTestAltirraCassetteDetection(ATPortableTestContext& context);
 bool ATTestAltirraMemoryManager(ATPortableTestContext& context);
 bool ATTestAltirraRTime8(ATPortableTestContext& context);
 bool ATTestAltirraRVerter(ATPortableTestContext& context);
@@ -382,6 +390,14 @@ const ATPortableTestCase *ATGetPortableTests(size_t& count) {
 		{ "Altirra_FirmwareCatalog", ATTestAltirraFirmwareCatalog },
 		{ "Altirra_FirmwareFiles", ATTestAltirraFirmwareFiles },
 		{ "Altirra_FirmwareVFS", ATTestAltirraFirmwareVFS },
+		{ "Altirra_CassetteTransport", ATTestAltirraCassetteTransport },
+		{ "Altirra_CassetteLifecycle", ATTestAltirraCassetteLifecycle },
+		{ "Altirra_CassetteBlockRead", ATTestAltirraCassetteBlockRead },
+		{ "Altirra_CassetteBlockWrite", ATTestAltirraCassetteBlockWrite },
+		{ "Altirra_CassetteSerial", ATTestAltirraCassetteSerial },
+		{ "Altirra_CassetteTurbo", ATTestAltirraCassetteTurbo },
+		{ "Altirra_CassetteAudio", ATTestAltirraCassetteAudio },
+		{ "Altirra_CassetteDetection", ATTestAltirraCassetteDetection },
 		{ "Altirra_MemoryManager", ATTestAltirraMemoryManager },
 		{ "Altirra_RTime8", ATTestAltirraRTime8 },
 		{ "Altirra_RVerter", ATTestAltirraRVerter },

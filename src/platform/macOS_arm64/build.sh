@@ -217,6 +217,8 @@ portable_test_sources=(
 	src/ATTest/source/TestAltirra_InputManagerMapsPortable.cpp
 	src/ATTest/source/TestAltirra_InputManagerAnalogPortable.cpp
 	src/ATTest/source/TestAltirra_FirmwareManagerPortable.cpp
+	src/ATTest/source/TestAltirra_CassettePortable.cpp
+	src/ATTest/source/TestAltirra_CassetteDataPortable.cpp
 	src/ATTest/source/TestAltirra_DisasmOpcodesPortable.cpp
 	src/ATTest/source/TestAltirra_DisasmReferencesPortable.cpp
 	src/ATTest/source/TestAltirra_DisasmContextPortable.cpp
@@ -455,6 +457,18 @@ portable_test_sources=(
 	src/Altirra/source/inputcontroller.cpp
 	src/Altirra/source/inputmanager.cpp
 	src/Altirra/source/firmwaremanager.cpp
+	src/Altirra/source/cassette.cpp
+	src/ATCore/source/deferredevent.cpp
+	src/ATCore/source/randomization.cpp
+	src/ATIO/source/cassetteimage.cpp
+	src/ATIO/source/cassetteblock.cpp
+	src/ATIO/source/tapepiecetable.cpp
+	src/ATIO/source/audioreaderwav.cpp
+	src/ATIO/source/audioreaderflac.cpp
+	src/ATIO/source/image.cpp
+	src/ATIO/source/audioutils.cpp
+	src/ATIO/source/blobimage.cpp
+	src/ATCore/source/md5.cpp
 	src/platform/macOS_arm64/Altirra/source/inputkeyname.cpp
 	src/Altirra/source/cpuheatmapadapter.cpp
 	src/Altirra/source/cpu.cpp

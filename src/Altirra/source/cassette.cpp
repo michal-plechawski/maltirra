@@ -15,7 +15,10 @@
 //	along with this program; if not, write to the Free Software
 //	Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
-#include <stdafx.h>
+#include <algorithm>
+#include <cstring>
+#include <iterator>
+#include <utility>
 #include <math.h>
 #include <vd2/system/binary.h>
 #include <vd2/system/error.h>
@@ -31,20 +34,18 @@
 #include <at/atio/cassetteimage.h>
 #include <at/atio/wav.h>
 #include "cassette.h"
-#include "cpu.h"
 #include "cpumemory.h"
-#include "console.h"
-#include "debuggerlog.h"
+#include <at/atcore/logging.h>
 #include "trace.h"
 #include "tracetape.h"
 
 using namespace nsVDWinFormats;
 
-ATDebuggerLogChannel g_ATLCCas(true, false, "CAS", "Cassette I/O");
-ATDebuggerLogChannel g_ATLCCasData(false, true, "CASDATA", "Cassette data");
-ATDebuggerLogChannel g_ATLCCasData2(false, true, "CASDATA2", "Cassette data (extra verbose)");
-ATDebuggerLogChannel g_ATLCCasDirectData(false, true, "CASDRDATA", "Cassette direct data");
-ATDebuggerLogChannel g_ATLCCasDecoder(false, true, "CASDEC", "Cassette data decoder");
+ATLogChannel g_ATLCCas(true, false, "CAS", "Cassette I/O");
+ATLogChannel g_ATLCCasData(false, true, "CASDATA", "Cassette data");
+ATLogChannel g_ATLCCasData2(false, true, "CASDATA2", "Cassette data (extra verbose)");
+ATLogChannel g_ATLCCasDirectData(false, true, "CASDRDATA", "Cassette direct data");
+ATLogChannel g_ATLCCasDecoder(false, true, "CASDEC", "Cassette data decoder");
 
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -110,7 +111,7 @@ ATCassetteEmulator::ATCassetteEmulator() {
 }
 
 ATCassetteEmulator::~ATCassetteEmulator() {
-	VDASSERT(!mpScheduler);
+	Shutdown();
 }
 
 float ATCassetteEmulator::GetLength() const {
@@ -158,6 +159,9 @@ void ATCassetteEmulator::Init(ATPokeyEmulator *pokey, ATScheduler *sched, ATSche
 }
 
 void ATCassetteEmulator::Shutdown() {
+	if (mpScheduler)
+		Stop();
+
 	TapeDirtyStateChanged.Shutdown();
 	TapePeaksUpdated.Shutdown();
 	PositionChanged.Shutdown();
@@ -236,7 +240,7 @@ void ATCassetteEmulator::ColdReset() {
 
 	Play();
 }
-	
+
 void ATCassetteEmulator::LoadNew() {
 	TapeChanging.InvokeAll();
 
@@ -274,10 +278,10 @@ void ATCassetteEmulator::Load(IATCassetteImage *image, const wchar_t *path, bool
 	TapeChanging.InvokeAll();
 
 	try {
+		vdrefptr<IATCassetteImage> retained(image);
 		UnloadInternal();
 
-		mpImage = image;
-		mpImage->AddRef();
+		mpImage = retained.release();
 		mImagePath = path ? path : L"";
 		mbImagePersistent = persistent;
 
@@ -379,12 +383,7 @@ void ATCassetteEmulator::SetDirectSenseMode(ATCassetteDirectSenseMode mode) {
 }
 
 void ATCassetteEmulator::SetTurboMode(ATCassetteTurboMode mode) {
-	if (mTurboMode == mode)
-		return;
-
-	mTurboMode = mode;
-
-	switch(mode) {
+	switch (mode) {
 		case kATCassetteTurboMode_None:
 		case kATCassetteTurboMode_CommandControl:
 		case kATCassetteTurboMode_ProceedSense:
@@ -392,14 +391,15 @@ void ATCassetteEmulator::SetTurboMode(ATCassetteTurboMode mode) {
 		case kATCassetteTurboMode_KSOTurbo2000:
 		case kATCassetteTurboMode_TurboD:
 		case kATCassetteTurboMode_DataControl:
+		case kATCassetteTurboMode_Always:
 			break;
-
 		default:
 			mode = kATCassetteTurboMode_None;
-			if (mTurboMode == mode)
-				return;
 			break;
 	}
+	if (mTurboMode == mode)
+		return;
+	mTurboMode = mode;
 
 	mbFSKControlByCommandEnabled = mTurboMode == kATCassetteTurboMode_CommandControl;
 	mbFSKControlByDataEnabled = mTurboMode == kATCassetteTurboMode_DataControl;
@@ -599,12 +599,8 @@ void ATCassetteEmulator::RewindToStart() {
 }
 
 void ATCassetteEmulator::SeekToTime(float seconds) {
-	if (seconds < 0.0f)
-		seconds = 0.0f;
-
-	uint32 pos = VDRoundToInt(seconds * kATCassetteDataSampleRate);
-
-	SeekToBitPos(pos);
+	const double pos = static_cast<double>(seconds) * kATCassetteDataSampleRate;
+	SeekToBitPos(!(pos > 0) ? 0 : pos >= mLength ? mLength : static_cast<uint32>(VDRoundToInt(pos)));
 }
 
 void ATCassetteEmulator::SeekToBitPos(uint32 bitPos) {
@@ -653,10 +649,8 @@ void ATCassetteEmulator::SeekToBitPos(uint32 bitPos) {
 }
 
 void ATCassetteEmulator::SkipForward(float seconds) {
-	// compute tape offset
-	sint32 bitsToSkip = VDRoundToInt(seconds * kATCassetteDataSampleRate);
-
-	SeekToBitPos(mPosition + bitsToSkip);
+	const double pos = static_cast<double>(mPosition) + static_cast<double>(seconds) * kATCassetteDataSampleRate;
+	SeekToBitPos(!(pos > 0) ? 0 : pos >= mLength ? mLength : static_cast<uint32>(VDRoundToInt(pos)));
 }
 
 uint32 ATCassetteEmulator::OnPreModifyTape() {
@@ -818,7 +812,7 @@ uint8 ATCassetteEmulator::ReadBlock(uint16 bufadr0, uint16 len, ATCPUEmulatorMem
 		}
 
 		VDASSERT(r == kBR_ByteReceived);
-		
+
 		lastReceivedByte = mDataByte;
 
 		if (offset < len) {
@@ -931,6 +925,7 @@ uint8 ATCassetteEmulator::WriteBlock(uint16 bufadr, uint16 len, ATCPUEmulatorMem
 	if (longIRG)
 		mpImage->WriteBlankData(mWriteCursor, (uint32)kATCassetteDataSampleRate, false);
 
+	UpdateRecordingPosition();
 	mRecordLastTime = ATSCHEDULER_GETTIME(mpScheduler);
 
 	return kATCIOStat_Success;
@@ -1069,7 +1064,7 @@ void ATCassetteEmulator::OnScheduledEvent(uint32 id) {
 
 		UpdateDirectSense(0);
 		const auto result = ProcessBit();
-		
+
 		if (mPosition < mLength) {
 			static_assert(kATCassetteCyclesPerDataSample == 56, "Re-check jitter parameters");
 
@@ -1108,7 +1103,7 @@ void ATCassetteEmulator::OnScheduledEvent(uint32 id) {
 		}
 
 	} else if (id == kATCassetteEventId_Record) {
-		mpRecordEvent = mpScheduler->AddEvent(kRecordPollPeriod, this, kATCassetteEventId_Record);
+		mpRecordEvent = mpSlowScheduler->AddEvent(kRecordPollPeriod, this, kATCassetteEventId_Record);
 
 		const uint32 t = ATSCHEDULER_GETTIME(mpScheduler);
 
@@ -1327,6 +1322,10 @@ void ATCassetteEmulator::UpdateRawSIODevice() {
 
 				mpSIOMgr->SetSIOProceed(this, false);
 			}
+			if (mbTurboInterruptAsserted) {
+				mbTurboInterruptAsserted = false;
+				mpSIOMgr->SetSIOInterrupt(this, false);
+			}
 
 			mpSIOMgr->RemoveRawDevice(this);
 		}
@@ -1382,7 +1381,7 @@ void ATCassetteEmulator::UpdateMotorState() {
 
 	if (mbMotorRunning && mbRecordEnable) {
 		if (!mpRecordEvent) {
-			mpRecordEvent = mpScheduler->AddEvent(kRecordPollPeriod, this, kATCassetteEventId_Record);
+			mpRecordEvent = mpSlowScheduler->AddEvent(kRecordPollPeriod, this, kATCassetteEventId_Record);
 
 			mRecordLastTime = ATSCHEDULER_GETTIME(mpScheduler);
 		}
@@ -1404,7 +1403,7 @@ void ATCassetteEmulator::UpdateInvertData() {
 
 void ATCassetteEmulator::UpdateFSKDecoderEnabled() {
 	bool fskDecoderEnabled = true;
-	
+
 	if (mTurboMode == kATCassetteTurboMode_Always)
 		fskDecoderEnabled = false;
 	else if (mbFSKControlByCommandEnabled)
@@ -1441,7 +1440,7 @@ void ATCassetteEmulator::UpdateDirectSense(sint32 posOffset) {
 	// period to ~2000 baud.
 	bool newDataLineState = true;
 	bool turboState = true;
-	
+
 	if (mpImage) {
 		if (mbFSKDecoderEnabled) {
 			mDirectCursor.Update(*mpImage, pos);
@@ -1696,6 +1695,7 @@ void ATCassetteEmulator::UpdateRecordingPosition() {
 		mPosition = pos;
 
 		mLength = mpImage->GetDataLength();
+		mAudioLength = mpImage->GetAudioLength();
 
 		PositionChanged.NotifyDeferred();
 

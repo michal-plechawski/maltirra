@@ -23,6 +23,7 @@
 #endif
 
 #include <optional>
+#include <vd2/system/VDString.h>
 #include <at/atcore/audiosource.h>
 #include <at/atcore/enumparse.h>
 #include <at/atcore/deferredevent.h>
@@ -171,7 +172,7 @@ public:
 	uint8 WriteBlock(uint16 bufadr, uint16 len, ATCPUEmulatorMemory *mpMem);
 
 	std::optional<bool> AutodetectBasicNeeded();
-	
+
 	ATTapeSlidingWindowCursor GetFSKSampleCursor() const;
 	ATTapeSlidingWindowCursor GetFSKBitCursor(uint32 samplesPerHalfBit) const;
 
@@ -229,7 +230,7 @@ private:
 	void StopAudio();
 	void SeekAudio(uint32 pos);
 	void ResyncAudio();
-	
+
 	void FlushRecording(uint32 t, bool force);
 	void UpdateRecordingPosition();
 

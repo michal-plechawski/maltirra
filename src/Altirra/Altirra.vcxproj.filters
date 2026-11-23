@@ -103,7 +103,7 @@
     <ClCompile Include="..\platform\Windows_x64\Altirra\source\cartridge.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\platform\Windows_x64\Altirra\source\cassette.cpp">
+    <ClCompile Include="source\cassette.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="source\cheatengine.cpp">
@@ -1197,7 +1197,7 @@
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\cartridge.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\platform\Windows_x64\Altirra\h\cassette.h">
+    <ClInclude Include="h\cassette.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="h\cheatengine.h">

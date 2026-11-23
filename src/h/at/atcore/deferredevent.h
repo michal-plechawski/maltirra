@@ -64,6 +64,8 @@ public:
 	}
 
 	void Shutdown() {
+		if (mbDeferredNotifyPending && mpManager)
+			mpManager->RemovePendingEvent(this);
 		mpManager = nullptr;
 	}
 

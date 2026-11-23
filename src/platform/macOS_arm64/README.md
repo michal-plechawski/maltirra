@@ -452,3 +452,21 @@ beside the executable under `out/macOS_arm64/firmware`. Native resource loading
 checks that directory in addition to bundle and source-tree locations. CI
 downloads a revision-pinned ARM64 MADS binary, checks its SHA-256, and includes
 the firmware and ATCompiler in its artifacts. Full machine boot remains pending.
+
+The complete cassette emulator is shared in `cassette.cpp`/`cassette.h`.
+Eight portable test groups cover transport/seek, CAS/WAV file round trips, block acceleration with
+checksums and 16-bit address wrap, timed byte reception into real POKEY
+SERIN/IRQs, recording through real POKEY SEROUT, turbo signals on real PIA
+and joystick pins, audio against the production tape waveform, BASIC/binary
+autodetection, and shutdown with queued callbacks. The fixtures use actual
+tape images, memory maps, POKEY, PIA, ANTIC and fast/scanline schedulers.
+SIO control-line and mixer registration probes provide the surrounding
+boundaries; they do not implement disk command or machine lifecycle behavior.
+
+Recording polls now consistently use the scanline scheduler. Seek operations
+clamp before conversion; recording updates cached data/audio lengths, and
+reloading an image already owned by the cassette retains it before release.
+Shutdown stops scheduled work and releases raw SIO/audio registrations.
+Deferred-event shutdown removes queued callbacks while preserving pending
+notification state for reinitialization. The full SIO manager, simulator and
+native application wiring remain to be connected.
