@@ -18,6 +18,8 @@
 #ifndef f_AT_PCLINK_H
 #define f_AT_PCLINK_H
 
+#include <cstring>
+#include <vd2/system/function.h>
 #include <vd2/system/date.h>
 #include <vd2/system/file.h>
 #include <at/atcore/deviceimpl.h>
@@ -178,6 +180,9 @@ public:
 public:
 	void DumpStatus(ATConsoleOutput& output) override;
 
+	// The canonical path remains in the PCLink/SpartaDOS namespace on every host.
+	static uint8 ResolvePathStatic(const char *path, const char *curDir, VDStringA& resultPath);
+
 protected:
 	enum Command {
 		kCommandNone,
@@ -198,7 +203,6 @@ protected:
 	bool CheckValidFileHandle(bool setError);
 	bool IsDirEntIncluded(const ATPCLinkDirEnt& dirEnt) const;
 	bool ResolvePath(VDStringA& resultPath);
-	static uint8 ResolvePathStatic(const char *path, const char *curDir, VDStringA& resultPath);
 	bool ResolveNativePath(VDStringW& resultPath);
 	bool ResolveNativePath(VDStringW& resultPath, const VDStringA& netPath);
 	void OnReadActivity();
@@ -239,11 +243,11 @@ protected:
 		uint8	mPath[65];
 	};
 
-	ParameterBuffer mParBuf;
+	ParameterBuffer mParBuf {};
 
 	ATPCLinkFileHandle mFileHandles[15];
 
-	uint8	mTransferBuffer[65536];
+	uint8	mTransferBuffer[65536] {};
 };
 
 #endif

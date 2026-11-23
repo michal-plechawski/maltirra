@@ -44,6 +44,7 @@
 #include <vd2/system/filesys.h>
 #include <vd2/system/text.h>
 #include <vd2/system/VDString.h>
+#include "fileattributes.h"
 
 namespace {
 	constexpr sint64 kVDDateTicksPerSecond = 10000000;
@@ -469,6 +470,7 @@ long VDFile::writeData(const void *buffer, long length) {
 		total += static_cast<long>(actual);
 		mFilePosition += actual;
 	}
+	if (total) VDMacFileAttributes::MarkWritten(VDFileHandleToDescriptor(mhFile));
 	return total;
 }
 
@@ -581,7 +583,10 @@ uint32 VDFile::getAttributes() const {
 	struct stat info {};
 	if (!mhFile || fstat(VDFileHandleToDescriptor(mhFile), &info))
 		return 0;
-	return VDAttributesFromFile(VDGetErrorFilename(mpFilename), info);
+	uint32 attributes=VDAttributesFromFile(VDGetErrorFilename(mpFilename), info);
+	if (VDMacFileAttributes::Archive(VDFileHandleToDescriptor(mhFile),S_ISREG(info.st_mode)))
+		attributes |= kVDFileAttr_Archive;
+	return attributes;
 }
 
 VDDate VDFile::getCreationTime() const {

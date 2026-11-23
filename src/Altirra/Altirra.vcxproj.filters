@@ -298,7 +298,7 @@
     <ClCompile Include="source\pbi.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\platform\Windows_x64\Altirra\source\pclink.cpp">
+    <ClCompile Include="source\pclink.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\platform\Windows_x64\Altirra\source\pclink_win32.cpp">
@@ -1377,7 +1377,7 @@
     <ClInclude Include="h\pclinkerror.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\platform\Windows_x64\Altirra\h\pclink.h">
+    <ClInclude Include="h\pclink.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="h\pia.h">

@@ -687,7 +687,7 @@ are removed. Foreign handler addresses and entries still referenced by native
 IOCBs are preserved; table compaction updates IOCB IDs. The PIA overlay keeps
 chip registers and writes accessible around the CIO ROM window. Full tables
 and wrapped buffers are checked before access. The
-native build has 650 translation units and 423 portable groups. Full simulator
+native build has 654 translation units and 441 portable groups. Full simulator
 and application assembly, BASIC interpreter boot, and complete boot validation
 remain outstanding.
 
@@ -710,3 +710,24 @@ and closes the channel. Regressions include a failed oversized text open followe
 by a binary update (which previously could truncate the file), GETCWD selecting
 the requested drive, CHDIR rejecting regular files, and readonly rename/write
 enforcement. All sixteen groups pass AddressSanitizer and UBSan.
+
+The full PCLink filesystem service (`pclink.cpp`/`pclink.h`) is shared and uses
+the production SIO manager. Its canonical SpartaDOS paths retain backslashes;
+native directory lookup uses platform separators, native entry case and escaped
+reserved names. All original functions, fifteen handles, 24-bit file limits,
+directory byte streams/FNEXT filters, file timestamps, mutations, diagnostics
+and high-speed command variants remain available. Native macOS archive flags
+persist as extended attributes, are visible through file/path/directory APIs,
+and reset on writes through VDFile. Unlocking precedes metadata changes so a
+single CHMOD can unlock a file and change Archive/Hidden.
+
+Eighteen portable groups cover name/path parsing (including the legacy Windows
+path cases), directory records and attribute filters, native file handles,
+append/seek/limits, timestamp reuse, and complete PUT/STATUS/READ exchanges through
+actual SIO. Tests exercise all fifteen handles, readonly changes, native errors,
+mixed-case paths, reserved directories, file/directory mutations, settings and
+shutdown/reset. Raw POKEY/SIO tests wait for ACK before sending packets and check
+good/bad checksums. A 6502 program calls SIOV to read a real host file. All eighteen
+groups pass AddressSanitizer and UBSan. Fixes include append's logical position,
+stale timestamps/parameters, closed-handle replies, directory-name buffer bounds,
+native error preservation, and accelerated request mode/length validation.

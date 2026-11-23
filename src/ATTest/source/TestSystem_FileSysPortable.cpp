@@ -8,6 +8,7 @@
 #include <vd2/system/Error.h>
 #include <vd2/system/date.h>
 #include <vd2/system/filesys.h>
+#include <vd2/system/file.h>
 #include <vd2/system/text.h>
 #include <vd2/system/thread.h>
 #include <vd2/system/time.h>
@@ -154,6 +155,17 @@ bool ATTestSystemFileSys(ATPortableTestContext& context) {
 	VDFileSetAttributes(sandbox.mSourcePath.c_str(), kVDFileAttr_Hidden, 0);
 	AT_PORTABLE_TEST_ASSERT(context,
 		(VDFileGetAttributes(sandbox.mSourcePath.c_str()) & kVDFileAttr_Hidden) == 0);
+	VDFileSetAttributes(sandbox.mSourcePath.c_str(),kVDFileAttr_Archive,0);
+	AT_PORTABLE_TEST_ASSERT(context, !(VDFileGetAttributes(sandbox.mSourcePath.c_str()) & kVDFileAttr_Archive));
+	{
+		VDDirectoryIterator iterator(VDMakePath(sandbox.mBasePath.c_str(),L"*.TXT").c_str());
+		AT_PORTABLE_TEST_ASSERT(context, iterator.Next() && !(iterator.GetAttributes() & kVDFileAttr_Archive));
+		VDFile file(sandbox.mSourcePath.c_str(),nsVDFile::kReadWrite|nsVDFile::kOpenExisting);
+		AT_PORTABLE_TEST_ASSERT(context, !(file.getAttributes() & kVDFileAttr_Archive));
+		char original; file.read(&original,1); file.seek(0); file.write(&original,1);
+		AT_PORTABLE_TEST_ASSERT(context, file.getAttributes() & kVDFileAttr_Archive);
+	}
+	AT_PORTABLE_TEST_ASSERT(context, VDFileGetAttributes(sandbox.mSourcePath.c_str()) & kVDFileAttr_Archive);
 
 	{
 		VDDirectoryIterator iterator(

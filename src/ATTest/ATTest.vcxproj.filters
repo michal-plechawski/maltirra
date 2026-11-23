@@ -840,6 +840,15 @@
     <ClCompile Include="source\TestAltirra_CIOPortable.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="source\TestAltirra_PCLinkPortable.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="source\TestAltirra_PCLinkFilesPortable.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="source\TestAltirra_PCLinkStatePortable.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
     <ClCompile Include="source\TestAltirra_HostDevicePortable.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>

@@ -15,7 +15,9 @@
 //	along with this program; if not, write to the Free Software
 //	Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
-#include <stdafx.h>
+#include <algorithm>
+#include <cstring>
+#include <filesystem>
 #include <vd2/system/error.h>
 #include <vd2/system/file.h>
 #include <vd2/system/filesys.h>
@@ -28,15 +30,12 @@
 #include <at/atcore/scheduler.h>
 #include "pclink.h"
 #include "pclinkerror.h"
-#include "console.h"
-#include "cpu.h"
-#include "kerneldb.h"
-#include "uirender.h"
-#include "debuggerlog.h"
+#include <at/atcore/logging.h>
 
-ATDebuggerLogChannel g_ATLCPCLink(false, false, "PCLINK", "PCLink activity");
+ATLogChannel g_ATLCPCLink(false, false, "PCLINK", "PCLink activity");
 
 namespace {
+	constexpr wchar_t kPCLinkPathSeparator = (wchar_t)std::filesystem::path::preferred_separator;
 	// 2011 and we still have to put up with this crap
 	static const char *const kReservedDeviceNames[]={
 		"CON",
@@ -238,7 +237,7 @@ bool ATPCLinkFileName::ParseFromNative(const wchar_t *fn) {
 
 	while(wchar_t c = *fn++) {
 		if (c == L'.') {
-			if (i > 8)
+			if (inext || i > 8)
 				return false;
 
 			while(i < 8)
@@ -267,7 +266,7 @@ bool ATPCLinkFileName::ParseFromNative(const wchar_t *fn) {
 	while(i < 11)
 		mName[i++] = L' ';
 
-	if (isescaped != IsReservedDeviceName())
+	if ((mName[0] == ' ' && mName[8] == ' ') || isescaped != IsReservedDeviceName())
 		return false;
 
 	return true;
@@ -378,6 +377,7 @@ void ATPCLinkFileName::WildMerge(const ATPCLinkFileName& fn) {
 ///////////////////////////////////////////////////////////////////////////
 
 ATPCLinkFileHandle::~ATPCLinkFileHandle() {
+	Close();
 }
 
 bool ATPCLinkFileHandle::IsOpen() const {
@@ -417,6 +417,8 @@ void ATPCLinkFileHandle::AddDirEnt(const ATPCLinkDirEnt& dirEnt) {
 }
 
 uint8 ATPCLinkFileHandle::OpenFile(const wchar_t *nativePath, uint32 openFlags, bool allowRead, bool allowWrite, bool append) {
+	if (mbOpen) return kATCIOStat_IOCBInUse;
+	Close();
 	try {
 		const uint32 creationMode = openFlags & nsVDFile::kCreationMask;
 
@@ -440,9 +442,18 @@ uint8 ATPCLinkFileHandle::OpenFile(const wchar_t *nativePath, uint32 openFlags, 
 		} else {
 			mFile.open(nativePath, openFlags);
 		}
+		const sint64 len = mFile.size();
+		mLength = len > 0xFFFFFF ? 0xFFFFFF : (uint32)len;
+		mPos = append ? mLength : 0;
+		if (append) mFile.seek(mPos);
+	} catch(const VDNativeFileError& e) {
+		Close();
+		return ATTranslateHostErrorToSIOError(e.GetNativeError());
 	} catch(const MyWin32Error& e) {
+		Close();
 		return ATTranslateHostErrorToSIOError(e.GetWin32Error());
 	} catch(const MyError&) {
+		Close();
 		return kATCIOStat_SystemError;
 	}
 
@@ -450,17 +461,6 @@ uint8 ATPCLinkFileHandle::OpenFile(const wchar_t *nativePath, uint32 openFlags, 
 	mbIsDirectory = false;
 	mbAllowRead = allowRead;
 	mbAllowWrite = allowWrite;
-
-	sint64 len = mFile.size();
-	if (len > 0xffffff)
-		mLength = 0xffffff;
-	else
-		mLength = (uint32)len;
-
-	mPos = 0;
-
-	if (append)
-		mFile.seekNT(mLength);
 
 	return kATCIOStat_Success;
 }
@@ -503,17 +503,27 @@ void ATPCLinkFileHandle::Close() {
 	mbOpen = false;
 	mbAllowRead = false;
 	mbAllowWrite = false;
+	mbIsDirectory = false;
+	mbWasCreated = false;
+	mPos = mLength = 0;
+	mPendingDate = {};
+	mDirEnt = {};
 	vdfastvector<ATPCLinkDirEnt> tmp;
 	mDirEnts.swap(tmp);
 }
 
 uint8 ATPCLinkFileHandle::Seek(uint32 pos) {
-	if (pos > mLength && !mbAllowRead)
+	if (!mbOpen)
+		return kATCIOStat_NotOpen;
+	if (pos > 0xFFFFFF || (pos > mLength && !mbAllowWrite))
 		return kATCIOStat_PointDLen;
 
 	if (!mbIsDirectory) {
 		try {
 			mFile.seek(pos);
+		} catch(const VDNativeFileError& e) {
+			mFile.seekNT(mPos);
+			return ATTranslateHostErrorToSIOError(e.GetNativeError());
 		} catch(const MyWin32Error& e) {
 			mFile.seekNT(mPos);
 			return ATTranslateHostErrorToSIOError(e.GetWin32Error());
@@ -527,7 +537,7 @@ uint8 ATPCLinkFileHandle::Seek(uint32 pos) {
 	return kATCIOStat_Success;
 }
 
-uint8 ATPCLinkFileHandle::Read(void *dst, uint32 len, uint32& actual) {
+uint8 ATPCLinkFileHandle::Read(void *dst, uint32 len, uint32& actual) try {
 	actual = 0;
 
 	if (!mbOpen)
@@ -583,9 +593,15 @@ uint8 ATPCLinkFileHandle::Read(void *dst, uint32 len, uint32& actual) {
 	}
 
 	return kATCIOStat_Success;
+} catch(const VDNativeFileError& e) {
+	return ATTranslateHostErrorToSIOError(e.GetNativeError());
+} catch(const MyWin32Error& e) {
+	return ATTranslateHostErrorToSIOError(e.GetWin32Error());
+} catch(const MyError&) {
+	return kATCIOStat_FatalDiskIO;
 }
 
-uint8 ATPCLinkFileHandle::Write(const void *dst, uint32 len) {
+uint8 ATPCLinkFileHandle::Write(const void *dst, uint32 len) try {
 	if (!mbOpen)
 		return kATCIOStat_NotOpen;
 
@@ -613,6 +629,12 @@ uint8 ATPCLinkFileHandle::Write(const void *dst, uint32 len) {
 		mLength = mPos;
 
 	return actual != len ? kATCIOStat_DiskFull : kATCIOStat_Success;
+} catch(const VDNativeFileError& e) {
+	return ATTranslateHostErrorToSIOError(e.GetNativeError());
+} catch(const MyWin32Error& e) {
+	return ATTranslateHostErrorToSIOError(e.GetWin32Error());
+} catch(const MyError&) {
+	return kATCIOStat_FatalDiskIO;
 }
 
 void ATPCLinkFileHandle::SetTimestamp(const uint8 tsdata[6]) {
@@ -649,6 +671,7 @@ ATPCLinkDevice::ATPCLinkDevice() {
 }
 
 ATPCLinkDevice::~ATPCLinkDevice() {
+	Shutdown();
 }
 
 void *ATPCLinkDevice::AsInterface(uint32 id) {
@@ -671,13 +694,15 @@ void ATPCLinkDevice::SetReadOnly(bool readOnly) {
 }
 
 void ATPCLinkDevice::SetBasePath(const wchar_t *basePath) {
-	if (VDFileIsRelativePath(basePath))
-		mBasePathNative = VDMakePath(VDGetProgramPath().c_str(), basePath);
-	else
-		mBasePathNative = basePath;
-
-	if (!mBasePathNative.empty() && !VDIsPathSeparator(mBasePathNative.back()))
-		mBasePathNative += '\\';
+	VDStringW next(basePath ? basePath : L"");
+	if (!next.empty() && VDFileIsRelativePath(next.c_str()))
+		next = VDMakePath(VDGetProgramPath().c_str(), next.c_str());
+	if (!next.empty() && !VDIsPathSeparator(next.back()))
+		next += kPCLinkPathSeparator;
+	if (next != mBasePathNative) {
+		mBasePathNative = std::move(next);
+		mCurDir.clear();
+	}
 }
 
 void ATPCLinkDevice::GetDeviceInfo(ATDeviceInfo& info) {
@@ -706,7 +731,7 @@ bool ATPCLinkDevice::SetSettings(const ATPropertySet& settings) {
 }
 
 void ATPCLinkDevice::Shutdown() {
-	AbortCommand();
+	ColdReset();
 
 	mpUIRenderer = nullptr;
 
@@ -715,8 +740,13 @@ void ATPCLinkDevice::Shutdown() {
 }
 
 void ATPCLinkDevice::ColdReset() {
+	AbortCommand();
 	for(auto& fh : mFileHandles)
 		fh.Close();
+	mCurDir.clear();
+	mStatusFlags = mStatusLengthLo = mStatusLengthHi = 0;
+	mStatusError = kATCIOStat_Success;
+	mParBuf = {};
 }
 
 void ATPCLinkDevice::InitIndicators(IATDeviceIndicatorManager *uir) {
@@ -724,8 +754,10 @@ void ATPCLinkDevice::InitIndicators(IATDeviceIndicatorManager *uir) {
 }
 
 void ATPCLinkDevice::InitSIO(IATDeviceSIOManager *mgr) {
+	if (mpSIOMgr == mgr) return;
+	if (mpSIOMgr) Shutdown();
 	mpSIOMgr = mgr;
-	mpSIOInterface = mpSIOMgr->AddDevice(this);
+	if (mgr) mpSIOInterface = mgr->AddDevice(this);
 }
 
 IATDeviceSIO::CmdResponse ATPCLinkDevice::OnSerialBeginCommand(const ATDeviceSIOCommand& cmd) {
@@ -756,7 +788,7 @@ IATDeviceSIO::CmdResponse ATPCLinkDevice::OnSerialBeginCommand(const ATDeviceSIO
 	else if (commandId == 0x3F)
 		command = kCommandGetHiSpeedIndex;
 	else {
-		g_ATLCPCLink("Unsupported command $%02x\n", cmd);
+		g_ATLCPCLink("Unsupported command $%02x\n", cmd.mCommand);
 		return kCmdResponse_Fail_NAK;
 	}
 
@@ -780,14 +812,38 @@ void ATPCLinkDevice::OnSerialAbortCommand() {
 }
 
 void ATPCLinkDevice::OnSerialReceiveComplete(uint32 id, const void *data, uint32 len, bool checksumOK) {
-	mpReceiveFn(data, len);
+	if (!checksumOK) {
+		mStatusError = kATCIOStat_BadParameter;
+		AbortCommand();
+		return;
+	}
+	if (mpReceiveFn) { auto receive = mpReceiveFn; receive(data, len); }
 }
 
 void ATPCLinkDevice::OnSerialFence(uint32 id) {
-	mpFenceFn();
+	if (mpFenceFn) { auto fence = mpFenceFn; fence(); }
 }
 
 IATDeviceSIO::CmdResponse ATPCLinkDevice::OnSerialAccelCommand(const ATDeviceSIORequest& request) {
+	if (request.mDevice != 0x6F || mBasePathNative.empty()) return kCmdResponse_NotHandled;
+	uint32 length = 0;
+	uint8 mode = 0x40;
+	switch(request.mCommand & 0x7F) {
+		case 0x53: length = 4; break;
+		case 0x3F: length = 1; break;
+		case 0x50: length = request.mAUX[0] ? request.mAUX[0] : 256; mode = 0x80; break;
+		case 0x52:
+			switch(mParBuf.mFunction) {
+				case 0: length = mStatusLengthLo + 256u*mStatusLengthHi; break;
+				case 1: length = mParBuf.mF[0] + 256u*mParBuf.mF[1]; mode = 0x80; break;
+				case 3: case 4: length = 3; break;
+				case 6: case 9: case 10: length = 24; break;
+				case 17: case 19: length = 64; break;
+			}
+			break;
+		default: return kCmdResponse_Fail_NAK;
+	}
+	if (request.mMode != mode || request.mLength != length) return kCmdResponse_BypassAccel;
 	return OnSerialBeginCommand(request);
 }
 
@@ -841,8 +897,13 @@ void ATPCLinkDevice::AbortCommand() {
 		mCommand = kCommandNone;
 		mCommandPhase = 0;
 
-		mpSIOInterface->EndCommand();
+		if (mpSIOInterface) {
+			mpSIOInterface->FlushQueue();
+			mpSIOInterface->EndCommand();
+		}
 	}
+	mpReceiveFn = nullptr;
+	mpFenceFn = nullptr;
 }
 
 void ATPCLinkDevice::AdvanceCommand() {
@@ -854,7 +915,7 @@ void ATPCLinkDevice::AdvanceCommand() {
 				uint8 hsindex = 9;
 				mpSIOInterface->SendData(&hsindex, 1, true);
 			}
-			mpSIOInterface->EndCommand();
+			FinishCommand();
 			break;
 
 		case kCommandStatus:
@@ -870,11 +931,12 @@ void ATPCLinkDevice::AdvanceCommand() {
 
 				mpSIOInterface->SendData(data, 4, true);
 			}
-			mpSIOInterface->EndCommand();
+			FinishCommand();
 			break;
 
 		case kCommandPut:
 			mpReceiveFn = [this](const void *src, uint32 len) {
+				mParBuf = {};
 				memcpy(&mParBuf, src, std::min<uint32>(len, sizeof(mParBuf)));
 			};
 			mpSIOInterface->ReceiveData(0, mCommandAux1 ? mCommandAux1 : 256, true);
@@ -883,7 +945,7 @@ void ATPCLinkDevice::AdvanceCommand() {
 					mpSIOInterface->SendComplete();
 				else
 					mpSIOInterface->SendError();
-				mpSIOInterface->EndCommand();
+				FinishCommand();
 			};
 			mpSIOInterface->InsertFence(0);
 			break;
@@ -898,27 +960,31 @@ void ATPCLinkDevice::AdvanceCommand() {
 				mpSIOInterface->InsertFence(0);
 				mpFenceFn = [this]() {
 					OnRead();
-					mpSIOInterface->EndCommand();
+					FinishCommand();
 				};
 				mpSIOInterface->SendComplete();
 			} else {
 				mpSIOInterface->SendComplete();
 				mpFenceFn = [this]() {
 					OnRead();
-					mpSIOInterface->EndCommand();
+					FinishCommand();
 				};
 				mpSIOInterface->InsertFence(0);
 			}
 
 			break;
+		case kCommandNone:
+			break;
 	}
 }
 
 void ATPCLinkDevice::FinishCommand() {
-	AbortCommand();
+	mCommand = kCommandNone;
+	mpSIOInterface->EndCommand();
 }
 
-bool ATPCLinkDevice::OnPut() {
+bool ATPCLinkDevice::OnPut() try {
+	mStatusLengthLo = mStatusLengthHi = 0;
 	switch(mParBuf.mFunction) {
 		case 0:		// fread
 			{
@@ -1106,13 +1172,15 @@ bool ATPCLinkDevice::OnPut() {
 
 				ATPCLinkFileName pattern;
 
-				if (!pattern.ParseFromNet(mParBuf.mName1))
+				if (!pattern.ParseFromNet(mParBuf.mName1)) {
+					mStatusError = kATCIOStat_FileNameErr;
 					return true;
+				}
 
 				const bool openDir = mParBuf.mFunction == 10 || (mParBuf.mMode & 0x10) != 0;
 
 				VDDirectoryIterator it(VDMakePath(nativePath.c_str(), L"*").c_str());
-				ATPCLinkDirEnt dirEnt;
+				ATPCLinkDirEnt dirEnt {};
 				VDStringW nativeFilePath;
 
 				bool matched = false;
@@ -1167,13 +1235,13 @@ bool ATPCLinkDevice::OnPut() {
 					const char *fnend = ext ? ext : end;
 
 					size_t fnlen = fnend - s;
-					size_t extlen = end - ext;
+					size_t extlen = ext ? size_t(end - ext - 1) : 0;
 
 					if (fnlen > 8)
 						fnlen = 8;
 
 					if (extlen > 3)
-						extlen = 8;
+						extlen = 3;
 
 					ATPCLinkFileName dirName;
 					memset(dirName.mName, ' ', 11);
@@ -1185,7 +1253,7 @@ bool ATPCLinkDevice::OnPut() {
 						memcpy(dirName.mName, s, fnlen);
 
 					if (ext)
-						memcpy(dirName.mName + 8, ext, extlen);
+						memcpy(dirName.mName + 8, ext + 1, extlen);
 
 					fh.OpenAsDirectory(dirName, pattern, mParBuf.mAttr1, isRoot);
 
@@ -1312,8 +1380,7 @@ bool ATPCLinkDevice::OnPut() {
 						if (fn == fn2)
 							continue;
 
-						srcNativePath = path;
-						fn.AppendNative(srcNativePath);
+						srcNativePath = it.GetFullPath();
 
 						dstNativePath = path;
 						fn2.AppendNative(dstNativePath);
@@ -1326,6 +1393,8 @@ bool ATPCLinkDevice::OnPut() {
 						mStatusError = kATCIOStat_Success;
 					else
 						mStatusError = kATCIOStat_FileNotFound;
+				} catch(const VDNativeFileError& e) {
+					mStatusError = ATTranslateHostErrorToSIOError(e.GetNativeError());
 				} catch(const MyWin32Error& e) {
 					mStatusError = ATTranslateHostErrorToSIOError(e.GetWin32Error());
 				} catch(const MyError&) {
@@ -1334,94 +1403,23 @@ bool ATPCLinkDevice::OnPut() {
 			}
 			return true;
 
-		case 12:	// remove
-			g_ATLCPCLink("Received remove() command.\n");
-
-			if (mbReadOnly) {
-				mStatusError = kATCIOStat_ReadOnly;
-				return true;
-			}
-
+		case 12: // remove (exact and wildcard names share native case mapping)
+			if (mbReadOnly) { mStatusError=kATCIOStat_ReadOnly; return true; }
 			OnWriteActivity();
 			{
-				VDStringW resultPath;
-
-				if (!ResolveNativePath(resultPath))
-					return true;
-
-				ATPCLinkFileName fname;
-				if (!fname.ParseFromNet(mParBuf.mName1)) {
-					mStatusError = kATCIOStat_FileNameErr;
-					return true;
+				VDStringW path;
+				if (!ResolveNativePath(path)) return true;
+				ATPCLinkFileName pattern;
+				if (!pattern.ParseFromNet(mParBuf.mName1)) { mStatusError=kATCIOStat_FileNameErr; return true; }
+				bool matched=false;
+				VDDirectoryIterator it(VDMakePath(path.c_str(),L"*").c_str());
+				while(it.Next()) {
+					ATPCLinkFileName name; ATPCLinkDirEnt entry {};
+					entry.SetFlagsFromAttributes(it.GetAttributes());
+					if (it.IsDirectory() || !name.ParseFromNative(it.GetName()) || !pattern.WildMatch(name) || !IsDirEntIncluded(entry)) continue;
+					VDRemoveFileEx(it.GetFullPath().c_str()); matched=true;
 				}
-
-				if (fname.IsWild()) {
-					VDDirectoryIterator it(VDMakePath(resultPath.c_str(), L"*").c_str());
-					bool matched = false;
-
-					while(it.Next()) {
-						if (it.IsDirectory())
-							continue;
-
-						ATPCLinkDirEnt dirEnt;
-						dirEnt.SetFlagsFromAttributes(it.GetAttributes());
-
-						if (!IsDirEntIncluded(dirEnt))
-							continue;
-
-						ATPCLinkFileName entryName;
-						if (!entryName.ParseFromNative(it.GetName()))
-							continue;
-
-						if (!fname.WildMatch(entryName))
-							continue;
-
-						try {
-							VDRemoveFile(it.GetFullPath().c_str());
-							matched = true;
-						} catch(const MyWin32Error& e) {
-							mStatusError = ATTranslateHostErrorToSIOError(e.GetWin32Error());
-							return true;
-						} catch(const MyError&) {
-							mStatusError = kATCIOStat_SystemError;
-							return true;
-						}
-					}
-
-					if (!matched) {
-						mStatusError = kATCIOStat_FileNotFound;
-						return true;
-					}
-				} else {
-					fname.AppendNative(resultPath);
-
-					try {
-						uint32 attrs = VDFileGetAttributes(resultPath.c_str());
-
-						if (attrs == kVDFileAttr_Invalid) {
-							mStatusError = kATCIOStat_FileNotFound;
-							return true;
-						}
-
-						ATPCLinkDirEnt dirEnt;
-						dirEnt.SetFlagsFromAttributes(attrs);
-
-						if (IsDirEntIncluded(dirEnt))
-							VDRemoveFile(resultPath.c_str());
-						else {
-							mStatusError = kATCIOStat_FileNotFound;
-							return true;
-						}
-					} catch(const MyWin32Error& e) {
-						mStatusError = ATTranslateHostErrorToSIOError(e.GetWin32Error());
-						return true;
-					} catch(const MyError&) {
-						mStatusError = kATCIOStat_SystemError;
-						return true;
-					}
-				}
-
-				mStatusError = kATCIOStat_Success;
+				mStatusError=matched ? kATCIOStat_Success : kATCIOStat_FileNotFound;
 			}
 			return true;
 
@@ -1467,8 +1465,7 @@ bool ATPCLinkDevice::OnPut() {
 						if (!srcpat.WildMatch(fn))
 							continue;
 
-						srcNativePath = path;
-						fn.AppendNative(srcNativePath);
+						srcNativePath = it.GetFullPath();
 
 						uint32 attrMask = 0;
 						uint32 attrVals = 0;
@@ -1500,6 +1497,8 @@ bool ATPCLinkDevice::OnPut() {
 						mStatusError = kATCIOStat_Success;
 					else
 						mStatusError = kATCIOStat_FileNotFound;
+				} catch(const VDNativeFileError& e) {
+					mStatusError = ATTranslateHostErrorToSIOError(e.GetNativeError());
 				} catch(const MyWin32Error& e) {
 					mStatusError = ATTranslateHostErrorToSIOError(e.GetWin32Error());
 				} catch(const MyError&) {
@@ -1546,6 +1545,9 @@ bool ATPCLinkDevice::OnPut() {
 							VDSetDirectoryCreationTime(resultPath.c_str(), date);
 					}
 
+				} catch(const VDNativeFileError& e) {
+					mStatusError = ATTranslateHostErrorToSIOError(e.GetNativeError());
+					return true;
 				} catch(const MyWin32Error& e) {
 					mStatusError = ATTranslateHostErrorToSIOError(e.GetWin32Error());
 					return true;
@@ -1584,10 +1586,19 @@ bool ATPCLinkDevice::OnPut() {
 					return true;
 				}
 
-				fname.AppendNative(resultPath);
-
 				try {
-					VDRemoveDirectory(resultPath.c_str());
+					VDDirectoryIterator it(VDMakePath(resultPath.c_str(),L"*").c_str());
+					bool found=false;
+					while(it.Next()) {
+						ATPCLinkFileName name;
+						if (it.IsDirectory() && name.ParseFromNative(it.GetName()) && name == fname) {
+							VDRemoveDirectory(it.GetFullPath().c_str()); found=true; break;
+						}
+					}
+					if (!found) { mStatusError=kATCIOStat_PathNotFound; return true; }
+				} catch(const VDNativeFileError& e) {
+					mStatusError = ATTranslateHostErrorToSIOError(e.GetNativeError());
+					return true;
 				} catch(const MyWin32Error& e) {
 					mStatusError = ATTranslateHostErrorToSIOError(e.GetWin32Error());
 					return true;
@@ -1653,9 +1664,16 @@ bool ATPCLinkDevice::OnPut() {
 	g_ATLCPCLink("Unsupported put for function $%02x\n", mParBuf.mFunction);
 	mStatusError = kATCIOStat_NotSupported;
 	return true;
+} catch(const VDNativeFileError& e) {
+	mStatusError = ATTranslateHostErrorToSIOError(e.GetNativeError()); return true;
+} catch(const MyWin32Error& e) {
+	mStatusError = ATTranslateHostErrorToSIOError(e.GetWin32Error()); return true;
+} catch(const MyError&) {
+	mStatusError = kATCIOStat_SystemError; return true;
 }
 
-bool ATPCLinkDevice::OnRead() {
+bool ATPCLinkDevice::OnRead() try {
+	if (mParBuf.mFunction != 1) memset(mTransferBuffer, 0, sizeof mTransferBuffer);
 	switch(mParBuf.mFunction) {
 		case 0:		// fread
 			OnReadActivity();
@@ -1828,6 +1846,12 @@ bool ATPCLinkDevice::OnRead() {
 	}
 
 	return false;
+} catch(const VDNativeFileError& e) {
+	mStatusError = ATTranslateHostErrorToSIOError(e.GetNativeError()); return true;
+} catch(const MyWin32Error& e) {
+	mStatusError = ATTranslateHostErrorToSIOError(e.GetWin32Error()); return true;
+} catch(const MyError&) {
+	mStatusError = kATCIOStat_SystemError; return true;
 }
 
 bool ATPCLinkDevice::CheckValidFileHandle(bool setError) {
@@ -1835,6 +1859,10 @@ bool ATPCLinkDevice::CheckValidFileHandle(bool setError) {
 		if (setError)
 			mStatusError = kATCIOStat_InvalidIOCB;
 
+		return false;
+	}
+	if (!mFileHandles[mParBuf.mHandle - 1].IsOpen()) {
+		if (setError) mStatusError = kATCIOStat_NotOpen;
 		return false;
 	}
 
@@ -2007,26 +2035,39 @@ bool ATPCLinkDevice::ResolveNativePath(VDStringW& resultPath) {
 }
 
 bool ATPCLinkDevice::ResolveNativePath(VDStringW& resultPath, const VDStringA& netPath) {
-
-	// translate path
 	resultPath = mBasePathNative;
-
-	for(VDStringA::const_iterator it(netPath.begin()), itEnd(netPath.end());
-		it != itEnd;
-		++it)
-	{
-		char c = *it;
-
-		if (c >= 'A' && c <= 'Z')
-			c &= ~0x20;
-
-		resultPath += (wchar_t)c;	
+	const uint32 baseAttributes=VDFileGetAttributes(resultPath.c_str());
+	if (baseAttributes == kVDFileAttr_Invalid || !(baseAttributes & kVDFileAttr_Directory)) {
+		mStatusError = kATCIOStat_PathNotFound;
+		return false;
 	}
-
-	// ensure trailing separator
-	if (!resultPath.empty() && resultPath.back() != L'\\')
-		resultPath += L'\\';
-
+	// The network path is canonical ASCII 8.3. Resolve each directory against
+	// native entries so case and reserved-device escapes work on every host.
+	size_t start = 0;
+	while(start < netPath.size()) {
+		if (netPath[start] == '\\') { ++start; continue; }
+		size_t end = netPath.find('\\', start);
+		if (end == VDStringA::npos) end = netPath.size();
+		uint8 raw[11]; memset(raw, ' ', sizeof raw);
+		const auto component = netPath.subspan(start, end-start);
+		const auto dot = component.find('.');
+		const size_t baseLen = dot == VDStringA::npos ? component.size() : dot;
+		memcpy(raw, component.data(), std::min<size_t>(baseLen,8));
+		if (dot != VDStringA::npos) memcpy(raw+8, component.data()+dot+1, std::min<size_t>(component.size()-dot-1,3));
+		ATPCLinkFileName wanted;
+		if (!wanted.ParseFromNet(raw)) { mStatusError=kATCIOStat_FileNameErr; return false; }
+		bool found = false;
+		VDDirectoryIterator it(VDMakePath(resultPath.c_str(),L"*").c_str());
+		while(it.Next()) {
+			ATPCLinkFileName entry;
+			if (it.IsDirectory() && entry.ParseFromNative(it.GetName()) && entry == wanted) {
+				resultPath=it.GetFullPath(); found=true; break;
+			}
+		}
+		if (!found) { mStatusError=kATCIOStat_PathNotFound; return false; }
+		start=end;
+	}
+	if (!resultPath.empty() && !VDIsPathSeparator(resultPath.back())) resultPath+=kPCLinkPathSeparator;
 	return true;
 }
 

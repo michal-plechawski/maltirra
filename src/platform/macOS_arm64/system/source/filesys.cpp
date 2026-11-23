@@ -22,6 +22,7 @@
 #include <vd2/system/filesys.h>
 #include <vd2/system/strutil.h>
 #include <vd2/system/text.h>
+#include "fileattributes.h"
 
 namespace {
 	constexpr wchar_t kVDNativePathSeparator = L'/';
@@ -234,6 +235,8 @@ namespace {
 
 	uint32 VDAttributesFromStat(const wchar_t *path, const struct stat& info) {
 		uint32 attributes = 0;
+		if (VDMacFileAttributes::Archive(VDPathToUTF8(path).c_str(),S_ISREG(info.st_mode)))
+			attributes |= kVDFileAttr_Archive;
 		if (!(info.st_mode & S_IWUSR))
 			attributes |= kVDFileAttr_ReadOnly;
 		if (S_ISDIR(info.st_mode))
@@ -750,7 +753,7 @@ void VDFileSetAttributes(const wchar_t *path, uint32 attributesToChange, uint32 
 	if (lstat(pathUTF8.c_str(), &info))
 		VDThrowFileSystemError("Cannot read file attributes", path, errno);
 
-	if (attributesToChange & kVDFileAttr_ReadOnly) {
+	const auto setReadOnly = [&] {
 		mode_t mode = info.st_mode;
 		if (newAttributes & kVDFileAttr_ReadOnly)
 			mode &= ~(S_IWUSR | S_IWGRP | S_IWOTH);
@@ -758,6 +761,15 @@ void VDFileSetAttributes(const wchar_t *path, uint32 attributesToChange, uint32 
 			mode |= S_IWUSR;
 		if (chmod(pathUTF8.c_str(), mode))
 			VDThrowFileSystemError("Cannot change file permissions", path, errno);
+	};
+	// Allow metadata changes while unlocking; apply a new lock after metadata.
+	if ((attributesToChange & kVDFileAttr_ReadOnly) && !(newAttributes & kVDFileAttr_ReadOnly))
+		setReadOnly();
+
+	if (attributesToChange & kVDFileAttr_Archive) {
+		const unsigned char value=(newAttributes & kVDFileAttr_Archive) ? 1 : 0;
+		if (setxattr(pathUTF8.c_str(),VDMacFileAttributes::kArchiveAttribute,&value,1,0,0))
+			VDThrowFileSystemError("Cannot change archive file attribute",path,errno);
 	}
 
 	if (attributesToChange & kVDFileAttr_Hidden) {
@@ -767,6 +779,8 @@ void VDFileSetAttributes(const wchar_t *path, uint32 attributesToChange, uint32 
 		if (chflags(pathUTF8.c_str(), flags))
 			VDThrowFileSystemError("Cannot change hidden file attribute", path, errno);
 	}
+	if ((attributesToChange & kVDFileAttr_ReadOnly) && (newAttributes & kVDFileAttr_ReadOnly))
+		setReadOnly();
 }
 
 VDDirectoryIterator::VDDirectoryIterator(const wchar_t *path)

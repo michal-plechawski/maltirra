@@ -248,6 +248,24 @@ bool ATTestAltirraHLEUtils(ATPortableTestContext& context);
 bool ATTestAltirraGTIATables(ATPortableTestContext& context);
 bool ATTestAltirraGTIARenderer(ATPortableTestContext& context);
 bool ATTestAltirraHostDeviceUtils(ATPortableTestContext& context);
+bool ATTestAltirraPCLinkNames(ATPortableTestContext& context);
+bool ATTestAltirraPCLinkPaths(ATPortableTestContext& context);
+bool ATTestAltirraPCLinkDirEntry(ATPortableTestContext& context);
+bool ATTestAltirraPCLinkFile(ATPortableTestContext& context);
+bool ATTestAltirraPCLinkFileState(ATPortableTestContext& context);
+bool ATTestAltirraPCLinkDirHandle(ATPortableTestContext& context);
+bool ATTestAltirraPCLinkProtocol(ATPortableTestContext& context);
+bool ATTestAltirraPCLinkTransfer(ATPortableTestContext& context);
+bool ATTestAltirraPCLinkAppend(ATPortableTestContext& context);
+bool ATTestAltirraPCLinkDirectory(ATPortableTestContext& context);
+bool ATTestAltirraPCLinkNavigation(ATPortableTestContext& context);
+bool ATTestAltirraPCLinkMutation(ATPortableTestContext& context);
+bool ATTestAltirraPCLinkAttributes(ATPortableTestContext& context);
+bool ATTestAltirraPCLinkHandles(ATPortableTestContext& context);
+bool ATTestAltirraPCLinkSettings(ATPortableTestContext& context);
+bool ATTestAltirraPCLinkLifecycle(ATPortableTestContext& context);
+bool ATTestAltirraPCLinkSerial(ATPortableTestContext& context);
+bool ATTestAltirraPCLinkCPU(ATPortableTestContext& context);
 bool ATTestAltirraHostParsing(ATPortableTestContext& context);
 bool ATTestAltirraHostWildcards(ATPortableTestContext& context);
 bool ATTestAltirraHostSettings(ATPortableTestContext& context);
@@ -676,6 +694,24 @@ const ATPortableTestCase *ATGetPortableTests(size_t& count) {
 		{ "Altirra_GTIATables", ATTestAltirraGTIATables },
 		{ "Altirra_GTIARenderer", ATTestAltirraGTIARenderer },
 		{ "Altirra_HostDeviceUtils", ATTestAltirraHostDeviceUtils },
+		{ "Altirra_PCLinkNames", ATTestAltirraPCLinkNames },
+		{ "Altirra_PCLinkPaths", ATTestAltirraPCLinkPaths },
+		{ "Altirra_PCLinkDirEntry", ATTestAltirraPCLinkDirEntry },
+		{ "Altirra_PCLinkFile", ATTestAltirraPCLinkFile },
+		{ "Altirra_PCLinkFileState", ATTestAltirraPCLinkFileState },
+		{ "Altirra_PCLinkDirHandle", ATTestAltirraPCLinkDirHandle },
+		{ "Altirra_PCLinkProtocol", ATTestAltirraPCLinkProtocol },
+		{ "Altirra_PCLinkTransfer", ATTestAltirraPCLinkTransfer },
+		{ "Altirra_PCLinkAppend", ATTestAltirraPCLinkAppend },
+		{ "Altirra_PCLinkDirectory", ATTestAltirraPCLinkDirectory },
+		{ "Altirra_PCLinkNavigation", ATTestAltirraPCLinkNavigation },
+		{ "Altirra_PCLinkMutation", ATTestAltirraPCLinkMutation },
+		{ "Altirra_PCLinkAttributes", ATTestAltirraPCLinkAttributes },
+		{ "Altirra_PCLinkHandles", ATTestAltirraPCLinkHandles },
+		{ "Altirra_PCLinkSettings", ATTestAltirraPCLinkSettings },
+		{ "Altirra_PCLinkLifecycle", ATTestAltirraPCLinkLifecycle },
+		{ "Altirra_PCLinkSerial", ATTestAltirraPCLinkSerial },
+		{ "Altirra_PCLinkCPU", ATTestAltirraPCLinkCPU },
 		{ "Altirra_HostParsing", ATTestAltirraHostParsing },
 		{ "Altirra_HostWildcards", ATTestAltirraHostWildcards },
 		{ "Altirra_HostSettings", ATTestAltirraHostSettings },
