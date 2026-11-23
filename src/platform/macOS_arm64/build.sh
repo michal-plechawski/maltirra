@@ -192,6 +192,9 @@ portable_test_sources=(
 	src/ATTest/source/TestAltirra_CallbackPortable.cpp
 	src/ATTest/source/TestAltirra_CartridgePortPortable.cpp
 	src/ATTest/source/TestAltirra_CIOPortable.cpp
+	src/ATTest/source/TestAltirra_HostDevicePortable.cpp
+	src/ATTest/source/TestAltirra_HostDeviceFilesPortable.cpp
+	src/ATTest/source/TestAltirra_HostDeviceStatePortable.cpp
 	src/ATTest/source/TestAltirra_CIOTransfersPortable.cpp
 	src/ATTest/source/TestAltirra_CIOIntegrationPortable.cpp
 	src/ATTest/source/TestAltirra_VirtualScreenPortable.cpp
@@ -585,6 +588,7 @@ portable_test_sources=(
 	src/Altirra/source/iderawimage.cpp
 	src/Altirra/source/idevhdimage.cpp
 	src/Altirra/source/hostdeviceutils.cpp
+	src/Altirra/source/hostdevice.cpp
 	src/Altirra/source/printer1020font.cpp
 	src/Altirra/source/printer1020.cpp
 	src/Altirra/source/printerbase.cpp

@@ -22,7 +22,9 @@
 
 class ATCPUEmulator;
 class ATCPUEmulatorMemory;
-class IATUIRenderer;
+class IATDevice;
+class ATPropertySet;
+class VDStringW;
 
 class IATHostDeviceEmulator : public IVDUnknown {
 public:
@@ -41,6 +43,11 @@ public:
 	virtual void SetBasePath(int index, const wchar_t *s) = 0;
 };
 
-IATHostDeviceEmulator *ATCreateHostDeviceEmulator();
+// The returned device owns one reference; release it after Shutdown().
+void ATCreateDeviceHostFS(const ATPropertySet& settings, IATDevice **device);
+
+void ATHostDeviceMergeWildPath(VDStringW& dst, const wchar_t *source, const wchar_t *pattern);
+bool ATHostDeviceParseFilename(const char *path, bool allowDir, bool allowWild,
+	bool allowPath, bool lowercase, bool lfn, VDStringW& nativeRelPath);
 
 #endif

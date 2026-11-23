@@ -15,7 +15,12 @@
 //	along with this program; if not, write to the Free Software
 //	Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
-#include <stdafx.h>
+#include <algorithm>
+#include <cctype>
+#include <cstring>
+#include <filesystem>
+#include <at/atcore/deviceindicators.h>
+#include <vd2/system/vdstl.h>
 #include <vd2/system/error.h>
 #include <vd2/system/file.h>
 #include <vd2/system/filesys.h>
@@ -28,7 +33,10 @@
 #include "hostdeviceutils.h"
 #include "oshelper.h"
 #include "pclinkerror.h"
-#include "uirender.h"
+
+namespace {
+	constexpr wchar_t kHostPathSeparator = (wchar_t)std::filesystem::path::preferred_separator;
+}
 
 ///////////////////////////////////////////////////////////////////////////
 
@@ -90,23 +98,6 @@ void ATHostDeviceMergeWildPath(VDStringW& dst, const wchar_t *s, const wchar_t *
 		dst.pop_back();
 }
 
-#ifdef _DEBUG
-namespace {
-	struct ATTest_HostDeviceMergeWildPath {
-		ATTest_HostDeviceMergeWildPath() {
-			VDStringW resultPath;
-
-			ATHostDeviceMergeWildPath(resultPath, L"foo.txt", L"bar.txt"); VDASSERT(resultPath == L"bar.txt");
-			ATHostDeviceMergeWildPath(resultPath, L"foo.txt", L"*.*"); VDASSERT(resultPath == L"foo.txt");
-			ATHostDeviceMergeWildPath(resultPath, L"foo.txt", L"*.bin"); VDASSERT(resultPath == L"foo.bin");
-			ATHostDeviceMergeWildPath(resultPath, L"foo.txt", L"bar.*"); VDASSERT(resultPath == L"bar.txt");
-			ATHostDeviceMergeWildPath(resultPath, L"foo.txt", L"f?x.txt"); VDASSERT(resultPath == L"fox.txt");
-			ATHostDeviceMergeWildPath(resultPath, L"foo", L"b*.*"); VDASSERT(resultPath == L"boo");
-
-		}
-	} g_ATTest_HostDeviceMergeWildPath;
-}
-#endif
 
 bool ATHostDeviceParseFilename(const char *s, bool allowDir, bool allowWild, bool allowPath, bool lowercase, bool lfn, VDStringW& nativeRelPath) {
 	bool inext = false;
@@ -145,7 +136,7 @@ bool ATHostDeviceParseFilename(const char *s, bool allowDir, bool allowWild, boo
 							return false;
 
 						// remove a component
-						if (!nativeRelPath.empty() && nativeRelPath.back() == '\\')
+						if (!nativeRelPath.empty() && VDIsPathSeparator(nativeRelPath.back()))
 							nativeRelPath.pop_back();
 
 						while(!nativeRelPath.empty()) {
@@ -153,7 +144,7 @@ bool ATHostDeviceParseFilename(const char *s, bool allowDir, bool allowWild, boo
 
 							nativeRelPath.pop_back();
 
-							if (c == '\\')
+							if (VDIsPathSeparator(c))
 								break;
 						}
 
@@ -179,7 +170,7 @@ bool ATHostDeviceParseFilename(const char *s, bool allowDir, bool allowWild, boo
 
 		if (!fnchars) {
 			if (!nativeRelPath.empty())
-				nativeRelPath += '\\';
+				nativeRelPath += kHostPathSeparator;
 
 			componentStart = nativeRelPath.size();
 		}
@@ -231,57 +222,23 @@ bool ATHostDeviceParseFilename(const char *s, bool allowDir, bool allowWild, boo
 	if (wild && !allowWild)
 		return false;
 
-	if (!wild && (ATHostDeviceIsDevice(nativeRelPath.c_str() + componentStart) || nameFirst == '!'))
+	if (fnchars && !wild && (ATHostDeviceIsDevice(nativeRelPath.c_str() + componentStart) || nameFirst == '!'))
 		nativeRelPath.insert(nativeRelPath.begin() + componentStart, L'!');
 
 	// strip off trailing separator if present
-	if (!nativeRelPath.empty() && nativeRelPath.back() == '\\')
+	if (!nativeRelPath.empty() && VDIsPathSeparator(nativeRelPath.back()))
 		nativeRelPath.pop_back();
 
 	return true;
 }
 
-#ifdef _DEBUG
-namespace {
-	struct ATTest_HostDeviceParseFilename {
-		ATTest_HostDeviceParseFilename() {
-			VDStringW nativeRelPath;
-
-			nativeRelPath = L""; VDASSERT( ATHostDeviceParseFilename("TEST.TXT", false, false, true, false, false, nativeRelPath) && nativeRelPath == L"TEST.TXT");
-			nativeRelPath = L""; VDASSERT(!ATHostDeviceParseFilename("*.TXT", false, false, true, false, false, nativeRelPath));
-			nativeRelPath = L""; VDASSERT( ATHostDeviceParseFilename("*.TXT", false, true, true, false, false, nativeRelPath) && nativeRelPath == L"*.TXT");
-			nativeRelPath = L""; VDASSERT(!ATHostDeviceParseFilename("*>*.TXT", false, false, true, false, false, nativeRelPath));
-			nativeRelPath = L""; VDASSERT(!ATHostDeviceParseFilename("*>*.TXT", false, true, true, false, false, nativeRelPath));
-			nativeRelPath = L""; VDASSERT(!ATHostDeviceParseFilename("*>FOO.TXT", false, true, true, false, false, nativeRelPath));
-			nativeRelPath = L""; VDASSERT(!ATHostDeviceParseFilename("", false, false, true, false, false, nativeRelPath));
-			nativeRelPath = L""; VDASSERT( ATHostDeviceParseFilename("", true, false, true, false, false, nativeRelPath) && nativeRelPath == L"");
-			nativeRelPath = L""; VDASSERT( ATHostDeviceParseFilename("FOO>", true, false, true, false, false, nativeRelPath) && nativeRelPath == L"FOO");
-			nativeRelPath = L""; VDASSERT( ATHostDeviceParseFilename("FOO>BAR", true, false, true, false, false, nativeRelPath) && nativeRelPath == L"FOO\\BAR");
-			nativeRelPath = L""; VDASSERT( ATHostDeviceParseFilename("FOO>BAR>", true, false, true, false, false, nativeRelPath) && nativeRelPath == L"FOO\\BAR");
-			nativeRelPath = L""; VDASSERT( ATHostDeviceParseFilename("FOO>BAR>.", true, false, true, false, false, nativeRelPath) && nativeRelPath == L"FOO\\BAR");
-			nativeRelPath = L""; VDASSERT( ATHostDeviceParseFilename("FOO>BAR>..", true, false, true, false, false, nativeRelPath) && nativeRelPath == L"FOO");
-			nativeRelPath = L""; VDASSERT( ATHostDeviceParseFilename("CON", false, false, true, false, false, nativeRelPath) && nativeRelPath == L"!CON");
-			nativeRelPath = L""; VDASSERT( ATHostDeviceParseFilename("CON.TXT", false, false, true, false, false, nativeRelPath) && nativeRelPath == L"!CON.TXT");
-			nativeRelPath = L""; VDASSERT( ATHostDeviceParseFilename("CONX.TXT", false, false, true, false, false, nativeRelPath) && nativeRelPath == L"CONX.TXT");
-			nativeRelPath = L""; VDASSERT( ATHostDeviceParseFilename("TEST.TXT", false, false, true, false, false, nativeRelPath) && nativeRelPath == L"TEST.TXT");
-			nativeRelPath = L""; VDASSERT( ATHostDeviceParseFilename("TEST.TXT", false, false, true, false, false, nativeRelPath) && nativeRelPath == L"TEST.TXT");
-			nativeRelPath = L"FOO"; VDASSERT(ATHostDeviceParseFilename("TEST.TXT", false, false, true, false, false, nativeRelPath) && nativeRelPath == L"FOO\\TEST.TXT");
-			nativeRelPath = L"FOO\\BAR"; VDASSERT(ATHostDeviceParseFilename("TEST.TXT", false, false, true, false, false, nativeRelPath) && nativeRelPath == L"FOO\\BAR\\TEST.TXT");
-			nativeRelPath = L"FOO\\BAR"; VDASSERT(ATHostDeviceParseFilename("BAZ>TEST.TXT", false, false, true, false, false, nativeRelPath) && nativeRelPath == L"FOO\\BAR\\BAZ\\TEST.TXT");
-			nativeRelPath = L"FOO\\BAR"; VDASSERT(ATHostDeviceParseFilename("..\\BAZ>TEST.TXT", false, false, true, false, false, nativeRelPath) && nativeRelPath == L"FOO\\BAZ\\TEST.TXT");
-			nativeRelPath = L"FOO\\BAR\\BLAH"; VDASSERT(ATHostDeviceParseFilename("..\\..\\BAZ>TEST.TXT", false, false, true, false, false, nativeRelPath) && nativeRelPath == L"FOO\\BAZ\\TEST.TXT");
-			nativeRelPath = L"FOO\\BAR\\BLAH"; VDASSERT(ATHostDeviceParseFilename("..\\..\\..\\..\\BAZ>TEST.TXT", false, false, true, false, false, nativeRelPath) && nativeRelPath == L"BAZ\\TEST.TXT");
-		}
-	} g_ATTest_HostDeviceParseFilename;
-}
-#endif
 
 ///////////////////////////////////////////////////////////////////////////
 class ATHostDeviceChannel {
 public:
 	ATHostDeviceChannel();
 
-	void Close();
+	uint8 Close();
 
 	bool GetLength(uint32& len);
 	uint8 Seek(uint32 pos);
@@ -306,11 +263,9 @@ public:
 ATHostDeviceChannel::ATHostDeviceChannel() {
 }
 
-void ATHostDeviceChannel::Close() {
-	if (!mbOpen)
-		return;
-
-	if (mbWriteBackData && mFile.isOpen()) {
+uint8 ATHostDeviceChannel::Close() {
+	uint8 status = kATCIOStat_Success;
+	if (mbOpen && mbWriteBackData && mFile.isOpen()) {
 		vdfastvector<uint8> tmp;
 		tmp.reserve(mData.size());
 
@@ -326,10 +281,16 @@ void ATHostDeviceChannel::Close() {
 			tmp.push_back(c);
 		}
 
-		if (mFile.seekNT(0)) {
-			mFile.writeData(tmp.data(), (uint32)tmp.size());
-			mFile.truncateNT();
-			mFile.closeNT();
+		try {
+			mFile.seek(0);
+			mFile.write(tmp.data(), (uint32)tmp.size());
+			mFile.truncate();
+		} catch(const VDNativeFileError& e) {
+			status = ATTranslateHostErrorToSIOError(e.GetNativeError());
+		} catch(const MyWin32Error& e) {
+			status = ATTranslateHostErrorToSIOError(e.GetWin32Error());
+		} catch(const MyError&) {
+			status = kATCIOStat_FatalDiskIO;
 		}
 	}
 
@@ -338,10 +299,13 @@ void ATHostDeviceChannel::Close() {
 	mbUsingRawData = false;
 	mbReadEnabled = false;
 	mbWriteEnabled = false;
+	mbIsDirectory = false;
+	mOffset = mLength = 0;
 	mFile.closeNT();
 
 	vdfastvector<uint8> tmp;
 	tmp.swap(mData);
+	return status;
 }
 
 bool ATHostDeviceChannel::GetLength(uint32& len) {
@@ -370,6 +334,7 @@ uint8 ATHostDeviceChannel::Seek(uint32 pos) {
 
 uint8 ATHostDeviceChannel::Read(void *dst, uint32 len, uint32& actual) {
 	actual = 0;
+	if (!len) return kATCIOStat_Success;
 
 	uint8 status = kATCIOStat_Success;
 	try {
@@ -405,7 +370,8 @@ uint8 ATHostDeviceChannel::Read(void *dst, uint32 len, uint32& actual) {
 }
 
 uint8 ATHostDeviceChannel::Write(const void *buf, uint32 tc) {
-	if (mMaxLength - mOffset < tc)
+	if (!tc) return kATCIOStat_Success;
+	if (mOffset > mMaxLength || mMaxLength - mOffset < tc)
 		return kATCIOStat_DiskFull;
 
 	if (mbUsingRawData) {
@@ -441,8 +407,6 @@ public:
 	~ATHostDeviceEmulator();
 
 	void *AsInterface(uint32 id) override;
-
-	void SetUIRenderer(IATUIRenderer *uir);
 
 	bool IsReadOnly() const override;
 	void SetReadOnly(bool enabled) override;
@@ -536,7 +500,7 @@ ATHostDeviceEmulator::ATHostDeviceEmulator() {
 }
 
 ATHostDeviceEmulator::~ATHostDeviceEmulator() {
-	ColdReset();
+	Shutdown();
 }
 
 void *ATHostDeviceEmulator::AsInterface(uint32 id) {
@@ -548,10 +512,6 @@ void *ATHostDeviceEmulator::AsInterface(uint32 id) {
 		return static_cast<IATDeviceIndicators *>(this);
 
 	return ATDevice::AsInterface(id);
-}
-
-void ATHostDeviceEmulator::SetUIRenderer(IATUIRenderer *uir) {
-	mpUIRenderer = uir;
 }
 
 bool ATHostDeviceEmulator::IsReadOnly() const {
@@ -570,12 +530,12 @@ void ATHostDeviceEmulator::SetBasePath(int index, const wchar_t *basePath) {
 	if ((unsigned)index >= 4)
 		return;
 
-	VDStringW& nbpath = mNativeBasePath[index];
-	nbpath = basePath;
-
-	if (!nbpath.empty()) {
-		if (!VDIsPathSeparator(nbpath.back()))
-			nbpath += L'\\';
+	VDStringW nbpath(basePath ? basePath : L"");
+	if (!nbpath.empty() && !VDIsPathSeparator(nbpath.back()))
+		nbpath += kHostPathSeparator;
+	if (nbpath != mNativeBasePath[index]) {
+		mNativeBasePath[index] = std::move(nbpath);
+		mNativeCurDir[index].clear();
 	}
 }
 
@@ -645,16 +605,25 @@ void ATHostDeviceEmulator::ColdReset() {
 
 void ATHostDeviceEmulator::Shutdown() {
 	if (mpCIOMgr) {
-		mpCIOMgr->RemoveCIODevice(this);
+		auto *manager = mpCIOMgr;
 		mpCIOMgr = nullptr;
+		manager->RemoveCIODevice(this);
 	}
 
+	ColdReset();
 	mpUIRenderer = nullptr;
 }
 
 void ATHostDeviceEmulator::InitCIO(IATDeviceCIOManager *mgr) {
+	if (mpCIOMgr == mgr) return;
+	if (mpCIOMgr) {
+		auto *previous = mpCIOMgr;
+		mpCIOMgr = nullptr;
+		previous->RemoveCIODevice(this);
+		ColdReset();
+	}
 	mpCIOMgr = mgr;
-	mpCIOMgr->AddCIODevice(this);
+	if (mgr) mgr->AddCIODevice(this);
 }
 
 void ATHostDeviceEmulator::GetCIODevices(IATDeviceCIODeviceList& deviceList) const {
@@ -668,6 +637,7 @@ sint32 ATHostDeviceEmulator::OnCIOOpen(int channel, uint8 deviceNo, uint8 mode, 
 	Channel& ch = mChannels[channel];
 	if (ch.mbOpen)
 		return kATCIOStat_IOCBInUse;
+	ch.Close(); // clear failed-open state as well as stale translation flags
 
 	bool append = false;
 	bool create = false;
@@ -719,6 +689,7 @@ sint32 ATHostDeviceEmulator::OnCIOOpen(int channel, uint8 deviceNo, uint8 mode, 
 		mpUIRenderer->SetHActivity(false);
 
 	if (mode == 0x06 || mode == 0x07) {
+		if (mFilePattern.empty() || mFilePattern == ".") mFilePattern = "*";
 		ch.mbOpen = true;
 		ch.mbUsingRawData = true;
 		ch.mData.clear();
@@ -763,7 +734,7 @@ sint32 ATHostDeviceEmulator::OnCIOOpen(int channel, uint8 deviceNo, uint8 mode, 
 						if (c == L'$' || c == L'!')
 							continue;
 
-						if (c == '\\')
+						if (VDIsPathSeparator(c))
 							c = L'>';
 
 						ch.mData.push_back((uint8)c);
@@ -985,11 +956,14 @@ sint32 ATHostDeviceEmulator::OnCIOOpen(int channel, uint8 deviceNo, uint8 mode, 
 				} else
 					ch.mOffset = 0;
 			}
+		} catch(const VDNativeFileError& e) {
+			ch.Close();
+			return ATTranslateHostErrorToSIOError(e.GetNativeError());
 		} catch(const MyWin32Error& e) {
-			ch.mFile.closeNT();
+			ch.Close();
 			return ATTranslateHostErrorToSIOError(e.GetWin32Error());
 		} catch(const MyError&) {
-			ch.mFile.closeNT();
+			ch.Close();
 			return kATCIOStat_FileNotFound;
 		}
 
@@ -1003,12 +977,11 @@ sint32 ATHostDeviceEmulator::OnCIOOpen(int channel, uint8 deviceNo, uint8 mode, 
 sint32 ATHostDeviceEmulator::OnCIOClose(int channel, uint8 deviceNo) {
 	Channel& ch = mChannels[channel];
 
-	ch.Close();
-
-	return kATCIOStat_Success;
+	return ch.Close();
 }
 
 sint32 ATHostDeviceEmulator::OnCIOGetBytes(int channel, uint8 deviceNo, void *buf, uint32 len, uint32& actual) {
+	actual = 0;
 	Channel& ch = mChannels[channel];
 
 	if (!ch.mbOpen)
@@ -1025,19 +998,20 @@ sint32 ATHostDeviceEmulator::OnCIOGetBytes(int channel, uint8 deviceNo, void *bu
 }
 
 sint32 ATHostDeviceEmulator::OnCIOPutBytes(int channel, uint8 deviceNo, const void *buf, uint32 len, uint32& actual) {
+	actual = 0;
 	Channel& ch = mChannels[channel];
 
 	if (!ch.mbOpen)
 		return kATCIOStat_NotOpen;
 
-	if (!ch.mbWriteEnabled)
-		return kATCIOStat_WriteOnly;
+	if (!ch.mbWriteEnabled || mbReadOnly)
+		return kATCIOStat_ReadOnly;
 
 	if (mpUIRenderer)
 		mpUIRenderer->SetHActivity(true);
 
 	uint8 status = ch.Write(buf, len);
-	actual = len;
+	if (status < 0x80) actual = len;
 
 	return status;
 }
@@ -1065,6 +1039,8 @@ sint32 ATHostDeviceEmulator::OnCIOSpecial(int channel, uint8 deviceNo, uint8 com
 		else if (command == 0x2B)	return HandleCmd_SDX_Rmdir(bufadr);					// SDX: Remove Directory
 		else if (command == 0x2C)	return HandleCmd_Chdir(bufadr);						// SDX: Set Current Directory
 		else if (command == 0x30)	return HandleCmd_SDX_Getcwd(bufadr, buflen);		// SDX: Get Current Directory
+	} catch(const VDNativeFileError& e) {
+		return ATTranslateHostErrorToSIOError(e.GetNativeError());
 	} catch(const MyWin32Error& e) {
 		return ATTranslateHostErrorToSIOError(e.GetWin32Error());
 	} catch(const MyError&) {
@@ -1087,8 +1063,8 @@ sint32 ATHostDeviceEmulator::HandleCmd_Note(int channel, uint8 aux[6]) {
 	if (!ch.mbOpen)
 		return kATCIOStat_NotOpen;
 
-	int offset = ch.mOffset;
-	int sector = offset / 125;
+	const uint32 offset = ch.mOffset;
+	const uint32 sector = offset / 125;
 
 	// Note that we must write directly to the originating IOCB as
 	// AUX3-5 are not copied into zero page.
@@ -1199,6 +1175,7 @@ sint32 ATHostDeviceEmulator::HandleCmd_Delete(uint16 bufadr) {
 }
 
 sint32 ATHostDeviceEmulator::HandleCmd_Rename(uint16 bufadr) {
+	if (mbReadOnly) return kATCIOStat_ReadOnly;
 	if (uint8 fnfail = ReadFilename(bufadr, false, true))
 		return fnfail;
 
@@ -1226,7 +1203,7 @@ sint32 ATHostDeviceEmulator::HandleCmd_Rename(uint16 bufadr) {
 	for(;;) {
 		mpCIOMgr->ReadMemory(&c, bufadr + (idx2++), 1);
 
-		if (c == 0x9B || c == 0x20 || c == ',' || c == 0)
+		if (c == 0x9B || (!mbLongFileNames && c == 0x20) || c == ',' || c == 0)
 			break;
 
 		// check for excessively long or unterminated filename
@@ -1238,7 +1215,7 @@ sint32 ATHostDeviceEmulator::HandleCmd_Rename(uint16 bufadr) {
 			return kATCIOStat_FileNameErr;
 
 		// convert to lowercase
-		if (c >= 0x61 && c <= 0x7A)
+		if (!mbLongFileNames && c >= 0x61 && c <= 0x7A)
 			c -= 0x20;
 
 		fn2.push_back((char)c);
@@ -1317,7 +1294,7 @@ sint32 ATHostDeviceEmulator::HandleCmd_Chdir(uint16 bufadr) {
 	if (!mFilePattern.empty()) {
 		VDDirectoryIterator it(mNativeSearchPath.c_str());
 
-		if (!GetNextMatch(it, true))
+		if (!GetNextMatch(it, true) || !it.IsDirectory())
 			return kATCIOStat_PathNotFound;
 
 		const VDStringW& newPath = VDFileSplitPathLeft(mNativeRelPath);
@@ -1336,6 +1313,7 @@ sint32 ATHostDeviceEmulator::HandleCmd_Chdir(uint16 bufadr) {
 }
 
 sint32 ATHostDeviceEmulator::HandleCmd_SDX_Getcwd(uint16 bufadr, uint16 buflen) {
+	if (uint8 status = ReadFilename(bufadr, true, false)) return status;
 	VDStringW::const_iterator it(mNativeCurDir[mPathIndex].begin()), itEnd(mNativeCurDir[mPathIndex].end());
 
 	vdfastvector<uint8> path;
@@ -1348,7 +1326,7 @@ sint32 ATHostDeviceEmulator::HandleCmd_SDX_Getcwd(uint16 bufadr, uint16 buflen) 
 			if (c == L'$' || c == L'!')
 				continue;
 
-			if (c == '\\')
+			if (VDIsPathSeparator(c))
 				c = L'>';
 
 			path.push_back((uint8)c);
@@ -1497,7 +1475,7 @@ uint8 ATHostDeviceEmulator::ReadFilename(const uint8 *rawfn, bool allowDir, bool
 
 			parsedPath.pop_back();
 
-			if (c == L'\\')
+			if (VDIsPathSeparator(c))
 				break;
 		}
 	}
@@ -1518,10 +1496,10 @@ uint8 ATHostDeviceEmulator::ReadFilename(const uint8 *rawfn, bool allowDir, bool
 	mNativeDirPath = mNativeBasePath[mPathIndex];
 	mNativeDirPath.append(nativeRelPath, nativeFile);
 	mNativeSearchPath = mNativeDirPath;
-	mNativeSearchPath += L"*.*";
+	mNativeSearchPath += L"*";
 	mFilePattern = VDTextWToA(*nativeFile == L'!' ? nativeFile + 1 : nativeFile);
 
-	if (mFilePattern.find('.') == VDStringW::npos)
+	if (!mbLongFileNames && mFilePattern.find('.') == VDStringW::npos)
 		mFilePattern += '.';
 
 	return 0;
@@ -1531,11 +1509,6 @@ uint8 ATHostDeviceEmulator::ReadFilename(const uint8 *rawfn, bool allowDir, bool
 // the last parsed path (mPathIndex). Any subdirectories that fail to map are
 // left as-is. The filename is not touched.
 void ATHostDeviceEmulator::RemapPathDirectories(VDStringW& rawRelPath) {
-	// If LFNs are enabled, directory mangling will not occur and so there is
-	// nothing to do here.
-	if (mbLongFileNames)
-		return;
-
 	// look up native base folder
 	const VDStringW& nativeBasePath = mNativeBasePath[mPathIndex];
 
@@ -1574,7 +1547,7 @@ void ATHostDeviceEmulator::RemapPathDirectories(VDStringW& rawRelPath) {
 			// check if the subdirectory exists as-is
 			if (!VDDoesPathExist((nativeBasePath + rawRelPath.subspan(0, nextSplitPos)).c_str())) {
 				// it doesn't, do directory search
-				VDDirectoryIterator it(((nativeBasePath + rawRelPath.subspan(0, startPos)) + L"*.*").c_str());
+				VDDirectoryIterator it(((nativeBasePath + rawRelPath.subspan(0, startPos)) + L"*").c_str());
 				VDStringA encodedName;
 
 				while(it.Next()) {

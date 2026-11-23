@@ -124,6 +124,19 @@ public:
 	VDAllocationFailedException(size_t attemptedSize);
 };
 
+// File errors retain the platform code across formatting and stack unwinding.
+// Existing callers can continue to catch VDException.
+class VDNativeFileError : public VDException {
+public:
+	template<typename... Args>
+	VDNativeFileError(uint32 code, const char *format, Args&& ...args)
+		: VDException(format, std::forward<Args>(args)...), mNativeError(code) {}
+	uint32 GetNativeError() const { return mNativeError; }
+
+private:
+	uint32 mNativeError;
+};
+
 class VDWin32Exception : public VDException {
 public:
 	VDWin32Exception(const char *format, uint32 err, ...);

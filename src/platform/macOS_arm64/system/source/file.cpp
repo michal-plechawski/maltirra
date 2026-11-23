@@ -81,7 +81,7 @@ namespace {
 		const wchar_t *filename,
 		int errorCode) {
 		const VDStringA filenameUTF8 = VDTextWToU8(filename ? filename : L"", -1);
-		throw MyError(
+		throw VDNativeFileError(errorCode,
 			"Cannot %s file \"%s\": %s",
 			operation,
 			filenameUTF8.c_str(),
@@ -334,7 +334,8 @@ uint32 VDFile::open_internal(
 	}
 	if (!VDRegisterOpenFile(fileDescriptor, info, flags)) {
 		::close(fileDescriptor);
-		return EACCES;
+		// A sharing conflict is distinct from denied native permissions.
+		return EBUSY;
 	}
 
 	if (truncate && ftruncate(fileDescriptor, 0)) {

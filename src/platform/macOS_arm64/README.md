@@ -687,6 +687,26 @@ are removed. Foreign handler addresses and entries still referenced by native
 IOCBs are preserved; table compaction updates IOCB IDs. The PIA overlay keeps
 chip registers and writes accessible around the CIO ROM window. Full tables
 and wrapped buffers are checked before access. The
-native build has 646 translation units and 407 portable groups. Full simulator
-and application assembly, host-file device integration, BASIC interpreter boot,
-and complete boot validation remain outstanding.
+native build has 650 translation units and 423 portable groups. Full simulator
+and application assembly, BASIC interpreter boot, and complete boot validation
+remain outstanding.
+
+The complete H: host filesystem device (`hostdevice.cpp`/`hostdevice.h`) is shared
+and connected to the production CIO manager. Native paths use the platform's
+separator while Atari paths retain their `>` and `\\` syntax. H1-H4 roots and
+H6-H9 text aliases support binary/text reads, create/append/update, directories,
+wildcard rename/delete, lock/unlock, CWD, NOTE/POINT and SDX file length. Native
+enumeration includes extensionless files and directories; long filenames without
+extensions and case-insensitive directory remapping work on native filesystems.
+Native file exceptions retain errno for CIO error translation, distinguishing
+sharing conflicts from denied permissions.
+
+Sixteen portable groups use isolated native directory trees and the actual
+CIO/CPU implementation. They cover all eight channels, four independent drive
+roots, CR/LF conversion and CRLF writeback, readonly state changes, directory
+records, Unicode/long-name aliases, native errors and reset/shutdown. A real 6502
+program opens a host file, reads its bytes through the hook page, observes EOF
+and closes the channel. Regressions include a failed oversized text open followed
+by a binary update (which previously could truncate the file), GETCWD selecting
+the requested drive, CHDIR rejecting regular files, and readonly rename/write
+enforcement. All sixteen groups pass AddressSanitizer and UBSan.

@@ -248,6 +248,22 @@ bool ATTestAltirraHLEUtils(ATPortableTestContext& context);
 bool ATTestAltirraGTIATables(ATPortableTestContext& context);
 bool ATTestAltirraGTIARenderer(ATPortableTestContext& context);
 bool ATTestAltirraHostDeviceUtils(ATPortableTestContext& context);
+bool ATTestAltirraHostParsing(ATPortableTestContext& context);
+bool ATTestAltirraHostWildcards(ATPortableTestContext& context);
+bool ATTestAltirraHostSettings(ATPortableTestContext& context);
+bool ATTestAltirraHostBinary(ATPortableTestContext& context);
+bool ATTestAltirraHostPermissions(ATPortableTestContext& context);
+bool ATTestAltirraHostText(ATPortableTestContext& context);
+bool ATTestAltirraHostDirectory(ATPortableTestContext& context);
+bool ATTestAltirraHostNavigation(ATPortableTestContext& context);
+bool ATTestAltirraHostMutation(ATPortableTestContext& context);
+bool ATTestAltirraHostLongNames(ATPortableTestContext& context);
+bool ATTestAltirraHostAliases(ATPortableTestContext& context);
+bool ATTestAltirraHostPositions(ATPortableTestContext& context);
+bool ATTestAltirraHostOpenFailures(ATPortableTestContext& context);
+bool ATTestAltirraHostNativeErrors(ATPortableTestContext& context);
+bool ATTestAltirraHostLifecycle(ATPortableTestContext& context);
+bool ATTestAltirraHostCPU(ATPortableTestContext& context);
 bool ATTestAltirraIDERawImage(ATPortableTestContext& context);
 bool ATTestAltirraIDEVHDImage(ATPortableTestContext& context);
 bool ATTestAltirraKernelDB(ATPortableTestContext& context);
@@ -660,6 +676,22 @@ const ATPortableTestCase *ATGetPortableTests(size_t& count) {
 		{ "Altirra_GTIATables", ATTestAltirraGTIATables },
 		{ "Altirra_GTIARenderer", ATTestAltirraGTIARenderer },
 		{ "Altirra_HostDeviceUtils", ATTestAltirraHostDeviceUtils },
+		{ "Altirra_HostParsing", ATTestAltirraHostParsing },
+		{ "Altirra_HostWildcards", ATTestAltirraHostWildcards },
+		{ "Altirra_HostSettings", ATTestAltirraHostSettings },
+		{ "Altirra_HostBinary", ATTestAltirraHostBinary },
+		{ "Altirra_HostPermissions", ATTestAltirraHostPermissions },
+		{ "Altirra_HostText", ATTestAltirraHostText },
+		{ "Altirra_HostDirectory", ATTestAltirraHostDirectory },
+		{ "Altirra_HostNavigation", ATTestAltirraHostNavigation },
+		{ "Altirra_HostMutation", ATTestAltirraHostMutation },
+		{ "Altirra_HostLongNames", ATTestAltirraHostLongNames },
+		{ "Altirra_HostAliases", ATTestAltirraHostAliases },
+		{ "Altirra_HostPositions", ATTestAltirraHostPositions },
+		{ "Altirra_HostOpenFailures", ATTestAltirraHostOpenFailures },
+		{ "Altirra_HostNativeErrors", ATTestAltirraHostNativeErrors },
+		{ "Altirra_HostLifecycle", ATTestAltirraHostLifecycle },
+		{ "Altirra_HostCPU", ATTestAltirraHostCPU },
 		{ "Altirra_IDERawImage", ATTestAltirraIDERawImage },
 		{ "Altirra_IDEVHDImage", ATTestAltirraIDEVHDImage },
 		{ "Altirra_KernelDB", ATTestAltirraKernelDB },

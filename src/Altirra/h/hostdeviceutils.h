@@ -36,11 +36,11 @@ inline bool ATHostDeviceIsValidPathCharWide(wchar_t c) {
 }
 
 inline bool ATHostDeviceIsValidPathCharLFN(uint8 c) {
-	return c >= 0x20 && c < 0x7C;
+	return c >= 0x20 && c < 0x7C && c != '/' && c != '\\' && c != ':' && c != '"' && c != '<' && c != '>';
 }
 
 inline bool ATHostDeviceIsValidPathCharWideLFN(wchar_t c) {
-	return c >= 0x20 && c < 0x7C;
+	return c >= 0x20 && c < 0x7C && c != L'/' && c != L'\\' && c != L':' && c != L'"' && c != L'<' && c != L'>';
 }
 
 void ATHostDeviceEncodeName(VDStringA& encodedName, const wchar_t *hostName, bool useLongNameEncoding, bool useLongNames);

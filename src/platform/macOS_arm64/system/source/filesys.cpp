@@ -193,7 +193,7 @@ namespace {
 		const wchar_t *path,
 		int errorCode) {
 		const VDStringA pathUTF8 = VDPathToUTF8(path);
-		throw MyError(
+		throw VDNativeFileError(errorCode,
 			"%s \"%s\": %s",
 			operation,
 			pathUTF8.c_str(),

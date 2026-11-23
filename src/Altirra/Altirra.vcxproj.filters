@@ -226,7 +226,7 @@
     <ClCompile Include="source\hleutils.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\platform\Windows_x64\Altirra\source\hostdevice.cpp">
+    <ClCompile Include="source\hostdevice.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="source\hostdeviceutils.cpp">
@@ -1308,7 +1308,7 @@
     <ClInclude Include="h\hleutils.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\platform\Windows_x64\Altirra\h\hostdevice.h">
+    <ClInclude Include="h\hostdevice.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="h\hostdeviceutils.h">
