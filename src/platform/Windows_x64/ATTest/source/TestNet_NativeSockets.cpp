@@ -22,6 +22,7 @@
 #include <at/atnetworksockets/nativesockets.h>
 #include <test.h>
 #include <WinSock2.h>
+#include <algorithm>
 #include <memory>
 
 namespace {
@@ -88,22 +89,18 @@ AT_DEFINE_TEST(Net_NativeSockets) {
 		socket.SetOnEvent(&asyncDispatcher, [&](const ATSocketStatus& status2) { status = status2; }, true);
 	};
 
-	const auto waitForSocketStatus = [&](IATSocket& socket, const vdfunction<bool(const ATSocketStatus&)>& fn) {
-		if (!fn(status)) {
-			uint32 t0 = VDGetCurrentTick() + 1000;
+	const auto waitForSocketStatus = [&](const char *stage, const vdfunction<bool(const ATSocketStatus&)>& fn) {
+		const uint32 deadline = VDGetCurrentTick() + 3000;
+		for(;;) {
+			asyncDispatcher.RunCallbacks();
+			AT_TEST_ASSERTF(status.mError == ATSocketError::None, "%s: socket error %u", stage, (unsigned)status.mError);
+			if (fn(status))
+				break;
 
-			for(;;) {
-				asyncDispatcher.RunCallbacks();
-
-				if (fn(status))
-					break;
-
-				uint32 t = VDGetCurrentTick();
-
-				AT_TEST_ASSERT(t0 > t);
-
-				asyncDispatchSignal.tryWait(t0 - t);
-			}
+			const sint32 remaining = (sint32)(deadline - VDGetCurrentTick());
+			AT_TEST_ASSERTF(remaining > 0, "%s timed out (connecting=%d, closed=%d, remoteClosed=%d)",
+				stage, status.mbConnecting, status.mbClosed, status.mbRemoteClosed);
+			asyncDispatchSignal.tryWait(std::min<uint32>((uint32)remaining, 20));
 		}
 	};
 
@@ -115,12 +112,15 @@ AT_DEFINE_TEST(Net_NativeSockets) {
 
 		sockaddr_in localhost {};
 		localhost.sin_family = AF_INET;
-		localhost.sin_port = htons(6502);
+		localhost.sin_port = 0;
 		localhost.sin_addr.S_un.S_addr = htonl(INADDR_LOOPBACK);
 		AT_TEST_ASSERT(0 == bind(hs.get(), (const sockaddr *)&localhost, sizeof localhost));
+		int localhostLen = sizeof localhost;
+		AT_TEST_ASSERT(0 == getsockname(hs.get(), (sockaddr *)&localhost, &localhostLen));
+		AT_TEST_ASSERT(localhost.sin_port != 0);
 		AT_TEST_ASSERT(0 == listen(hs.get(), SOMAXCONN));
 
-		auto s = ATNetConnect(ATSocketAddress::CreateIPv4(0x7F000001, 6502));
+		auto s = ATNetConnect(ATSocketAddress::CreateIPv4(0x7F000001, ntohs(localhost.sin_port)));
 		AT_TEST_ASSERT(s);
 
 		initSocket(*s);
@@ -132,20 +132,15 @@ AT_DEFINE_TEST(Net_NativeSockets) {
 		AT_TEST_ASSERT(!status.mbCanAccept);
 		AT_TEST_ASSERT(status.mError == ATSocketError::None);
 
-		waitForSocketStatus(*s, [](const ATSocketStatus& status) { return status.mbConnecting; });
-		AT_TEST_ASSERT(!status.mbRemoteClosed);
-		AT_TEST_ASSERT(!status.mbClosed);
-		AT_TEST_ASSERT(!status.mbCanRead);
-		AT_TEST_ASSERT(status.mbCanWrite);
-		AT_TEST_ASSERT(!status.mbCanAccept);
-		AT_TEST_ASSERT(status.mError == ATSocketError::None);
+		// Connecting is transient and can be over before the first snapshot.
+		// Wait for the connected state before accepting the native peer.
+		waitForSocketStatus("connect", [](const ATSocketStatus& status) { return !status.mbConnecting; });
 
 		sockaddr_in srcaddr {};
 		int srcaddrlen = sizeof(srcaddr);
 		ATNativeSocketHandle hs2(accept(hs.get(), (sockaddr *)&srcaddr, &srcaddrlen));
 		AT_TEST_ASSERT(hs2.valid());
 
-		waitForSocketStatus(*s, [](const ATSocketStatus& status) { return !status.mbConnecting; });
 		AT_TEST_ASSERT(!status.mbRemoteClosed);
 		AT_TEST_ASSERT(!status.mbClosed);
 		AT_TEST_ASSERT(!status.mbCanRead);
@@ -155,7 +150,7 @@ AT_DEFINE_TEST(Net_NativeSockets) {
 
 		AT_TEST_ASSERT(0 == shutdown(hs2.get(), SD_SEND));
 
-		waitForSocketStatus(*s, [](const ATSocketStatus& status) { return status.mbRemoteClosed; });
+		waitForSocketStatus("remote shutdown", [](const ATSocketStatus& status) { return status.mbRemoteClosed; });
 		AT_TEST_ASSERT(!status.mbClosed);
 		AT_TEST_ASSERT(!status.mbCanRead);
 		AT_TEST_ASSERT(status.mbCanWrite);
@@ -163,7 +158,7 @@ AT_DEFINE_TEST(Net_NativeSockets) {
 		AT_TEST_ASSERT(status.mError == ATSocketError::None);
 
 		s->CloseSocket(false);
-		waitForSocketStatus(*s, [](const ATSocketStatus& status) { return status.mbClosed; });
+		waitForSocketStatus("graceful close", [](const ATSocketStatus& status) { return status.mbClosed; });
 
 		char c;
 		AT_TEST_ASSERT(recv(hs2.get(), &c, 1, 0) == 0);
