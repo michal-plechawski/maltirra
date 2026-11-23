@@ -15,27 +15,29 @@
 //	along with this program; if not, write to the Free Software
 //	Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
-#include <stdafx.h>
+#include <algorithm>
+#include <cmath>
+#include <cstdlib>
+#include <cstring>
 #include <vd2/system/VDString.h>
 #include <at/atcore/decmath.h>
 #include <at/atcore/ksyms.h>
 #include "decmath.h"
 #include "cpu.h"
 #include "cpumemory.h"
-#include "console.h"
-#include "debuggerlog.h"
+#include <at/atcore/logging.h>
 
-ATDebuggerLogChannel g_ATLCFPAccel(false, false, "FPACCEL", "Floating-point acceleration");
+ATLogChannel g_ATLCFPAccel(false, false, "FPACCEL", "Floating-point acceleration");
 
 ATDecFloat ATReadDecFloat(ATCPUEmulatorMemory& mem, uint16 addr) {
 	ATDecFloat v;
 
 	v.mSignExp		= mem.ReadByte(addr);
-	v.mMantissa[0]	= mem.ReadByte(addr+1);
-	v.mMantissa[1]	= mem.ReadByte(addr+2);
-	v.mMantissa[2]	= mem.ReadByte(addr+3);
-	v.mMantissa[3]	= mem.ReadByte(addr+4);
-	v.mMantissa[4]	= mem.ReadByte(addr+5);
+	v.mMantissa[0]	= mem.ReadByte((uint16)(addr+1));
+	v.mMantissa[1]	= mem.ReadByte((uint16)(addr+2));
+	v.mMantissa[2]	= mem.ReadByte((uint16)(addr+3));
+	v.mMantissa[3]	= mem.ReadByte((uint16)(addr+4));
+	v.mMantissa[4]	= mem.ReadByte((uint16)(addr+5));
 	return v;
 }
 
@@ -43,21 +45,21 @@ ATDecFloat ATDebugReadDecFloat(ATCPUEmulatorMemory& mem, uint16 addr) {
 	ATDecFloat v;
 
 	v.mSignExp		= mem.DebugReadByte(addr);
-	v.mMantissa[0]	= mem.DebugReadByte(addr+1);
-	v.mMantissa[1]	= mem.DebugReadByte(addr+2);
-	v.mMantissa[2]	= mem.DebugReadByte(addr+3);
-	v.mMantissa[3]	= mem.DebugReadByte(addr+4);
-	v.mMantissa[4]	= mem.DebugReadByte(addr+5);
+	v.mMantissa[0]	= mem.DebugReadByte((uint16)(addr+1));
+	v.mMantissa[1]	= mem.DebugReadByte((uint16)(addr+2));
+	v.mMantissa[2]	= mem.DebugReadByte((uint16)(addr+3));
+	v.mMantissa[3]	= mem.DebugReadByte((uint16)(addr+4));
+	v.mMantissa[4]	= mem.DebugReadByte((uint16)(addr+5));
 	return v;
 }
 
 void ATWriteDecFloat(ATCPUEmulatorMemory& mem, uint16 addr, const ATDecFloat& v) {
 	mem.WriteByte(addr, v.mSignExp);
-	mem.WriteByte(addr+1, v.mMantissa[0]);
-	mem.WriteByte(addr+2, v.mMantissa[1]);
-	mem.WriteByte(addr+3, v.mMantissa[2]);
-	mem.WriteByte(addr+4, v.mMantissa[3]);
-	mem.WriteByte(addr+5, v.mMantissa[4]);
+	mem.WriteByte((uint16)(addr+1), v.mMantissa[0]);
+	mem.WriteByte((uint16)(addr+2), v.mMantissa[1]);
+	mem.WriteByte((uint16)(addr+3), v.mMantissa[2]);
+	mem.WriteByte((uint16)(addr+4), v.mMantissa[3]);
+	mem.WriteByte((uint16)(addr+5), v.mMantissa[4]);
 }
 
 ATDecFloat ATReadFR0(ATCPUEmulatorMemory& mem) {
@@ -100,7 +102,7 @@ void ATAccelAFP(ATCPUEmulator& cpu, ATCPUEmulatorMemory& mem) {
 	uint8 index = mem.ReadByte(ATKernelSymbols::CIX);
 
 	// skip leading spaces
-	while(mem.ReadByte(buffer+index) == ' ') {
+	while(mem.ReadByte((uint16)(buffer+index)) == ' ') {
 		++index;
 		if (!index) {
 			cpu.SetFlagC();
@@ -111,7 +113,7 @@ void ATAccelAFP(ATCPUEmulator& cpu, ATCPUEmulatorMemory& mem) {
 
 	// check for a minus sign
 	uint8 bias = 0x40;
-	switch(mem.ReadByte(buffer+index)) {
+	switch(mem.ReadByte((uint16)(buffer+index))) {
 		case '-':
 			bias = 0xc0;
 			// fall through
@@ -130,7 +132,7 @@ void ATAccelAFP(ATCPUEmulator& cpu, ATCPUEmulatorMemory& mem) {
 	bool nonzero = false;
 	bool anydigits = false;
 	for(;;) {
-		uint8 c = mem.ReadByte(buffer+index);
+		uint8 c = mem.ReadByte((uint16)(buffer+index));
 
 		if (c == '.') {
 			if (period)
@@ -180,21 +182,21 @@ void ATAccelAFP(ATCPUEmulator& cpu, ATCPUEmulatorMemory& mem) {
 	}
 
 	// check for exponential notation -- note that this must be an uppercase E
-	uint8 c = mem.ReadByte(buffer+index);
+	uint8 c = mem.ReadByte((uint16)(buffer+index));
 	if (c == 'E') {
 		int index0 = index;
 
 		// check for sign
 		++index;
 
-		c = mem.ReadByte(buffer+index);
+		c = mem.ReadByte((uint16)(buffer+index));
 		bool negexp = false;
 		if (c == '+' || c == '-') {
 			if (c == '-')
 				negexp = true;
 
 			++index;
-			c = mem.ReadByte(buffer+index);
+			c = mem.ReadByte((uint16)(buffer+index));
 		}
 
 		// check for first digit -- note if this fails, it is NOT an error; we
@@ -206,7 +208,7 @@ void ATAccelAFP(ATCPUEmulator& cpu, ATCPUEmulatorMemory& mem) {
 			int exp = xd;
 
 			++index;
-			c = mem.ReadByte(buffer+index);
+			c = mem.ReadByte((uint16)(buffer+index));
 			uint8 xd2 = c - '0';
 			if (xd2 < 10) {
 				exp = exp*10+xd2;
@@ -648,7 +650,7 @@ void ATAccelSKPSPC(ATCPUEmulator& cpu, ATCPUEmulatorMemory& mem) {
 	uint8 ch;
 
 	for(;;) {
-		ch = mem.ReadByte(buffer + index);
+		ch = mem.ReadByte((uint16)(buffer + index));
 		
 		if (ch != ' ')
 			break;
@@ -666,7 +668,7 @@ void ATAccelISDIGT(ATCPUEmulator& cpu, ATCPUEmulatorMemory& mem) {
 	uint16 buffer = mem.ReadByte(ATKernelSymbols::INBUFF) + ((uint16)mem.ReadByte(ATKernelSymbols::INBUFF+1) << 8);
 	uint8 index = mem.ReadByte(ATKernelSymbols::CIX);
 
-	uint8 c = mem.ReadByte(buffer + index);
+	uint8 c = mem.ReadByte((uint16)(buffer + index));
 	if ((uint8)(c - '0') >= 10)
 		cpu.SetFlagC();
 	else
@@ -842,7 +844,7 @@ void ATAccelFST0P(ATCPUEmulator& cpu, ATCPUEmulatorMemory& mem) {
 	uint16 addr = ((uint16)mem.ReadByte(ATKernelSymbols::FLPTR+1) << 8) + mem.ReadByte(ATKernelSymbols::FLPTR);
 
 	for(int i=0; i<6; ++i)
-		mem.WriteByte(addr+i, mem.ReadByte(ATKernelSymbols::FR0+i));
+		mem.WriteByte((uint16)(addr+i), mem.ReadByte(ATKernelSymbols::FR0+i));
 }
 
 void ATAccelFMOVE(ATCPUEmulator& cpu, ATCPUEmulatorMemory& mem) {

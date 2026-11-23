@@ -15,7 +15,7 @@
 //	along with this program; if not, write to the Free Software
 //	Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
-#include <stdafx.h>
+#include <vd2/system/vdtypes.h>
 #include <vd2/system/vdalloc.h>
 #include <at/atcore/ksyms.h>
 #include "hlefpaccelerator.h"
@@ -90,7 +90,7 @@ public:
 	void Shutdown();
 
 	bool SetHookEnabled(uint32 addr, bool enabled) override;
-	void ListHooks(vdfastvector<std::pair<uint32, bool>>& hooks) const override;
+	void ListHooks(vdvector<std::pair<uint32, bool>>& hooks) const override;
 
 private:
 	void OnHook(uint16 pc);
@@ -145,7 +145,7 @@ bool ATHLEFPAccelerator::SetHookEnabled(uint32 addr, bool enabled) {
 	return false;
 }
 
-void ATHLEFPAccelerator::ListHooks(vdfastvector<std::pair<uint32, bool>>& hooks) const {
+void ATHLEFPAccelerator::ListHooks(vdvector<std::pair<uint32, bool>>& hooks) const {
 	hooks.resize(vdcountof(mpHookNodes));
 
 	for(size_t i = 0; i < vdcountof(mpHookNodes); ++i) {

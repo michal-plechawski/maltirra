@@ -16,6 +16,16 @@ bool ATTestAltirraAudioStockSamples(ATPortableTestContext& context);
 bool ATTestAltirraBlockDevDiskAdapter(ATPortableTestContext& context);
 bool ATTestAltirraCallback(ATPortableTestContext& context);
 bool ATTestAltirraCartridgePort(ATPortableTestContext& context);
+bool ATTestAltirraMathPackIntegers(ATPortableTestContext& context);
+bool ATTestAltirraMathPackStrings(ATPortableTestContext& context);
+bool ATTestAltirraMathPackArithmetic(ATPortableTestContext& context);
+bool ATTestAltirraMathPackFunctions(ATPortableTestContext& context);
+bool ATTestAltirraMathPackMemory(ATPortableTestContext& context);
+bool ATTestAltirraMathPackHooks(ATPortableTestContext& context);
+bool ATTestAltirraFastBootClear(ATPortableTestContext& context);
+bool ATTestAltirraFastBootMemCheck(ATPortableTestContext& context);
+bool ATTestAltirraFastBootChecksum(ATPortableTestContext& context);
+bool ATTestAltirraFastBootLifecycle(ATPortableTestContext& context);
 bool ATTestAltirraCartridgeMapping(ATPortableTestContext& context);
 bool ATTestAltirraCartridgeDataBanking(ATPortableTestContext& context);
 bool ATTestAltirraCartridgeAddressBanking(ATPortableTestContext& context);
@@ -360,6 +370,16 @@ const ATPortableTestCase *ATGetPortableTests(size_t& count) {
 		{ "Altirra_BlockDevDiskAdapter", ATTestAltirraBlockDevDiskAdapter },
 		{ "Altirra_Callback", ATTestAltirraCallback },
 		{ "Altirra_CartridgePort", ATTestAltirraCartridgePort },
+		{ "Altirra_MathPackIntegers", ATTestAltirraMathPackIntegers },
+		{ "Altirra_MathPackStrings", ATTestAltirraMathPackStrings },
+		{ "Altirra_MathPackArithmetic", ATTestAltirraMathPackArithmetic },
+		{ "Altirra_MathPackFunctions", ATTestAltirraMathPackFunctions },
+		{ "Altirra_MathPackMemory", ATTestAltirraMathPackMemory },
+		{ "Altirra_MathPackHooks", ATTestAltirraMathPackHooks },
+		{ "Altirra_FastBootClear", ATTestAltirraFastBootClear },
+		{ "Altirra_FastBootMemCheck", ATTestAltirraFastBootMemCheck },
+		{ "Altirra_FastBootChecksum", ATTestAltirraFastBootChecksum },
+		{ "Altirra_FastBootLifecycle", ATTestAltirraFastBootLifecycle },
 		{ "Altirra_CartridgeMapping", ATTestAltirraCartridgeMapping },
 		{ "Altirra_CartridgeDataBanking", ATTestAltirraCartridgeDataBanking },
 		{ "Altirra_CartridgeAddressBanking", ATTestAltirraCartridgeAddressBanking },

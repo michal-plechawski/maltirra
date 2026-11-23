@@ -295,7 +295,9 @@
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="..\platform\Windows_x64\Altirra\source\debugtarget.cpp" />
-    <ClCompile Include="..\platform\Windows_x64\Altirra\source\decmath.cpp" />
+    <ClCompile Include="source\decmath.cpp">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+    </ClCompile>
     <ClCompile Include="..\platform\Windows_x64\Altirra\source\decode_png.cpp" />
     <ClCompile Include="..\platform\Windows_x64\Altirra\source\devicemanager.cpp" />
     <ClCompile Include="..\platform\Windows_x64\Altirra\source\devices.cpp" />
@@ -369,8 +371,12 @@
     </ClCompile>
     <ClCompile Include="..\platform\Windows_x64\Altirra\source\hlebasicloader.cpp" />
     <ClCompile Include="..\platform\Windows_x64\Altirra\source\hleciohook.cpp" />
-    <ClCompile Include="..\platform\Windows_x64\Altirra\source\hlefastboothook.cpp" />
-    <ClCompile Include="..\platform\Windows_x64\Altirra\source\hlefpaccelerator.cpp" />
+    <ClCompile Include="source\hlefastboothook.cpp">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="source\hlefpaccelerator.cpp">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+    </ClCompile>
     <ClCompile Include="..\platform\Windows_x64\Altirra\source\hleprogramloader.cpp" />
     <ClCompile Include="source\hleutils.cpp">
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
@@ -759,7 +765,7 @@
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\debuggerexp.h" />
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\debuggerlog.h" />
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\debugtarget.h" />
-    <ClInclude Include="..\platform\Windows_x64\Altirra\h\decmath.h" />
+    <ClInclude Include="h\decmath.h" />
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\directorywatcher.h" />
     <ClInclude Include="h\disasm.h" />
     <ClInclude Include="h\disk.h" />
@@ -772,8 +778,8 @@
     <ClInclude Include="h\gtiatables.h" />
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\hlebasicloader.h" />
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\hleciohook.h" />
-    <ClInclude Include="..\platform\Windows_x64\Altirra\h\hlefastboothook.h" />
-    <ClInclude Include="..\platform\Windows_x64\Altirra\h\hlefpaccelerator.h" />
+    <ClInclude Include="h\hlefastboothook.h" />
+    <ClInclude Include="h\hlefpaccelerator.h" />
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\hleprogramloader.h" />
     <ClInclude Include="h\hleutils.h" />
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\hostdevice.h" />

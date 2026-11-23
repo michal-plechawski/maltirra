@@ -13805,7 +13805,7 @@ void ATConsoleCmdFPAccel(ATDebuggerCmdParser& parser) {
 		else
 			throw MyError("Unsupported hook address for FP acceleration.");
 	} else {
-		vdfastvector<std::pair<uint32, bool>> hooks;
+		vdvector<std::pair<uint32, bool>> hooks;
 		accel->ListHooks(hooks);
 
 		std::sort(hooks.begin(), hooks.end());

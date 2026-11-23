@@ -154,7 +154,7 @@
     <ClCompile Include="..\platform\Windows_x64\Altirra\source\debuggerlog.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\platform\Windows_x64\Altirra\source\decmath.cpp">
+    <ClCompile Include="source\decmath.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\platform\Windows_x64\Altirra\source\directorywatcher.cpp">
@@ -208,10 +208,10 @@
     <ClCompile Include="..\platform\Windows_x64\Altirra\source\hleciohook.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\platform\Windows_x64\Altirra\source\hlefastboothook.cpp">
+    <ClCompile Include="source\hlefastboothook.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\platform\Windows_x64\Altirra\source\hlefpaccelerator.cpp">
+    <ClCompile Include="source\hlefpaccelerator.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\platform\Windows_x64\Altirra\source\hleprogramloader.cpp">
@@ -1251,7 +1251,7 @@
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\debuggerlog.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\platform\Windows_x64\Altirra\h\decmath.h">
+    <ClInclude Include="h\decmath.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\directorywatcher.h">
@@ -1290,10 +1290,10 @@
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\hleciohook.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\platform\Windows_x64\Altirra\h\hlefastboothook.h">
+    <ClInclude Include="h\hlefastboothook.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\platform\Windows_x64\Altirra\h\hlefpaccelerator.h">
+    <ClInclude Include="h\hlefpaccelerator.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\hleprogramloader.h">

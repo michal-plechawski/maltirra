@@ -18,6 +18,8 @@
 #ifndef AT_DECMATH_H
 #define AT_DECMATH_H
 
+#include <vd2/system/vdtypes.h>
+
 class ATCPUEmulator;
 class ATCPUEmulatorMemory;
 

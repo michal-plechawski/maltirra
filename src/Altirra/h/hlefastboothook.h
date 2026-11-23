@@ -18,6 +18,7 @@
 #ifndef f_AT_HLEFASTBOOTHOOK_H
 #define f_AT_HLEFASTBOOTHOOK_H
 
+class ATCPUEmulator;
 class ATHLEFastBootHook;
 
 ATHLEFastBootHook *ATCreateHLEFastBootHook(ATCPUEmulator *cpu);

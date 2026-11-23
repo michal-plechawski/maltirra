@@ -15,9 +15,11 @@
 //	along with this program; if not, write to the Free Software
 //	Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
-#include <stdafx.h>
+#include <cstring>
+#include <vd2/system/vdtypes.h>
 #include <vd2/system/vdalloc.h>
 #include <at/atcore/ksyms.h>
+#include "hlefastboothook.h"
 #include "cpu.h"
 #include "cpuheatmap.h"
 #include "cpumemory.h"
@@ -91,7 +93,7 @@ void ATHLEFastBootHook::OnInitHooks(const uint8 *lowerROM, const uint8 *upperROM
 	};
 
 	if (upperROM) {
-		for(uint32 i=0; i<0x1C00 - sizeof(kMemClearRoutine); ++i) {
+		for(uint32 i=0; i<=0x1C00 - sizeof(kMemClearRoutine); ++i) {
 			if (upperROM[i + 0x0C00] == kMemClearRoutine[0] && !memcmp(upperROM + 0xC00 + i + 1, kMemClearRoutine + 1, sizeof kMemClearRoutine - 1)) {
 				hookmgr.SetHookMethod(mpMemClearHook, kATCPUHookMode_KernelROMOnly, 0xE400 + i, 0, this, &ATHLEFastBootHook::OnHookMemClear);
 				break;
@@ -164,37 +166,29 @@ uint8 ATHLEFastBootHook::OnHookMemCheck(uint16) {
 	// C2F8: C8     INY
 	// C2F9: D0 E9  BNE $C2E4
 
-	uint32 addr = mem.ReadByte(0x04) + 256*(uint32)mem.ReadByte(0x05);
-
-	bool success = true;
-
-	addr += mpCPU->GetY();
-
-	const uint32 startAddr = addr;
-
-	for(uint32 i=mpCPU->GetY(); i<256; ++i) {
-		mem.WriteByte(addr, 0xFF);
-		if (mem.ReadByte(addr) != 0xFF)
-			success = false;
-
-		mem.WriteByte(addr, 0x00);
-		if (mem.ReadByte(addr) != 0x00)
-			success = false;
-
-		++addr;
-	}
-
-	if (!success)
-		mem.WriteByte(0x01, mem.ReadByte(0x01) >> 1);
-
-	// let the heat map know this is valid memory
-	if (ATCPUHeatMap *heatMap = mpCPU->GetHeatMap()) {
-		heatMap->PresetMemoryRange(startAddr, addr - startAddr);
+	bool carry = false;
+	ATCPUHeatMap *heatMap = mpCPU->GetHeatMap();
+	for(uint32 y = mpCPU->GetY(); y < 256; ++y) {
+		// Re-read the indirect pointer, including when the tested range
+		// wraps into zero page and changes the pointer itself.
+		const auto address = [&] { return (uint16)(mem.ReadByte(4) + 256U * mem.ReadByte(5) + y); };
+		for (uint8 value : {uint8(0xFF), uint8(0)}) {
+			const uint16 addr = address();
+			mem.WriteByte(addr, value);
+			if (heatMap) heatMap->PresetMemoryRange(addr, 1);
+			const uint8 observed = mem.ReadByte(address());
+			carry = value >= observed;
+			if (observed != value) {
+				const uint8 flags = mem.ReadByte(1);
+				carry = (flags & 1) != 0;
+				mem.WriteByte(1, flags >> 1);
+			}
+		}
 	}
 
 	mpCPU->SetY(0);
 	mpCPU->SetA(0);
-	mpCPU->SetP((mpCPU->GetP() & ~AT6502::kFlagN) | AT6502::kFlagZ);
+	mpCPU->SetP((mpCPU->GetP() & ~(AT6502::kFlagN | AT6502::kFlagC)) | AT6502::kFlagZ | (carry ? AT6502::kFlagC : 0));
 	mpCPU->Jump(0xC2FB - 1);
 	return 0xEA;
 }
@@ -211,21 +205,18 @@ uint8 ATHLEFastBootHook::OnHookMemClear(uint16 pc) {
 	// dex
 	// bne *-10
 
-	uint32 addr = mem.ReadByte(ATKernelSymbols::TOADR) + 256*(uint32)mem.ReadByte(ATKernelSymbols::TOADR + 1);
-
 	const uint8 fillByte = mpCPU->GetA();
 	uint8 x = mpCPU->GetX();
 	uint8 y = mpCPU->GetY();
 
 	do {
-		for(uint32 i=y; i<256; ++i)
-			mem.WriteByte(addr + i, fillByte);
-
-		addr += 0x100;
+		for(uint32 i=y; i<256; ++i) {
+			const uint16 addr = mem.ReadByte(ATKernelSymbols::TOADR) + 256U * mem.ReadByte(ATKernelSymbols::TOADR + 1);
+			mem.WriteByte((uint16)(addr + i), fillByte);
+		}
+		mem.WriteByte(ATKernelSymbols::TOADR + 1, (uint8)(mem.ReadByte(ATKernelSymbols::TOADR + 1) + 1));
 		y = 0;
 	} while(--x);
-
-	mem.WriteByte(ATKernelSymbols::TOADR + 1, (uint8)(addr >> 8));
 
 	mpCPU->SetX(0);
 	mpCPU->SetY(0);
@@ -236,6 +227,9 @@ uint8 ATHLEFastBootHook::OnHookMemClear(uint16 pc) {
 
 uint8 ATHLEFastBootHook::OnHookChecksum(uint16) {
 	ATCPUEmulatorMemory& mem = *mpCPU->GetMemory();
+	// The fast sum is binary. Let the original routine handle decimal mode.
+	if (mpCPU->GetP() & AT6502::kFlagD)
+		return 0;
 
 	// XL kernel checksum routine
 	//
@@ -256,20 +250,23 @@ uint8 ATHLEFastBootHook::OnHookChecksum(uint16) {
 	// FFD2: C5 A1   CMP $A1
 	// FFD4: D0 E3   BNE $FFB9
 
-	uint16 addr = mem.ReadByte(0x9E) + 256*(uint32)mem.ReadByte(0x9F);
-	uint32 checksum = mem.ReadByte(0x8B) + 256*(uint32)mem.ReadByte(0x8C);
-	uint16 limit = mem.ReadByte(0xA0) + 256*(uint32)mem.ReadByte(0xA1);
-
+	bool overflow = false;
 	do {
-		checksum += mem.ReadByte(addr++);
-	} while(addr != limit);
+		const uint16 addr = mem.ReadByte(0x9E) + 256U * mem.ReadByte(0x9F);
+		const uint8 value = mem.ReadByte(addr);
+		const uint8 previous = mem.ReadByte(0x8B);
+		const uint32 sum = previous + value;
+		overflow = (~(previous ^ value) & (previous ^ sum) & 0x80) != 0;
+		mem.WriteByte(0x8B, (uint8)sum);
+		if (sum >= 256) mem.WriteByte(0x8C, (uint8)(mem.ReadByte(0x8C) + 1));
+		const uint8 lo = mem.ReadByte(0x9E) + 1;
+		mem.WriteByte(0x9E, lo);
+		if (!lo) mem.WriteByte(0x9F, (uint8)(mem.ReadByte(0x9F) + 1));
+	} while (mem.ReadByte(0x9E) != mem.ReadByte(0xA0) || mem.ReadByte(0x9F) != mem.ReadByte(0xA1));
 
-	mem.WriteByte(0x9E, (uint8)addr);
-	mem.WriteByte(0x9F, (uint8)(addr >> 8));
-	mem.WriteByte(0x8B, (uint8)checksum);
-	mem.WriteByte(0x8C, (uint8)(checksum >> 8));
-
+	mpCPU->SetA(mem.ReadByte(0x9F));
 	mpCPU->SetY(0);
+	mpCPU->SetP((mpCPU->GetP() & ~(AT6502::kFlagN | AT6502::kFlagV)) | AT6502::kFlagC | AT6502::kFlagZ | (overflow ? AT6502::kFlagV : 0));
 	mpCPU->Jump(0xFFD6 - 1);
 	return 0xEA;
 }

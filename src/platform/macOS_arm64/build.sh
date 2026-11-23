@@ -191,6 +191,8 @@ portable_test_sources=(
 	src/ATTest/source/TestAltirra_BlockDevDiskAdapterPortable.cpp
 	src/ATTest/source/TestAltirra_CallbackPortable.cpp
 	src/ATTest/source/TestAltirra_CartridgePortPortable.cpp
+	src/ATTest/source/TestAltirra_MathPackPortable.cpp
+	src/ATTest/source/TestAltirra_FastBootPortable.cpp
 	src/ATTest/source/TestAltirra_CartridgeEmulatorPortable.cpp
 	src/ATTest/source/TestAltirra_CartridgeStatePortable.cpp
 	src/ATTest/source/TestAltirra_CheatEnginePortable.cpp
@@ -509,6 +511,10 @@ portable_test_sources=(
 	src/Altirra/source/blockdevdiskadapter.cpp
 	src/Altirra/source/cartridgeport.cpp
 	src/Altirra/source/cartridge.cpp
+	src/Altirra/source/decmath.cpp
+	src/ATCore/source/decmath.cpp
+	src/Altirra/source/hlefpaccelerator.cpp
+	src/Altirra/source/hlefastboothook.cpp
 	src/platform/macOS_arm64/Altirra/source/cartridgeoptions.cpp
 	src/ATEmulation/source/flash.cpp
 	src/ATEmulation/source/eeprom.cpp

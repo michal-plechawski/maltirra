@@ -24,6 +24,9 @@
 #include <cmath>
 
 bool ATDecFloat::SetDouble(double v) {
+	if (!std::isfinite(v))
+		return false;
+
 	uint8 bias = 0x40;
 
 	if (v < 0) {

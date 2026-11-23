@@ -557,3 +557,26 @@ services are handled safely. New 2/4KB and OSS images allocate the same expanded
 backing store used by file-loaded images, avoiding mapper buffer overruns.
 The native build has 624 translation units and 339 portable groups. The full
 simulator and native application still need assembly and boot validation.
+
+The math-pack ABI (`decmath.cpp`/`decmath.h`), all 28 floating-point accelerator
+hooks, and the kernel fast-boot hooks are shared. They retain the same CPU hook
+manager, memory manager, decimal arithmetic and log channel on both platforms.
+The hook-list API uses a regular vector because standard-library pairs are not
+trivially copyable on libc++; the Windows debugger uses the same updated API.
+
+Ten new portable groups check all 65,536 integer conversions, numeric parsing
+and formatting, arithmetic and domain/overflow errors, polynomial/range
+evaluation, register and pointer helpers, zero-page and 16-bit wrapping, hook
+enable/disable and ROM gating, and actual 6502 JSR/RTS execution of an accelerated
+math entry point. Fast-boot tests compare complete RAM and final CPU registers
+and flags against the recognized routines executed by the production 6502,
+including partial pages, read-only ROM, address wrapping and decimal-mode
+fallback. They also check heat-map initialization, signature matching, the
+last possible ROM signature position and destruction/unhooking.
+
+These comparisons corrected fast-boot pointer aliasing/wrapping, memory-test
+failure shifts and final carry/overflow/accumulator state. Math-pack indirect
+accesses now wrap at 16 bits, and decimal conversion rejects NaN and infinity
+before floating-to-integer conversion. The native build has 629 translation
+units and 349 portable groups. Full simulator/application assembly and a
+verified complete machine boot remain outstanding.

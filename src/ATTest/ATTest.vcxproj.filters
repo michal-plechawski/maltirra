@@ -840,6 +840,12 @@
     <ClCompile Include="source\TestAltirra_CartridgeEmulatorPortable.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="source\TestAltirra_MathPackPortable.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="source\TestAltirra_FastBootPortable.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
     <ClCompile Include="source\TestAltirra_CartridgeStatePortable.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
