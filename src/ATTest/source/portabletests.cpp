@@ -16,6 +16,16 @@ bool ATTestAltirraAudioStockSamples(ATPortableTestContext& context);
 bool ATTestAltirraBlockDevDiskAdapter(ATPortableTestContext& context);
 bool ATTestAltirraCallback(ATPortableTestContext& context);
 bool ATTestAltirraCartridgePort(ATPortableTestContext& context);
+bool ATTestAltirraVirtualScreenOutput(ATPortableTestContext& context);
+bool ATTestAltirraVirtualScreenControls(ATPortableTestContext& context);
+bool ATTestAltirraVirtualScreenEditing(ATPortableTestContext& context);
+bool ATTestAltirraVirtualScreenScroll(ATPortableTestContext& context);
+bool ATTestAltirraVirtualScreenResize(ATPortableTestContext& context);
+bool ATTestAltirraVirtualScreenInput(ATPortableTestContext& context);
+bool ATTestAltirraVirtualScreenKeyboard(ATPortableTestContext& context);
+bool ATTestAltirraVirtualScreenModes(ATPortableTestContext& context);
+bool ATTestAltirraVirtualScreenReset(ATPortableTestContext& context);
+bool ATTestAltirraVirtualScreenCPU(ATPortableTestContext& context);
 bool ATTestAltirraBasicLoaderCommand(ATPortableTestContext& context);
 bool ATTestAltirraBasicLoaderIO(ATPortableTestContext& context);
 bool ATTestAltirraBasicLoaderTape(ATPortableTestContext& context);
@@ -402,6 +412,16 @@ const ATPortableTestCase *ATGetPortableTests(size_t& count) {
 		{ "Altirra_BlockDevDiskAdapter", ATTestAltirraBlockDevDiskAdapter },
 		{ "Altirra_Callback", ATTestAltirraCallback },
 		{ "Altirra_CartridgePort", ATTestAltirraCartridgePort },
+		{ "Altirra_VirtualScreenOutput", ATTestAltirraVirtualScreenOutput },
+		{ "Altirra_VirtualScreenControls", ATTestAltirraVirtualScreenControls },
+		{ "Altirra_VirtualScreenEditing", ATTestAltirraVirtualScreenEditing },
+		{ "Altirra_VirtualScreenScroll", ATTestAltirraVirtualScreenScroll },
+		{ "Altirra_VirtualScreenResize", ATTestAltirraVirtualScreenResize },
+		{ "Altirra_VirtualScreenInput", ATTestAltirraVirtualScreenInput },
+		{ "Altirra_VirtualScreenKeyboard", ATTestAltirraVirtualScreenKeyboard },
+		{ "Altirra_VirtualScreenModes", ATTestAltirraVirtualScreenModes },
+		{ "Altirra_VirtualScreenReset", ATTestAltirraVirtualScreenReset },
+		{ "Altirra_VirtualScreenCPU", ATTestAltirraVirtualScreenCPU },
 		{ "Altirra_BasicLoaderCommand", ATTestAltirraBasicLoaderCommand },
 		{ "Altirra_BasicLoaderIO", ATTestAltirraBasicLoaderIO },
 		{ "Altirra_BasicLoaderTape", ATTestAltirraBasicLoaderTape },

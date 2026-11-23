@@ -15,7 +15,9 @@
 //	along with this program; if not, write to the Free Software
 //	Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
-#include <stdafx.h>
+#include <algorithm>
+#include <cstring>
+#include <iterator>
 #include <vd2/system/binary.h>
 #include <vd2/system/vdalloc.h>
 #include <vd2/system/vdstl.h>
@@ -121,7 +123,7 @@ protected:
 
 	bool	mbDisplayValid = false;
 	bool	mbScreenModeValid = false;
-	bool	mbPassThrough = false;
+	bool	mbPassThrough = true;
 
 	uint32	mGetLineX = 0;
 	uint32	mGetLineY = 0;
@@ -152,7 +154,7 @@ ATVirtualScreenHandler::ATVirtualScreenHandler(ATCPUEmulatorMemory& mem)
 	: mCPUMemory(mem)
 {
 	mScreen.resize(mWidth * mHeight, 0x20);
-	std::fill(std::begin(mLogicalLineMap), std::end(mLogicalLineMap), 0xFF);
+	ClearScreen();
 }
 
 ATVirtualScreenHandler::~ATVirtualScreenHandler() {
@@ -175,7 +177,7 @@ void ATVirtualScreenHandler::SetReadyCallback(const vdfunction<void()>& fn) {
 }
 
 bool ATVirtualScreenHandler::IsReadyForInput() const {
-	return mActiveInputLine.empty();
+	return mInputIndex >= mActiveInputLine.size();
 }
 
 void ATVirtualScreenHandler::SetResizeCallback(const vdfunction<void()>& fn) {
@@ -212,6 +214,8 @@ void ATVirtualScreenHandler::Resize(uint32 w, uint32 h) {
 		memcpy(&newScreen[y * w], &mScreen[y * mWidth], commonW);
 	
 	mScreen.swap(newScreen);
+	for (uint32 y = mHeight; y < h; ++y)
+		SetLogicalLineStart((uint8)y);
 	mWidth = w;
 	mHeight = h;
 
@@ -220,11 +224,18 @@ void ATVirtualScreenHandler::Resize(uint32 w, uint32 h) {
 
 	if (mY >= h)
 		mY = h - 1;
+	if (mLeftMargin >= w)
+		mLeftMargin = 2;
+	mRightMargin = w - 1;
+	mGetLineX = std::clamp(mGetLineX, mLeftMargin, mRightMargin);
+	mGetLineY = std::min(mGetLineY, h - 1);
+	MoveCursor(mX, mY);
 
 	mbResetMarginsPending = true;
+	mbMarginAdjusted = false;
 
-	if (mpResizeHandler)
-		mpResizeHandler();
+	if (auto fn = mpResizeHandler)
+		fn();
 }
 
 void ATVirtualScreenHandler::ReadScreenAsInput() {
@@ -237,6 +248,7 @@ void ATVirtualScreenHandler::ReadScreenAsInput() {
 
 	// scan the logical line into the input buffer
 	mActiveInputLine.clear();
+	mInputIndex = 0;
 
 	uint32 x = mGetLineX;
 	uint32 y = GetLogicalLineBegin(mY);
@@ -282,6 +294,7 @@ void ATVirtualScreenHandler::ReadScreenAsInput() {
 void ATVirtualScreenHandler::PushLine(const char *line) {
 	size_t len = strlen(line);
 	mActiveInputLine.resize(len + 1);
+	mInputIndex = 0;
 
 	for(size_t i=0; i<len; ++i)
 		mActiveInputLine[i] = (uint8)line[i];
@@ -325,7 +338,7 @@ int ATVirtualScreenHandler::ReadRawText(uint8 *dst, int x, int y, int n) const {
 		return 0;
 
 	uint32 n2 = std::min<uint32>(n, mWidth - x);
-	const uint8 *src = &mScreen[y * mWidth];
+	const uint8 *src = &mScreen[y * mWidth + x];
 
 	memcpy(dst, src, n2);
 	return n2;
@@ -348,9 +361,9 @@ void ATVirtualScreenHandler::CheckForDisplayListReplaced() {
 	const uint8 fbAddrLo = mCPUMemory.DebugReadByte(ATKernelSymbols::SAVMSC);
 	const uint8 fbAddrHi = mCPUMemory.DebugReadByte(ATKernelSymbols::SAVMSC + 1);
 
-	const uint8 lms0 = mCPUMemory.DebugReadByte(dladdr + 3);
-	const uint8 lms1 = mCPUMemory.DebugReadByte(dladdr + 4);
-	const uint8 lms2 = mCPUMemory.DebugReadByte(dladdr + 5);
+	const uint8 lms0 = mCPUMemory.DebugReadByte((uint16)(dladdr + 3));
+	const uint8 lms1 = mCPUMemory.DebugReadByte((uint16)(dladdr + 4));
+	const uint8 lms2 = mCPUMemory.DebugReadByte((uint16)(dladdr + 5));
 
 	const bool dlValid = (lms0 == 0x42 && lms1 == fbAddrLo && lms2 == fbAddrHi);
 
@@ -360,8 +373,17 @@ void ATVirtualScreenHandler::CheckForDisplayListReplaced() {
 void ATVirtualScreenHandler::WarmReset() {
 	mbMarginAdjusted = false;
 	mbIgnoreEditorGetForMarginAdjust = false;
+	mActiveInputLine.clear();
+	mInputIndex = 0;
+	mbToggleSuspend = false;
+	mbBellPending = false;
+	SetWaitingForInput(false);
 
 	ClearScreen();
+	mGetLineX = mX;
+	mGetLineY = mY;
+	MoveCursor(mX, mY);
+	ShowCursor(false);
 	SetScreenModeValid(false);
 	SetDisplayValid(false);
 }
@@ -482,8 +504,8 @@ uint8 ATVirtualScreenHandler::OnEditorCIOVector(ATCPUEmulator *cpu, ATCPUEmulato
 					mGetLineY = GetLogicalLineBegin(mY);
 				}
 
-				if (mpReadyHandler) {
-					mpReadyHandler();
+				if (auto fn = mpReadyHandler) {
+					fn();
 
 					if (!mActiveInputLine.empty())
 						break;
@@ -611,20 +633,19 @@ uint8 ATVirtualScreenHandler::OnScreenCIOVector(ATCPUEmulator *cpu, ATCPUEmulato
 				return 0x60;
 			}
 
-			ReadParams(*mem);
-
-			if (mX >= mWidth || mY >= mHeight) {
+			if (kdb.COLCRS >= mWidth || kdb.ROWCRS >= mHeight) {
 				cpu->Ldy(kATCIOStat_CursorRange);
 				return 0x60;
 			}
 
-			WriteParams(*mem);
+			ReadParams(*mem);
 
 			cpu->SetA(mScreen[mY * mWidth + mX]);
-			if (mX >= mRightMargin) {
+			if (++mX > mRightMargin) {
 				mX = mLeftMargin;
 				++mY;
 			}
+			WriteParams(*mem);
 
 			cpu->Ldy(kATCIOStat_Success);
 			break;
@@ -1096,6 +1117,7 @@ void ATVirtualScreenHandler::PutChar(uint8 c, bool updateCursor) {
 							MoveLines(y + 1, y, mHeight - y);
 							ClearLines(y, 1);
 							ClearLogicalLineStart(y);
+							mScreen[y * mWidth + mLeftMargin] = shiftIn;
 						}
 						break;
 					}
@@ -1195,7 +1217,7 @@ void ATVirtualScreenHandler::MoveLines(uint32 dstY, uint32 srcY, uint32 n) {
 }
 
 void ATVirtualScreenHandler::ReadParams(ATCPUEmulatorMemory& mem) {
-	mX = mem.CPUReadByte(ATKernelSymbols::COLCRS);
+	mX = mem.CPUReadByte(ATKernelSymbols::COLCRS) + 256*mem.CPUReadByte(ATKernelSymbols::COLCRS+1);
 	mY = mem.CPUReadByte(ATKernelSymbols::ROWCRS);
 	mLeftMargin = mem.CPUReadByte(ATKernelSymbols::LMARGN);
 	mRightMargin = mem.CPUReadByte(ATKernelSymbols::RMARGN);
@@ -1234,6 +1256,8 @@ void ATVirtualScreenHandler::WriteParams(ATCPUEmulatorMemory& mem) {
 
 	kdb.COLCRS = mX;
 	kdb.ROWCRS = mY;
+	for (uint32 i = 0; i < 3; ++i)
+		mem.CPUWriteByte(ATKernelSymbols::TABMAP + i, mTabMap[i]);
 
 	if (mbResetMarginsPending) {
 		mbResetMarginsPending = false;
@@ -1375,8 +1399,8 @@ void ATVirtualScreenHandler::UpdatePassThrough() {
 	if (mbPassThrough != enabled) {
 		mbPassThrough = enabled;
 
-		if (mpPassThroughChangedHandler)
-			mpPassThroughChangedHandler();
+		if (auto fn = mpPassThroughChangedHandler)
+			fn();
 	}
 }
 

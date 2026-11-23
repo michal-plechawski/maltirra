@@ -19,6 +19,10 @@
 #define f_AT_VIRTUALSCREEN_H
 
 #include <vd2/system/function.h>
+#include <vd2/system/vectors.h>
+
+class ATCPUEmulator;
+class ATCPUEmulatorMemory;
 
 class IATVirtualScreenHandler {
 public:

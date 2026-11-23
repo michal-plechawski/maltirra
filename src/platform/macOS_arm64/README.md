@@ -639,6 +639,22 @@ input preserves a pending load. BASIC resets its open channel when replacing a
 program with another program or tape, supports IOCB 0, and reports zero bytes
 at EOF. XEX replacement removes its previous continuation hook, and randomized
 RAM stops before MEMTOP. The 12 new groups also pass AddressSanitizer and UBSan.
-The native build has 639 translation units and 381 portable groups. Full
-simulator/application assembly, BASIC interpreter boot, and complete boot
-validation remain outstanding.
+
+The complete virtual E:/S: editor (`virtualscreen.cpp`/`virtualscreen.h`) is
+shared too. Ten portable groups cover character output and sequential S: reads,
+cursor control, escape/display flags, tabs and bell, insertion/deletion across
+physical lines, logical-line scrolling, raw selection reads, and resize limits
+from 40x24 to 255x255. A flat text model independently checks 64 edits; long
+input lines are reconstructed at widths 40, 80, and 255. Keyboard tests exercise
+the original scan-code table, shift/control lock, inverse, invalid keys, RETURN,
+and EOF. Mode/display-list switching, BREAK, suspend, reset, and callbacks that
+unregister themselves are also covered. An actual 6502 program waits through
+the editor continuation loop, consumes a line, and returns with its stack intact.
+The ten groups pass AddressSanitizer and UBSan.
+
+The port corrects column-offset selection reads, S: cursor advancement and range
+errors, 16-bit cursor/display-list addresses, lost characters during insertion,
+tab-map persistence, input replacement/exhaustion, stale reset state, and cursor
+and margin bounds after resize. The native build has 642 translation units and
+391 portable groups. CIO manager wiring, simulator/application assembly, BASIC
+interpreter boot, and complete boot validation remain outstanding.

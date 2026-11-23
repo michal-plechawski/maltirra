@@ -191,6 +191,8 @@ portable_test_sources=(
 	src/ATTest/source/TestAltirra_BlockDevDiskAdapterPortable.cpp
 	src/ATTest/source/TestAltirra_CallbackPortable.cpp
 	src/ATTest/source/TestAltirra_CartridgePortPortable.cpp
+	src/ATTest/source/TestAltirra_VirtualScreenPortable.cpp
+	src/ATTest/source/TestAltirra_VirtualScreenInputPortable.cpp
 	src/ATTest/source/TestAltirra_BasicLoaderPortable.cpp
 	src/ATTest/source/TestAltirra_ProgramLoaderPortable.cpp
 	src/ATTest/source/TestAltirra_DeviceManagerPortable.cpp
@@ -523,6 +525,7 @@ portable_test_sources=(
 	src/Altirra/source/decmath.cpp
 	src/ATCore/source/decmath.cpp
 	src/Altirra/source/hlefpaccelerator.cpp
+	src/Altirra/source/virtualscreen.cpp
 	src/Altirra/source/hlebasicloader.cpp
 	src/Altirra/source/hleprogramloader.cpp
 	src/Altirra/source/hlefastboothook.cpp

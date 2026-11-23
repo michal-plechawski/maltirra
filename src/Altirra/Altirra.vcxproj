@@ -733,7 +733,9 @@
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="..\platform\Windows_x64\Altirra\source\videowriter.cpp" />
-    <ClCompile Include="..\platform\Windows_x64\Altirra\source\virtualscreen.cpp" />
+    <ClCompile Include="source\virtualscreen.cpp">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+    </ClCompile>
     <ClCompile Include="..\platform\Windows_x64\Altirra\source\warpos.cpp" />
     <ClCompile Include="..\platform\Windows_x64\Altirra\source\xelcf.cpp" />
     <ClCompile Include="..\platform\Windows_x64\Altirra\source\xep80.cpp" />
@@ -916,7 +918,7 @@
     <ClInclude Include="h\cpumode.h" />
     <ClInclude Include="h\versioninfo.h" />
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\videowriter.h" />
-    <ClInclude Include="..\platform\Windows_x64\Altirra\h\virtualscreen.h" />
+    <ClInclude Include="h\virtualscreen.h" />
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\xep80.h" />
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\stdafx.h" />
   </ItemGroup>

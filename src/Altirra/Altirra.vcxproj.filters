@@ -499,7 +499,7 @@
     <ClCompile Include="..\platform\Windows_x64\Altirra\source\videowriter.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\platform\Windows_x64\Altirra\source\virtualscreen.cpp">
+    <ClCompile Include="source\virtualscreen.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\platform\Windows_x64\Altirra\source\xep80.cpp">
@@ -1497,7 +1497,7 @@
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\videowriter.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\platform\Windows_x64\Altirra\h\virtualscreen.h">
+    <ClInclude Include="h\virtualscreen.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\xep80.h">
