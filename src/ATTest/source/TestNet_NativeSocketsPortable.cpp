@@ -55,6 +55,7 @@ bool ATTestNetNativeSockets(ATPortableTestContext& context) {
 	vdrefptr<IATStreamSocket> client;
 	ATSocketStatus listenerStatus {};
 	ATSocketStatus clientStatus {};
+	bool clientObserved = false;
 	listener = ATNetListen(ATSocketAddress::CreateLocalhostIPv4(0));
 	AT_PORTABLE_TEST_ASSERT(context, listener != nullptr);
 	listener->SetOnEvent(&dispatcher, [&](const ATSocketStatus& status) { listenerStatus = status; }, true);
@@ -67,9 +68,9 @@ bool ATTestNetNativeSockets(ATPortableTestContext& context) {
 	AT_PORTABLE_TEST_ASSERT(context, listenAddress.mType == ATSocketAddressType::IPv4 && listenAddress.mIPv4Address == 0x7F000001 && listener->GetSocketStatus().mError == ATSocketError::None);
 	client = ATNetConnect(listenAddress);
 	AT_PORTABLE_TEST_ASSERT(context, client != nullptr);
-	client->SetOnEvent(&dispatcher, [&](const ATSocketStatus& status) { clientStatus = status; }, true);
+	client->SetOnEvent(&dispatcher, [&](const ATSocketStatus& status) { clientStatus = status; clientObserved = true; }, true);
 	AT_PORTABLE_TEST_ASSERT(context, ATWaitForSocketEvent(dispatcher, dispatchSignal, [&] {
-		return (listenerStatus.mbCanAccept && client->GetLocalAddress().mPort != 0)
+		return (listenerStatus.mbCanAccept && clientObserved && !clientStatus.mbConnecting && client->GetLocalAddress().mPort != 0)
 			|| listenerStatus.mError != ATSocketError::None || clientStatus.mError != ATSocketError::None;
 	}));
 	AT_PORTABLE_TEST_ASSERT(context, listenerStatus.mbCanAccept && listenerStatus.mError == ATSocketError::None);
