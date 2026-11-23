@@ -163,9 +163,13 @@ bool ATTestSystemFileSys(ATPortableTestContext& context) {
 		VDFile file(sandbox.mSourcePath.c_str(),nsVDFile::kReadWrite|nsVDFile::kOpenExisting);
 		AT_PORTABLE_TEST_ASSERT(context, !(file.getAttributes() & kVDFileAttr_Archive));
 		char original; file.read(&original,1); file.seek(0); file.write(&original,1);
+	}
+	// Windows publishes write-related metadata when the writer closes.
+	AT_PORTABLE_TEST_ASSERT(context, VDFileGetAttributes(sandbox.mSourcePath.c_str()) & kVDFileAttr_Archive);
+	{
+		VDFile file(sandbox.mSourcePath.c_str(),nsVDFile::kRead|nsVDFile::kOpenExisting);
 		AT_PORTABLE_TEST_ASSERT(context, file.getAttributes() & kVDFileAttr_Archive);
 	}
-	AT_PORTABLE_TEST_ASSERT(context, VDFileGetAttributes(sandbox.mSourcePath.c_str()) & kVDFileAttr_Archive);
 
 	{
 		VDDirectoryIterator iterator(
