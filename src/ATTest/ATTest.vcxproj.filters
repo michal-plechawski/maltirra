@@ -825,6 +825,12 @@
     <ClCompile Include="source\TestAltirra_CassetteDataPortable.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="source\TestAltirra_SIOManagerPortable.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="source\TestAltirra_SIOAccelPortable.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
 	<ClInclude Include="..\h\at\attest\portabletest.h">

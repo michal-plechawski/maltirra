@@ -15,32 +15,34 @@
 //	along with this program; if not, write to the Free Software
 //	Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
-#include <stdafx.h>
+#include <algorithm>
+#include <cstring>
+#include <iterator>
+#include <utility>
+#include <vd2/system/atomic.h>
+#include <at/atcore/logging.h>
 #include <vd2/system/binary.h>
 #include <vd2/system/vdstl_algorithm.h>
 #include <at/atcore/cio.h>
 #include <at/atcore/enumparseimpl.h>
 #include <at/atcore/snapshotimpl.h>
 #include "siomanager.h"
-#include "simulator.h"
 #include "cpu.h"
+#include "pia.h"
 #include "cpuhookmanager.h"
-#include "disk.h"
 #include "kerneldb.h"
-#include "debuggerlog.h"
-#include "uirender.h"
 #include "hleutils.h"
 #include "cassette.h"
 #include "savestate.h"
 #include "trace.h"
 #include <at/atcore/sioutils.h>
 
-ATDebuggerLogChannel g_ATLCHookSIOReqs(false, false, "HOOKSIOREQS", "OS SIO hook requests");
-ATDebuggerLogChannel g_ATLCHookSIO(false, false, "HOOKSIO", "OS SIO hook messages");
-ATDebuggerLogChannel g_ATLCSIOCmd(false, false, "SIOCMD", "SIO bus commands");
-ATDebuggerLogChannel g_ATLCSIOAccel(false, false, "SIOACCEL", "SIO command acceleration");
-ATDebuggerLogChannel g_ATLCSIOSteps(false, false, "SIOSTEPS", "SIO command steps");
-ATDebuggerLogChannel g_ATLCSIOReply(false, false, "SIOREPLY", "SIO command reply");
+ATLogChannel g_ATLCHookSIOReqs(false, false, "HOOKSIOREQS", "OS SIO hook requests");
+ATLogChannel g_ATLCHookSIO(false, false, "HOOKSIO", "OS SIO hook messages");
+ATLogChannel g_ATLCSIOCmd(false, false, "SIOCMD", "SIO bus commands");
+ATLogChannel g_ATLCSIOAccel(false, false, "SIOACCEL", "SIO command acceleration");
+ATLogChannel g_ATLCSIOSteps(false, false, "SIOSTEPS", "SIO command steps");
+ATLogChannel g_ATLCSIOReply(false, false, "SIOREPLY", "SIO command reply");
 
 AT_DECLARE_ENUM_TABLE(ATSIOManager::StepType);
 
@@ -77,6 +79,8 @@ public:
 	uint8 mCommandBufferIndex = 0;
 	uint8 mCommandBuffer[5] {};
 };
+
+class ATSaveStateSioCommandStep;
 
 class ATSaveStateSioActiveCommand final : public ATSnapExchangeObject<ATSaveStateSioActiveCommand, "ATSaveStateSioActiveCommand"> {
 public:
@@ -169,6 +173,8 @@ public:
 
 				case ATSIOManager::kStepType_EndCommand:
 					break;
+				default:
+					break;
 			}
 		}
 
@@ -217,6 +223,8 @@ public:
 
 				case ATSIOManager::kStepType_EndCommand:
 					break;
+				default:
+					break;
 			}
 		}
 	}
@@ -245,14 +253,14 @@ ATSIOManager::RawDeviceListLock::RawDeviceListLock(ATSIOManager *parent)
 ATSIOManager::RawDeviceListLock::~RawDeviceListLock() {
 	mpParent->mSIORawDevicesBusy -= 2;
 
-	if (mpParent->mSIORawDevicesBusy < 0) {
+	if (mpParent->mSIORawDevicesBusy <= 0) {
 		mpParent->mSIORawDevicesBusy = 0;
 
 		// remove dead devices
 		mpParent->mSIORawDevices.erase(
 			std::remove_if(mpParent->mSIORawDevices.begin(), mpParent->mSIORawDevices.end(),
 				[](IATDeviceRawSIO *p) { return p == nullptr; }
-			)
+			), mpParent->mSIORawDevices.end()
 		);
 
 		// add new devices
@@ -341,7 +349,7 @@ public:
 	uint32 mTransferStartTime = 0;	// starting cycle timestamp for transfer
 	uint32 mTransferBurstOffset = 0;
 	uint32 mTransferLastBurstOffset = 0;
-	
+
 	uint32 mTransferStart = 0;		// Starting offset for current transfer.
 	uint32 mTransferIndex = 0;		// Next byte to send/receive for current transfer.
 	uint32 mTransferEnd = 0;		// Stopping offset for current transfer.
@@ -395,8 +403,10 @@ bool ATSIOManager::SIOInterface::IsCommandActive() const {
 }
 
 void ATSIOManager::SIOInterface::Shutdown() {
-	mParent.mpScheduler->UnsetEvent(mpDelayEvent);
-	mParent.mpScheduler->UnsetEvent(mpTransferEvent);
+	if (mParent.mpScheduler) {
+		mParent.mpScheduler->UnsetEvent(mpDelayEvent);
+		mParent.mpScheduler->UnsetEvent(mpTransferEvent);
+	}
 }
 
 int ATSIOManager::SIOInterface::AddRef() {
@@ -485,7 +495,7 @@ void ATSIOManager::SIOInterface::SendData(const void *data, uint32 len, bool add
 	Step& step = mStepQueue.push_back();
 	step.mType = addChecksum ? kStepType_SendAutoProtocol : kStepType_Send;
 	step.mTransferLength = spaceRequired;
-	
+
 	const uint8 *data8 = (const uint8 *)data;
 	mTransferBuffer.insert_range(mTransferBuffer.end(), vdspan(data8, len));
 
@@ -808,7 +818,7 @@ void ATSIOManager::SIOInterface::LoadActiveCommandState(IATObjectState *state0) 
 		}
 
 		mTransferIndex = state.mTransferIndex;
-		
+
 		if (mTransferIndex > mTransferEnd)
 			throw ATInvalidSaveStateException();
 
@@ -825,6 +835,8 @@ void ATSIOManager::SIOInterface::LoadActiveCommandState(IATObjectState *state0) 
 				case kStepType_Receive:
 				case kStepType_ReceiveAutoProtocol:
 					mTransferBuffer.resize(mTransferBuffer.size() + step->mStep.mTransferLength, 0);
+					break;
+				default:
 					break;
 			}
 		}
@@ -975,6 +987,10 @@ bool ATSIOManager::SIOInterface::OnReceive(uint8 c, uint32 cyclesPerBit, bool fr
 		if (mCurrentStep.mType == kStepType_ReceiveAutoProtocol) {
 			if (!checksumOK) {
 				mStepQueue.clear();
+				// Discard queued reply data too: otherwise the old ACK is sent
+				// from the transfer buffer in place of the newly queued NAK.
+				mTransferBuffer.resize(mTransferIndex);
+				mParent.EndReceive(*this);
 				mCurrentStep.mType = kStepType_None;
 
 				// SIO protocol requires 850us minimum delay.
@@ -996,7 +1012,7 @@ bool ATSIOManager::SIOInterface::OnReceive(uint8 c, uint32 cyclesPerBit, bool fr
 		mCurrentStep.mType = kStepType_None;
 		ExecuteNextStep();
 	}
-	
+
 	return mbActiveDeviceDisk ? mParent.mbDiskBurstTransfersEnabled : mParent.mbBurstTransfersEnabled;
 }
 
@@ -1272,6 +1288,7 @@ ATSIOManager::ATSIOManager() {
 }
 
 ATSIOManager::~ATSIOManager() {
+	Shutdown();
 }
 
 void ATSIOManager::SetSIOPatchEnabled(bool enable) {
@@ -1313,14 +1330,16 @@ void ATSIOManager::SetDebuggerDeviceId(uint8 id) {
 	}
 }
 
-void ATSIOManager::Init(ATCPUEmulator *cpu, ATSimulator *sim) {
-	mpCPU = cpu;
-	mpMemory = cpu->GetMemory();
-	mpSim = sim;
-	mpUIRenderer = sim->GetUIRenderer();
-	mpScheduler = sim->GetScheduler();
-	mpPokey = &mpSim->GetPokey();
-	mpPIA = &mpSim->GetPIA();
+void ATSIOManager::Init(ATCPUEmulator& cpu, ATScheduler& scheduler, ATPokeyEmulator& pokey,
+	ATPIAEmulator& pia, ATCassetteEmulator& cassette, ATSIOManagerConnections connections) {
+	mpCPU = &cpu;
+	mpMemory = cpu.GetMemory();
+	mpScheduler = &scheduler;
+	mpPokey = &pokey;
+	mpPIA = &pia;
+	mpCassette = &cassette;
+	mConnections = std::move(connections);
+	mbMotorState = (mpPIA->GetOutputState() & kATPIAOutput_CA2) == 0;
 	mPIAOutput = mpPIA->AllocOutput(
 		[](void *p, uint32 state) {
 			((ATSIOManager *)p)->OnMotorStateChanged((state & kATPIAOutput_CA2) == 0);
@@ -1335,6 +1354,7 @@ void ATSIOManager::Init(ATCPUEmulator *cpu, ATSimulator *sim) {
 
 void ATSIOManager::Shutdown() {
 	UninitHooks();
+	CancelAllCommands();
 
 	mSIOInterfaces.NotifyAllDirect(
 		[](SIOInterface *iface) {
@@ -1344,18 +1364,28 @@ void ATSIOManager::Shutdown() {
 
 	if (mpPokey) {
 		mpPokey->SetNotifyOnBiClockChange(nullptr);
+		mpPokey->SetExternalSerialClock(0, 0);
 		mpPokey->RemoveSIODevice(this);
 		mpPokey = nullptr;
 	}
 
 	if (mpPIA) {
+		mpPIA->SetCA1(true);
+		mpPIA->SetCB1(true);
 		mpPIA->FreeOutput(mPIAOutput);
 		mpPIA = nullptr;
 	}
+	mSIORawDevices.clear();
+	mSIORawDevicesNew.clear();
+	mSIOInterruptActive.clear();
+	mSIOProceedActive.clear();
+	mNotifyBiClockDevices.clear();
+	mExternalClocks.clear();
+	SetTraceContext(nullptr);
 
 	mpScheduler = nullptr;
-	mpUIRenderer = NULL;
-	mpSim = NULL;
+	mpCassette = nullptr;
+	mConnections = {};
 	mpMemory = NULL;
 	mpCPU = NULL;
 }
@@ -1398,7 +1428,7 @@ void ATSIOManager::ReinitHooks() {
 	ATCPUHookManager& hookmgr = *mpCPU->GetHookManager();
 
 	if (mbSIOPatchEnabled || mDebuggerDeviceId) {
-		if (mbOtherSIOAccelEnabled || mbDiskSIOAccelEnabled || mpSim->IsCassetteSIOPatchEnabled() || mpSim->IsFastBootEnabled() || mDebuggerDeviceId)
+		if (mbOtherSIOAccelEnabled || mbDiskSIOAccelEnabled || mConnections.mpIsCassetteSIOPatchEnabled() || mConnections.mpIsFastBootEnabled() || mDebuggerDeviceId)
 			hookmgr.SetHookMethod(mpSIOVHook, kATCPUHookMode_KernelROMOnly, ATKernelSymbols::SIOV, 0, this, &ATSIOManager::OnHookSIOV);
 	}
 }
@@ -1456,7 +1486,7 @@ bool ATSIOManager::TryAccelRequest(const ATSIORequest& req, bool pbi) {
 	// Yes, there is game stupid enough to do this (Formula 1 Racing). Specifically,
 	// we need to check if TIMFLG is in the buffer as that will cause the read to
 	// prematurely abort.
-	if (req.mAddress <= ATKernelSymbols::TIMFLG && (ATKernelSymbols::TIMFLG - req.mAddress) < req.mLength)
+	if (static_cast<uint16>(ATKernelSymbols::TIMFLG - req.mAddress) < req.mLength)
 		return false;
 
 	// Bypass acceleration if the Break key has been pressed.
@@ -1474,7 +1504,7 @@ bool ATSIOManager::TryAccelRequest(const ATSIORequest& req, bool pbi) {
 		return false;
 
 	uint8 status = 0x01;
-	
+
 	SetPendingDeviceId(req.mDevice);
 
 	bool allowAccel = mbOtherSIOAccelEnabled || (mDebuggerDeviceId && mDebuggerDeviceId == req.mDevice);
@@ -1482,10 +1512,10 @@ bool ATSIOManager::TryAccelRequest(const ATSIORequest& req, bool pbi) {
 	if (mbPendingDeviceDisk) {
 		allowAccel = mbDiskSIOAccelEnabled;
 
-		if (allowAccel && mpSim->IsDiskSIOOverrideDetectEnabled() && !(mAccessedDisks & (1 << (req.mDevice - 0x31))))
+		if (allowAccel && mConnections.mpIsDiskSIOOverrideDetectEnabled() && !(mAccessedDisks & (1 << (req.mDevice - 0x31))))
 			return false;
 	}
-	
+
 	while(allowAccel) {
 		// Convert the request to a device request.
 		ATDeviceSIORequest devreq = {};
@@ -1501,7 +1531,7 @@ bool ATSIOManager::TryAccelRequest(const ATSIORequest& req, bool pbi) {
 		devreq.mTimeout = req.mTimeout;
 		devreq.mLength = req.mLength;
 		devreq.mSector = req.mSector;
-		
+
 		mCommandFrameEndTime = mCommandDeassertTime = mpScheduler->GetTick64();
 
 		// Run down the device chain and see if anyone is interested in this request.
@@ -1513,6 +1543,7 @@ bool ATSIOManager::TryAccelRequest(const ATSIORequest& req, bool pbi) {
 				mpAccelStatus = &status;
 				mAccelBufferAddress = req.mAddress;
 
+				SetPendingDeviceId(req.mDevice);
 				mpPendingInterface = iface;
 
 				response = iface->TryAccelCommand(devreq);
@@ -1537,7 +1568,7 @@ bool ATSIOManager::TryAccelRequest(const ATSIORequest& req, bool pbi) {
 		// Check if the command is a type 3 poll command and we have fast boot enabled.
 		// If so, keep looping until we hit 26 retries. This gives accelerated devices
 		// a chance to intercept fast boot.
-		if (mpSim->IsFastBootEnabled()) {
+		if (mConnections.mpIsFastBootEnabled()) {
 			// type 3 poll (??/40/00/00)
 			if (devreq.mCommand == 0x40 && devreq.mAUX[0] == 0x00 && devreq.mAUX[1] == 0x00) {
 				++mPollCount;
@@ -1553,27 +1584,25 @@ bool ATSIOManager::TryAccelRequest(const ATSIORequest& req, bool pbi) {
 	// Check hard-coded devices.
 	if (req.mDevice >= 0x31 && req.mDevice <= 0x3F) {
 		const uint32 diskIndex = req.mDevice - 0x31;
-		ATDiskEmulator& disk = mpSim->GetDiskDrive(diskIndex);
-
-		if (!disk.IsEnabled() && mpSim->GetDiskInterface(diskIndex).GetClientCount() < 2 && mpSim->IsFastBootEnabled())
+		if (!mConnections.mpIsDiskDriveEnabled(diskIndex) && mConnections.mpGetDiskClientCount(diskIndex) < 2 && mConnections.mpIsFastBootEnabled())
 			goto fastbootignore;
 
 		return false;
 	} else if (req.mDevice == 0x4F) {
-		if (!mpSim->IsFastBootEnabled())
+		if (!mConnections.mpIsFastBootEnabled())
 			return false;
 
 fastbootignore:
 		// return timeout
 		status = 0x8A;
 	} else if (req.mDevice == 0x5F) {
-		if (!mpSim->IsCassetteSIOPatchEnabled())
+		if (!mConnections.mpIsCassetteSIOPatchEnabled())
 			return false;
 
-		ATCassetteEmulator& cassette = mpSim->GetCassette();
+		ATCassetteEmulator& cassette = *mpCassette;
 
 		// Check if a read or write is requested.
-		// 
+		//
 		// Atomia issues a read with DSTATS=$01, so this needs to only check bit 7 -- cassette ops
 		// don't support requests without a data frame.
 
@@ -1582,13 +1611,13 @@ fastbootignore:
 			// minutes.
 			status = cassette.ReadBlock(req.mAddress, req.mLength, mpMemory, !req.mTimeout ? -1.0f : (float)((uint32)req.mTimeout * 64 * (double)mCyclesPerFrame * mpScheduler->GetRate().AsInverseDouble()));
 
-			mpUIRenderer->PulseStatusFlags(1 << 16);
+			mConnections.mpPulseStatusFlags(1 << 16);
 
 			g_ATLCHookSIO("Intercepted cassette SIO read: buf=%04X, len=%04X, status=%02X\n", req.mAddress, req.mLength, status);
 		} else {
 			status = cassette.WriteBlock(req.mAddress, req.mLength, mpMemory);
 
-			mpUIRenderer->PulseStatusFlags(1 << 16);
+			mConnections.mpPulseStatusFlags(1 << 16);
 
 			g_ATLCHookSIO("Intercepted cassette SIO write: buf=%04X, len=%04X, status=%02X\n", req.mAddress, req.mLength, status);
 		}
@@ -1636,7 +1665,7 @@ handled:
 	// read. Per the OS Manual, the flag is set to $01 initially and then cleared by the VBI
 	// on a timeout.
 	kdb.TIMFLG = (status == kATCIOStat_Timeout) ? 0 : 1;
-	
+
 	// Set carry depending on last status. Micropainter depends on the state of the carry flag
 	// after issuing a call to DSKINV, which in turn leaves the carry flag set from the call to
 	// SIOV. The carry is set by two compares within SIO on the status, first to $01 (success)
@@ -1728,10 +1757,10 @@ bool ATSIOManager::PokeyWriteSIO(uint8 c, bool command, uint32 cyclesPerBit, uin
 void ATSIOManager::PokeyBeginCommand() {
 	if (!mbLoadingState)
 		mCommandBufferIndex = 0;
-	
+
 	if (mpTraceChannelBusCommand)
 		mTraceCommandStartTime = mpScheduler->GetTick64();
-	
+
 	if (!mbCommandState) {
 		mbCommandState = true;
 
@@ -1746,7 +1775,7 @@ void ATSIOManager::PokeyBeginCommand() {
 void ATSIOManager::PokeyEndCommand() {
 	if (!mbCommandState)
 		return;
-	
+
 	mbCommandState = false;
 
 	if (mbLoadingState)
@@ -1958,7 +1987,7 @@ void ATSIOManager::SetSIOInterrupt(IATDeviceRawSIO *dev, bool state) {
 			mSIOInterruptActive.insert(it, dev);
 		}
 	} else {
-		if (it != mSIOInterruptActive.end()) {
+		if (it != mSIOInterruptActive.end() && *it == dev) {
 			mSIOInterruptActive.erase(it);
 
 			if (mSIOInterruptActive.empty())
@@ -1978,7 +2007,7 @@ void ATSIOManager::SetSIOProceed(IATDeviceRawSIO *dev, bool state) {
 			mSIOProceedActive.insert(it, dev);
 		}
 	} else {
-		if (it != mSIOProceedActive.end()) {
+		if (it != mSIOProceedActive.end() && *it == dev) {
 			mSIOProceedActive.erase(it);
 
 			if (mSIOProceedActive.empty())
@@ -2031,10 +2060,9 @@ void ATSIOManager::SetExternalClock(IATDeviceRawSIO *dev, uint32 initialOffset, 
 			if (it->mPeriod == period && it->mTimeBase == timeBase)
 				return;
 
-			mExternalClocks.erase(it);
-
 			if (it == mExternalClocks.begin())
 				updatePOKEY = true;
+			mExternalClocks.erase(it);
 		}
 
 		const ExternalClock newEntry { dev, timeBase, period };

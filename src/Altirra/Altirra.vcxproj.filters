@@ -331,7 +331,10 @@
     <ClCompile Include="..\platform\Windows_x64\Altirra\source\simulator.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\platform\Windows_x64\Altirra\source\siomanager.cpp">
+    <ClCompile Include="..\platform\Windows_x64\Altirra\source\siomanageradapter.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="source\siomanager.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="source\slightsid.cpp">
@@ -1398,7 +1401,7 @@
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\simulator.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\platform\Windows_x64\Altirra\h\siomanager.h">
+    <ClInclude Include="h\siomanager.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="h\slightsid.h">

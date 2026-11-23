@@ -106,6 +106,18 @@ bool ATTestAltirraCassetteSerial(ATPortableTestContext& context);
 bool ATTestAltirraCassetteTurbo(ATPortableTestContext& context);
 bool ATTestAltirraCassetteAudio(ATPortableTestContext& context);
 bool ATTestAltirraCassetteDetection(ATPortableTestContext& context);
+bool ATTestAltirraSIOCommandFrames(ATPortableTestContext& context);
+bool ATTestAltirraSIOTimedSend(ATPortableTestContext& context);
+bool ATTestAltirraSIOReceive(ATPortableTestContext& context);
+bool ATTestAltirraSIORawLines(ATPortableTestContext& context);
+bool ATTestAltirraSIORawReentry(ATPortableTestContext& context);
+bool ATTestAltirraSIOAcceleration(ATPortableTestContext& context);
+bool ATTestAltirraSIOAccelGuards(ATPortableTestContext& context);
+bool ATTestAltirraSIOHooksCassette(ATPortableTestContext& context);
+bool ATTestAltirraSIOSnapshot(ATPortableTestContext& context);
+bool ATTestAltirraSIOLifecycle(ATPortableTestContext& context);
+bool ATTestAltirraSIOClocks(ATPortableTestContext& context);
+bool ATTestAltirraSIOSerialWire(ATPortableTestContext& context);
 bool ATTestAltirraMemoryManager(ATPortableTestContext& context);
 bool ATTestAltirraRTime8(ATPortableTestContext& context);
 bool ATTestAltirraRVerter(ATPortableTestContext& context);
@@ -398,6 +410,18 @@ const ATPortableTestCase *ATGetPortableTests(size_t& count) {
 		{ "Altirra_CassetteTurbo", ATTestAltirraCassetteTurbo },
 		{ "Altirra_CassetteAudio", ATTestAltirraCassetteAudio },
 		{ "Altirra_CassetteDetection", ATTestAltirraCassetteDetection },
+		{ "Altirra_SIOCommandFrames", ATTestAltirraSIOCommandFrames },
+		{ "Altirra_SIOTimedSend", ATTestAltirraSIOTimedSend },
+		{ "Altirra_SIOReceive", ATTestAltirraSIOReceive },
+		{ "Altirra_SIORawLines", ATTestAltirraSIORawLines },
+		{ "Altirra_SIORawReentry", ATTestAltirraSIORawReentry },
+		{ "Altirra_SIOAcceleration", ATTestAltirraSIOAcceleration },
+		{ "Altirra_SIOAccelGuards", ATTestAltirraSIOAccelGuards },
+		{ "Altirra_SIOHooksCassette", ATTestAltirraSIOHooksCassette },
+		{ "Altirra_SIOSnapshot", ATTestAltirraSIOSnapshot },
+		{ "Altirra_SIOLifecycle", ATTestAltirraSIOLifecycle },
+		{ "Altirra_SIOClocks", ATTestAltirraSIOClocks },
+		{ "Altirra_SIOSerialWire", ATTestAltirraSIOSerialWire },
 		{ "Altirra_MemoryManager", ATTestAltirraMemoryManager },
 		{ "Altirra_RTime8", ATTestAltirraRTime8 },
 		{ "Altirra_RVerter", ATTestAltirraRVerter },

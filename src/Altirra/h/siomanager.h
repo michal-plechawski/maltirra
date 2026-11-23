@@ -18,6 +18,7 @@
 #ifndef f_AT_SIOMANAGER_H
 #define f_AT_SIOMANAGER_H
 
+#include <vd2/system/vdstl_fastdeque.h>
 #include <at/atcore/devicesio.h>
 #include <at/atcore/notifylist.h>
 #include <at/atcore/scheduler.h>
@@ -26,7 +27,7 @@
 class ATCPUEmulator;
 class ATCPUEmulatorMemory;
 class ATSimulator;
-class IATUIRenderer;
+class ATCassetteEmulator;
 struct ATCPUHookNode;
 class ATPokeyEmulator;
 class ATPIAEmulator;
@@ -34,6 +35,17 @@ class ATPIAEmulator;
 struct ATTraceContext;
 class ATTraceChannelSimple;
 class ATTraceChannelFormatted;
+
+// Machine policies and UI activity remain owned by the surrounding simulator.
+// All serial protocol, timing, memory and chip operations live in ATSIOManager.
+struct ATSIOManagerConnections {
+	vdfunction<bool()> mpIsCassetteSIOPatchEnabled;
+	vdfunction<bool()> mpIsFastBootEnabled;
+	vdfunction<bool()> mpIsDiskSIOOverrideDetectEnabled;
+	vdfunction<bool(uint32)> mpIsDiskDriveEnabled;
+	vdfunction<uint32(uint32)> mpGetDiskClientCount;
+	vdfunction<void(uint32)> mpPulseStatusFlags;
+};
 
 struct ATSIORequest {
 	uint8	mDevice;
@@ -73,6 +85,8 @@ public:
 	void SetDebuggerDeviceId(uint8 id);
 
 	void Init(ATCPUEmulator *cpu, ATSimulator *sim);
+	void Init(ATCPUEmulator& cpu, ATScheduler& scheduler, ATPokeyEmulator& pokey,
+		ATPIAEmulator& pia, ATCassetteEmulator& cassette, ATSIOManagerConnections connections);
 	void Shutdown();
 
 	void ColdReset();
@@ -149,7 +163,7 @@ public:
 		kStepType_AccelSendComplete,
 		kStepType_AccelSendError,
 	};
-	
+
 	class SIOInterface;
 
 	void RemoveInterface(SIOInterface& iface);
@@ -176,8 +190,8 @@ private:
 
 	ATCPUEmulator *mpCPU = nullptr;
 	ATCPUEmulatorMemory *mpMemory = nullptr;
-	ATSimulator *mpSim = nullptr;
-	IATUIRenderer *mpUIRenderer = nullptr;
+	ATCassetteEmulator *mpCassette = nullptr;
+	ATSIOManagerConnections mConnections;
 	ATScheduler *mpScheduler = nullptr;
 	ATPokeyEmulator *mpPokey = nullptr;
 	ATPIAEmulator *mpPIA = nullptr;

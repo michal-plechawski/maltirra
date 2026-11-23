@@ -720,6 +720,12 @@
     <ClCompile Include="source\TestAltirra_CassetteDataPortable.cpp">
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="source\TestAltirra_SIOManagerPortable.cpp">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="source\TestAltirra_SIOAccelPortable.cpp">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
 	<ClInclude Include="..\h\at\attest\portabletest.h" />

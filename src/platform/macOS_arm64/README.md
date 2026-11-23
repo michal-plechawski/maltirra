@@ -468,5 +468,26 @@ clamp before conversion; recording updates cached data/audio lengths, and
 reloading an image already owned by the cassette retains it before release.
 Shutdown stops scheduled work and releases raw SIO/audio registrations.
 Deferred-event shutdown removes queued callbacks while preserving pending
-notification state for reinitialization. The full SIO manager, simulator and
-native application wiring remain to be connected.
+notification state for reinitialization.
+
+The complete SIO manager is shared in `siomanager.cpp`/`siomanager.h`, including
+timed protocol queues, acceleration, raw-device control lines, clocks, tracing
+and save states. Its explicit chip connections use the existing CPU, memory,
+POKEY, PIA and cassette implementations. Simulator policies and UI activity
+callbacks are bound by the Windows `siomanageradapter.cpp`; native machine
+assembly will supply the corresponding connections on macOS.
+
+Twelve portable SIO groups cover command checksums/polling/early deassertion,
+timed sends into POKEY SERIN/IRQs, good/bad receive checksums, raw line ownership
+and reentrant registration, external/bidirectional clocks, a complete command
+sent through POKEY SEROUT, accelerated read/write/error/guard paths, SIOV/PBI
+hooks, real cassette block operations, serialized partial commands/transfers,
+and shutdown with pending work. Test devices exercise the production manager;
+they do not replace its command queues or chip behavior.
+
+Bad receive checksums now discard queued ACK bytes before replying NAK. Raw
+device changes settle after notifications; releasing an unasserted line no
+longer removes another device's assertion. Acceleration retains the device ID
+across the chain and detects TIMFLG overlap across the 16-bit address wrap.
+Shutdown cancels commands, unregisters chips and releases line/clock state.
+The complete simulator and native application wiring remain to be connected.
