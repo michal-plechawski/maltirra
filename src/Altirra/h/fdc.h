@@ -18,6 +18,11 @@
 #ifndef f_AT_FDC_H
 #define f_AT_FDC_H
 
+#include <optional>
+#include <vd2/system/memory.h>
+#include <vd2/system/vdalloc.h>
+#include <vd2/system/refcount.h>
+#include <vd2/system/vdstl.h>
 #include <vd2/system/function.h>
 #include <at/atio/diskimage.h>
 #include <at/atcore/scheduler.h>
@@ -26,6 +31,7 @@ class ATDiskInterface;
 class ATDiskRotationTracer;
 class ATConsoleOutput;
 class ATTraceChannelFormatted;
+struct ATTraceContext;
 
 enum ATFDCWPOverride {
 	kATFDCWPOverride_None,

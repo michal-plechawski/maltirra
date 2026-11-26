@@ -697,7 +697,7 @@
     <ClCompile Include="..\platform\Windows_x64\Altirra\source\diskdrivefull.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\platform\Windows_x64\Altirra\source\fdc.cpp">
+    <ClCompile Include="source\fdc.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\platform\Windows_x64\Altirra\source\diskdriveindusgt.cpp">
@@ -1581,7 +1581,7 @@
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\diskdrivefull.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\platform\Windows_x64\Altirra\h\fdc.h">
+    <ClInclude Include="h\fdc.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\diskdriveindusgt.h">

@@ -192,6 +192,9 @@ portable_test_sources=(
 	src/ATTest/source/TestAltirra_CallbackPortable.cpp
 	src/ATTest/source/TestAltirra_CartridgePortPortable.cpp
 	src/ATTest/source/TestAltirra_CIOPortable.cpp
+	src/ATTest/source/TestAltirra_FDCPortable.cpp
+	src/ATTest/source/TestAltirra_FDCTransferPortable.cpp
+	src/ATTest/source/TestAltirra_FDCTrackPortable.cpp
 	src/ATTest/source/TestAltirra_DiskDriveBaseQueuesPortable.cpp
 	src/ATTest/source/TestAltirra_DiskDriveBaseServicesPortable.cpp
 	src/ATTest/source/TestAltirra_DiskDriveBaseTargetPortable.cpp
@@ -544,6 +547,8 @@ portable_test_sources=(
 	src/Altirra/source/hlefastboothook.cpp
 	src/platform/macOS_arm64/Altirra/source/cartridgeoptions.cpp
 	src/ATEmulation/source/flash.cpp
+	src/ATEmulation/source/diskutils.cpp
+	src/ATCore/source/crc.cpp
 	src/ATEmulation/source/eeprom.cpp
 	src/Altirra/source/cheatengine.cpp
 	src/Altirra/source/cpuhookmanager.cpp
@@ -571,6 +576,7 @@ portable_test_sources=(
 	src/platform/macOS_arm64/Altirra/source/oshelper.mm
 	src/platform/macOS_arm64/Altirra/source/pclink_posix.cpp
 	src/Altirra/source/pclink.cpp
+	src/Altirra/source/fdc.cpp
 	src/Altirra/source/diskdrivefullbase.cpp
 	src/platform/macOS_arm64/Altirra/source/startuplogger.cpp
 	src/platform/macOS_arm64/Altirra/source/updatefeed_macos.cpp

@@ -15,7 +15,10 @@
 //	along with this program; if not, write to the Free Software
 //	Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
-#include <stdafx.h>
+#include <algorithm>
+#include <cmath>
+#include <cstring>
+#include <vd2/system/VDString.h>
 #include <vd2/system/binary.h>
 #include <vd2/system/math.h>
 #include <at/atcore/consoleoutput.h>
@@ -116,6 +119,7 @@ void ATFDCEmulator::Init(ATScheduler *sch, float rpm, float periodAdjustFactor, 
 
 void ATFDCEmulator::Shutdown() {
 	if (mpScheduler) {
+		SetTraceContext(nullptr, 0, 0);
 		mpScheduler->UnsetEvent(mpStateEvent);
 		mpScheduler->UnsetEvent(mpAutoIndexOnEvent);
 		mpScheduler->UnsetEvent(mpAutoIndexOffEvent);
@@ -167,6 +171,7 @@ void ATFDCEmulator::Reset() {
 	}
 
 	mbDataReadPending = false;
+	mbDataWritePending = false;
 	mbRegStatusTypeI = true;
 
 	mpFnDrqChange(false);
@@ -277,8 +282,6 @@ void ATFDCEmulator::SetSpeeds(float rpm, float periodAdjustFactor, bool doubleCl
 	}
 
 	SetDoubleClock(doubleClock);
-
-	UpdateStepTimes();
 }
 
 void ATFDCEmulator::SetDoubleClock(bool doubleClock) {
@@ -301,6 +304,7 @@ void ATFDCEmulator::SetDoubleClock(bool doubleClock) {
 	mCyclesPerByteMFM_FX16 = VDRoundToInt(schRate / mBytesPerSecondMFM * 0x1p16f);
 
 	UpdateDensity();
+	UpdateStepTimes();
 }
 
 void ATFDCEmulator::SetDiskImage(IATDiskImage *image, bool diskReady) {
@@ -371,7 +375,7 @@ uint8 ATFDCEmulator::DebugReadByte(uint8 address) const {
 				v &= 0x39;
 
 				// update write protect
-				if (ModifyWriteProtect(mbWriteProtectOverride.value_or(mpDiskImage && !mpDiskInterface->IsDiskWritable())))
+				if (ModifyWriteProtect(mbWriteProtectOverride.value_or(mpDiskImage && mpDiskInterface && !mpDiskInterface->IsDiskWritable())))
 					v |= 0x40;
 
 				if (mType == kType_1770 || mType == kType_1772) {
@@ -561,6 +565,7 @@ void ATFDCEmulator::OnIndexPulse(bool asserted) {
 
 void ATFDCEmulator::SetTraceContext(ATTraceContext *context, uint64 baseTick, double secondsPerTick) {
 	if (context) {
+		if (mpRotationTracer) SetTraceContext(nullptr, 0, 0);
 		ATTraceCollection *coll = context->mpCollection;
 		ATTraceGroup *group = coll->AddGroup(L"FDC");
 
@@ -574,9 +579,10 @@ void ATFDCEmulator::SetTraceContext(ATTraceContext *context, uint64 baseTick, do
 		mpRotationTracer->SetMotorRunning(mbMotorRunning);
 		mpRotationTracer->Warp(mRotPos);
 	} else {
-		mpRotationTracer->Flush();
-		mpRotationTracer->Shutdown();
-		mpRotationTracer = nullptr;
+		if (mpRotationTracer) {
+			mpRotationTracer->Shutdown();
+			mpRotationTracer = nullptr;
+		}
 
 		if (mpTraceChannelCommands)
 			mpTraceChannelCommands->TruncateLastEvent(mpScheduler->GetTick64());
@@ -1069,13 +1075,8 @@ void ATFDCEmulator::RunStateMachine() {
 			if (mbDataReadPending)
 				mRegStatus |= 0x04;
 
-			// set DRQ
-			if (!mbDataReadPending) {
-				mbDataReadPending = true;
-
-				mpFnDrqChange(true);
-			}
-
+			const bool notifyDrq = !mbDataReadPending;
+			mbDataReadPending = true;
 			mRegStatus |= 0x02;
 
 			// Compute the number of bits to advance.
@@ -1115,6 +1116,8 @@ void ATFDCEmulator::RunStateMachine() {
 			mCyclesPerByteAccum_FX16 += (mCyclesPerByte_FX16 * bitCount + 8) >> 4;
 			SetTransition(kState_ReadTrack_TransferByte, mCyclesPerByteAccum_FX16 >> 16);
 			mCyclesPerByteAccum_FX16 &= 0xFFFF;
+			if (notifyDrq)
+				mpFnDrqChange(true);
 			break;
 		}
 
@@ -1488,8 +1491,10 @@ void ATFDCEmulator::RunStateMachine() {
 					// check for a boot sector on a double density disk
 					if (vsec <= mDiskGeometry.mBootSectorCount && mbMFM && mDiskGeometry.mSectorSize > 128) {
 						// extend it to 256 bytes if needed as usually written on physical disk
-						if (mTransferLength == 128)
+						if (mTransferLength == 128) {
+							memset(mTransferBuffer + 128, 0, 128);
 							mTransferLength = 256;
+						}
 
 						if (mBootSectorMode == DDBootSectorMode::Swapped)
 							std::rotate(mTransferBuffer, mTransferBuffer + 128, mTransferBuffer + 256);
@@ -1576,18 +1581,14 @@ void ATFDCEmulator::RunStateMachine() {
 
 			[[fallthrough]];
 
-		case kState_ReadSector_TransferByte:
+		case kState_ReadSector_TransferByte: {
 			// check for lost data
 			if (mbDataReadPending)
 				mRegStatus |= 0x04;
 
-			// set DRQ
-			if (!mbDataReadPending) {
-				mbDataReadPending = true;
-
-				mpFnDrqChange(true);
-			}
-
+			// Publish the byte and state before notifying a synchronous consumer.
+			const bool notifyDrq = !mbDataReadPending;
+			mbDataReadPending = true;
 			mRegStatus |= 0x02;
 
 			mRegData = mTransferBuffer[mTransferIndex];
@@ -1598,7 +1599,10 @@ void ATFDCEmulator::RunStateMachine() {
 				SetTransition(kState_ReadSector_TransferByte, mCyclesPerByteAccum_FX16 >> 16);
 				mCyclesPerByteAccum_FX16 &= 0xFFFF;
 			}
+			if (notifyDrq)
+				mpFnDrqChange(true);
 			break;
+		}
 
 		case kState_ReadSector_TransferComplete:
 			// Update status based on sector read:
@@ -1848,7 +1852,7 @@ void ATFDCEmulator::RunStateMachine() {
 					// we need to swap the sector data around
 					const auto& geo = mpDiskImage->GetGeometry();
 
-					if (mTransferLength == 256 && mActiveVirtSector < geo.mBootSectorCount && geo.mSectorSize > 128) {
+					if (mTransferLength == 256 && mActiveVirtSector <= geo.mBootSectorCount && geo.mSectorSize > 128) {
 						if (mBootSectorMode == DDBootSectorMode::Swapped)
 							std::rotate(mTransferBuffer, mTransferBuffer + 128, mTransferBuffer + 256);
 					}

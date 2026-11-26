@@ -96,7 +96,7 @@
     <ClInclude Include="h\disktrace.h" />
     <ClInclude Include="h\diskvirtimagebase.h" />
     <ClInclude Include="h\errordecode.h" />
-    <ClInclude Include="..\platform\Windows_x64\Altirra\h\fdc.h" />
+    <ClInclude Include="h\fdc.h" />
     <ClInclude Include="h\inputdefs.h" />
     <ClInclude Include="h\inputmap.h" />
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\mediamanager.h" />
@@ -355,7 +355,9 @@
     <ClCompile Include="source\errordecode.cpp">
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="..\platform\Windows_x64\Altirra\source\fdc.cpp" />
+    <ClCompile Include="source\fdc.cpp">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+    </ClCompile>
     <ClCompile Include="source\firmwaredetect.cpp">
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
     </ClCompile>

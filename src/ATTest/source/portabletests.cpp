@@ -248,6 +248,30 @@ bool ATTestAltirraHLEUtils(ATPortableTestContext& context);
 bool ATTestAltirraGTIATables(ATPortableTestContext& context);
 bool ATTestAltirraGTIARenderer(ATPortableTestContext& context);
 bool ATTestAltirraHostDeviceUtils(ATPortableTestContext& context);
+bool ATTestAltirraFDCRegisters(ATPortableTestContext& context);
+bool ATTestAltirraFDCTypes(ATPortableTestContext& context);
+bool ATTestAltirraFDCTiming(ATPortableTestContext& context);
+bool ATTestAltirraFDCSensors(ATPortableTestContext& context);
+bool ATTestAltirraFDCIndexMotor(ATPortableTestContext& context);
+bool ATTestAltirraFDCForceInterrupt(ATPortableTestContext& context);
+bool ATTestAltirraFDCReset(ATPortableTestContext& context);
+bool ATTestAltirraFDCTrace(ATPortableTestContext& context);
+bool ATTestAltirraFDCReadFM(ATPortableTestContext& context);
+bool ATTestAltirraFDCReadMFM(ATPortableTestContext& context);
+bool ATTestAltirraFDCWriteFM(ATPortableTestContext& context);
+bool ATTestAltirraFDCWriteMFM(ATPortableTestContext& context);
+bool ATTestAltirraFDCBootSectors(ATPortableTestContext& context);
+bool ATTestAltirraFDCSideMapping(ATPortableTestContext& context);
+bool ATTestAltirraFDCAddress(ATPortableTestContext& context);
+bool ATTestAltirraFDCErrorSectors(ATPortableTestContext& context);
+bool ATTestAltirraFDCWeakSectors(ATPortableTestContext& context);
+bool ATTestAltirraFDCWriteProtect(ATPortableTestContext& context);
+bool ATTestAltirraFDCReadLostData(ATPortableTestContext& context);
+bool ATTestAltirraFDCWriteLostData(ATPortableTestContext& context);
+bool ATTestAltirraFDCReadTrack(ATPortableTestContext& context);
+bool ATTestAltirraFDCWriteTrack(ATPortableTestContext& context);
+bool ATTestAltirraFDCPersistence(ATPortableTestContext& context);
+bool ATTestAltirraFDCCPU(ATPortableTestContext& context);
 bool ATTestAltirraDriveBaseBytes(ATPortableTestContext& context);
 bool ATTestAltirraDriveBaseByteWrap(ATPortableTestContext& context);
 bool ATTestAltirraDriveBaseBits(ATPortableTestContext& context);
@@ -712,6 +736,30 @@ const ATPortableTestCase *ATGetPortableTests(size_t& count) {
 		{ "Altirra_GTIATables", ATTestAltirraGTIATables },
 		{ "Altirra_GTIARenderer", ATTestAltirraGTIARenderer },
 		{ "Altirra_HostDeviceUtils", ATTestAltirraHostDeviceUtils },
+		{ "Altirra_FDCRegisters", ATTestAltirraFDCRegisters },
+		{ "Altirra_FDCTypes", ATTestAltirraFDCTypes },
+		{ "Altirra_FDCTiming", ATTestAltirraFDCTiming },
+		{ "Altirra_FDCSensors", ATTestAltirraFDCSensors },
+		{ "Altirra_FDCIndexMotor", ATTestAltirraFDCIndexMotor },
+		{ "Altirra_FDCForceInterrupt", ATTestAltirraFDCForceInterrupt },
+		{ "Altirra_FDCReset", ATTestAltirraFDCReset },
+		{ "Altirra_FDCTrace", ATTestAltirraFDCTrace },
+		{ "Altirra_FDCReadFM", ATTestAltirraFDCReadFM },
+		{ "Altirra_FDCReadMFM", ATTestAltirraFDCReadMFM },
+		{ "Altirra_FDCWriteFM", ATTestAltirraFDCWriteFM },
+		{ "Altirra_FDCWriteMFM", ATTestAltirraFDCWriteMFM },
+		{ "Altirra_FDCBootSectors", ATTestAltirraFDCBootSectors },
+		{ "Altirra_FDCSideMapping", ATTestAltirraFDCSideMapping },
+		{ "Altirra_FDCAddress", ATTestAltirraFDCAddress },
+		{ "Altirra_FDCErrorSectors", ATTestAltirraFDCErrorSectors },
+		{ "Altirra_FDCWeakSectors", ATTestAltirraFDCWeakSectors },
+		{ "Altirra_FDCWriteProtect", ATTestAltirraFDCWriteProtect },
+		{ "Altirra_FDCReadLostData", ATTestAltirraFDCReadLostData },
+		{ "Altirra_FDCWriteLostData", ATTestAltirraFDCWriteLostData },
+		{ "Altirra_FDCReadTrack", ATTestAltirraFDCReadTrack },
+		{ "Altirra_FDCWriteTrack", ATTestAltirraFDCWriteTrack },
+		{ "Altirra_FDCPersistence", ATTestAltirraFDCPersistence },
+		{ "Altirra_FDCCPU", ATTestAltirraFDCCPU },
 		{ "Altirra_DriveBaseBytes", ATTestAltirraDriveBaseBytes },
 		{ "Altirra_DriveBaseByteWrap", ATTestAltirraDriveBaseByteWrap },
 		{ "Altirra_DriveBaseBits", ATTestAltirraDriveBaseBits },

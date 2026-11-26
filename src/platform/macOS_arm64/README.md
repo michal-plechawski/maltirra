@@ -687,7 +687,7 @@ are removed. Foreign handler addresses and entries still referenced by native
 IOCBs are preserved; table compaction updates IOCB IDs. The PIA overlay keeps
 chip registers and writes accessible around the CIO ROM window. Full tables
 and wrapped buffers are checked before access. The
-native build has 658 translation units and 459 portable groups. Full simulator
+native build has 662 translation units and 483 portable groups. Full simulator
 and application assembly, BASIC interpreter boot, and complete boot validation
 remain outstanding.
 
@@ -748,4 +748,22 @@ assertions superseding queued deassertions, idle bit-queue progress after a reje
 baud rate, and reset callbacks draining their own queues. Empty/uninitialized
 queue shutdown is safe. Disabling history clears its range; target shutdown
 detaches the processor history buffer and cancels pending step notifications.
-The FDC and individual full drive models remain to be integrated.
+The individual full drive models remain to be integrated.
+
+The complete floppy controller (`fdc.cpp`/`fdc.h`) is shared, retaining the 1771,
+2793, 2797, 1770 and 1772 command state machines, raw track rendering/formatting,
+FM/MFM timing, weak sectors, side mappings, IRQ/DRQ and trace support. Twenty-four
+portable groups use production disk images, disk interfaces and schedulers.
+They exercise seek/restore, index/motor/head signals, normal/double clock rates,
+128-8192-byte sectors with the controller's 4096-byte transfer limit, boot-sector
+swapping, address CRCs, sector errors, write protection, lost data, raw tracks,
+reset/shutdown and ATR save/reload. A real 6502 program polls controller registers
+and copies a sector into RAM. All twenty-four groups pass AddressSanitizer and
+UBSan, and the full native suite passes with 483 groups.
+
+Regressions cover stale write DRQ after reset, repeated trace detach, double-clock
+seek timing, missing disk-interface status reads, short DD boot-sector padding
+and swapping the last boot sector. Read callbacks now receive the valid byte and
+status before DRQ notification, including synchronous acknowledgements during
+sector and raw-track reads. Full drive firmware execution and complete Atari
+boot validation remain outstanding.
