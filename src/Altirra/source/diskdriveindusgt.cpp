@@ -15,7 +15,9 @@
 //	along with this program; if not, write to the Free Software
 //	Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
-#include <stdafx.h>
+#include <algorithm>
+#include <cmath>
+#include <cstring>
 #include <vd2/system/hash.h>
 #include <vd2/system/int128.h>
 #include <vd2/system/math.h>
@@ -23,11 +25,8 @@
 #include <at/atcore/logging.h>
 #include <at/atcore/propertyset.h>
 #include <at/atcore/deviceserial.h>
-#include "audiosampleplayer.h"
 #include "diskdriveindusgt.h"
-#include "memorymanager.h"
 #include "firmwaremanager.h"
-#include "debuggerlog.h"
 
 extern ATLogChannel g_ATLCDiskEmu;
 
@@ -53,6 +52,7 @@ ATDeviceDiskDriveIndusGT::ATDeviceDiskDriveIndusGT() {
 }
 
 ATDeviceDiskDriveIndusGT::~ATDeviceDiskDriveIndusGT() {
+	Shutdown();
 }
 
 void *ATDeviceDiskDriveIndusGT::AsInterface(uint32 iid) {
@@ -210,6 +210,8 @@ void ATDeviceDiskDriveIndusGT::Shutdown() {
 	mSerialXmitQueue.Shutdown();
 
 	mDriveScheduler.UnsetEvent(mpEventDriveReceiveBit);
+	mDriveScheduler.UnsetEvent(mpEventDriveDiskChange);
+	mFDC.Shutdown();
 
 	ShutdownTargetControl();
 
@@ -222,6 +224,8 @@ void ATDeviceDiskDriveIndusGT::Shutdown() {
 
 	if (mpDiskInterface) {
 		mpDiskInterface->SetShowLEDReadout(-1);
+		mpDiskInterface->SetShowMotorActive(false);
+		mpDiskInterface->SetShowActivity(false, 0);
 		mpDiskInterface->RemoveClient(this);
 		mpDiskInterface = nullptr;
 	}
@@ -230,13 +234,11 @@ void ATDeviceDiskDriveIndusGT::Shutdown() {
 }
 
 void ATDeviceDiskDriveIndusGT::WarmReset() {
-	if (mpSIOMgr->IsSIOReadyAsserted())
-		mStatus2 |= 0x10;
-	else
-		mStatus2 &= ~0x10;
+	OnReadyStateChanged(mpSIOMgr->IsSIOReadyAsserted());
 
 	// If the computer resets, its transmission is interrupted.
 	mDriveScheduler.UnsetEvent(mpEventDriveReceiveBit);
+	mReceiveShiftRegister = 1;
 }
 
 void ATDeviceDiskDriveIndusGT::ComputerColdReset() {
@@ -251,6 +253,9 @@ void ATDeviceDiskDriveIndusGT::PeripheralColdReset() {
 	mSerialXmitQueue.Reset();
 
 	mLEDState = 0;
+	mpDiskInterface->SetShowLEDReadout(0);
+	mStatus1CPMHoldStart = 0;
+	mStatus1ChangeDensityHoldStart = 0;
 	
 	mStatus1 = 0x7C + mDriveId;
 
@@ -264,12 +269,13 @@ void ATDeviceDiskDriveIndusGT::PeripheralColdReset() {
 
 	// start the disk drive on a track other than 0/20/39, just to make things interesting
 	mCurrentTrack = 20;
-	mFDC.SetCurrentTrack(mCurrentTrack, true);
+	mFDC.SetCurrentTrack(mCurrentTrack, false);
 
 	mbMotorRunning = false;
 	mFDC.SetMotorRunning(false);
 	mFDC.SetDensity(false);
-	mFDC.SetWriteProtectOverride(false);
+	UpdateWriteProtectStatus();
+	UpdateRotationStatus();
 
 	mAudioRawSource.SetOutput(ATSCHEDULER_GETTIME(mpScheduler), 0);
 
@@ -277,6 +283,9 @@ void ATDeviceDiskDriveIndusGT::PeripheralColdReset() {
 	UpdateMemoryMap();
 
 	mCoProc.ColdReset();
+	mbCommandState = mpSIOMgr->IsSIOCommandAsserted();
+	if (mbCommandState) mCoProc.AssertIrq();
+	else mCoProc.NegateIrq();
 
 	ResetTargetControl();
 
@@ -383,7 +392,7 @@ void ATDeviceDiskDriveIndusGT::OnScheduledEvent(uint32 id) {
 			case 1:		// disk being removed (write protect covered)
 			case 2:		// disk removed (write protect clear)
 			case 3:		// disk being inserted (write protect covered)
-				mDriveScheduler.SetEvent(kDiskChangeStepMS, this, kEventId_DriveDiskChange, mpEventDriveDiskChange);
+				mDriveScheduler.SetEvent(VDRoundToInt32(mDriveScheduler.GetRate().asDouble() * (kDiskChangeStepMS / 1000.0)), this, kEventId_DriveDiskChange, mpEventDriveDiskChange);
 				break;
 
 			case 4:		// disk inserted (write protect normal)
@@ -409,7 +418,14 @@ void ATDeviceDiskDriveIndusGT::OnCommandStateChanged(bool asserted) {
 void ATDeviceDiskDriveIndusGT::OnMotorStateChanged(bool asserted) {
 }
 
+void ATDeviceDiskDriveIndusGT::OnReadyStateChanged(bool asserted) {
+	if (asserted) mStatus2 |= 0x10;
+	else mStatus2 &= ~0x10;
+}
+
 void ATDeviceDiskDriveIndusGT::OnBeginReceiveByte(uint8 c, bool command, uint32 cyclesPerBit) {
+	if (!cyclesPerBit)
+		return;
 	Sync();
 
 	mReceiveShiftRegister = (c + c + 0x200) * 2 + 1;
@@ -544,7 +560,7 @@ uint8 ATDeviceDiskDriveIndusGT::OnReadStatus1(uint8 addr) {
 			uint64 elapsed = t - mStatus1ChangeDensityHoldStart;
 
 			if (elapsed > 4000000) {
-				mStatus1CPMHoldStart = 0;
+				mStatus1ChangeDensityHoldStart = 0;
 			} else {
 				// hold drive type
 				mStatus1 |= 0x20;
@@ -825,5 +841,5 @@ void ATDeviceDiskDriveIndusGT::UpdateWriteProtectStatus() {
 	if (wpsense || wpoverride)
 		mStatus1 |= 0x80;
 
-	mFDC.SetWriteProtectOverride(wpoverride);
+	mFDC.SetWriteProtectOverride(mDiskChangeState ? wpoverride : wpsense);
 }

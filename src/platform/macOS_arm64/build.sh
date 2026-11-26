@@ -192,6 +192,9 @@ portable_test_sources=(
 	src/ATTest/source/TestAltirra_CallbackPortable.cpp
 	src/ATTest/source/TestAltirra_CartridgePortPortable.cpp
 	src/ATTest/source/TestAltirra_CIOPortable.cpp
+	src/ATTest/source/TestAltirra_IndusGTPortable.cpp
+	src/ATTest/source/TestAltirra_IndusGTControlsPortable.cpp
+	src/ATTest/source/TestAltirra_IndusGTBusPortable.cpp
 	src/ATTest/source/TestAltirra_SpeedyXFPortable.cpp
 	src/ATTest/source/TestAltirra_SpeedyXFBusPortable.cpp
 	src/ATTest/source/TestAltirra_FullDrivePortable.cpp
@@ -583,6 +586,9 @@ portable_test_sources=(
 	src/platform/macOS_arm64/Altirra/source/oshelper.mm
 	src/platform/macOS_arm64/Altirra/source/pclink_posix.cpp
 	src/Altirra/source/pclink.cpp
+	src/Altirra/source/diskdriveindusgt.cpp
+	src/ATCPU/source/coz80.cpp
+	src/ATCPU/source/decodez80.cpp
 	src/Altirra/source/diskdrivespeedyxf.cpp
 	src/Altirra/source/diskdrivefull.cpp
 	src/ATEmulation/source/riot.cpp

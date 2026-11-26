@@ -248,6 +248,30 @@ bool ATTestAltirraHLEUtils(ATPortableTestContext& context);
 bool ATTestAltirraGTIATables(ATPortableTestContext& context);
 bool ATTestAltirraGTIARenderer(ATPortableTestContext& context);
 bool ATTestAltirraHostDeviceUtils(ATPortableTestContext& context);
+bool ATTestAltirraIndusGTInterfaces(ATPortableTestContext& context);
+bool ATTestAltirraIndusGTSettings(ATPortableTestContext& context);
+bool ATTestAltirraIndusGTFirmware(ATPortableTestContext& context);
+bool ATTestAltirraIndusGTCPU(ATPortableTestContext& context);
+bool ATTestAltirraIndusGTMemory(ATPortableTestContext& context);
+bool ATTestAltirraIndusGTExtendedRAM(ATPortableTestContext& context);
+bool ATTestAltirraIndusGTButtons(ATPortableTestContext& context);
+bool ATTestAltirraIndusGTButtonMacros(ATPortableTestContext& context);
+bool ATTestAltirraIndusGTStatus(ATPortableTestContext& context);
+bool ATTestAltirraIndusGTLED(ATPortableTestContext& context);
+bool ATTestAltirraIndusGTStepper(ATPortableTestContext& context);
+bool ATTestAltirraIndusGTMotorAudio(ATPortableTestContext& context);
+bool ATTestAltirraIndusGTSpeaker(ATPortableTestContext& context);
+bool ATTestAltirraIndusGTGeometry(ATPortableTestContext& context);
+bool ATTestAltirraIndusGTDebugHistory(ATPortableTestContext& context);
+bool ATTestAltirraIndusGTIRQ(ATPortableTestContext& context);
+bool ATTestAltirraIndusGTReadSector(ATPortableTestContext& context);
+bool ATTestAltirraIndusGTWriteSector(ATPortableTestContext& context);
+bool ATTestAltirraIndusGTWriteProtect(ATPortableTestContext& context);
+bool ATTestAltirraIndusGTSerial(ATPortableTestContext& context);
+bool ATTestAltirraIndusGTReceiveClock(ATPortableTestContext& context);
+bool ATTestAltirraIndusGTDiskChange(ATPortableTestContext& context);
+bool ATTestAltirraIndusGTTiming(ATPortableTestContext& context);
+bool ATTestAltirraIndusGTResetShutdown(ATPortableTestContext& context);
 bool ATTestAltirraSpeedyXFInterfaces(ATPortableTestContext& context);
 bool ATTestAltirraSpeedyXFSettings(ATPortableTestContext& context);
 bool ATTestAltirraSpeedyXFFirmware(ATPortableTestContext& context);
@@ -798,6 +822,30 @@ const ATPortableTestCase *ATGetPortableTests(size_t& count) {
 		{ "Altirra_GTIATables", ATTestAltirraGTIATables },
 		{ "Altirra_GTIARenderer", ATTestAltirraGTIARenderer },
 		{ "Altirra_HostDeviceUtils", ATTestAltirraHostDeviceUtils },
+		{ "Altirra_IndusGTInterfaces", ATTestAltirraIndusGTInterfaces },
+		{ "Altirra_IndusGTSettings", ATTestAltirraIndusGTSettings },
+		{ "Altirra_IndusGTFirmware", ATTestAltirraIndusGTFirmware },
+		{ "Altirra_IndusGTCPU", ATTestAltirraIndusGTCPU },
+		{ "Altirra_IndusGTMemory", ATTestAltirraIndusGTMemory },
+		{ "Altirra_IndusGTExtendedRAM", ATTestAltirraIndusGTExtendedRAM },
+		{ "Altirra_IndusGTButtons", ATTestAltirraIndusGTButtons },
+		{ "Altirra_IndusGTButtonMacros", ATTestAltirraIndusGTButtonMacros },
+		{ "Altirra_IndusGTStatus", ATTestAltirraIndusGTStatus },
+		{ "Altirra_IndusGTLED", ATTestAltirraIndusGTLED },
+		{ "Altirra_IndusGTStepper", ATTestAltirraIndusGTStepper },
+		{ "Altirra_IndusGTMotorAudio", ATTestAltirraIndusGTMotorAudio },
+		{ "Altirra_IndusGTSpeaker", ATTestAltirraIndusGTSpeaker },
+		{ "Altirra_IndusGTGeometry", ATTestAltirraIndusGTGeometry },
+		{ "Altirra_IndusGTDebugHistory", ATTestAltirraIndusGTDebugHistory },
+		{ "Altirra_IndusGTIRQ", ATTestAltirraIndusGTIRQ },
+		{ "Altirra_IndusGTReadSector", ATTestAltirraIndusGTReadSector },
+		{ "Altirra_IndusGTWriteSector", ATTestAltirraIndusGTWriteSector },
+		{ "Altirra_IndusGTWriteProtect", ATTestAltirraIndusGTWriteProtect },
+		{ "Altirra_IndusGTSerial", ATTestAltirraIndusGTSerial },
+		{ "Altirra_IndusGTReceiveClock", ATTestAltirraIndusGTReceiveClock },
+		{ "Altirra_IndusGTDiskChange", ATTestAltirraIndusGTDiskChange },
+		{ "Altirra_IndusGTTiming", ATTestAltirraIndusGTTiming },
+		{ "Altirra_IndusGTResetShutdown", ATTestAltirraIndusGTResetShutdown },
 		{ "Altirra_SpeedyXFInterfaces", ATTestAltirraSpeedyXFInterfaces },
 		{ "Altirra_SpeedyXFSettings", ATTestAltirraSpeedyXFSettings },
 		{ "Altirra_SpeedyXFFirmware", ATTestAltirraSpeedyXFFirmware },

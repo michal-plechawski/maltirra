@@ -687,7 +687,7 @@ are removed. Foreign handler addresses and entries still referenced by native
 IOCBs are preserved; table compaction updates IOCB IDs. The PIA overlay keeps
 chip registers and writes accessible around the CIO ROM window. Full tables
 and wrapped buffers are checked before access. The
-native build has 672 translation units and 545 portable groups. Full simulator
+native build has 676 translation units and 569 portable groups. Full simulator
 and application assembly, BASIC interpreter boot, and complete boot validation
 remain outstanding.
 
@@ -827,7 +827,6 @@ behavior, 32KB ROM duplication, firmware loss, memory/register access, LEDs,
 geometry, CPU stepping/history, traces, READY/COMMAND and receive timing, motor
 and step audio, disk changes and shutdown. All twenty groups pass AddressSanitizer
 and UBSan, with the drive CPU and memory-map implementation instrumented too.
-The full native suite passes with 545 groups.
 
 Regressions preserve bit 7 on non-status FDC debugger reads, restore ROM banking
 and clear RIOT RAM on peripheral reset, and keep initial/stepped positions in
@@ -836,3 +835,26 @@ are sampled when attaching to a running computer; warm reset releases DATA OUT.
 Disk-change phases last 50ms and shutdown cancels the RIOT timer. Destruction
 performs the same cleanup. Stock Speedy XF firmware boot and complete Atari
 boot remain unverified.
+
+The complete Indus GT (`diskdriveindusgt.cpp`/`diskdriveindusgt.h`) is shared,
+including its production Z80, 2793 FDC, 2KB mirrored RAM, 64KB RAMCharger banking,
+memory-mapped status/control/LED registers, port-controlled audio and SIO pins,
+front-panel actions, firmware provider and debug/history interfaces. Twenty-four
+portable groups load native-file test ROMs and execute actual Z80 code, including
+indexed registers, IN/OUT, FM/MFM sector transfers and a COMMAND interrupt handler.
+The serial test sends both SIO start/completion notifications and echoes a byte
+through the Z80 into real POKEY reception. Other groups cover both memory maps,
+latched/held buttons and overlapping density/CP/M actions, LEDs, head phases and
+track-zero sense, write protection, speaker edges and sample audio, READY,
+receive clock/truncation, geometry, byte timing, disk changes and reset/shutdown.
+All twenty-four groups pass AddressSanitizer and UBSan with the Z80, decoder and
+memory-map implementation instrumented; the full native suite passes 569 groups.
+
+Regressions keep density-action expiry from cancelling a later CP/M action,
+restore idle serial state on reset and ignore zero-rate receives. READY follows
+the current bus state and COMMAND is sampled on peripheral reset. Reset clears
+virtual panel actions, LEDs and motor activity, uses the correct initial track
+sensor state, and restores write protection from the actual image. Disk-change
+phases last 50ms at 4MHz. Shutdown cancels disk-change/FDC events and clears motor
+activity; destruction performs the same cleanup. Stock Indus GT firmware boot
+and complete Atari boot remain unverified.

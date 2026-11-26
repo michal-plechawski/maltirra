@@ -18,6 +18,7 @@
 #ifndef f_AT_DISKDRIVEINDUSGT_H
 #define f_AT_DISKDRIVEINDUSGT_H
 
+#include <utility>
 #include <vd2/system/function.h>
 #include <vd2/system/refcount.h>
 #include <vd2/system/vdstl.h>
@@ -85,6 +86,7 @@ public:	// IATSchedulerCallback
 public:	// IATDeviceRawSIO
 	void OnCommandStateChanged(bool asserted) override;
 	void OnMotorStateChanged(bool asserted) override;
+	void OnReadyStateChanged(bool asserted) override;
 	void OnBeginReceiveByte(uint8 c, bool command, uint32 cyclesPerBit) override;
 	void OnReceiveByte(uint8 c, bool command, uint32 cyclesPerBit) override;
 	void OnTruncateByte() override;
@@ -148,7 +150,7 @@ protected:
 	uint64 mStatus1CPMHoldStart = 0;
 	uint64 mStatus1ChangeDensityHoldStart = 0;
 
-	uint32 mReceiveShiftRegister = 0;
+	uint32 mReceiveShiftRegister = 1;
 	uint32 mReceiveTimingAccum = 0;
 	uint32 mReceiveTimingStep = 0;
 
