@@ -18,6 +18,7 @@
 #ifndef f_AT_DISKDRIVEXF551_H
 #define f_AT_DISKDRIVEXF551_H
 
+#include <utility>
 #include <vd2/system/function.h>
 #include <vd2/system/refcount.h>
 #include <vd2/system/vdstl.h>
@@ -130,7 +131,7 @@ protected:
 
 	static constexpr uint32 kDiskChangeStepMS = 50;
 
-	uint32 mReceiveShiftRegister = 0;
+	uint32 mReceiveShiftRegister = 1;
 	uint32 mReceiveTimingAccum = 0;
 	uint32 mReceiveTimingStep = 0;
 

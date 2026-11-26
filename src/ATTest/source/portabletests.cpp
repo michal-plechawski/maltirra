@@ -248,6 +248,24 @@ bool ATTestAltirraHLEUtils(ATPortableTestContext& context);
 bool ATTestAltirraGTIATables(ATPortableTestContext& context);
 bool ATTestAltirraGTIARenderer(ATPortableTestContext& context);
 bool ATTestAltirraHostDeviceUtils(ATPortableTestContext& context);
+bool ATTestAltirraXF551Interfaces(ATPortableTestContext& context);
+bool ATTestAltirraXF551Settings(ATPortableTestContext& context);
+bool ATTestAltirraXF551Firmware(ATPortableTestContext& context);
+bool ATTestAltirraXF551CPU(ATPortableTestContext& context);
+bool ATTestAltirraXF551ROMBanks(ATPortableTestContext& context);
+bool ATTestAltirraXF551Registers(ATPortableTestContext& context);
+bool ATTestAltirraXF551Geometry(ATPortableTestContext& context);
+bool ATTestAltirraXF551Debug(ATPortableTestContext& context);
+bool ATTestAltirraXF551ReadSector(ATPortableTestContext& context);
+bool ATTestAltirraXF551WriteSector(ATPortableTestContext& context);
+bool ATTestAltirraXF551Side(ATPortableTestContext& context);
+bool ATTestAltirraXF551WriteProtect(ATPortableTestContext& context);
+bool ATTestAltirraXF551DiskChange(ATPortableTestContext& context);
+bool ATTestAltirraXF551SerialReceive(ATPortableTestContext& context);
+bool ATTestAltirraXF551SerialTransmit(ATPortableTestContext& context);
+bool ATTestAltirraXF551Command(ATPortableTestContext& context);
+bool ATTestAltirraXF551Audio(ATPortableTestContext& context);
+bool ATTestAltirraXF551ResetShutdown(ATPortableTestContext& context);
 bool ATTestAltirraFDCRegisters(ATPortableTestContext& context);
 bool ATTestAltirraFDCTypes(ATPortableTestContext& context);
 bool ATTestAltirraFDCTiming(ATPortableTestContext& context);
@@ -736,6 +754,24 @@ const ATPortableTestCase *ATGetPortableTests(size_t& count) {
 		{ "Altirra_GTIATables", ATTestAltirraGTIATables },
 		{ "Altirra_GTIARenderer", ATTestAltirraGTIARenderer },
 		{ "Altirra_HostDeviceUtils", ATTestAltirraHostDeviceUtils },
+		{ "Altirra_XF551Interfaces", ATTestAltirraXF551Interfaces },
+		{ "Altirra_XF551Settings", ATTestAltirraXF551Settings },
+		{ "Altirra_XF551Firmware", ATTestAltirraXF551Firmware },
+		{ "Altirra_XF551CPU", ATTestAltirraXF551CPU },
+		{ "Altirra_XF551ROMBanks", ATTestAltirraXF551ROMBanks },
+		{ "Altirra_XF551Registers", ATTestAltirraXF551Registers },
+		{ "Altirra_XF551Geometry", ATTestAltirraXF551Geometry },
+		{ "Altirra_XF551Debug", ATTestAltirraXF551Debug },
+		{ "Altirra_XF551ReadSector", ATTestAltirraXF551ReadSector },
+		{ "Altirra_XF551WriteSector", ATTestAltirraXF551WriteSector },
+		{ "Altirra_XF551Side", ATTestAltirraXF551Side },
+		{ "Altirra_XF551WriteProtect", ATTestAltirraXF551WriteProtect },
+		{ "Altirra_XF551DiskChange", ATTestAltirraXF551DiskChange },
+		{ "Altirra_XF551SerialReceive", ATTestAltirraXF551SerialReceive },
+		{ "Altirra_XF551SerialTransmit", ATTestAltirraXF551SerialTransmit },
+		{ "Altirra_XF551Command", ATTestAltirraXF551Command },
+		{ "Altirra_XF551Audio", ATTestAltirraXF551Audio },
+		{ "Altirra_XF551ResetShutdown", ATTestAltirraXF551ResetShutdown },
 		{ "Altirra_FDCRegisters", ATTestAltirraFDCRegisters },
 		{ "Altirra_FDCTypes", ATTestAltirraFDCTypes },
 		{ "Altirra_FDCTiming", ATTestAltirraFDCTiming },

@@ -687,7 +687,7 @@ are removed. Foreign handler addresses and entries still referenced by native
 IOCBs are preserved; table compaction updates IOCB IDs. The PIA overlay keeps
 chip registers and writes accessible around the CIO ROM window. Full tables
 and wrapped buffers are checked before access. The
-native build has 662 translation units and 483 portable groups. Full simulator
+native build has 665 translation units and 501 portable groups. Full simulator
 and application assembly, BASIC interpreter boot, and complete boot validation
 remain outstanding.
 
@@ -748,7 +748,7 @@ assertions superseding queued deassertions, idle bit-queue progress after a reje
 baud rate, and reset callbacks draining their own queues. Empty/uninitialized
 queue shutdown is safe. Disabling history clears its range; target shutdown
 detaches the processor history buffer and cancels pending step notifications.
-The individual full drive models remain to be integrated.
+The remaining individual full drive models are being integrated.
 
 The complete floppy controller (`fdc.cpp`/`fdc.h`) is shared, retaining the 1771,
 2793, 2797, 1770 and 1772 command state machines, raw track rendering/formatting,
@@ -759,11 +759,32 @@ They exercise seek/restore, index/motor/head signals, normal/double clock rates,
 swapping, address CRCs, sector errors, write protection, lost data, raw tracks,
 reset/shutdown and ATR save/reload. A real 6502 program polls controller registers
 and copies a sector into RAM. All twenty-four groups pass AddressSanitizer and
-UBSan, and the full native suite passes with 483 groups.
+UBSan.
 
 Regressions cover stale write DRQ after reset, repeated trace detach, double-clock
 seek timing, missing disk-interface status reads, short DD boot-sector padding
 and swapping the last boot sector. Read callbacks now receive the valid byte and
 status before DRQ notification, including synchronous acknowledgements during
-sector and raw-track reads. Full drive firmware execution and complete Atari
-boot validation remain outstanding.
+sector and raw-track reads. Stock drive firmware boot and complete Atari boot
+validation remain outstanding.
+
+The full XF551 drive (`diskdrivexf551.cpp`/`diskdrivexf551.h`) is shared. Its
+production 8048 executes ROM code, accesses the 1770 FDC through P1/MOVX and T1,
+receives SIO through T0 and /COMMAND interrupts, and transmits through P1.7 and
+the bit queue. Drive IDs, firmware selection/reload, side selection, disk-change
+sensors, audio and debug/history/stepping interfaces retain their original APIs.
+
+Eighteen portable groups load deterministic test ROMs from native files and run
+the actual 8048. Programs restore the head and read/write real FM/MFM disk images,
+select side two, check write protection, and echo a byte through production SIO
+into real POKEY reception. Other groups cover both ROM banks and operand wrapping,
+drive-select inputs, register strobes, image geometry, IRQ delivery, debug steps,
+motor/step audio, firmware disappearance, media replacement and reset/shutdown.
+All eighteen groups pass AddressSanitizer and UBSan. The full native suite passes
+with 501 groups; stock XF551 firmware boot remains unverified.
+
+The port corrects disk-change intervals from 50 controller ticks to 50ms, keeps
+the receive pin at its idle level before and after a frame or reset, and updates
+motor indicators/rotation audio on peripheral reset. Shutdown cancels disk-change
+and FDC events, stops the motor indicator and detaches the disk/SIO clients;
+destruction also performs this cleanup.

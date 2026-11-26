@@ -15,7 +15,9 @@
 //	along with this program; if not, write to the Free Software
 //	Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
-#include <stdafx.h>
+#include <algorithm>
+#include <cmath>
+#include <cstring>
 #include <vd2/system/hash.h>
 #include <vd2/system/int128.h>
 #include <vd2/system/math.h>
@@ -24,13 +26,8 @@
 #include <at/atcore/propertyset.h>
 #include <at/atcore/deviceserial.h>
 #include <at/atcpu/memorymap.h>
-#include "audiosampleplayer.h"
 #include "diskdrivexf551.h"
-#include "memorymanager.h"
 #include "firmwaremanager.h"
-#include "debuggerlog.h"
-
-extern ATLogChannel g_ATLCDiskEmu;
 
 void ATCreateDeviceDiskDriveXF551(const ATPropertySet& pset, IATDevice **dev) {
 	vdrefptr<ATDeviceDiskDriveXF551> p(new ATDeviceDiskDriveXF551);
@@ -104,6 +101,7 @@ ATDeviceDiskDriveXF551::ATDeviceDiskDriveXF551()
 }
 
 ATDeviceDiskDriveXF551::~ATDeviceDiskDriveXF551() {
+	Shutdown();
 }
 
 void *ATDeviceDiskDriveXF551::AsInterface(uint32 iid) {
@@ -196,6 +194,8 @@ void ATDeviceDiskDriveXF551::Shutdown() {
 	mAudioPlayer.Shutdown();
 
 	mDriveScheduler.UnsetEvent(mpEventDriveReceiveBit);
+	mDriveScheduler.UnsetEvent(mpEventDriveDiskChange);
+	mFDC.Shutdown();
 
 	ShutdownTargetControl();
 
@@ -210,6 +210,7 @@ void ATDeviceDiskDriveXF551::Shutdown() {
 	}
 
 	if (mpDiskInterface) {
+		mpDiskInterface->SetShowMotorActive(false);
 		mpDiskInterface->RemoveClient(this);
 		mpDiskInterface = nullptr;
 	}
@@ -220,6 +221,7 @@ void ATDeviceDiskDriveXF551::Shutdown() {
 void ATDeviceDiskDriveXF551::WarmReset() {
 	// If the computer resets, its transmission is interrupted.
 	mDriveScheduler.UnsetEvent(mpEventDriveReceiveBit);
+	mReceiveShiftRegister = 1;
 }
 
 void ATDeviceDiskDriveXF551::ComputerColdReset() {
@@ -247,6 +249,7 @@ void ATDeviceDiskDriveXF551::PeripheralColdReset() {
 	mbMotorRunning = false;
 	mFDC.SetMotorRunning(false);
 	mFDC.SetDensity(false);
+	UpdateRotationStatus();
 
 	UpdateWriteProtectStatus();
 
@@ -334,7 +337,7 @@ void ATDeviceDiskDriveXF551::OnScheduledEvent(uint32 id) {
 			case 1:		// disk being removed (write protect covered)
 			case 2:		// disk removed (write protect clear)
 			case 3:		// disk being inserted (write protect covered)
-				mDriveScheduler.SetEvent(kDiskChangeStepMS, this, kEventId_DriveDiskChange, mpEventDriveDiskChange);
+				mDriveScheduler.SetEvent(VDRoundToInt32(mDriveScheduler.GetRate().asDouble() * (kDiskChangeStepMS / 1000.0)), this, kEventId_DriveDiskChange, mpEventDriveDiskChange);
 				break;
 
 			case 4:		// disk inserted (write protect normal)

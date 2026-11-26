@@ -840,6 +840,12 @@
     <ClCompile Include="source\TestAltirra_CIOPortable.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="source\TestAltirra_XF551Portable.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="source\TestAltirra_XF551BusPortable.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
     <ClCompile Include="source\TestAltirra_FDCPortable.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>

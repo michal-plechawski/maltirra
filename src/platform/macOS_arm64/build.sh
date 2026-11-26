@@ -192,6 +192,8 @@ portable_test_sources=(
 	src/ATTest/source/TestAltirra_CallbackPortable.cpp
 	src/ATTest/source/TestAltirra_CartridgePortPortable.cpp
 	src/ATTest/source/TestAltirra_CIOPortable.cpp
+	src/ATTest/source/TestAltirra_XF551Portable.cpp
+	src/ATTest/source/TestAltirra_XF551BusPortable.cpp
 	src/ATTest/source/TestAltirra_FDCPortable.cpp
 	src/ATTest/source/TestAltirra_FDCTransferPortable.cpp
 	src/ATTest/source/TestAltirra_FDCTrackPortable.cpp
@@ -576,6 +578,8 @@ portable_test_sources=(
 	src/platform/macOS_arm64/Altirra/source/oshelper.mm
 	src/platform/macOS_arm64/Altirra/source/pclink_posix.cpp
 	src/Altirra/source/pclink.cpp
+	src/Altirra/source/diskdrivexf551.cpp
+	src/ATCPU/source/co8048.cpp
 	src/Altirra/source/fdc.cpp
 	src/Altirra/source/diskdrivefullbase.cpp
 	src/platform/macOS_arm64/Altirra/source/startuplogger.cpp

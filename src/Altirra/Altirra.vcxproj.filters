@@ -703,7 +703,7 @@
     <ClCompile Include="..\platform\Windows_x64\Altirra\source\diskdriveindusgt.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\platform\Windows_x64\Altirra\source\diskdrivexf551.cpp">
+    <ClCompile Include="source\diskdrivexf551.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="source\audiorawsource.cpp">
@@ -1587,7 +1587,7 @@
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\diskdriveindusgt.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\platform\Windows_x64\Altirra\h\diskdrivexf551.h">
+    <ClInclude Include="h\diskdrivexf551.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="h\audiorawsource.h">

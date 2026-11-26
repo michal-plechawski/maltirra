@@ -735,6 +735,12 @@
     <ClCompile Include="source\TestAltirra_CIOPortable.cpp">
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="source\TestAltirra_XF551Portable.cpp">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="source\TestAltirra_XF551BusPortable.cpp">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+    </ClCompile>
     <ClCompile Include="source\TestAltirra_FDCPortable.cpp">
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
     </ClCompile>
