@@ -3,7 +3,9 @@
   <Import Project="../Build/ProjectConfigurations.props" />
   <ItemGroup>
     <ClCompile Include="source\acia.cpp" />
-    <ClCompile Include="source\acia6850.cpp" />
+    <ClCompile Include="source\acia6850.cpp">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+    </ClCompile>
     <ClCompile Include="source\crtc.cpp" />
     <ClCompile Include="source\ctc.cpp" />
     <ClCompile Include="source\diskutils.cpp" />

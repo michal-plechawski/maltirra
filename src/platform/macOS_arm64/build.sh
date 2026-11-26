@@ -192,6 +192,10 @@ portable_test_sources=(
 	src/ATTest/source/TestAltirra_CallbackPortable.cpp
 	src/ATTest/source/TestAltirra_CartridgePortPortable.cpp
 	src/ATTest/source/TestAltirra_CIOPortable.cpp
+	src/ATTest/source/TestAltirra_AMDCPortable.cpp
+	src/ATTest/source/TestAltirra_AMDCDiskPortable.cpp
+	src/ATTest/source/TestAltirra_AMDCBusPortable.cpp
+	src/ATTest/source/TestEmu_ACIA6850Portable.cpp
 	src/ATTest/source/TestAltirra_IndusGTPortable.cpp
 	src/ATTest/source/TestAltirra_IndusGTControlsPortable.cpp
 	src/ATTest/source/TestAltirra_IndusGTBusPortable.cpp
@@ -586,6 +590,10 @@ portable_test_sources=(
 	src/platform/macOS_arm64/Altirra/source/oshelper.mm
 	src/platform/macOS_arm64/Altirra/source/pclink_posix.cpp
 	src/Altirra/source/pclink.cpp
+	src/Altirra/source/diskdriveamdc.cpp
+	src/ATCPU/source/co6809.cpp
+	src/ATCPU/source/decode6809.cpp
+	src/ATEmulation/source/acia6850.cpp
 	src/Altirra/source/diskdriveindusgt.cpp
 	src/ATCPU/source/coz80.cpp
 	src/ATCPU/source/decodez80.cpp

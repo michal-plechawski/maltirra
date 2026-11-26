@@ -687,7 +687,7 @@ are removed. Foreign handler addresses and entries still referenced by native
 IOCBs are preserved; table compaction updates IOCB IDs. The PIA overlay keeps
 chip registers and writes accessible around the CIO ROM window. Full tables
 and wrapped buffers are checked before access. The
-native build has 676 translation units and 569 portable groups. Full simulator
+native build has 681 translation units and 599 portable groups. Full simulator
 and application assembly, BASIC interpreter boot, and complete boot validation
 remain outstanding.
 
@@ -848,7 +848,7 @@ latched/held buttons and overlapping density/CP/M actions, LEDs, head phases and
 track-zero sense, write protection, speaker edges and sample audio, READY,
 receive clock/truncation, geometry, byte timing, disk changes and reset/shutdown.
 All twenty-four groups pass AddressSanitizer and UBSan with the Z80, decoder and
-memory-map implementation instrumented; the full native suite passes 569 groups.
+memory-map implementation instrumented.
 
 Regressions keep density-action expiry from cancelling a later CP/M action,
 restore idle serial state on reset and ignore zero-rate receives. READY follows
@@ -858,3 +858,29 @@ sensor state, and restores write protection from the actual image. Disk-change
 phases last 50ms at 4MHz. Shutdown cancels disk-change/FDC events and clears motor
 activity; destruction performs the same cleanup. Stock Indus GT firmware boot
 and complete Atari boot remain unverified.
+
+The complete Amdek AMDC (`diskdriveamdc.cpp`/`diskdriveamdc.h`) is shared,
+including its production 6809, ACIA 6850, 2797 FDC, four physical drive positions,
+mirrored RAM/ROM, configuration switches, printer register stubs, watchdog,
+firmware provider, disk-change handling, audio and debug/history interfaces.
+Twenty-four portable groups load native-file test ROMs and execute actual 6809
+programs. They cover FM/MFM sector reads and writes on all four drives, side-two
+mapping on 80-track media, independent head positions and seek limits, sparse
+drive configurations, write protection, COMMAND/CTS timing, normal/fast serial
+transmission and an echo through the real SIO manager and POKEY. Interrupt tests
+transfer a sector through a real FIRQ handler and service the watchdog NMI.
+
+Six additional ACIA groups check transmit buffering and timing, clock dividers,
+receive acknowledgement and framing errors, IRQ transitions and reset during a
+pending transmission. All thirty groups pass AddressSanitizer and UBSan with
+the AMDC, FDC, ACIA, 6809, decoder and memory-map implementations instrumented;
+the complete native suite passes 599 groups.
+
+Regressions clear both ACIA transmit stages on reset, mark the data register
+empty and refresh IRQ when queuing a second byte. The 6809 debug state now
+includes register B. AMDC logical disk IDs and labels follow the actual bindings
+when physical slots are empty. Deselection avoids a negative bit shift, reset
+resamples COMMAND, and shutdown cancels peripheral events and clears each motor
+indicator; destruction performs the same cleanup. Stock AMDC firmware boot,
+printer output beyond the existing register stubs and complete Atari boot
+remain unverified.

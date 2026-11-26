@@ -15,7 +15,7 @@
 //	along with this program; if not, write to the Free Software
 //	Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
-#include <stdafx.h>
+#include <cstdlib>
 #include <at/atcore/scheduler.h>
 #include <at/atcore/logging.h>
 #include <at/atemulation/acia6850.h>
@@ -96,10 +96,10 @@ void ATACIA6850Emulator::Reset() {
 	if (mpInterruptFn)
 		mpInterruptFn(false);
 
-	// Clear everything except DCD and CTS bits, which are controlled
-	// externally.
-	mStatus &= 0x0C;
+	// Preserve external inputs and mark both transmit stages empty.
+	mStatus = (mStatus & 0x0C) | 0x02;
 	mControl = 0;
+	mbTransmitShiftBusy = false;
 
 	mpScheduler->UnsetEvent(mpEventTransmit);
 
@@ -134,6 +134,8 @@ void ATACIA6850Emulator::WriteByte(uint8 address, uint8 value) {
 		// load shifter now if it's idle
 		if (!mbTransmitShiftBusy)
 			LoadTransmitShifter();
+		else
+			UpdateIrqStatus();
 	} else {				// control
 		if (mControl != value) {
 			const uint8 oldControl = mControl;

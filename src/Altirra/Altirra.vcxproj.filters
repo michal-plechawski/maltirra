@@ -823,7 +823,7 @@
     <ClCompile Include="source\debuggersettings.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\platform\Windows_x64\Altirra\source\diskdriveamdc.cpp">
+    <ClCompile Include="source\diskdriveamdc.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\platform\Windows_x64\Altirra\source\uiconfdevxep80.cpp">
@@ -1680,7 +1680,7 @@
     <ClInclude Include="h\debuggersettings.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\platform\Windows_x64\Altirra\h\diskdriveamdc.h">
+    <ClInclude Include="h\diskdriveamdc.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="h\diskvirtimagebase.h">

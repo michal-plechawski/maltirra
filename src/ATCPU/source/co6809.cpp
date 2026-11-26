@@ -80,6 +80,7 @@ void ATCoProc6809::SetCC(uint8 cc) {
 void ATCoProc6809::GetExecState(ATCPUExecState& state) const {
 	state.m6809.mPC = mInsnPC;
 	state.m6809.mA = mA;
+	state.m6809.mB = mB;
 	state.m6809.mX = mX;
 	state.m6809.mY = mY;
 	state.m6809.mS = mS;
@@ -101,6 +102,7 @@ void ATCoProc6809::SetExecState(const ATCPUExecState& state) {
 	}
 
 	mA = state6809.mA;
+	mB = state6809.mB;
 	mX = state6809.mX;
 	mY = state6809.mY;
 	mS = state6809.mS;

@@ -248,6 +248,36 @@ bool ATTestAltirraHLEUtils(ATPortableTestContext& context);
 bool ATTestAltirraGTIATables(ATPortableTestContext& context);
 bool ATTestAltirraGTIARenderer(ATPortableTestContext& context);
 bool ATTestAltirraHostDeviceUtils(ATPortableTestContext& context);
+bool ATTestAltirraAMDCInterfaces(ATPortableTestContext& context);
+bool ATTestAltirraAMDCSettings(ATPortableTestContext& context);
+bool ATTestAltirraAMDCSparseSlots(ATPortableTestContext& context);
+bool ATTestAltirraAMDCFirmware(ATPortableTestContext& context);
+bool ATTestAltirraAMDCCPU(ATPortableTestContext& context);
+bool ATTestAltirraAMDCMemory(ATPortableTestContext& context);
+bool ATTestAltirraAMDCSwitches(ATPortableTestContext& context);
+bool ATTestAltirraAMDCDebugHistory(ATPortableTestContext& context);
+bool ATTestAltirraAMDCSelection(ATPortableTestContext& context);
+bool ATTestAltirraAMDCReadSector(ATPortableTestContext& context);
+bool ATTestAltirraAMDCWriteSector(ATPortableTestContext& context);
+bool ATTestAltirraAMDCSide(ATPortableTestContext& context);
+bool ATTestAltirraAMDCSeek(ATPortableTestContext& context);
+bool ATTestAltirraAMDCPositions(ATPortableTestContext& context);
+bool ATTestAltirraAMDCMediaChange(ATPortableTestContext& context);
+bool ATTestAltirraAMDCWriteProtect(ATPortableTestContext& context);
+bool ATTestAltirraAMDCACIA(ATPortableTestContext& context);
+bool ATTestAltirraAMDCEcho(ATPortableTestContext& context);
+bool ATTestAltirraAMDCRates(ATPortableTestContext& context);
+bool ATTestAltirraAMDCCTS(ATPortableTestContext& context);
+bool ATTestAltirraAMDCFIRQ(ATPortableTestContext& context);
+bool ATTestAltirraAMDCWatchdog(ATPortableTestContext& context);
+bool ATTestAltirraAMDCAudio(ATPortableTestContext& context);
+bool ATTestAltirraAMDCResetShutdown(ATPortableTestContext& context);
+bool ATTestEmuACIA6850Reset(ATPortableTestContext& context);
+bool ATTestEmuACIA6850Transmit(ATPortableTestContext& context);
+bool ATTestEmuACIA6850ResetPending(ATPortableTestContext& context);
+bool ATTestEmuACIA6850Receive(ATPortableTestContext& context);
+bool ATTestEmuACIA6850Rates(ATPortableTestContext& context);
+bool ATTestEmuACIA6850IRQ(ATPortableTestContext& context);
 bool ATTestAltirraIndusGTInterfaces(ATPortableTestContext& context);
 bool ATTestAltirraIndusGTSettings(ATPortableTestContext& context);
 bool ATTestAltirraIndusGTFirmware(ATPortableTestContext& context);
@@ -822,6 +852,36 @@ const ATPortableTestCase *ATGetPortableTests(size_t& count) {
 		{ "Altirra_GTIATables", ATTestAltirraGTIATables },
 		{ "Altirra_GTIARenderer", ATTestAltirraGTIARenderer },
 		{ "Altirra_HostDeviceUtils", ATTestAltirraHostDeviceUtils },
+		{ "Altirra_AMDCInterfaces", ATTestAltirraAMDCInterfaces },
+		{ "Altirra_AMDCSettings", ATTestAltirraAMDCSettings },
+		{ "Altirra_AMDCSparseSlots", ATTestAltirraAMDCSparseSlots },
+		{ "Altirra_AMDCFirmware", ATTestAltirraAMDCFirmware },
+		{ "Altirra_AMDCCPU", ATTestAltirraAMDCCPU },
+		{ "Altirra_AMDCMemory", ATTestAltirraAMDCMemory },
+		{ "Altirra_AMDCSwitches", ATTestAltirraAMDCSwitches },
+		{ "Altirra_AMDCDebugHistory", ATTestAltirraAMDCDebugHistory },
+		{ "Altirra_AMDCSelection", ATTestAltirraAMDCSelection },
+		{ "Altirra_AMDCReadSector", ATTestAltirraAMDCReadSector },
+		{ "Altirra_AMDCWriteSector", ATTestAltirraAMDCWriteSector },
+		{ "Altirra_AMDCSide", ATTestAltirraAMDCSide },
+		{ "Altirra_AMDCSeek", ATTestAltirraAMDCSeek },
+		{ "Altirra_AMDCPositions", ATTestAltirraAMDCPositions },
+		{ "Altirra_AMDCMediaChange", ATTestAltirraAMDCMediaChange },
+		{ "Altirra_AMDCWriteProtect", ATTestAltirraAMDCWriteProtect },
+		{ "Altirra_AMDCACIA", ATTestAltirraAMDCACIA },
+		{ "Altirra_AMDCEcho", ATTestAltirraAMDCEcho },
+		{ "Altirra_AMDCRates", ATTestAltirraAMDCRates },
+		{ "Altirra_AMDCCTS", ATTestAltirraAMDCCTS },
+		{ "Altirra_AMDCFIRQ", ATTestAltirraAMDCFIRQ },
+		{ "Altirra_AMDCWatchdog", ATTestAltirraAMDCWatchdog },
+		{ "Altirra_AMDCAudio", ATTestAltirraAMDCAudio },
+		{ "Altirra_AMDCResetShutdown", ATTestAltirraAMDCResetShutdown },
+		{ "Emu_ACIA6850Reset", ATTestEmuACIA6850Reset },
+		{ "Emu_ACIA6850Transmit", ATTestEmuACIA6850Transmit },
+		{ "Emu_ACIA6850ResetPending", ATTestEmuACIA6850ResetPending },
+		{ "Emu_ACIA6850Receive", ATTestEmuACIA6850Receive },
+		{ "Emu_ACIA6850Rates", ATTestEmuACIA6850Rates },
+		{ "Emu_ACIA6850IRQ", ATTestEmuACIA6850IRQ },
 		{ "Altirra_IndusGTInterfaces", ATTestAltirraIndusGTInterfaces },
 		{ "Altirra_IndusGTSettings", ATTestAltirraIndusGTSettings },
 		{ "Altirra_IndusGTFirmware", ATTestAltirraIndusGTFirmware },

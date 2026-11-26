@@ -15,7 +15,8 @@
 //	along with this program; if not, write to the Free Software
 //	Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
-#include <stdafx.h>
+#include <cmath>
+#include <cstring>
 #include <vd2/system/hash.h>
 #include <vd2/system/int128.h>
 #include <vd2/system/math.h>
@@ -23,11 +24,8 @@
 #include <at/atcore/logging.h>
 #include <at/atcore/propertyset.h>
 #include <at/atcore/deviceserial.h>
-#include "audiosampleplayer.h"
-#include "diskdriveAMDC.h"
-#include "memorymanager.h"
+#include "diskdriveamdc.h"
 #include "firmwaremanager.h"
-#include "debuggerlog.h"
 
 extern ATLogChannel g_ATLCDiskEmu;
 
@@ -95,6 +93,7 @@ ATDeviceDiskDriveAMDC::ATDeviceDiskDriveAMDC() {
 }
 
 ATDeviceDiskDriveAMDC::~ATDeviceDiskDriveAMDC() {
+	Shutdown();
 }
 
 void *ATDeviceDiskDriveAMDC::AsInterface(uint32 iid) {
@@ -120,15 +119,16 @@ void ATDeviceDiskDriveAMDC::GetDeviceInfo(ATDeviceInfo& info) {
 
 void ATDeviceDiskDriveAMDC::GetSettingsBlurb(VDStringW& buf) {
 	bool first = true;
+	uint32 diskInterfaceId = mDriveId;
 
-	for(uint32 i=1; i<4; ++i) {
+	for(uint32 i=0; i<kNumDrives; ++i) {
 		if (mDrives[i].mType) {
 			if (first)
 				first = false;
 			else
 				buf += ',';
 
-			buf.append_sprintf(L"D%u:", i + mDriveId + 1);
+			buf.append_sprintf(L"D%u:", ++diskInterfaceId);
 		}
 	}
 }
@@ -316,6 +316,9 @@ void ATDeviceDiskDriveAMDC::Shutdown() {
 	mAudioPlayer.Shutdown();
 	mSerialXmitQueue.Shutdown();
 	mSerialCmdQueue.Shutdown();
+	mACIA.Shutdown();
+	mFDC.Shutdown();
+	mDriveScheduler.UnsetEvent(mpEventDriveTimeout);
 
 	ShutdownTargetControl();
 	mFirmwareControl.Shutdown();
@@ -329,12 +332,15 @@ void ATDeviceDiskDriveAMDC::Shutdown() {
 		drive.mDiskChangeHandler.Shutdown();
 
 		if (drive.mpDiskInterface) {
+			drive.mpDiskInterface->SetShowMotorActive(false);
+			drive.mpDiskInterface->SetShowActivity(false, 0);
 			drive.mpDiskInterface->RemoveClient(&drive);
 			drive.mpDiskInterface = nullptr;
 		}
 	}
 
 	mpDiskDriveManager = nullptr;
+	mSelectedDrive = -1;
 }
 
 uint32 ATDeviceDiskDriveAMDC::GetComputerPowerOnDelay() const {
@@ -361,6 +367,10 @@ void ATDeviceDiskDriveAMDC::PeripheralColdReset() {
 	mDriveScheduler.UnsetEvent(mpEventDriveTimeout);
 
 	ResetTargetControl();
+
+	mbCommandState = false;
+	if (mpSIOMgr)
+		OnCommandStateChanged(mpSIOMgr->IsSIOCommandAsserted());
 
 	SelectDrive(-1);
 	
@@ -408,9 +418,13 @@ void ATDeviceDiskDriveAMDC::InitDiskDrive(IATDiskDriveManager *ddm) {
 }
 
 ATDeviceDiskDriveInterfaceClient ATDeviceDiskDriveAMDC::GetDiskInterfaceClient(uint32 index) {
+	uint32 diskInterfaceId = mDriveId;
 	for(uint32 i=0; i<kNumDrives; ++i) {
-		if (mDrives[i].mType && !index--)
-			return { &mDrives[i], mDriveId + i };
+		if (mDrives[i].mType) {
+			if (!index--)
+				return { &mDrives[i], diskInterfaceId };
+			++diskInterfaceId;
+		}
 	}
 
 	return {};
@@ -685,7 +699,7 @@ void ATDeviceDiskDriveAMDC::UpdateDiskStatus() {
 }
 
 void ATDeviceDiskDriveAMDC::SelectDrive(int index) {
-	if (!(mAvailableDrives & (1 << index)))
+	if (index < 0 || index >= kNumDrives || !(mAvailableDrives & (1U << index)))
 		index = -1;
 
 	if (mSelectedDrive == index)
