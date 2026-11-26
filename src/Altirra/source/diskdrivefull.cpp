@@ -14,7 +14,10 @@
 //	You should have received a copy of the GNU General Public License along
 //	with this program. If not, see <http://www.gnu.org/licenses/>.
 
-#include <stdafx.h>
+#include <algorithm>
+#include <cmath>
+#include <cstring>
+#include <functional>
 #include <vd2/system/binary.h>
 #include <vd2/system/constexpr.h>
 #include <vd2/system/hash.h>
@@ -28,11 +31,8 @@
 #include <at/atcore/propertyset.h>
 #include <at/atcore/wraptime.h>
 #include <at/atemulation/diskutils.h>
-#include "audiosampleplayer.h"
-#include "debuggerlog.h"
 #include "diskdrivefull.h"
 #include "firmwaremanager.h"
-#include "memorymanager.h"
 #include "trace.h"
 
 ATLogChannel g_ATLCDiskEmu(false, false, "DISKEMU", "Disk drive emulation");
@@ -188,6 +188,7 @@ ATDeviceDiskDriveFull::ATDeviceDiskDriveFull(bool is1050, DeviceType deviceType)
 }
 
 ATDeviceDiskDriveFull::~ATDeviceDiskDriveFull() {
+	Shutdown();
 }
 
 void *ATDeviceDiskDriveFull::AsInterface(uint32 iid) {
@@ -278,7 +279,7 @@ bool ATDeviceDiskDriveFull::SetSettings(const ATPropertySet& settings) {
 		mbHappy810AutoSpeed = settings.GetBool("autospeed", false);
 
 		float rate = settings.GetFloat("autospeedrate", kDefaultAutoSpeedRate);
-		if (!isfinite(rate) || rate < 200.0f || rate > 400.0f)
+		if (!std::isfinite(rate) || rate < 200.0f || rate > 400.0f)
 			rate = kDefaultAutoSpeedRate;
 
 		mHappy810AutoSpeedRate = rate;
@@ -291,8 +292,11 @@ bool ATDeviceDiskDriveFull::SetSettings(const ATPropertySet& settings) {
 		return false;
 	}
 
-	if (mpScheduler)
+	if (mpScheduler) {
 		UpdateAutoSpeed();
+		UpdateSlowSwitch();
+		UpdateWriteProtectOverride();
+	}
 	return true;
 }
 
@@ -530,15 +534,15 @@ void ATDeviceDiskDriveFull::Init() {
 				auto* thisptr = (ATDeviceDiskDriveFull*)thisptr0;
 
 				addr -= 0x4000;
-				const uintptr r = thisptr->mCoProc.GetReadMap()[((addr >> 8) - 0x40) & 0xFF];
+				const uintptr r = thisptr->mCoProc.GetReadMap()[(addr >> 8) & 0xFF];
 
 				if (r & 1) {
 					const auto& readNode = *(const ATCoProcReadMemNode*)(r - 1);
 
-					return readNode.mpDebugRead(addr - 0x4000, readNode.mpThis);
+					return readNode.mpDebugRead(addr, readNode.mpThis);
 				}
 				else {
-					return *(const uint8*)(r + (addr - 0x4000));
+					return *(const uint8*)(r + addr);
 				}
 				};
 
@@ -654,10 +658,10 @@ void ATDeviceDiskDriveFull::Init() {
 				[](uint32 addr, ATDeviceDiskDriveFull* thisptr) -> uint8 {
 					thisptr->UpdateROMBankHappy1050(addr);
 
-					return thisptr->mRAM[addr & 0x1FFF];
+					return thisptr->mRAM[0x100 + (addr & 0x1FFF)];
 				},
 				[](uint32 addr, const ATDeviceDiskDriveFull* thisptr) -> uint8 {
-					return thisptr->mRAM[addr & 0x1FFF];
+					return thisptr->mRAM[0x100 + (addr & 0x1FFF)];
 				}
 			);
 
@@ -666,7 +670,7 @@ void ATDeviceDiskDriveFull::Init() {
 				[](uint32 addr, uint8 val, void* thisptr0) {
 					auto* thisptr = (ATDeviceDiskDriveFull*)thisptr0;
 
-					thisptr->mRAM[addr & 0x1FFF] = val;
+					thisptr->mRAM[0x100 + (addr & 0x1FFF)] = val;
 					thisptr->UpdateROMBankHappy1050(addr);
 				}
 			);
@@ -1042,12 +1046,16 @@ void ATDeviceDiskDriveFull::Init() {
 	UpdateROMBankSuperArchiver();
 	UpdateROMBank1050Turbo();
 	UpdateSlowSwitch();
+	UpdateWriteProtectOverride();
 	UpdateAutoSpeed();
 }
 
 void ATDeviceDiskDriveFull::Shutdown() {
 	mAudioPlayer.Shutdown();
 	mSerialXmitQueue.Shutdown();
+	mRIOT.Shutdown();
+	if (mPIAOutput >= 0) { mPIA.FreeOutput(mPIAOutput); mPIAOutput = -1; }
+	if (mPIAInput >= 0) { mPIA.FreeInput(mPIAInput); mPIAInput = -1; }
 
 	mDriveScheduler.UnsetEvent(mpEventDriveReceiveBit);
 	mDriveScheduler.UnsetEvent(mpEventDriveDiskChange);
@@ -1086,6 +1094,8 @@ uint32 ATDeviceDiskDriveFull::GetComputerPowerOnDelay() const {
 void ATDeviceDiskDriveFull::WarmReset() {
 	// If the computer resets, its transmission is interrupted.
 	mDriveScheduler.UnsetEvent(mpEventDriveReceiveBit);
+	mReceiveShiftRegister = 0;
+	mRIOT.SetInputB(0, mb1050 ? 0x40 : 0x80);
 }
 
 void ATDeviceDiskDriveFull::ComputerColdReset() {
@@ -1116,7 +1126,7 @@ void ATDeviceDiskDriveFull::PeripheralColdReset() {
 	
 	// start the disk drive on a track other than 0/20/39, just to make things interesting
 	mCurrentTrack = mb1050 ? 20 : 10;
-	mFDC.SetCurrentTrack(mCurrentTrack, false);
+	mFDC.SetCurrentTrack(mb1050 ? mCurrentTrack : mCurrentTrack << 1, false);
 
 	mFDC.SetMotorRunning(!mb1050);
 	mFDC.SetDensity(mb1050);
@@ -1219,6 +1229,7 @@ bool ATDeviceDiskDriveFull::ReloadFirmware() {
 			// 3K firmware
 			memmove(firmware + 0x400, firmware, 0xC00);
 			memset(firmware, 0, 0x400);
+			memcpy(firmware + 0x1000, firmware, 0x1000);
 		} else if (len == 0x1000) {
 			// 4K firmware
 			memcpy(firmware + 0x1000, firmware, 0x1000);
@@ -1362,7 +1373,7 @@ void ATDeviceDiskDriveFull::OnScheduledEvent(uint32 id) {
 			case 1:		// disk being removed (write protect covered)
 			case 2:		// disk removed (write protect clear)
 			case 3:		// disk being inserted (write protect covered)
-				mDriveScheduler.SetEvent(mb1050 ? kDiskChangeStepMS : kDiskChangeStepMS >> 1, this, kEventId_DriveDiskChange, mpEventDriveDiskChange);
+				mDriveScheduler.SetEvent(VDRoundToInt32(mDriveScheduler.GetRate().asDouble() * (kDiskChangeStepMS / 1000.0)), this, kEventId_DriveDiskChange, mpEventDriveDiskChange);
 				break;
 
 			case 4:		// disk inserted (write protect normal)
@@ -1868,7 +1879,7 @@ void ATDeviceDiskDriveFull::BitWriterWriteRawTrack() {
 				const uint8 *src2 = src + 18;
 				uint32 accum2 = VDReadUnalignedLEU32(&src[14]);
 				uint32 damPos = 0;
-				uint8 dataField[1024 + 3];
+				uint8 dataField[1024 + 3] {};
 				uint16 recordedDataCRC = 0;
 				uint16 computedDataCRC = 0;
 
@@ -2116,8 +2127,8 @@ void ATDeviceDiskDriveFull::UpdateROMBankHappy1050() {
 	// $2000-3FFF is ignored as the read conflict mapping needs to stay there.
 	// $6000-7FFF is ignored as the write switch mapping needs to stay there (and will forward to $2000-3FFF).
 	// $A000-BFFF is ignored as RAM dominates there.
-	mmapView.SetMemory(0xE0, 0x0F, romBank);
-	mmapView.SetMemory(0xF0, 0x0F, romBank);
+	mmapView.SetReadMem(0xE0, 0x0F, romBank);
+	mmapView.SetReadMem(0xF0, 0x0F, romBank);
 }
 
 void ATDeviceDiskDriveFull::UpdateROMBank1050Turbo() {

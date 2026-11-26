@@ -694,7 +694,7 @@
     <ClCompile Include="..\platform\Windows_x64\Altirra\source\uiexportroms.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\platform\Windows_x64\Altirra\source\diskdrivefull.cpp">
+    <ClCompile Include="source\diskdrivefull.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="source\fdc.cpp">
@@ -1578,7 +1578,7 @@
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\compatengine.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\platform\Windows_x64\Altirra\h\diskdrivefull.h">
+    <ClInclude Include="h\diskdrivefull.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="h\fdc.h">

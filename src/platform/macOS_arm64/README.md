@@ -687,7 +687,7 @@ are removed. Foreign handler addresses and entries still referenced by native
 IOCBs are preserved; table compaction updates IOCB IDs. The PIA overlay keeps
 chip registers and writes accessible around the CIO ROM window. Full tables
 and wrapped buffers are checked before access. The
-native build has 665 translation units and 501 portable groups. Full simulator
+native build has 669 translation units and 525 portable groups. Full simulator
 and application assembly, BASIC interpreter boot, and complete boot validation
 remain outstanding.
 
@@ -780,11 +780,38 @@ select side two, check write protection, and echo a byte through production SIO
 into real POKEY reception. Other groups cover both ROM banks and operand wrapping,
 drive-select inputs, register strobes, image geometry, IRQ delivery, debug steps,
 motor/step audio, firmware disappearance, media replacement and reset/shutdown.
-All eighteen groups pass AddressSanitizer and UBSan. The full native suite passes
-with 501 groups; stock XF551 firmware boot remains unverified.
+All eighteen groups pass AddressSanitizer and UBSan. Stock XF551 firmware boot
+remains unverified.
 
 The port corrects disk-change intervals from 50 controller ticks to 50ms, keeps
 the receive pin at its idle level before and after a frame or reset, and updates
 motor indicators/rotation audio on peripheral reset. Shutdown cancels disk-change
 and FDC events, stops the motor indicator and detaches the disk/SIO clients;
 destruction also performs this cleanup.
+
+The complete 810/1050 drive family (`diskdrivefull.cpp`/`diskdrivefull.h`) is
+shared, including all sixteen configurations: stock 810/1050, Happy, Archiver,
+US Doubler, Speedy, Super Archiver/BitWriter, TOMS, Tygrys, Duplicator, Turbo/Turbo
+II, I.S. Plate and 810 Turbo. It retains the production 6502/65C02, RIOT, FDC,
+PIA, firmware loading, memory maps, switches, serial pins, audio and debug/trace
+interfaces. Tests run native-file test ROMs in every configuration; original
+drive firmware boot and a complete Atari boot remain unverified.
+
+Twenty-four portable groups cover all factories/configurations, drive-select
+inputs, compact Happy and doubled Speedy/I.S. Plate ROMs, RAM/ROM mirrors and
+banking, Happy switches/write protection, CPU steps/history, trace attachment,
+stepper phases and actual FM/MFM sector reads/writes from drive CPU instructions.
+Serial tests echo a byte from production SIO through RIOT and 6502 into POKEY.
+BitWriter tests upload/read its RAM through PIA and write an entire raw track;
+they also decode a 1024-byte sector spanning the index. Motor/audio, byte timing,
+disk-change intervals and reset/shutdown are checked. All twenty-four groups
+pass AddressSanitizer and UBSan; the full native suite passes with 525 groups.
+
+Regressions fix Happy 1050's debugger mirror address translation, RAM bank-control
+aliases and writable ROM mappings; 3KB Happy 810 firmware is mirrored into its
+initial bank. Happy settings apply write protection immediately and on init.
+The 810 reset position now uses the same half-track units as subsequent steps,
+disk-change phases last 50ms at either controller clock, and reset releases the
+receive pin. BitWriter's wrap buffer accommodates a full encoded 1024-byte field,
+and missing data fields have deterministic initial state. Destruction shuts down
+the device, including RIOT timer and PIA input/output allocations.

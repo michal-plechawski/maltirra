@@ -248,6 +248,30 @@ bool ATTestAltirraHLEUtils(ATPortableTestContext& context);
 bool ATTestAltirraGTIATables(ATPortableTestContext& context);
 bool ATTestAltirraGTIARenderer(ATPortableTestContext& context);
 bool ATTestAltirraHostDeviceUtils(ATPortableTestContext& context);
+bool ATTestAltirraFullDriveVariants(ATPortableTestContext& context);
+bool ATTestAltirraFullDriveSettings(ATPortableTestContext& context);
+bool ATTestAltirraFullDriveFirmware(ATPortableTestContext& context);
+bool ATTestAltirraFullDriveCompactFirmware(ATPortableTestContext& context);
+bool ATTestAltirraFullDriveButtons(ATPortableTestContext& context);
+bool ATTestAltirraFullDriveGeometry(ATPortableTestContext& context);
+bool ATTestAltirraFullDriveDebug(ATPortableTestContext& context);
+bool ATTestAltirraFullDriveTrace(ATPortableTestContext& context);
+bool ATTestAltirraFullDriveBaseMemory(ATPortableTestContext& context);
+bool ATTestAltirraFullDriveExpandedRAM(ATPortableTestContext& context);
+bool ATTestAltirraFullDriveHappyBanks(ATPortableTestContext& context);
+bool ATTestAltirraFullDriveArchiverBanks(ATPortableTestContext& context);
+bool ATTestAltirraFullDriveTurboBanks(ATPortableTestContext& context);
+bool ATTestAltirraFullDriveHappyMirrors(ATPortableTestContext& context);
+bool ATTestAltirraFullDriveBitWriterRAM(ATPortableTestContext& context);
+bool ATTestAltirraFullDriveBitWriterTrack(ATPortableTestContext& context);
+bool ATTestAltirraFullDriveReadSector(ATPortableTestContext& context);
+bool ATTestAltirraFullDriveWriteSector(ATPortableTestContext& context);
+bool ATTestAltirraFullDriveStepper(ATPortableTestContext& context);
+bool ATTestAltirraFullDriveDensityMotor(ATPortableTestContext& context);
+bool ATTestAltirraFullDriveDiskChange(ATPortableTestContext& context);
+bool ATTestAltirraFullDriveSerial(ATPortableTestContext& context);
+bool ATTestAltirraFullDriveTiming(ATPortableTestContext& context);
+bool ATTestAltirraFullDriveResetShutdown(ATPortableTestContext& context);
 bool ATTestAltirraXF551Interfaces(ATPortableTestContext& context);
 bool ATTestAltirraXF551Settings(ATPortableTestContext& context);
 bool ATTestAltirraXF551Firmware(ATPortableTestContext& context);
@@ -754,6 +778,30 @@ const ATPortableTestCase *ATGetPortableTests(size_t& count) {
 		{ "Altirra_GTIATables", ATTestAltirraGTIATables },
 		{ "Altirra_GTIARenderer", ATTestAltirraGTIARenderer },
 		{ "Altirra_HostDeviceUtils", ATTestAltirraHostDeviceUtils },
+		{ "Altirra_FullDriveVariants", ATTestAltirraFullDriveVariants },
+		{ "Altirra_FullDriveSettings", ATTestAltirraFullDriveSettings },
+		{ "Altirra_FullDriveFirmware", ATTestAltirraFullDriveFirmware },
+		{ "Altirra_FullDriveCompactFirmware", ATTestAltirraFullDriveCompactFirmware },
+		{ "Altirra_FullDriveButtons", ATTestAltirraFullDriveButtons },
+		{ "Altirra_FullDriveGeometry", ATTestAltirraFullDriveGeometry },
+		{ "Altirra_FullDriveDebug", ATTestAltirraFullDriveDebug },
+		{ "Altirra_FullDriveTrace", ATTestAltirraFullDriveTrace },
+		{ "Altirra_FullDriveBaseMemory", ATTestAltirraFullDriveBaseMemory },
+		{ "Altirra_FullDriveExpandedRAM", ATTestAltirraFullDriveExpandedRAM },
+		{ "Altirra_FullDriveHappyBanks", ATTestAltirraFullDriveHappyBanks },
+		{ "Altirra_FullDriveArchiverBanks", ATTestAltirraFullDriveArchiverBanks },
+		{ "Altirra_FullDriveTurboBanks", ATTestAltirraFullDriveTurboBanks },
+		{ "Altirra_FullDriveHappyMirrors", ATTestAltirraFullDriveHappyMirrors },
+		{ "Altirra_FullDriveBitWriterRAM", ATTestAltirraFullDriveBitWriterRAM },
+		{ "Altirra_FullDriveBitWriterTrack", ATTestAltirraFullDriveBitWriterTrack },
+		{ "Altirra_FullDriveReadSector", ATTestAltirraFullDriveReadSector },
+		{ "Altirra_FullDriveWriteSector", ATTestAltirraFullDriveWriteSector },
+		{ "Altirra_FullDriveStepper", ATTestAltirraFullDriveStepper },
+		{ "Altirra_FullDriveDensityMotor", ATTestAltirraFullDriveDensityMotor },
+		{ "Altirra_FullDriveDiskChange", ATTestAltirraFullDriveDiskChange },
+		{ "Altirra_FullDriveSerial", ATTestAltirraFullDriveSerial },
+		{ "Altirra_FullDriveTiming", ATTestAltirraFullDriveTiming },
+		{ "Altirra_FullDriveResetShutdown", ATTestAltirraFullDriveResetShutdown },
 		{ "Altirra_XF551Interfaces", ATTestAltirraXF551Interfaces },
 		{ "Altirra_XF551Settings", ATTestAltirraXF551Settings },
 		{ "Altirra_XF551Firmware", ATTestAltirraXF551Firmware },

@@ -18,6 +18,7 @@
 #ifndef f_AT_DISKDRIVEFULL_H
 #define f_AT_DISKDRIVEFULL_H
 
+#include <utility>
 #include <vd2/system/function.h>
 #include <vd2/system/refcount.h>
 #include <vd2/system/vdstl.h>
@@ -255,13 +256,13 @@ protected:
 	
 	// The slowest standard speed is 270 RPM at 4us bit cells, which corresponds to
 	// 55,555.6 bit cells per track, or 6944.4 raw bytes (including clock and data bits).
-	// To make things easier, we allocate 6945+1536 bytes and repeat the extra bits
+	// To make things easier, we allocate 6945+2176 bytes and repeat the extra bits
 	// so we can overrun by up to a full sector when parsing, + 64 bits for the bit
 	// reader. During the write, we
 	// wrap over the entire buffer size, and after the write, the last part gets
 	// rotated around and tail-wrapped for decoding.
 	static constexpr uint32 kRawTrackMaxBitLen = 55556;
-	static constexpr uint32 kRawTrackBufExtraWrap = 1536;
+	static constexpr uint32 kRawTrackBufExtraWrap = 2 * (1024 + 64);
 	static constexpr uint32 kRawTrackBufSize = 6945 + kRawTrackBufExtraWrap + 8;
 	uint8 mBitWriterTrack[kRawTrackBufSize] {};
 	
