@@ -718,7 +718,7 @@
     <ClCompile Include="..\platform\Windows_x64\Altirra\source\uiconfdiskdrivefull.cpp">
       <Filter>Source Files - Device Configuration UI</Filter>
     </ClCompile>
-    <ClCompile Include="..\platform\Windows_x64\Altirra\source\diskdriveatr8000.cpp">
+    <ClCompile Include="source\diskdriveatr8000.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\platform\Windows_x64\Altirra\source\uiconfdevatr8000.cpp">
@@ -1599,7 +1599,7 @@
     <ClInclude Include="h\diskinterface.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\platform\Windows_x64\Altirra\h\diskdriveatr8000.h">
+    <ClInclude Include="h\diskdriveatr8000.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="h\diskdrivepercom.h">

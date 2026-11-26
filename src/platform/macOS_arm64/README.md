@@ -687,7 +687,7 @@ are removed. Foreign handler addresses and entries still referenced by native
 IOCBs are preserved; table compaction updates IOCB IDs. The PIA overlay keeps
 chip registers and writes accessible around the CIO ROM window. Full tables
 and wrapped buffers are checked before access. The
-native build has 685 translation units and 627 portable groups. Full simulator
+native build has 690 translation units and 665 portable groups. Full simulator
 and application assembly, BASIC interpreter boot, and complete boot validation
 remain outstanding.
 
@@ -873,8 +873,7 @@ transfer a sector through a real FIRQ handler and service the watchdog NMI.
 Six additional ACIA groups check transmit buffering and timing, clock dividers,
 receive acknowledgement and framing errors, IRQ transitions and reset during a
 pending transmission. All thirty groups pass AddressSanitizer and UBSan with
-the AMDC, FDC, ACIA, 6809, decoder and memory-map implementations instrumented;
-the complete native suite passes 599 groups.
+the AMDC, FDC, ACIA, 6809, decoder and memory-map implementations instrumented.
 
 Regressions clear both ACIA transmit stages on reset, mark the data register
 empty and refresh IRQ when queuing a second byte. The 6809 debug state now
@@ -902,7 +901,7 @@ Printer tests drive PIA data and strobe registers into the production text-outpu
 manager and a child raw-printer sink, including attach/detach, lazy output
 creation and repeated peripheral resets. All twenty-eight groups pass ASan and
 UBSan with the Percom, FDC, PIA, ACIA, 6809, decoder, memory map and child-bus
-implementation instrumented. The complete native suite passes 627 groups.
+implementation instrumented.
 
 Regressions preserve the 1795 option in settings, refresh the AT-88 PIA write
 protect input from the actual media without pulling unrelated inputs low, and
@@ -911,3 +910,39 @@ bit shift, peripheral reset resamples COMMAND, and shutdown cancels both FDCs,
 ACIA and watchdog events, detaches printers and clears motor/activity indicators.
 Destruction performs the same cleanup. Stock Percom firmware boot and complete
 Atari boot remain unverified.
+
+The complete ATR8000 (`diskdriveatr8000.cpp`/`diskdriveatr8000.h`) is shared,
+including the production Z80, CTC, 1793 FDC, 64KB RAM with mirrored switchable
+ROM, simultaneous drive selection, 5.25/8-inch timing, bit-level SIO, serial and
+parallel child buses, firmware provider, reset button, audio and debug/history
+interfaces. Thirty portable groups load native-file test ROMs and execute actual
+Z80 programs. Tests cover FM/MFM reads and writes on every drive, both sides,
+multi-drive restore and seek limits, write protection and media changes, index
+control and byte timing, IM2 interrupts from COMMAND and cascaded CTC channels,
+and sector transfers through HALT/NMI. SIO transmit reaches the real POKEY;
+receive tests sample the real input latch.
+
+RS-232 tests cover idle and status lines, RTS/DTR and CTS/DSR selection, false
+starts, receive-bit timing, transmit at 1200 baud and SIO-calibrated 19245 baud,
+and detachment during active receive/transmit. Printer tests drive data/strobe
+ports into the production output manager and an attached raw printer, including
+lazy creation, duplicate strobes, reset and child removal. Regressions preserve
+actual disk write protection, use 50ms disk-change phases at 4MHz, restore idle
+receive state and sample COMMAND on reset, ignore zero-rate input, cancel pending
+disk/serial events and detach children on shutdown, and clear motor/activity
+indicators. RS-232 transmit edges use converted Z80 instruction times rather than
+the host scheduler's synchronization batches.
+
+Eight standalone CTC groups check both prescalers, external triggers, interrupt
+enable, counter output pulses, zero-as-256 constants, cascade, reset, edge
+selection and nested priorities with pending lower-priority requests. The CTC
+fixes arm and schedule externally triggered timers, gate counter interrupts,
+generate counter underflow outputs, cancel obsolete events and preserve higher-
+priority preemption. Register semantics are checked against the CTC section of
+the [Zilog Z80 Family handbook](https://bitsavers.trailing-edge.com/components/zilog/z80/Z80_Family_Product_Specifications_Handbook_Feb84.pdf).
+
+All thirty-eight groups pass ASan and UBSan using a fully instrumented build of
+all 690 translation units, including the host fixtures and STL template users.
+This also avoids the documented [mixed-instrumentation container false positives](https://github.com/google/sanitizers/wiki/AddressSanitizerContainerOverflow#false-positives).
+The regular native suite passes 665 groups. Stock ATR8000 firmware/CP/M boot and
+complete Atari boot remain unverified.

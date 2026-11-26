@@ -735,6 +735,18 @@
     <ClCompile Include="source\TestAltirra_CIOPortable.cpp">
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="source\TestAltirra_ATR8000Portable.cpp">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="source\TestAltirra_ATR8000DiskPortable.cpp">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="source\TestAltirra_ATR8000BusPortable.cpp">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="source\TestEmu_CTCPortable.cpp">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+    </ClCompile>
     <ClCompile Include="source\TestAltirra_PercomPortable.cpp">
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
     </ClCompile>

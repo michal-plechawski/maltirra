@@ -7,7 +7,9 @@
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="source\crtc.cpp" />
-    <ClCompile Include="source\ctc.cpp" />
+    <ClCompile Include="source\ctc.cpp">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+    </ClCompile>
     <ClCompile Include="source\diskutils.cpp" />
     <ClCompile Include="source\eeprom.cpp" />
     <ClCompile Include="source\flash.cpp" />

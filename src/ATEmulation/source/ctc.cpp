@@ -15,7 +15,7 @@
 //	along with this program; if not, write to the Free Software
 //	Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
-#include <stdafx.h>
+#include <algorithm>
 #include <at/atcore/consoleoutput.h>
 #include <at/atcore/scheduler.h>
 #include <at/atcore/logging.h>
@@ -64,11 +64,14 @@ void ATCTCEmulator::DumpStatus(ATConsoleOutput& out) const {
 }
 
 void ATCTCEmulator::Reset() {
+	mpScheduler->UnsetEvent(mpInterruptEvent);
+
 	if (mpInterruptFn)
 		mpInterruptFn(-1);
 
 	for(Channel& ch : mChannels) {
 		ch.mbInterruptActive = false;
+		ch.mbInterruptEnabled = false;
 		ResetChannel(ch);
 	}
 }
@@ -100,9 +103,9 @@ void ATCTCEmulator::WriteByte(uint8 address, uint8 value) {
 			ch.mCounter = (uint8)ch.mTimeConstant;
 			ch.mbCounterRunning = true;
 			ch.mbEnabled = true;
-		} else if (ch.mbAutomaticTrigger && !ch.mbEnabled) {
+		} else if (!ch.mbEnabled) {
 			ch.mbEnabled = true;
-			ch.mbTimerRunning = true;
+			ch.mbTimerRunning = ch.mbAutomaticTrigger;
 			ch.mCounter = (uint8)ch.mTimeConstant;
 			ch.mTimerBase = mpScheduler->GetTick64();
 		}
@@ -143,7 +146,7 @@ void ATCTCEmulator::SetInputState(uint8 channel, bool state) {
 		ch.mbInputState = state;
 
 		if (ch.mbRisingEdgeTrigger == state)
-			TriggerChannel(ch);
+			TriggerChannel(channel & 3, ch);
 	}
 }
 
@@ -202,24 +205,28 @@ void ATCTCEmulator::ResetChannel(Channel& ch) {
 	mpScheduler->UnsetEvent(ch.mpUnderflowEvent);
 }
 
-void ATCTCEmulator::TriggerChannel(Channel& ch) {
+void ATCTCEmulator::TriggerChannel(uint32 channelIndex, Channel& ch) {
 	if (ch.mbCounterRunning) {
 		--ch.mCounter;
 
 		if (!ch.mCounter) {
 			ch.mCounter = (uint8)ch.mTimeConstant;
 
-			if (!ch.mbInterruptActive) {
+			if (ch.mbInterruptEnabled && !ch.mbInterruptActive) {
 				ch.mInterruptTime = mpScheduler->GetTick64();
 
 				mpScheduler->UnsetEvent(mpInterruptEvent);
 				AssertInterrupt();
 			}
+
+			if (ch.mpUnderflowFn)
+				ch.mpUnderflowFn();
 		}
 	} else if (ch.mbEnabled && !ch.mbTimerRunning) {
 		ch.mbTimerRunning = true;
 		ch.mCounter = (uint8)ch.mTimeConstant;
 		ch.mTimerBase = mpScheduler->GetTick64();
+		UpdateInterruptTime(channelIndex, ch);
 	}
 }
 
@@ -301,8 +308,9 @@ void ATCTCEmulator::UpdateGlobalInterruptTime() {
 	uint64 interruptTime = UINT64_MAX;
 
 	for(const Channel& ch : mChannels) {
+		// An in-service channel blocks only lower-priority channels.
 		if (ch.mbInterruptActive)
-			return;
+			break;
 
 		if (ch.mInterruptTime && ch.mInterruptTime < interruptTime)
 			interruptTime = ch.mInterruptTime;
@@ -313,7 +321,8 @@ void ATCTCEmulator::UpdateGlobalInterruptTime() {
 		const uint64 delay = interruptTime <= t ? 1 : interruptTime - t;
 
 		mpScheduler->SetEvent((uint32)delay, this, kEventId_Interrupt, mpInterruptEvent);
-	}
+	} else
+		mpScheduler->UnsetEvent(mpInterruptEvent);
 }
 
 void ATCTCEmulator::AssertInterrupt() {
@@ -321,7 +330,8 @@ void ATCTCEmulator::AssertInterrupt() {
 
 	uint32 vec = mInterruptVector;
 	for(Channel& ch : mChannels) {
-		VDASSERT(!ch.mbInterruptActive);
+		if (ch.mbInterruptActive)
+			break;
 
 		if (ch.mInterruptTime && ch.mInterruptTime <= t) {
 			ch.mbInterruptActive = true;
@@ -333,4 +343,6 @@ void ATCTCEmulator::AssertInterrupt() {
 
 		vec += 2;
 	}
+
+	UpdateGlobalInterruptTime();
 }

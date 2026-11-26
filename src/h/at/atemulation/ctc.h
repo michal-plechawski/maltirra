@@ -21,6 +21,8 @@
 #include <vd2/system/function.h>
 #include <at/atcore/scheduler.h>
 
+class ATConsoleOutput;
+
 class ATCTCEmulator final : public IATSchedulerCallback {
 public:
 	enum : uint32 { kTypeID = 'ctc ' };
@@ -78,7 +80,7 @@ protected:
 	};
 
 	void ResetChannel(Channel& ch);
-	void TriggerChannel(Channel& ch);
+	void TriggerChannel(uint32 channelIndex, Channel& ch);
 	uint8 ComputeCounter(const Channel& ch) const;
 	uint64 ComputeNextExpiration(const Channel& ch) const;
 	void UpdateInterruptTime(uint32 channelIndex, Channel& ch);

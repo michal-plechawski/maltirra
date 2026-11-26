@@ -15,7 +15,10 @@
 //	along with this program; if not, write to the Free Software
 //	Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
-#include <stdafx.h>
+#include <algorithm>
+#include <cmath>
+#include <cstring>
+#include <iterator>
 #include <vd2/system/bitmath.h>
 #include <vd2/system/hash.h>
 #include <vd2/system/int128.h>
@@ -27,11 +30,8 @@
 #include <at/atcore/deviceparentimpl.h>
 #include <at/atcore/deviceserial.h>
 #include <at/atcore/wraptime.h>
-#include "audiosampleplayer.h"
 #include "diskdriveatr8000.h"
-#include "memorymanager.h"
 #include "firmwaremanager.h"
-#include "debuggerlog.h"
 
 extern ATLogChannel g_ATLCDiskEmu;
 
@@ -100,7 +100,7 @@ public:
 
 	bool GetReceiveState() const;
 	void SetTransmitBaudRate(uint32 baudRate);
-	void SetTransmitState(bool state);
+	void SetTransmitState(uint32 t, bool state);
 
 	void ReadStatus(bool& signal2, bool& ring) const;
 	void SetControlState(bool state);
@@ -117,6 +117,7 @@ public:
 	void OnScheduledEvent(uint32 id) override;
 
 private:
+	void CancelTransfers();
 	void AdvanceTransmitShifter(uint32 t);
 	void UpdateControlState();
 
@@ -158,10 +159,18 @@ private:
 };
 
 ATDeviceDiskDriveATR8000::SerialPort::~SerialPort() {
-	if (mpSerialDevice) {
-		vdpoly_cast<IATDevice *>(mpSerialDevice)->SetParent(nullptr, 0);
-		mpSerialDevice = nullptr;
+	Shutdown();
+}
+
+void ATDeviceDiskDriveATR8000::SerialPort::CancelTransfers() {
+	if (mpScheduler) {
+		mpScheduler->UnsetEvent(mpTransmitEvent);
+		mpScheduler->UnsetEvent(mpReceiveEvent);
 	}
+	mTransmitState = 0;
+	mbTransmitLevel = true;
+	mReceiveByteDuration = 0;
+	mReceiveShifter = 0;
 }
 
 void ATDeviceDiskDriveATR8000::SerialPort::Init(IATDeviceParent *parent, ATScheduler *sch) {
@@ -170,11 +179,13 @@ void ATDeviceDiskDriveATR8000::SerialPort::Init(IATDeviceParent *parent, ATSched
 }
 
 void ATDeviceDiskDriveATR8000::SerialPort::Shutdown() {
-	if (mpScheduler) {
-		mpScheduler->UnsetEvent(mpTransmitEvent);
-		mpScheduler->UnsetEvent(mpReceiveEvent);
-		mpScheduler = nullptr;
+	CancelTransfers();
+	if (mpSerialDevice) {
+		vdpoly_cast<IATDevice *>(mpSerialDevice)->SetParent(nullptr, 0);
+		mpSerialDevice = nullptr;
 	}
+	mpScheduler = nullptr;
+	mpParent = nullptr;
 }
 
 void ATDeviceDiskDriveATR8000::SerialPort::GetSettings(ATPropertySet& settings) const {
@@ -185,7 +196,7 @@ void ATDeviceDiskDriveATR8000::SerialPort::GetSettings(ATPropertySet& settings) 
 void ATDeviceDiskDriveATR8000::SerialPort::SetSettings(const ATPropertySet& settings) {
 	const VDStringSpanW s1 { settings.GetString("signal1", L"") };
 	int idx1 = vdfind_index_if_r(kSignal1Names, [=](const wchar_t *s) { return s1 == s; });
-	mSignal1Mode = idx1 >= 0 ? (Signal1Mode)idx1 : kSignal1_RTS;
+	SetSignal1Mode(idx1 >= 0 ? (Signal1Mode)idx1 : kSignal1_RTS);
 
 	const VDStringSpanW s2 { settings.GetString("signal2", L"") };
 	int idx2 = vdfind_index_if_r(kSignal2Names, [=](const wchar_t *s) { return s2 == s; });
@@ -229,7 +240,7 @@ void ATDeviceDiskDriveATR8000::SerialPort::Reset() {
 
 bool ATDeviceDiskDriveATR8000::SerialPort::GetReceiveState() const {
 	if (!mReceiveByteDuration)
-		return false;
+		return true;
 
 	const uint64 dt = mpScheduler->GetTick64() - mReceiveByteStart;
 
@@ -242,7 +253,7 @@ bool ATDeviceDiskDriveATR8000::SerialPort::GetReceiveState() const {
 }
 
 void ATDeviceDiskDriveATR8000::SerialPort::SetTransmitBaudRate(uint32 baudRate) {
-	if (mTransmitBaudRate == baudRate)
+	if (!baudRate || mTransmitBaudRate == baudRate)
 		return;
 
 	mTransmitBaudRate = baudRate;
@@ -250,13 +261,11 @@ void ATDeviceDiskDriveATR8000::SerialPort::SetTransmitBaudRate(uint32 baudRate) 
 	mTransmitCyclesPerBitX256 = VDRoundToInt32(mpScheduler->GetRate().asDouble() / (double)mTransmitBaudRate * 256.0);
 }
 
-void ATDeviceDiskDriveATR8000::SerialPort::SetTransmitState(bool state) {
+void ATDeviceDiskDriveATR8000::SerialPort::SetTransmitState(uint32 t, bool state) {
 	if (mbTransmitLevel == state)
 		return;
 
-	// check if we're transmitting
-	const uint32 t = mpScheduler->GetTick();
-
+	// Sample at the drive instruction time, independent of sync batch size.
 	if (mTransmitState) {
 		// check for false start bit
 		if (state && mTransmitState == 1 && ATWrapTime{t} < mTransmitTimeNextBit) {
@@ -343,8 +352,10 @@ void ATDeviceDiskDriveATR8000::SerialPort::AddChildDevice(IATDevice *dev) {
 	IATDeviceSerial *sdev = vdpoly_cast<IATDeviceSerial *>(dev);
 
 	if (sdev && !mpSerialDevice) {
+		CancelTransfers();
 		mpSerialDevice = sdev;
 		dev->SetParent(mpParent, 0);
+		UpdateControlState();
 	}
 }
 
@@ -352,6 +363,7 @@ void ATDeviceDiskDriveATR8000::SerialPort::RemoveChildDevice(IATDevice *dev) {
 	IATDeviceSerial *sdev = vdpoly_cast<IATDeviceSerial *>(dev);
 
 	if (sdev && sdev == mpSerialDevice) {
+		CancelTransfers();
 		dev->SetParent(nullptr, 0);
 		mpSerialDevice = nullptr;
 	}
@@ -457,6 +469,7 @@ ATDeviceDiskDriveATR8000::ATDeviceDiskDriveATR8000() {
 }
 
 ATDeviceDiskDriveATR8000::~ATDeviceDiskDriveATR8000() {
+	Shutdown();
 	vdsafedelete <<= mpSerialPort;
 }
 
@@ -619,13 +632,17 @@ void ATDeviceDiskDriveATR8000::Shutdown() {
 	}
 
 	for(auto& drive : mDrives) {
+		mDriveScheduler.UnsetEvent(drive.mpEventDriveDiskChange);
 		if (drive.mpDiskInterface) {
+			drive.mpDiskInterface->SetShowMotorActive(false);
+			drive.mpDiskInterface->SetShowActivity(false, 0);
 			drive.mpDiskInterface->RemoveClient(&drive);
 			drive.mpDiskInterface = nullptr;
 		}
 	}
 
 	mpDiskDriveManager = nullptr;
+	mSelectedDrives = 0;
 }
 
 uint32 ATDeviceDiskDriveATR8000::GetComputerPowerOnDelay() const {
@@ -635,6 +652,8 @@ uint32 ATDeviceDiskDriveATR8000::GetComputerPowerOnDelay() const {
 void ATDeviceDiskDriveATR8000::WarmReset() {
 	// If the computer resets, its transmission is interrupted.
 	mDriveScheduler.UnsetEvent(mpEventDriveReceiveBit);
+	mReceiveShiftRegister = 1;
+	UpdateCTCTrigger0Input();
 }
 
 void ATDeviceDiskDriveATR8000::ComputerColdReset() {
@@ -645,8 +664,11 @@ void ATDeviceDiskDriveATR8000::PeripheralColdReset() {
 	memset(mRAM, 0xFF, sizeof mRAM);
 
 	// start the disk drive on a track other than 0/20/39, just to make things interesting
-	for(Drive& drive : mDrives)
+	for(Drive& drive : mDrives) {
+		mDriveScheduler.UnsetEvent(drive.mpEventDriveDiskChange);
+		drive.mDiskChangeState = 0;
 		drive.mCurrentTrack = 2;
+	}
 
 	mFDC.SetCurrentTrack(2, false);
 
@@ -671,6 +693,9 @@ void ATDeviceDiskDriveATR8000::DeviceReset() {
 
 	mbDirectTransmitOutput = true;
 
+	mDriveScheduler.UnsetEvent(mpEventDriveReceiveBit);
+	mReceiveShiftRegister = 1;
+	mbCommandState = mpSIOMgr && mpSIOMgr->IsSIOCommandAsserted();
 	mbTrigger0SelectData = true;
 	UpdateCTCTrigger0Input();
 
@@ -771,7 +796,7 @@ void ATDeviceDiskDriveATR8000::OnScheduledEvent(uint32 id) {
 			case 1:		// disk being removed (write protect covered)
 			case 2:		// disk removed (write protect clear)
 			case 3:		// disk being inserted (write protect covered)
-				mDriveScheduler.SetEvent(kDiskChangeStepMS, this, kEventId_DriveDiskChange0 + index, drive.mpEventDriveDiskChange);
+				mDriveScheduler.SetEvent(kDiskChangeStepMS * 4000, this, kEventId_DriveDiskChange0 + index, drive.mpEventDriveDiskChange);
 				break;
 
 			case 4:		// disk inserted (write protect normal)
@@ -798,6 +823,9 @@ void ATDeviceDiskDriveATR8000::OnMotorStateChanged(bool asserted) {
 }
 
 void ATDeviceDiskDriveATR8000::OnReceiveByte(uint8 c, bool command, uint32 cyclesPerBit) {
+	if (!cyclesPerBit)
+		return;
+
 	Sync();
 
 	mReceiveShiftRegister = (c + c + 0x200) * 2 + 1;
@@ -1053,7 +1081,7 @@ void ATDeviceDiskDriveATR8000::OnWritePort(uint8 addr, uint8 val) {
 						break;
 
 					case 1:
-						mpSerialPort->SetTransmitState(state);
+						mpSerialPort->SetTransmitState(DriveTimeToMasterTime(), state);
 						break;
 
 					case 2:
@@ -1134,7 +1162,8 @@ void ATDeviceDiskDriveATR8000::OnCTCInterrupt(sint32 vec) {
 	if (vec >= 0) {
 		mPendingIntVector = vec;
 		mCoProc.AssertIrq();
-	}
+	} else
+		mCoProc.NegateIrq();
 }
 
 void ATDeviceDiskDriveATR8000::OnFDCStep(bool inward) {
@@ -1261,7 +1290,7 @@ void ATDeviceDiskDriveATR8000::UpdateDiskStatus() {
 void ATDeviceDiskDriveATR8000::UpdateWriteProtectStatus() {
 	bool wpOverride = false;
 
-	// check if any selected drives need WP override due to disk change emulation
+	// Combine physical protection and disk-change sensor levels across drives.
 	if (mSelectedDrives) {
 		for(uint32 i=0; i<kNumDrives; ++i) {
 			if (!(mSelectedDrives & (1 << i)))
@@ -1269,7 +1298,10 @@ void ATDeviceDiskDriveATR8000::UpdateWriteProtectStatus() {
 
 			Drive& drive = mDrives[i];
 
-			if ((drive.mDiskChangeState & 1) != 0) {
+			const bool writeProtected = drive.mDiskChangeState
+				? (drive.mDiskChangeState & 1) != 0
+				: drive.mpDiskInterface->GetDiskImage() && !drive.mpDiskInterface->IsDiskWritable();
+			if (writeProtected) {
 				wpOverride = true;
 				break;
 			}

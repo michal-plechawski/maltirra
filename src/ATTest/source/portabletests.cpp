@@ -248,6 +248,44 @@ bool ATTestAltirraHLEUtils(ATPortableTestContext& context);
 bool ATTestAltirraGTIATables(ATPortableTestContext& context);
 bool ATTestAltirraGTIARenderer(ATPortableTestContext& context);
 bool ATTestAltirraHostDeviceUtils(ATPortableTestContext& context);
+bool ATTestAltirraATR8000Interfaces(ATPortableTestContext& context);
+bool ATTestAltirraATR8000Settings(ATPortableTestContext& context);
+bool ATTestAltirraATR8000SparseSlots(ATPortableTestContext& context);
+bool ATTestAltirraATR8000Firmware(ATPortableTestContext& context);
+bool ATTestAltirraATR8000CPU(ATPortableTestContext& context);
+bool ATTestAltirraATR8000Memory(ATPortableTestContext& context);
+bool ATTestAltirraATR8000ROMBank(ATPortableTestContext& context);
+bool ATTestAltirraATR8000DebugHistory(ATPortableTestContext& context);
+bool ATTestAltirraATR8000Selection(ATPortableTestContext& context);
+bool ATTestAltirraATR8000MultiSelect(ATPortableTestContext& context);
+bool ATTestAltirraATR8000ReadSector(ATPortableTestContext& context);
+bool ATTestAltirraATR8000WriteSector(ATPortableTestContext& context);
+bool ATTestAltirraATR8000Side(ATPortableTestContext& context);
+bool ATTestAltirraATR8000Seek(ATPortableTestContext& context);
+bool ATTestAltirraATR8000WriteProtect(ATPortableTestContext& context);
+bool ATTestAltirraATR8000MediaChange(ATPortableTestContext& context);
+bool ATTestAltirraATR8000Clock(ATPortableTestContext& context);
+bool ATTestAltirraATR8000CTCIRQ(ATPortableTestContext& context);
+bool ATTestAltirraATR8000HALTNMI(ATPortableTestContext& context);
+bool ATTestAltirraATR8000SIOReceive(ATPortableTestContext& context);
+bool ATTestAltirraATR8000SIOTransmit(ATPortableTestContext& context);
+bool ATTestAltirraATR8000CommandReset(ATPortableTestContext& context);
+bool ATTestAltirraATR8000Audio(ATPortableTestContext& context);
+bool ATTestAltirraATR8000SerialStatus(ATPortableTestContext& context);
+bool ATTestAltirraATR8000SerialTransmit(ATPortableTestContext& context);
+bool ATTestAltirraATR8000SerialReceive(ATPortableTestContext& context);
+bool ATTestAltirraATR8000SerialDetach(ATPortableTestContext& context);
+bool ATTestAltirraATR8000Printer(ATPortableTestContext& context);
+bool ATTestAltirraATR8000PrinterChild(ATPortableTestContext& context);
+bool ATTestAltirraATR8000ResetShutdown(ATPortableTestContext& context);
+bool ATTestEmuCTCTimer(ATPortableTestContext& context);
+bool ATTestEmuCTCExternalTrigger(ATPortableTestContext& context);
+bool ATTestEmuCTCCounter(ATPortableTestContext& context);
+bool ATTestEmuCTCZeroConstant(ATPortableTestContext& context);
+bool ATTestEmuCTCCascade(ATPortableTestContext& context);
+bool ATTestEmuCTCPriority(ATPortableTestContext& context);
+bool ATTestEmuCTCResetPending(ATPortableTestContext& context);
+bool ATTestEmuCTCEdges(ATPortableTestContext& context);
 bool ATTestAltirraPercomInterfaces(ATPortableTestContext& context);
 bool ATTestAltirraPercomSettings(ATPortableTestContext& context);
 bool ATTestAltirraPercomSparseSlots(ATPortableTestContext& context);
@@ -880,6 +918,44 @@ const ATPortableTestCase *ATGetPortableTests(size_t& count) {
 		{ "Altirra_GTIATables", ATTestAltirraGTIATables },
 		{ "Altirra_GTIARenderer", ATTestAltirraGTIARenderer },
 		{ "Altirra_HostDeviceUtils", ATTestAltirraHostDeviceUtils },
+		{ "Altirra_ATR8000Interfaces", ATTestAltirraATR8000Interfaces },
+		{ "Altirra_ATR8000Settings", ATTestAltirraATR8000Settings },
+		{ "Altirra_ATR8000SparseSlots", ATTestAltirraATR8000SparseSlots },
+		{ "Altirra_ATR8000Firmware", ATTestAltirraATR8000Firmware },
+		{ "Altirra_ATR8000CPU", ATTestAltirraATR8000CPU },
+		{ "Altirra_ATR8000Memory", ATTestAltirraATR8000Memory },
+		{ "Altirra_ATR8000ROMBank", ATTestAltirraATR8000ROMBank },
+		{ "Altirra_ATR8000DebugHistory", ATTestAltirraATR8000DebugHistory },
+		{ "Altirra_ATR8000Selection", ATTestAltirraATR8000Selection },
+		{ "Altirra_ATR8000MultiSelect", ATTestAltirraATR8000MultiSelect },
+		{ "Altirra_ATR8000ReadSector", ATTestAltirraATR8000ReadSector },
+		{ "Altirra_ATR8000WriteSector", ATTestAltirraATR8000WriteSector },
+		{ "Altirra_ATR8000Side", ATTestAltirraATR8000Side },
+		{ "Altirra_ATR8000Seek", ATTestAltirraATR8000Seek },
+		{ "Altirra_ATR8000WriteProtect", ATTestAltirraATR8000WriteProtect },
+		{ "Altirra_ATR8000MediaChange", ATTestAltirraATR8000MediaChange },
+		{ "Altirra_ATR8000Clock", ATTestAltirraATR8000Clock },
+		{ "Altirra_ATR8000CTCIRQ", ATTestAltirraATR8000CTCIRQ },
+		{ "Altirra_ATR8000HALTNMI", ATTestAltirraATR8000HALTNMI },
+		{ "Altirra_ATR8000SIOReceive", ATTestAltirraATR8000SIOReceive },
+		{ "Altirra_ATR8000SIOTransmit", ATTestAltirraATR8000SIOTransmit },
+		{ "Altirra_ATR8000CommandReset", ATTestAltirraATR8000CommandReset },
+		{ "Altirra_ATR8000Audio", ATTestAltirraATR8000Audio },
+		{ "Altirra_ATR8000SerialStatus", ATTestAltirraATR8000SerialStatus },
+		{ "Altirra_ATR8000SerialTransmit", ATTestAltirraATR8000SerialTransmit },
+		{ "Altirra_ATR8000SerialReceive", ATTestAltirraATR8000SerialReceive },
+		{ "Altirra_ATR8000SerialDetach", ATTestAltirraATR8000SerialDetach },
+		{ "Altirra_ATR8000Printer", ATTestAltirraATR8000Printer },
+		{ "Altirra_ATR8000PrinterChild", ATTestAltirraATR8000PrinterChild },
+		{ "Altirra_ATR8000ResetShutdown", ATTestAltirraATR8000ResetShutdown },
+		{ "Emu_CTCTimer", ATTestEmuCTCTimer },
+		{ "Emu_CTCExternalTrigger", ATTestEmuCTCExternalTrigger },
+		{ "Emu_CTCCounter", ATTestEmuCTCCounter },
+		{ "Emu_CTCZeroConstant", ATTestEmuCTCZeroConstant },
+		{ "Emu_CTCCascade", ATTestEmuCTCCascade },
+		{ "Emu_CTCPriority", ATTestEmuCTCPriority },
+		{ "Emu_CTCResetPending", ATTestEmuCTCResetPending },
+		{ "Emu_CTCEdges", ATTestEmuCTCEdges },
 		{ "Altirra_PercomInterfaces", ATTestAltirraPercomInterfaces },
 		{ "Altirra_PercomSettings", ATTestAltirraPercomSettings },
 		{ "Altirra_PercomSparseSlots", ATTestAltirraPercomSparseSlots },

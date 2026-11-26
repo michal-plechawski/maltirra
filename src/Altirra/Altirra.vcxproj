@@ -84,7 +84,7 @@
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\devxcmdcopypaste.h" />
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\diskdrive815.h" />
     <ClInclude Include="h\diskdriveamdc.h" />
-    <ClInclude Include="..\platform\Windows_x64\Altirra\h\diskdriveatr8000.h" />
+    <ClInclude Include="h\diskdriveatr8000.h" />
     <ClInclude Include="h\diskdrivefull.h" />
     <ClInclude Include="h\diskdrivefullbase.h" />
     <ClInclude Include="h\diskdriveindusgt.h" />
@@ -322,7 +322,9 @@
     <ClCompile Include="source\diskdriveamdc.cpp">
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="..\platform\Windows_x64\Altirra\source\diskdriveatr8000.cpp" />
+    <ClCompile Include="source\diskdriveatr8000.cpp">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+    </ClCompile>
     <ClCompile Include="source\diskdrivefull.cpp">
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
     </ClCompile>

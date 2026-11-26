@@ -192,6 +192,10 @@ portable_test_sources=(
 	src/ATTest/source/TestAltirra_CallbackPortable.cpp
 	src/ATTest/source/TestAltirra_CartridgePortPortable.cpp
 	src/ATTest/source/TestAltirra_CIOPortable.cpp
+	src/ATTest/source/TestAltirra_ATR8000Portable.cpp
+	src/ATTest/source/TestAltirra_ATR8000DiskPortable.cpp
+	src/ATTest/source/TestAltirra_ATR8000BusPortable.cpp
+	src/ATTest/source/TestEmu_CTCPortable.cpp
 	src/ATTest/source/TestAltirra_PercomPortable.cpp
 	src/ATTest/source/TestAltirra_PercomDiskPortable.cpp
 	src/ATTest/source/TestAltirra_PercomBusPortable.cpp
@@ -593,6 +597,8 @@ portable_test_sources=(
 	src/platform/macOS_arm64/Altirra/source/oshelper.mm
 	src/platform/macOS_arm64/Altirra/source/pclink_posix.cpp
 	src/Altirra/source/pclink.cpp
+	src/Altirra/source/diskdriveatr8000.cpp
+	src/ATEmulation/source/ctc.cpp
 	src/Altirra/source/diskdrivepercom.cpp
 	src/Altirra/source/diskdriveamdc.cpp
 	src/ATCPU/source/co6809.cpp
