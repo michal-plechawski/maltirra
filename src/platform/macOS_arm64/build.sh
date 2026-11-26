@@ -192,6 +192,9 @@ portable_test_sources=(
 	src/ATTest/source/TestAltirra_CallbackPortable.cpp
 	src/ATTest/source/TestAltirra_CartridgePortPortable.cpp
 	src/ATTest/source/TestAltirra_CIOPortable.cpp
+	src/ATTest/source/TestAltirra_DiskDriveBaseQueuesPortable.cpp
+	src/ATTest/source/TestAltirra_DiskDriveBaseServicesPortable.cpp
+	src/ATTest/source/TestAltirra_DiskDriveBaseTargetPortable.cpp
 	src/ATTest/source/TestAltirra_PCLinkPortable.cpp
 	src/ATTest/source/TestAltirra_PCLinkFilesPortable.cpp
 	src/ATTest/source/TestAltirra_PCLinkStatePortable.cpp
@@ -568,6 +571,7 @@ portable_test_sources=(
 	src/platform/macOS_arm64/Altirra/source/oshelper.mm
 	src/platform/macOS_arm64/Altirra/source/pclink_posix.cpp
 	src/Altirra/source/pclink.cpp
+	src/Altirra/source/diskdrivefullbase.cpp
 	src/platform/macOS_arm64/Altirra/source/startuplogger.cpp
 	src/platform/macOS_arm64/Altirra/source/updatefeed_macos.cpp
 	src/Altirra/source/errordecode.cpp

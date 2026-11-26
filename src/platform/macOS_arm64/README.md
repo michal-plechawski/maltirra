@@ -687,7 +687,7 @@ are removed. Foreign handler addresses and entries still referenced by native
 IOCBs are preserved; table compaction updates IOCB IDs. The PIA overlay keeps
 chip registers and writes accessible around the CIO ROM window. Full tables
 and wrapped buffers are checked before access. The
-native build has 654 translation units and 441 portable groups. Full simulator
+native build has 658 translation units and 459 portable groups. Full simulator
 and application assembly, BASIC interpreter boot, and complete boot validation
 remain outstanding.
 
@@ -732,3 +732,20 @@ groups pass AddressSanitizer and UBSan. Fixes include append's logical position,
 stale timestamps/parameters, closed-handle replies, new/truncated-file OPEN
 metadata, directory-name buffer bounds, native error preservation, and accelerated
 request mode/length validation.
+
+Full drive utilities (`diskdrivefullbase.cpp`/`diskdrivefullbase.h`) are shared.
+They provide bit/byte SIO transmit queues, the COMMAND edge queue, disk-change
+sensor timing, stock rotation/step audio, firmware loading, and controller debug
+targets with memory, history, clock conversion and execution control. Eighteen
+portable groups exercise all of these services with production schedulers,
+sample playback, a real 65C02 and real POKEY/SIO byte reception. Debug tests run
+JSR/RTS for step into/over/out, hit an actual breakpoint, wrap the 131072-entry
+history buffer, and check three master/controller clock ratios, including past
+and future 64-bit timestamps. All eighteen groups pass AddressSanitizer and UBSan.
+
+The port fixes COMMAND's 31-bit time comparisons/rescheduling at wrap, earlier
+assertions superseding queued deassertions, idle bit-queue progress after a rejected
+baud rate, and reset callbacks draining their own queues. Empty/uninitialized
+queue shutdown is safe. Disabling history clears its range; target shutdown
+detaches the processor history buffer and cancels pending step notifications.
+The FDC and individual full drive models remain to be integrated.

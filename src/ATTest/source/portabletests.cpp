@@ -248,6 +248,24 @@ bool ATTestAltirraHLEUtils(ATPortableTestContext& context);
 bool ATTestAltirraGTIATables(ATPortableTestContext& context);
 bool ATTestAltirraGTIARenderer(ATPortableTestContext& context);
 bool ATTestAltirraHostDeviceUtils(ATPortableTestContext& context);
+bool ATTestAltirraDriveBaseBytes(ATPortableTestContext& context);
+bool ATTestAltirraDriveBaseByteWrap(ATPortableTestContext& context);
+bool ATTestAltirraDriveBaseBits(ATPortableTestContext& context);
+bool ATTestAltirraDriveBaseBitFraming(ATPortableTestContext& context);
+bool ATTestAltirraDriveBaseBitReset(ATPortableTestContext& context);
+bool ATTestAltirraDriveBaseCommands(ATPortableTestContext& context);
+bool ATTestAltirraDriveBaseCommandWrap(ATPortableTestContext& context);
+bool ATTestAltirraDriveBaseCommandSupersede(ATPortableTestContext& context);
+bool ATTestAltirraDriveBaseChange(ATPortableTestContext& context);
+bool ATTestAltirraDriveBaseChangeReset(ATPortableTestContext& context);
+bool ATTestAltirraDriveBaseFirmware(ATPortableTestContext& context);
+bool ATTestAltirraDriveBaseAudio(ATPortableTestContext& context);
+bool ATTestAltirraDriveBaseWire(ATPortableTestContext& context);
+bool ATTestAltirraDriveBaseTargetMemory(ATPortableTestContext& context);
+bool ATTestAltirraDriveBaseTargetHistory(ATPortableTestContext& context);
+bool ATTestAltirraDriveBaseTargetTiming(ATPortableTestContext& context);
+bool ATTestAltirraDriveBaseTargetSteps(ATPortableTestContext& context);
+bool ATTestAltirraDriveBaseTargetLifecycle(ATPortableTestContext& context);
 bool ATTestAltirraPCLinkNames(ATPortableTestContext& context);
 bool ATTestAltirraPCLinkPaths(ATPortableTestContext& context);
 bool ATTestAltirraPCLinkDirEntry(ATPortableTestContext& context);
@@ -694,6 +712,24 @@ const ATPortableTestCase *ATGetPortableTests(size_t& count) {
 		{ "Altirra_GTIATables", ATTestAltirraGTIATables },
 		{ "Altirra_GTIARenderer", ATTestAltirraGTIARenderer },
 		{ "Altirra_HostDeviceUtils", ATTestAltirraHostDeviceUtils },
+		{ "Altirra_DriveBaseBytes", ATTestAltirraDriveBaseBytes },
+		{ "Altirra_DriveBaseByteWrap", ATTestAltirraDriveBaseByteWrap },
+		{ "Altirra_DriveBaseBits", ATTestAltirraDriveBaseBits },
+		{ "Altirra_DriveBaseBitFraming", ATTestAltirraDriveBaseBitFraming },
+		{ "Altirra_DriveBaseBitReset", ATTestAltirraDriveBaseBitReset },
+		{ "Altirra_DriveBaseCommands", ATTestAltirraDriveBaseCommands },
+		{ "Altirra_DriveBaseCommandWrap", ATTestAltirraDriveBaseCommandWrap },
+		{ "Altirra_DriveBaseCommandSupersede", ATTestAltirraDriveBaseCommandSupersede },
+		{ "Altirra_DriveBaseChange", ATTestAltirraDriveBaseChange },
+		{ "Altirra_DriveBaseChangeReset", ATTestAltirraDriveBaseChangeReset },
+		{ "Altirra_DriveBaseFirmware", ATTestAltirraDriveBaseFirmware },
+		{ "Altirra_DriveBaseAudio", ATTestAltirraDriveBaseAudio },
+		{ "Altirra_DriveBaseWire", ATTestAltirraDriveBaseWire },
+		{ "Altirra_DriveBaseTargetMemory", ATTestAltirraDriveBaseTargetMemory },
+		{ "Altirra_DriveBaseTargetHistory", ATTestAltirraDriveBaseTargetHistory },
+		{ "Altirra_DriveBaseTargetTiming", ATTestAltirraDriveBaseTargetTiming },
+		{ "Altirra_DriveBaseTargetSteps", ATTestAltirraDriveBaseTargetSteps },
+		{ "Altirra_DriveBaseTargetLifecycle", ATTestAltirraDriveBaseTargetLifecycle },
 		{ "Altirra_PCLinkNames", ATTestAltirraPCLinkNames },
 		{ "Altirra_PCLinkPaths", ATTestAltirraPCLinkPaths },
 		{ "Altirra_PCLinkDirEntry", ATTestAltirraPCLinkDirEntry },

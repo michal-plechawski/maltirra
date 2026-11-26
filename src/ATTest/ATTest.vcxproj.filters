@@ -840,6 +840,15 @@
     <ClCompile Include="source\TestAltirra_CIOPortable.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="source\TestAltirra_DiskDriveBaseQueuesPortable.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="source\TestAltirra_DiskDriveBaseServicesPortable.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="source\TestAltirra_DiskDriveBaseTargetPortable.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
     <ClCompile Include="source\TestAltirra_PCLinkPortable.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>

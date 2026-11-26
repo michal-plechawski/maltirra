@@ -14,7 +14,9 @@
 //	You should have received a copy of the GNU General Public License along
 //	with this program. If not, see <http://www.gnu.org/licenses/>.
 
-#include "stdafx.h"
+#include <algorithm>
+#include <vd2/system/math.h>
+#include <vd2/system/strutil.h>
 #include <vd2/system/int128.h>
 #include <at/atcore/devicesio.h>
 #include <at/atcore/wraptime.h>
@@ -56,6 +58,8 @@ void ATDiskDriveAudioPlayer::PlayStepSound(ATAudioSampleId sampleId, float volum
 }
 
 void ATDiskDriveAudioPlayer::InitAudioOutput(IATAudioMixer *mixer) {
+	Shutdown();
+	if (!mixer) return;
 	mpAudioMixer = mixer;
 
 	IATSyncAudioSamplePlayer& sp = mixer->GetSamplePlayer();
@@ -78,8 +82,9 @@ ATDiskDriveChangeHandler::~ATDiskDriveChangeHandler() {
 void ATDiskDriveChangeHandler::Init(ATScheduler *scheduler) {
 	static constexpr float kDiskChangeStepMS = 50.0f;
 
+	Shutdown();
 	mpScheduler = scheduler;
-	mCyclesPerStep = (uint32_t)(0.5f + scheduler->GetRate().asDouble() * (kDiskChangeStepMS / 1000.0f));
+	mCyclesPerStep = std::max<uint32>(1, (uint32)(0.5f + scheduler->GetRate().asDouble() * (kDiskChangeStepMS / 1000.0f)));
 }
 
 void ATDiskDriveChangeHandler::Shutdown() {
@@ -146,6 +151,7 @@ ATDiskDriveSerialBitTransmitQueue::~ATDiskDriveSerialBitTransmitQueue() {
 }
 
 void ATDiskDriveSerialBitTransmitQueue::Init(ATScheduler *masterScheduler, IATDeviceSIOManager *sioMgr) {
+	Shutdown();
 	mpSIOMgr = sioMgr;
 	mpMasterScheduler = masterScheduler;
 }
@@ -163,7 +169,7 @@ void ATDiskDriveSerialBitTransmitQueue::SetMaxCyclesPerBit(uint32 cpb) {
 
 void ATDiskDriveSerialBitTransmitQueue::Reset() {
 	// clear transmission
-	mpMasterScheduler->UnsetEvent(mpEventTransmit);
+	if (mpMasterScheduler) mpMasterScheduler->UnsetEvent(mpEventTransmit);
 
 	if (!mbTransmitCurrentBit) {
 		mbTransmitCurrentBit = true;
@@ -234,13 +240,13 @@ void ATDiskDriveSerialBitTransmitQueue::OnTransmitEvent() {
 			break;
 
 		bool bit = (nextEdge.mBit != 0);
+		++mTransmitHead;
 
 		if (mbTransmitCurrentBit != bit) {
 			mbTransmitCurrentBit = bit;
 			mpSIOMgr->SetRawInput(bit);
 		}
 
-		++mTransmitHead;
 	}
 
 	const uint32 resetCounter = mpSIOMgr->GetRecvResetCounter();
@@ -271,7 +277,8 @@ void ATDiskDriveSerialBitTransmitQueue::OnTransmitEvent() {
 
 			// queue event to half bit in
 			mpMasterScheduler->SetEvent(cyclesPerBit >> 1, this, kEventId_Transmit, mpEventTransmit);
-		}
+		} else
+			QueueNextTransmitEvent();
 		return;
 	}
 
@@ -324,6 +331,7 @@ ATDiskDriveSerialByteTransmitQueue::~ATDiskDriveSerialByteTransmitQueue() {
 }
 
 void ATDiskDriveSerialByteTransmitQueue::Init(ATScheduler *masterScheduler, IATDeviceSIOManager *sioMgr) {
+	Shutdown();
 	mpSIOMgr = sioMgr;
 	mpMasterScheduler = masterScheduler;
 }
@@ -400,9 +408,9 @@ void ATDiskDriveSerialByteTransmitQueue::OnTransmitEvent() {
 		if ((t - nextEdge.mTime) & UINT32_C(0x80000000))
 			break;
 
-		mpSIOMgr->SendRawByte(nextEdge.mData, nextEdge.mCyclesPerBit, false, false, true);
-
+		const auto event = nextEdge;
 		++mTransmitHead;
+		mpSIOMgr->SendRawByte(event.mData, event.mCyclesPerBit, false, false, true);
 	}
 
 	QueueNextTransmitEvent();
@@ -436,6 +444,7 @@ ATDiskDriveSerialCommandQueue::~ATDiskDriveSerialCommandQueue() {
 }
 
 void ATDiskDriveSerialCommandQueue::Init(ATScheduler *driveScheduler, IATDeviceSIOManager *sioMgr) {
+	Shutdown();
 	mpSIOMgr = sioMgr;
 	mpDriveScheduler = driveScheduler;
 }
@@ -466,12 +475,14 @@ void ATDiskDriveSerialCommandQueue::OnScheduledEvent(uint32 id) {
 }
 
 void ATDiskDriveSerialCommandQueue::AddCommandEdge(uint32 driveTime, uint32 polarity) {
+	driveTime &= UINT32_C(0x7FFFFFFF);
+	bool reschedule = false;
 	// check if previous transition is at same time
 	while(!mCommandQueue.empty()) {
 		auto& prevEdge = mCommandQueue.back();
 
 		// check if this event is at or before the last event in the queue
-		if ((prevEdge.mTime - driveTime) & UINT32_C(0x80000000)) {
+		if ((prevEdge.mTime - driveTime) & UINT32_C(0x40000000)) {
 			// The previous edge is before the time of this edge, so we're good.
 			break;
 		}
@@ -485,6 +496,7 @@ void ATDiskDriveSerialCommandQueue::AddCommandEdge(uint32 driveTime, uint32 pola
 			
 		if (polarity && !prevEdge.mBit) {
 			// If we're asserting /COMMAND, allow it to supercede earlier deassert events.
+			reschedule |= mCommandQueue.size() == 1;
 			mCommandQueue.pop_back();
 		} else {
 			VDASSERT(!"Dropping new event earlier than tail in command change queue.");
@@ -494,6 +506,7 @@ void ATDiskDriveSerialCommandQueue::AddCommandEdge(uint32 driveTime, uint32 pola
 
 	// add the new event
 	mCommandQueue.push_back( { driveTime, polarity } );
+	if (reschedule) mpDriveScheduler->UnsetEvent(mpEventDriveCommandChange);
 
 	// queue next event if needed
 	QueueNextCommandEvent();
@@ -525,6 +538,7 @@ void ATDiskDriveSerialCommandQueue::OnCommandChangeEvent() {
 			break;
 
 		bool bit = (nextEdge.mBit != 0);
+		mCommandQueue.pop_front();
 
 		if (mbDriveCommandState != bit) {
 			mbDriveCommandState = bit;
@@ -532,12 +546,11 @@ void ATDiskDriveSerialCommandQueue::OnCommandChangeEvent() {
 			mpOnDriveCommandStateChanged(bit);
 		}
 
-		mCommandQueue.pop_front();
 	}
 
 	// if we still have events, queue another event
 	if (!mCommandQueue.empty()) {
-		mpDriveScheduler->SetEvent(mCommandQueue.front().mTime - t, this, kEventId_DriveCommandChange, mpEventDriveCommandChange);
+		mpDriveScheduler->SetEvent((mCommandQueue.front().mTime - t) & UINT32_C(0x7FFFFFFF), this, kEventId_DriveCommandChange, mpEventDriveCommandChange);
 	}
 }
 
@@ -555,6 +568,7 @@ void ATDiskDriveFirmwareControl::Init(void *mem, uint32 len, ATFirmwareType type
 
 void ATDiskDriveFirmwareControl::Shutdown() {
 	mpFwMgr = nullptr;
+	mbFirmwareUsable = false;
 }
 
 void ATDiskDriveFirmwareControl::InitFirmware(ATFirmwareManager *fwman) {
@@ -564,6 +578,8 @@ void ATDiskDriveFirmwareControl::InitFirmware(ATFirmwareManager *fwman) {
 }
 
 bool ATDiskDriveFirmwareControl::ReloadFirmware() {
+	mbFirmwareUsable = false;
+	if (!mpFwMgr || !mpFirmware || !mFirmwareLen) return false;
 	const uint64 id = mpFwMgr->GetFirmwareOfType(mFirmwareType, true);
 	
 	uint32 len = 0;
@@ -635,6 +651,7 @@ void ATDiskDriveDebugTargetControl::ResetTargetControl() {
 
 	mDriveCycleAccumF32 = 0;
 	mDriveCycleLimit = ATSCHEDULER_GETTIME(&mDriveScheduler);
+	CancelStep();
 }
 
 void ATDiskDriveDebugTargetControl::ShutdownTargetControl() {
@@ -647,6 +664,8 @@ void ATDiskDriveDebugTargetControl::ShutdownTargetControl() {
 		mpScheduler->UnsetEvent(mpImmRunEvent);
 		mpScheduler = nullptr;
 	}
+	SetHistoryEnabled(false);
+	CancelStep();
 }
 
 uint32 ATDiskDriveDebugTargetControl::DriveTimeToMasterTime() const {
@@ -838,6 +857,7 @@ void ATDiskDriveDebugTargetControl::SetHistoryEnabled(bool enable) {
 			mHistory.clear();
 			mpProxy->SetHistoryBuffer(nullptr);
 		}
+		mHistorySize = mHistoryMask = 0;
 	}
 }
 
@@ -874,6 +894,7 @@ void ATDiskDriveDebugTargetControl::Break() {
 }
 
 bool ATDiskDriveDebugTargetControl::StepInto(const vdfunction<void(bool)>& fn) {
+	if (!mpScheduler || !mpProxy || !mpBreakpointsImpl) return false;
 	CancelStep();
 
 	mpStepHandler = fn;
@@ -885,6 +906,7 @@ bool ATDiskDriveDebugTargetControl::StepInto(const vdfunction<void(bool)>& fn) {
 }
 
 bool ATDiskDriveDebugTargetControl::StepOver(const vdfunction<void(bool)>& fn) {
+	if (!mpScheduler || !mpProxy || !mpBreakpointsImpl) return false;
 	CancelStep();
 
 	mpStepHandler = fn;
@@ -897,6 +919,7 @@ bool ATDiskDriveDebugTargetControl::StepOver(const vdfunction<void(bool)>& fn) {
 }
 
 bool ATDiskDriveDebugTargetControl::StepOut(const vdfunction<void(bool)>& fn) {
+	if (!mpScheduler || !mpProxy || !mpBreakpointsImpl) return false;
 	CancelStep();
 
 	mpStepHandler = fn;
@@ -939,6 +962,7 @@ bool ATDiskDriveDebugTargetControl::CheckBreakpoint(uint32 pc) {
 }
 
 void ATDiskDriveDebugTargetControl::CancelStep() {
+	mbStepNotifyPending = false;
 	if (mpStepHandler) {
 		mpBreakpointsImpl->SetStepActive(false);
 

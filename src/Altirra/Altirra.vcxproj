@@ -86,7 +86,7 @@
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\diskdriveamdc.h" />
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\diskdriveatr8000.h" />
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\diskdrivefull.h" />
-    <ClInclude Include="..\platform\Windows_x64\Altirra\h\diskdrivefullbase.h" />
+    <ClInclude Include="h\diskdrivefullbase.h" />
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\diskdriveindusgt.h" />
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\diskdrivepercom.h" />
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\diskdrivespeedyxf.h" />
@@ -322,7 +322,9 @@
     <ClCompile Include="..\platform\Windows_x64\Altirra\source\diskdriveamdc.cpp" />
     <ClCompile Include="..\platform\Windows_x64\Altirra\source\diskdriveatr8000.cpp" />
     <ClCompile Include="..\platform\Windows_x64\Altirra\source\diskdrivefull.cpp" />
-    <ClCompile Include="..\platform\Windows_x64\Altirra\source\diskdrivefullbase.cpp" />
+    <ClCompile Include="source\diskdrivefullbase.cpp">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+    </ClCompile>
     <ClCompile Include="..\platform\Windows_x64\Altirra\source\diskdriveindusgt.cpp" />
     <ClCompile Include="..\platform\Windows_x64\Altirra\source\diskdrivepercom.cpp" />
     <ClCompile Include="..\platform\Windows_x64\Altirra\source\diskdrivespeedyxf.cpp" />

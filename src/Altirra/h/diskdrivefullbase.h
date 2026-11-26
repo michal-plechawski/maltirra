@@ -25,6 +25,9 @@
 #define f_AT_DISKDRIVEFULLBASE_H
 
 #include <optional>
+#include <vd2/system/refcount.h>
+#include <vd2/system/VDString.h>
+#include <vd2/system/vdstl.h>
 #include <vd2/system/function.h>
 #include <at/atcore/audiomixer.h>
 #include <at/atcore/device.h>

@@ -796,7 +796,7 @@
     <ClCompile Include="..\platform\Windows_x64\Altirra\source\audiosampleplayer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\platform\Windows_x64\Altirra\source\diskdrivefullbase.cpp">
+    <ClCompile Include="source\diskdrivefullbase.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="source\artifacting_ntsc_neon.cpp">
@@ -1659,7 +1659,7 @@
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\audiosampleplayer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\platform\Windows_x64\Altirra\h\diskdrivefullbase.h">
+    <ClInclude Include="h\diskdrivefullbase.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\uiconfmodem.h">
