@@ -15,7 +15,9 @@
 //	along with this program; if not, write to the Free Software
 //	Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
-#include <stdafx.h>
+#include <cmath>
+#include <cstring>
+#include <vd2/system/function.h>
 #include <vd2/system/hash.h>
 #include <vd2/system/int128.h>
 #include <vd2/system/math.h>
@@ -24,11 +26,8 @@
 #include <at/atcore/propertyset.h>
 #include <at/atcore/deviceprinter.h>
 #include <at/atcore/deviceserial.h>
-#include "audiosampleplayer.h"
 #include "diskdrivepercom.h"
-#include "memorymanager.h"
 #include "firmwaremanager.h"
-#include "debuggerlog.h"
 
 extern ATLogChannel g_ATLCDiskEmu;
 
@@ -99,6 +98,7 @@ ATDeviceDiskDrivePercom::ATDeviceDiskDrivePercom(HardwareType hardwareType)
 }
 
 ATDeviceDiskDrivePercom::~ATDeviceDiskDrivePercom() {
+	Shutdown();
 }
 
 void *ATDeviceDiskDrivePercom::AsInterface(uint32 iid) {
@@ -153,6 +153,9 @@ void ATDeviceDiskDrivePercom::GetSettingsBlurb(VDStringW& buf) {
 }
 
 void ATDeviceDiskDrivePercom::GetSettings(ATPropertySet& settings) {
+	if (mHardwareType != HardwareType::RFD)
+		settings.SetBool("use1795", mbAT1795Mode);
+
 	if (mHardwareType == HardwareType::AT88)
 		settings.SetBool("ddcapable", mbIsAT88DoubleDensity);
 	else if (mHardwareType == HardwareType::RFD)
@@ -401,7 +404,9 @@ void ATDeviceDiskDrivePercom::Init() {
 						mFDC2.SetWriteProtectOverride(wpState);
 
 						// write protect -> PA6
-						mPIA.SetInput(0, wpState.value_or(false) ? ~UINT32_C(0x40) : 0);
+						const auto *disk = mDrives[driveIndex].mpDiskInterface;
+						const bool writeProtected = wpState.value_or(disk && !disk->IsDiskWritable());
+						mPIA.SetInputBits(0, writeProtected ? 0 : 0x40, 0x40);
 					}
 				}
 			},
@@ -434,6 +439,10 @@ void ATDeviceDiskDrivePercom::Shutdown() {
 	mAudioPlayer.Shutdown();
 	mSerialCmdQueue.Shutdown();
 	mSerialXmitQueue.Shutdown();
+	mACIA.Shutdown();
+	mFDC.Shutdown();
+	mFDC2.Shutdown();
+	mDriveScheduler.UnsetEvent(mpEventDriveTimeout);
 
 	ShutdownTargetControl();
 	mFirmwareControl.Shutdown();
@@ -447,12 +456,15 @@ void ATDeviceDiskDrivePercom::Shutdown() {
 		drive.mDiskChangeHandler.Shutdown();
 
 		if (drive.mpDiskInterface) {
+			drive.mpDiskInterface->SetShowMotorActive(false);
+			drive.mpDiskInterface->SetShowActivity(false, 0);
 			drive.mpDiskInterface->RemoveClient(&drive);
 			drive.mpDiskInterface = nullptr;
 		}
 	}
 
 	mpDiskDriveManager = nullptr;
+	mSelectedDrive = -1;
 }
 
 uint32 ATDeviceDiskDrivePercom::GetComputerPowerOnDelay() const {
@@ -484,6 +496,10 @@ void ATDeviceDiskDrivePercom::PeripheralColdReset() {
 	mDriveScheduler.UnsetEvent(mpEventDriveTimeout);
 
 	ResetTargetControl();
+
+	mbCommandState = false;
+	if (mpSIOMgr)
+		OnCommandStateChanged(mpSIOMgr->IsSIOCommandAsserted());
 
 	SelectDrive(-1);
 
@@ -617,7 +633,9 @@ void ATDeviceDiskDrivePercom::OnDiskChanged(uint32 index, bool mediaRemoved) {
 }
 
 void ATDeviceDiskDrivePercom::OnWriteModeChanged(uint32 index) {
-	// FDC polls write protect state directly, so no action needed
+	// The FDC polls the image, but AT-88 firmware also reads the PIA sensor.
+	if (mHardwareType == HardwareType::AT88 && mSelectedDrive == (int)index)
+		mDrives[index].mDiskChangeHandler.ForceOutputUpdate();
 }
 
 void ATDeviceDiskDrivePercom::OnTimingModeChanged(uint32 index) {
@@ -892,12 +910,19 @@ void ATDeviceDiskDrivePercom::OnPIAPortBChanged(uint32 outputState) {
 
 	SelectDrive(kDriveLookup[(outputState >> 8) & 15]);
 
-	mbSelectFDC2 = !mbIsAT88DoubleDensity || (outputState & 0x4000) != 0;
+	const bool selectFDC2 = !mbIsAT88DoubleDensity || (outputState & 0x4000) != 0;
+	const bool controllerChanged = mbSelectFDC2 != selectFDC2;
+	mbSelectFDC2 = selectFDC2;
 
 	auto& fdc = mbSelectFDC2 ? mFDC2 : mFDC;
 
 	fdc.SetSide((outputState & 0x2000) != 0);
 	fdc.OnIndexPulse((outputState & 0x8000) == 0);
+
+	if (controllerChanged) {
+		OnFDCDataRequest(fdc.GetDrqStatus());
+		OnFDCInterruptRequest(fdc.GetIrqStatus());
+	}
 }
 
 void ATDeviceDiskDrivePercom::OnPIAPortBChangedATSPD(uint32 outputState) {
@@ -1011,7 +1036,7 @@ void ATDeviceDiskDrivePercom::UpdateDiskStatus() {
 }
 
 void ATDeviceDiskDrivePercom::SelectDrive(int index) {
-	if (!(mAvailableDrives & (1 << index)))
+	if (index < 0 || index >= kNumDrives || !(mAvailableDrives & (1U << index)))
 		index = -1;
 
 	if (mSelectedDrive == index)

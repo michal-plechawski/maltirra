@@ -248,6 +248,34 @@ bool ATTestAltirraHLEUtils(ATPortableTestContext& context);
 bool ATTestAltirraGTIATables(ATPortableTestContext& context);
 bool ATTestAltirraGTIARenderer(ATPortableTestContext& context);
 bool ATTestAltirraHostDeviceUtils(ATPortableTestContext& context);
+bool ATTestAltirraPercomInterfaces(ATPortableTestContext& context);
+bool ATTestAltirraPercomSettings(ATPortableTestContext& context);
+bool ATTestAltirraPercomSparseSlots(ATPortableTestContext& context);
+bool ATTestAltirraPercomFirmware(ATPortableTestContext& context);
+bool ATTestAltirraPercomCPU(ATPortableTestContext& context);
+bool ATTestAltirraPercomMemory(ATPortableTestContext& context);
+bool ATTestAltirraPercomRegisters(ATPortableTestContext& context);
+bool ATTestAltirraPercomDebugHistory(ATPortableTestContext& context);
+bool ATTestAltirraPercomSelection(ATPortableTestContext& context);
+bool ATTestAltirraPercomReadSector(ATPortableTestContext& context);
+bool ATTestAltirraPercomWriteSector(ATPortableTestContext& context);
+bool ATTestAltirraPercomSide(ATPortableTestContext& context);
+bool ATTestAltirraPercomSeek(ATPortableTestContext& context);
+bool ATTestAltirraPercomPositions(ATPortableTestContext& context);
+bool ATTestAltirraPercomMediaChange(ATPortableTestContext& context);
+bool ATTestAltirraPercomWriteProtect(ATPortableTestContext& context);
+bool ATTestAltirraPercomSerial(ATPortableTestContext& context);
+bool ATTestAltirraPercomCTS(ATPortableTestContext& context);
+bool ATTestAltirraPercomFIRQ(ATPortableTestContext& context);
+bool ATTestAltirraPercomIRQ(ATPortableTestContext& context);
+bool ATTestAltirraPercomWatchdog(ATPortableTestContext& context);
+bool ATTestAltirraPercomAudio(ATPortableTestContext& context);
+bool ATTestAltirraPercomPrinter(ATPortableTestContext& context);
+bool ATTestAltirraPercomPrinterChild(ATPortableTestContext& context);
+bool ATTestAltirraPercomPrinterReset(ATPortableTestContext& context);
+bool ATTestAltirraPercomDualFDC(ATPortableTestContext& context);
+bool ATTestAltirraPercomClock(ATPortableTestContext& context);
+bool ATTestAltirraPercomResetShutdown(ATPortableTestContext& context);
 bool ATTestAltirraAMDCInterfaces(ATPortableTestContext& context);
 bool ATTestAltirraAMDCSettings(ATPortableTestContext& context);
 bool ATTestAltirraAMDCSparseSlots(ATPortableTestContext& context);
@@ -852,6 +880,34 @@ const ATPortableTestCase *ATGetPortableTests(size_t& count) {
 		{ "Altirra_GTIATables", ATTestAltirraGTIATables },
 		{ "Altirra_GTIARenderer", ATTestAltirraGTIARenderer },
 		{ "Altirra_HostDeviceUtils", ATTestAltirraHostDeviceUtils },
+		{ "Altirra_PercomInterfaces", ATTestAltirraPercomInterfaces },
+		{ "Altirra_PercomSettings", ATTestAltirraPercomSettings },
+		{ "Altirra_PercomSparseSlots", ATTestAltirraPercomSparseSlots },
+		{ "Altirra_PercomFirmware", ATTestAltirraPercomFirmware },
+		{ "Altirra_PercomCPU", ATTestAltirraPercomCPU },
+		{ "Altirra_PercomMemory", ATTestAltirraPercomMemory },
+		{ "Altirra_PercomRegisters", ATTestAltirraPercomRegisters },
+		{ "Altirra_PercomDebugHistory", ATTestAltirraPercomDebugHistory },
+		{ "Altirra_PercomSelection", ATTestAltirraPercomSelection },
+		{ "Altirra_PercomReadSector", ATTestAltirraPercomReadSector },
+		{ "Altirra_PercomWriteSector", ATTestAltirraPercomWriteSector },
+		{ "Altirra_PercomSide", ATTestAltirraPercomSide },
+		{ "Altirra_PercomSeek", ATTestAltirraPercomSeek },
+		{ "Altirra_PercomPositions", ATTestAltirraPercomPositions },
+		{ "Altirra_PercomMediaChange", ATTestAltirraPercomMediaChange },
+		{ "Altirra_PercomWriteProtect", ATTestAltirraPercomWriteProtect },
+		{ "Altirra_PercomSerial", ATTestAltirraPercomSerial },
+		{ "Altirra_PercomCTS", ATTestAltirraPercomCTS },
+		{ "Altirra_PercomFIRQ", ATTestAltirraPercomFIRQ },
+		{ "Altirra_PercomIRQ", ATTestAltirraPercomIRQ },
+		{ "Altirra_PercomWatchdog", ATTestAltirraPercomWatchdog },
+		{ "Altirra_PercomAudio", ATTestAltirraPercomAudio },
+		{ "Altirra_PercomPrinter", ATTestAltirraPercomPrinter },
+		{ "Altirra_PercomPrinterChild", ATTestAltirraPercomPrinterChild },
+		{ "Altirra_PercomPrinterReset", ATTestAltirraPercomPrinterReset },
+		{ "Altirra_PercomDualFDC", ATTestAltirraPercomDualFDC },
+		{ "Altirra_PercomClock", ATTestAltirraPercomClock },
+		{ "Altirra_PercomResetShutdown", ATTestAltirraPercomResetShutdown },
 		{ "Altirra_AMDCInterfaces", ATTestAltirraAMDCInterfaces },
 		{ "Altirra_AMDCSettings", ATTestAltirraAMDCSettings },
 		{ "Altirra_AMDCSparseSlots", ATTestAltirraAMDCSparseSlots },

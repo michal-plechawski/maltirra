@@ -687,7 +687,7 @@ are removed. Foreign handler addresses and entries still referenced by native
 IOCBs are preserved; table compaction updates IOCB IDs. The PIA overlay keeps
 chip registers and writes accessible around the CIO ROM window. Full tables
 and wrapped buffers are checked before access. The
-native build has 681 translation units and 599 portable groups. Full simulator
+native build has 685 translation units and 627 portable groups. Full simulator
 and application assembly, BASIC interpreter boot, and complete boot validation
 remain outstanding.
 
@@ -884,3 +884,30 @@ resamples COMMAND, and shutdown cancels peripheral events and clears each motor
 indicator; destruction performs the same cleanup. Stock AMDC firmware boot,
 printer output beyond the existing register stubs and complete Atari boot
 remain unverified.
+
+The complete Percom controller (`diskdrivepercom.cpp`/`diskdrivepercom.h`) is
+shared for RFD, AT-88 and AT88-SPD. This includes the production 6809, ACIA,
+PIA, both AT-88 FDCs, four physical drive positions, mirrored memory maps,
+reversed/off-by-one side-two mapping, firmware and debug/history interfaces,
+disk-change handling, audio, RFD watchdog and AT88-SPD parallel printer bus.
+Twenty-eight portable groups load native-file ROMs and execute real 6809 code
+on all three variants. Sector tests read FM/MFM media, write every physical
+drive, preserve neighboring images, and check both sides with 1793/1795 modes.
+Other tests cover sparse physical slots, head positions and seek limits, write
+protection including the PIA sensor, COMMAND/CTS, echo through real POKEY/SIO,
+RFD double-clock byte timing and variant-specific IRQ/NMI routing. FIRQ handlers
+transfer actual sectors; a separate regression switches FDCs while DRQ is active.
+
+Printer tests drive PIA data and strobe registers into the production text-output
+manager and a child raw-printer sink, including attach/detach, lazy output
+creation and repeated peripheral resets. All twenty-eight groups pass ASan and
+UBSan with the Percom, FDC, PIA, ACIA, 6809, decoder, memory map and child-bus
+implementation instrumented. The complete native suite passes 627 groups.
+
+Regressions preserve the 1795 option in settings, refresh the AT-88 PIA write
+protect input from the actual media without pulling unrelated inputs low, and
+route current DRQ/IRQ levels when switching FDCs. Deselection avoids a negative
+bit shift, peripheral reset resamples COMMAND, and shutdown cancels both FDCs,
+ACIA and watchdog events, detaches printers and clears motor/activity indicators.
+Destruction performs the same cleanup. Stock Percom firmware boot and complete
+Atari boot remain unverified.
