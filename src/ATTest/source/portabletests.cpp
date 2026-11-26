@@ -248,6 +248,26 @@ bool ATTestAltirraHLEUtils(ATPortableTestContext& context);
 bool ATTestAltirraGTIATables(ATPortableTestContext& context);
 bool ATTestAltirraGTIARenderer(ATPortableTestContext& context);
 bool ATTestAltirraHostDeviceUtils(ATPortableTestContext& context);
+bool ATTestAltirraSpeedyXFInterfaces(ATPortableTestContext& context);
+bool ATTestAltirraSpeedyXFSettings(ATPortableTestContext& context);
+bool ATTestAltirraSpeedyXFFirmware(ATPortableTestContext& context);
+bool ATTestAltirraSpeedyXFROMBanks(ATPortableTestContext& context);
+bool ATTestAltirraSpeedyXFCPU(ATPortableTestContext& context);
+bool ATTestAltirraSpeedyXFMemory(ATPortableTestContext& context);
+bool ATTestAltirraSpeedyXFRegisters(ATPortableTestContext& context);
+bool ATTestAltirraSpeedyXFLED(ATPortableTestContext& context);
+bool ATTestAltirraSpeedyXFGeometry(ATPortableTestContext& context);
+bool ATTestAltirraSpeedyXFDebugTrace(ATPortableTestContext& context);
+bool ATTestAltirraSpeedyXFReadSector(ATPortableTestContext& context);
+bool ATTestAltirraSpeedyXFWriteSector(ATPortableTestContext& context);
+bool ATTestAltirraSpeedyXFSide(ATPortableTestContext& context);
+bool ATTestAltirraSpeedyXFStepper(ATPortableTestContext& context);
+bool ATTestAltirraSpeedyXFReady(ATPortableTestContext& context);
+bool ATTestAltirraSpeedyXFSerial(ATPortableTestContext& context);
+bool ATTestAltirraSpeedyXFTiming(ATPortableTestContext& context);
+bool ATTestAltirraSpeedyXFAudio(ATPortableTestContext& context);
+bool ATTestAltirraSpeedyXFDiskChange(ATPortableTestContext& context);
+bool ATTestAltirraSpeedyXFResetShutdown(ATPortableTestContext& context);
 bool ATTestAltirraFullDriveVariants(ATPortableTestContext& context);
 bool ATTestAltirraFullDriveSettings(ATPortableTestContext& context);
 bool ATTestAltirraFullDriveFirmware(ATPortableTestContext& context);
@@ -778,6 +798,26 @@ const ATPortableTestCase *ATGetPortableTests(size_t& count) {
 		{ "Altirra_GTIATables", ATTestAltirraGTIATables },
 		{ "Altirra_GTIARenderer", ATTestAltirraGTIARenderer },
 		{ "Altirra_HostDeviceUtils", ATTestAltirraHostDeviceUtils },
+		{ "Altirra_SpeedyXFInterfaces", ATTestAltirraSpeedyXFInterfaces },
+		{ "Altirra_SpeedyXFSettings", ATTestAltirraSpeedyXFSettings },
+		{ "Altirra_SpeedyXFFirmware", ATTestAltirraSpeedyXFFirmware },
+		{ "Altirra_SpeedyXFROMBanks", ATTestAltirraSpeedyXFROMBanks },
+		{ "Altirra_SpeedyXFCPU", ATTestAltirraSpeedyXFCPU },
+		{ "Altirra_SpeedyXFMemory", ATTestAltirraSpeedyXFMemory },
+		{ "Altirra_SpeedyXFRegisters", ATTestAltirraSpeedyXFRegisters },
+		{ "Altirra_SpeedyXFLED", ATTestAltirraSpeedyXFLED },
+		{ "Altirra_SpeedyXFGeometry", ATTestAltirraSpeedyXFGeometry },
+		{ "Altirra_SpeedyXFDebugTrace", ATTestAltirraSpeedyXFDebugTrace },
+		{ "Altirra_SpeedyXFReadSector", ATTestAltirraSpeedyXFReadSector },
+		{ "Altirra_SpeedyXFWriteSector", ATTestAltirraSpeedyXFWriteSector },
+		{ "Altirra_SpeedyXFSide", ATTestAltirraSpeedyXFSide },
+		{ "Altirra_SpeedyXFStepper", ATTestAltirraSpeedyXFStepper },
+		{ "Altirra_SpeedyXFReady", ATTestAltirraSpeedyXFReady },
+		{ "Altirra_SpeedyXFSerial", ATTestAltirraSpeedyXFSerial },
+		{ "Altirra_SpeedyXFTiming", ATTestAltirraSpeedyXFTiming },
+		{ "Altirra_SpeedyXFAudio", ATTestAltirraSpeedyXFAudio },
+		{ "Altirra_SpeedyXFDiskChange", ATTestAltirraSpeedyXFDiskChange },
+		{ "Altirra_SpeedyXFResetShutdown", ATTestAltirraSpeedyXFResetShutdown },
 		{ "Altirra_FullDriveVariants", ATTestAltirraFullDriveVariants },
 		{ "Altirra_FullDriveSettings", ATTestAltirraFullDriveSettings },
 		{ "Altirra_FullDriveFirmware", ATTestAltirraFullDriveFirmware },

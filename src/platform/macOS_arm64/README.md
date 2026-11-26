@@ -687,7 +687,7 @@ are removed. Foreign handler addresses and entries still referenced by native
 IOCBs are preserved; table compaction updates IOCB IDs. The PIA overlay keeps
 chip registers and writes accessible around the CIO ROM window. Full tables
 and wrapped buffers are checked before access. The
-native build has 669 translation units and 525 portable groups. Full simulator
+native build has 672 translation units and 545 portable groups. Full simulator
 and application assembly, BASIC interpreter boot, and complete boot validation
 remain outstanding.
 
@@ -805,7 +805,7 @@ Serial tests echo a byte from production SIO through RIOT and 6502 into POKEY.
 BitWriter tests upload/read its RAM through PIA and write an entire raw track;
 they also decode a 1024-byte sector spanning the index. Motor/audio, byte timing,
 disk-change intervals and reset/shutdown are checked. All twenty-four groups
-pass AddressSanitizer and UBSan; the full native suite passes with 525 groups.
+pass AddressSanitizer and UBSan.
 
 Regressions fix Happy 1050's debugger mirror address translation, RAM bank-control
 aliases and writable ROM mappings; 3KB Happy 810 firmware is mirrored into its
@@ -815,3 +815,24 @@ disk-change phases last 50ms at either controller clock, and reset releases the
 receive pin. BitWriter's wrap buffer accommodates a full encoded 1024-byte field,
 and missing data fields have deterministic initial state. Destruction shuts down
 the device, including RIOT timer and PIA input/output allocations.
+
+The full Speedy XF drive (`diskdrivespeedyxf.cpp`/`diskdrivespeedyxf.h`) is shared.
+It retains its 65C02, RIOT, 1772 FDC, 64KB ROM with 32KB bank selection, RAM,
+two-byte LED display, control latch/side selection, serial pins and debug/trace
+interfaces. Twenty portable groups load native-file test ROMs and run actual
+65C02 instructions, including FM/MFM sector reads/writes and side-two transfers
+with reversed-track mapping. Serial tests echo a byte through production SIO,
+RIOT and the drive CPU into POKEY reception. Other groups cover bank/reset
+behavior, 32KB ROM duplication, firmware loss, memory/register access, LEDs,
+geometry, CPU stepping/history, traces, READY/COMMAND and receive timing, motor
+and step audio, disk changes and shutdown. All twenty groups pass AddressSanitizer
+and UBSan, with the drive CPU and memory-map implementation instrumented too.
+The full native suite passes with 545 groups.
+
+Regressions preserve bit 7 on non-status FDC debugger reads, restore ROM banking
+and clear RIOT RAM on peripheral reset, and keep initial/stepped positions in
+consistent half-track units with the correct track-zero sense. READY and COMMAND
+are sampled when attaching to a running computer; warm reset releases DATA OUT.
+Disk-change phases last 50ms and shutdown cancels the RIOT timer. Destruction
+performs the same cleanup. Stock Speedy XF firmware boot and complete Atari
+boot remain unverified.

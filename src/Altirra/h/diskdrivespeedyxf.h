@@ -17,6 +17,7 @@
 #ifndef f_AT_DISKDRIVESPEEDYXF_H
 #define f_AT_DISKDRIVESPEEDYXF_H
 
+#include <utility>
 #include <vd2/system/function.h>
 #include <vd2/system/refcount.h>
 #include <vd2/system/vdstl.h>

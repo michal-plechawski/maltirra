@@ -14,7 +14,8 @@
 //	You should have received a copy of the GNU General Public License along
 //	with this program. If not, see <http://www.gnu.org/licenses/>.
 
-#include <stdafx.h>
+#include <cmath>
+#include <cstring>
 #include <vd2/system/binary.h>
 #include <vd2/system/constexpr.h>
 #include <vd2/system/hash.h>
@@ -28,11 +29,8 @@
 #include <at/atcore/propertyset.h>
 #include <at/atcore/wraptime.h>
 #include <at/atemulation/diskutils.h>
-#include "audiosampleplayer.h"
-#include "debuggerlog.h"
 #include "diskdrivespeedyxf.h"
 #include "firmwaremanager.h"
-#include "memorymanager.h"
 #include "trace.h"
 
 extern ATLogChannel g_ATLCDiskEmu;
@@ -64,6 +62,7 @@ ATDeviceDiskDriveSpeedyXF::ATDeviceDiskDriveSpeedyXF()
 }
 
 ATDeviceDiskDriveSpeedyXF::~ATDeviceDiskDriveSpeedyXF() {
+	Shutdown();
 }
 
 void *ATDeviceDiskDriveSpeedyXF::AsInterface(uint32 iid) {
@@ -136,7 +135,7 @@ void ATDeviceDiskDriveSpeedyXF::Init() {
 	mReadNodeFDC.mpDebugRead = [](uint32 addr, void* thisptr0) -> uint8 {
 		auto* thisptr = (ATDeviceDiskDriveSpeedyXF*)thisptr0;
 
-		uint8 v = thisptr->mFDC.DebugReadByte((uint8)addr) & 0x7F;
+		uint8 v = thisptr->mFDC.DebugReadByte((uint8)addr);
 
 		if ((addr & 3) == 0) {
 			v &= 0x7F;
@@ -221,6 +220,8 @@ void ATDeviceDiskDriveSpeedyXF::Init() {
 
 	// Clear port B bit 1 (/READY) and bit 7 (/DATAOUT)
 	mRIOT.SetInputB(0x00, 0x82);
+	OnReadyStateChanged(mpSIOMgr->IsSIOReadyAsserted());
+	mRIOT.SetInputB(mpSIOMgr->IsSIOCommandAsserted() ? 0x80 : 0, 0x80);
 
 	// Set port A bits 0 and 1 to select D1:., and clear DRQ/IRQ from FDC
 	static const uint8 k1050IDs[4] = {
@@ -262,6 +263,7 @@ void ATDeviceDiskDriveSpeedyXF::Init() {
 void ATDeviceDiskDriveSpeedyXF::Shutdown() {
 	mAudioPlayer.Shutdown();
 	mSerialXmitQueue.Shutdown();
+	mRIOT.Shutdown();
 
 	mDriveScheduler.UnsetEvent(mpEventDriveReceiveBit);
 	mDriveScheduler.UnsetEvent(mpEventDriveDiskChange);
@@ -294,6 +296,8 @@ uint32 ATDeviceDiskDriveSpeedyXF::GetComputerPowerOnDelay() const {
 void ATDeviceDiskDriveSpeedyXF::WarmReset() {
 	// If the computer resets, its transmission is interrupted.
 	mDriveScheduler.UnsetEvent(mpEventDriveReceiveBit);
+	mReceiveShiftRegister = 0;
+	mRIOT.SetInputB(0, 0x40);
 }
 
 void ATDeviceDiskDriveSpeedyXF::ComputerColdReset() {
@@ -302,9 +306,11 @@ void ATDeviceDiskDriveSpeedyXF::ComputerColdReset() {
 
 void ATDeviceDiskDriveSpeedyXF::PeripheralColdReset() {
 	memset(mRAM, 0, sizeof mRAM);
+	memset(mRIOTRAM, 0, sizeof mRIOTRAM);
 
 	mRIOT.Reset();
 	mFDC.Reset();
+	UpdateROMBank();
 
 	// clear DRQ from FDC -> RIOT port A
 	mRIOT.SetInputA(0x00, 0x80);
@@ -313,7 +319,7 @@ void ATDeviceDiskDriveSpeedyXF::PeripheralColdReset() {
 	
 	// start the disk drive on a track other than 0/20/39, just to make things interesting
 	mCurrentTrack = 10;
-	mFDC.SetCurrentTrack(mCurrentTrack, false);
+	mFDC.SetCurrentTrack(mCurrentTrack * 2, false);
 
 	mFDC.SetMotorRunning(false);
 	mFDC.SetDensity(true);
@@ -420,7 +426,7 @@ void ATDeviceDiskDriveSpeedyXF::OnScheduledEvent(uint32 id) {
 			case 1:		// disk being removed (write protect covered)
 			case 2:		// disk removed (write protect clear)
 			case 3:		// disk being inserted (write protect covered)
-				mDriveScheduler.SetEvent(kDiskChangeStepMS, this, kEventId_DriveDiskChange, mpEventDriveDiskChange);
+				mDriveScheduler.SetEvent(VDRoundToInt32(mDriveScheduler.GetRate().asDouble() * (kDiskChangeStepMS / 1000.0)), this, kEventId_DriveDiskChange, mpEventDriveDiskChange);
 				break;
 
 			case 4:		// disk inserted (write protect normal)
@@ -595,7 +601,7 @@ void ATDeviceDiskDriveSpeedyXF::OnRIOTRegisterWrite(uint32 addr, uint8 val) {
 				if (mCurrentTrack > 0) {
 					--mCurrentTrack;
 
-					mFDC.SetCurrentTrack(mCurrentTrack * 2, mCurrentTrack != 0);
+					mFDC.SetCurrentTrack(mCurrentTrack * 2, mCurrentTrack == 0);
 
 					PlayStepSound();
 				}
@@ -604,7 +610,7 @@ void ATDeviceDiskDriveSpeedyXF::OnRIOTRegisterWrite(uint32 addr, uint8 val) {
 				if (mCurrentTrack < 90U) {
 					++mCurrentTrack;
 
-					mFDC.SetCurrentTrack(mCurrentTrack * 2, mCurrentTrack != 0);
+					mFDC.SetCurrentTrack(mCurrentTrack * 2, mCurrentTrack == 0);
 				}
 
 				PlayStepSound();

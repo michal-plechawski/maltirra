@@ -89,7 +89,7 @@
     <ClInclude Include="h\diskdrivefullbase.h" />
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\diskdriveindusgt.h" />
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\diskdrivepercom.h" />
-    <ClInclude Include="..\platform\Windows_x64\Altirra\h\diskdrivespeedyxf.h" />
+    <ClInclude Include="h\diskdrivespeedyxf.h" />
     <ClInclude Include="h\diskdrivexf551.h" />
     <ClInclude Include="h\diskinterface.h" />
     <ClInclude Include="h\diskprofile.h" />
@@ -329,7 +329,9 @@
     </ClCompile>
     <ClCompile Include="..\platform\Windows_x64\Altirra\source\diskdriveindusgt.cpp" />
     <ClCompile Include="..\platform\Windows_x64\Altirra\source\diskdrivepercom.cpp" />
-    <ClCompile Include="..\platform\Windows_x64\Altirra\source\diskdrivespeedyxf.cpp" />
+    <ClCompile Include="source\diskdrivespeedyxf.cpp">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+    </ClCompile>
     <ClCompile Include="source\diskdrivexf551.cpp">
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
     </ClCompile>

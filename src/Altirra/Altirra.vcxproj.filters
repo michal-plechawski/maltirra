@@ -1141,7 +1141,7 @@
     <ClCompile Include="..\platform\Windows_x64\Altirra\source\uiconfdevblackboxfloppy.cpp">
       <Filter>Source Files - Device Configuration UI</Filter>
     </ClCompile>
-    <ClCompile Include="..\platform\Windows_x64\Altirra\source\diskdrivespeedyxf.cpp">
+    <ClCompile Include="source\diskdrivespeedyxf.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\platform\Windows_x64\Altirra\source\vgmwriter.cpp">
@@ -1914,7 +1914,7 @@
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\blackboxfloppy.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\platform\Windows_x64\Altirra\h\diskdrivespeedyxf.h">
+    <ClInclude Include="h\diskdrivespeedyxf.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\platform\Windows_x64\Altirra\h\vgmwriter.h">
